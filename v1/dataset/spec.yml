@@ -1,0 +1,54 @@
+spec:
+- title: dataset folder
+  description: Folder containing a single dataset definition
+  type: folder
+  nameRegex: "[a-z0-9][a-z0-9_]+[a-z0-9]"
+  minOccurences: 1
+  spec:
+  - title: dataset manifest
+    description: A dataset's manifest file
+    type: file
+    fileMimeType: "application/x-yaml"
+    name: "manifest.yml"
+    required: true
+    specRef: "manifest.spec.yml"
+  - title: field definitions
+    description: Folder containing field definitions
+    type: folder
+    name: fields
+    required: true
+    specRef: "fields/spec.yml"
+  - title: agent definitions
+    description: Folder containing agent-related definitions
+    type: folder
+    name: agent
+    required: true
+    spec:
+    - title: stream definitions
+      description: Folder containing agent stream definitions
+      type: folder
+      name: stream
+      required: true
+      spec:
+      - title: stream definition
+        description: Agent stream definition
+        type: file
+        name: "stream.yml.hbs"
+        fileMimeType: "application/x-hbs"
+        required: true
+  - title: elasticsearch assets
+    description: Folder containing Elasticsearch assets
+    type: folder
+    name: elasticsearch
+    spec:
+    - title: ingest pipelines
+      description: Folder containing Elasticsearch Ingest Node pipeline definitions
+      type: folder
+      name: ingest_pipeline
+      spec:
+      - title: default ingest pipeline
+        description: Default ingest pipeline definition
+        type: file
+        name: "default.yml"
+        fileMimeType: "application/x-yaml"
+        required: true
