@@ -177,7 +177,6 @@ spec:
                 type:
                   description: Type of input.
                   type: string
-                  pattern: "(logfile|.+\/metrics)"
                 title:
                   description: Title of input.
                   type: string

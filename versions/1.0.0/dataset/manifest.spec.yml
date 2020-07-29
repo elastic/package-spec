@@ -1,0 +1,105 @@
+##
+## Describes the specification for a dataset's manifest.yml file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  properties:
+    title:
+      description: Title of dataset.
+      type: string
+      examples:
+      - AWS billing metrics
+    release:
+      description: Stability of dataset.
+      type: string
+      enum:
+      - beta
+      - TODO_ADD_MORE
+      examples:
+      - beta
+    type:
+      description: Type of dataset
+      type: string
+      enum:
+      - metrics
+      - TODO_ADD_MORE
+      examples:
+      - metrics
+    streams:
+      description: Streams offered by dataset.
+      type: array
+      items:
+        type: object
+        properties:
+          title:
+            type: string
+            examples:
+            - AWS Billing metrics
+          description:
+            type: string
+            examples:
+            - Collect AWS billing metrics
+          input:
+            type: string
+            examples:
+            - aws/metrics
+            - s3
+            - file
+          vars:
+            description: Input variables.
+            type: array
+            items:
+              type: object
+              properties:
+                name:
+                  description: Variable name.
+                  type: string
+                  examples:
+                  - hosts
+                type:
+                  description: Data type of variable.
+                  type: string
+                  enum:
+                  - text
+                  - TODO_ADD_MORE
+                  examples:
+                  - text
+                title:
+                  description: Title of variable
+                  type: string
+                  examples:
+                  - Hosts
+                multi:
+                  description: TODO
+                  type: boolean
+                  default: false
+                  examples:
+                  - true
+                required:
+                  description: Is variable required?
+                  type: boolean
+                  default: false
+                  examples:
+                  - true
+                show_user:
+                  description: TODO
+                  type: boolean
+                  default: true
+                  examples:
+                  - false
+                default:
+                  description: Default value(s) for variable
+                  type: array
+                  items:
+                    type: string
+                    examples:
+                    - "http://127.0.0.1"
+              required:
+              - name
+              - type                  
+        required:
+        - title
+        - description
+  required:
+  - title
