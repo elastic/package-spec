@@ -16,3 +16,4 @@ Each specification format is versioned. You will find folders at the root of thi
 
 Within each version folder, there must be a `spec.yml` file. This file is the entry point for the specification for a package's contents. For readability, the specification file may (recursively) reference other specification files via `specRef` attributes.
 
+Note that the specification files primarily defined the structure (syntax) of a package's contents. To a limited extent they may also define some semantics. Richer semantics, however, will need to be expressed in validation code.
