@@ -1,0 +1,37 @@
+  spec:
+  - description: Folder containing Kibana dashboard assets
+    type: folder
+    name: dashboard
+    required: false
+    spec:
+    - description: A dashboard asset file
+      type: file
+      contentMediaType: "application/json"
+      pattern: ".+\.json"
+  - description: Folder containing Kibana visualization assets
+    type: folder
+    name: visualization
+    required: false
+    spec:
+    - description: A visualization asset file
+      type: file
+      contentMediaType: "application/json"
+      pattern: ".+\.json"
+  - description: Folder containing Kibana saved search assets
+    type: folder
+    name: search
+    required: false
+    spec:
+    - description: A saved search asset file
+      type: file
+      contentMediaType: "application/json"
+      pattern: ".+\.json"
+  - description: Folder containing Kibana map assets
+    type: folder
+    name: map
+    required: false
+    spec:
+    - description: A map asset file
+      type: file
+      contentMediaType: "application/json"
+      pattern: ".+\.json"

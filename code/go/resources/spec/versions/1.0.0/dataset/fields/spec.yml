@@ -1,0 +1,27 @@
+spec:
+- name: base fields
+  description: Base fields definitions
+  type: file
+  name: "base-fields.yml"
+  required: true
+  contentMediaType: "application/x-yaml"
+  specRef: "base.spec.yml"
+- name: dataset fields
+  description: Dataset-specific fields definitions
+  type: file
+  name: "fields.yml"
+  required: true
+  contentMediaType: "application/x-yaml"
+  specRef: "fields.spec.yml"
+- name: package fields
+  description: Package-specific fields definitions
+  type: file
+  name: "package-fields.yml"
+  contentMediaType: "application/x-yaml"
+  specRef: "package.spec.yml"
+- name: ECS fields
+  description: ECS fields definitions
+  type: file
+  name: "ecs.yml"
+  contentMediaType: "application/x-yaml"
+  specRef: "ecs.spec.yml"
