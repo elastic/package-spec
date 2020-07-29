@@ -6,25 +6,258 @@ spec:
   type: object
   properties:
     format_version:
+      description: The version of the package specification format used by this package.
       type: string
-      minLength: 1
       pattern: "^[0-9]+\.[0-9]+\.[0-9]+$"
+      examples:
+      - "1.0.0"
     name:
+      description: The name of the package.
       type: string
-      minLength: 1
+      examples:
+      - apache
     title:
+      description: The title of the package.
       type: string
-      minLength: 1
+      examples:
+      - Apache
     description:
+      description: A longer description of the package.
       type: string
-      minLength: 1
+      examples:
+      - Apache Integration
     version:
+      description: The version of the package.
       type: string
-      minLength: 1
       pattern: "^[0-9]+\.[0-9]+\.[0-9]+$"
+      examples:
+      - "0.1.0"
+    license:
+      description: The license under which the package is being released.
+      type: string
+      enum:
+      - apache2
+      - basic
+      - gold
+      - platinum
+      default: basic
+      examples:
+      - basic
+    type:
+      description: The type of package.
+      type: string
+      enum:
+      - integration
+      - solution
+      examples:
+      - integration
+    release:
+      description: The stability of the package.
+      type: string
+      enum:
+      - experimental
+      - beta
+      - ga
+      examples:
+      - experimental
+    categories:
+      description: Categories to which this package belongs.
+      type: array
+      items:
+        type: string
+        enum:
+        - security
+        - web
+        - TODO_ADD_MORE
+        examples:
+        - web
+    conditions:
+      description: Constraints under which this package can be installed.
+      type: object
+      properties:
+        kibana:
+          description: Kibana versions compatible with this package.
+          type: object
+          properties:
+            version:
+              type: string
+              examples:
+              - ">=7.9.0"
+    icons:
+      description: List of icons for by this package.
+      type: array
+      items:
+        type: object
+        properties:
+          src:
+            description: Relative path to the icon's image file.
+            type: string
+            examples:
+            - "/img/logo_apache.svg"
+          title:
+            description: Title of icon.
+            type: string
+            examples:
+            - "Apache Logo"
+          size:
+            description: Size of the icon.
+            type: string
+            examples:
+            - "32x32"
+          type:
+            description: MIME type of the icon image file.
+            type: string
+            examples:
+            - "image/svg+xml"
+        required:
+        - src
+    screenshots:
+      description: List of screenshots of Kibana assets created by this package.
+      type: array
+      items:
+        type: object
+        properties:
+          src:
+            description: Relative path to the scrennshot's image file.
+            type: string
+            examples:
+            - "/img/apache_httpd_server_status.png"
+          title:
+            description: Title of screenshot.
+            type: string
+            examples:
+            - "Apache HTTPD Server Status"
+          size:
+            description: Size of the screenshot.
+            type: string
+            examples:
+            - "1215x1199"
+          type:
+            description: MIME type of the screenshot image file.
+            type: string
+            examples:
+            - "image/png"
+        required:
+        - src
+        - title
+    removable:
+      description: Is this package removable form the package registry?
+      type: boolean
+    config_templates:
+      description: List of configuration templates offered by this package.
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            description: Name of configuration template.
+            type: string
+            examples:
+            - apache
+          title:
+            description: Title of configuration template.
+            type: string
+            examples:
+            - Apache logs and metrics
+          description:
+            description: Longer description of configuration template.
+            type: string
+            examples:
+            - Collect logs and metrics from Apache instances
+          multiple:
+            type: boolean
+          solution:
+            type: string
+          inputs:
+            description: List of inputs supported by configuration template.
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  description: Type of input.
+                  type: string
+                  pattern: "(logfile|.+\/metrics)"
+                title:
+                  description: Title of input.
+                  type: string
+                  examples:
+                  - Collect logs from Apache instances
+                description:
+                  description: Longer description of input.
+                  type: string
+                  examples: 
+                  - Collecting Apache access and error logs
+                vars:
+                  description: Input configuration variables.
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        description: Variable name.
+                        type: string
+                        examples:
+                        - hosts
+                      type:
+                        description: Data type of variable.
+                        type: string
+                        enum:
+                        - text
+                        - TODO_ADD_MORE
+                        examples:
+                        - text
+                      title:
+                        description: Title of variable
+                        type: string
+                        examples:
+                        - Hosts
+                      multi:
+                        description: TODO
+                        type: boolean
+                        default: false
+                        examples:
+                        - true
+                      required:
+                        description: Is variable required?
+                        type: boolean
+                        default: false
+                        examples:
+                        - true
+                      show_user:
+                        description: TODO
+                        type: boolean
+                        default: true
+                        examples:
+                        - false
+                      default:
+                        description: Default value(s) for variable
+                        type: array
+                        items:
+                          type: string
+                          examples:
+                          - "http://127.0.0.1"
+                    required:
+                    - name
+                    - type
+              required:
+              - type
+              - title
+              - description
+        required:
+        - name
+        - title
+        - description
+    owner:
+      type: object
+      properties:
+        github:
+          description: GitHub repository name of package maintainer.
+          type: string
   required:
   - format_version
-
-  ##
-  ## TODO: WIP!
-  ##
+  - name
+  - title
+  - description
+  - version
+  - release
