@@ -1,0 +1,26 @@
+##
+## Entrypoint of package specification.
+##
+## Describes the folders and files that make up a package.
+## 
+spec:
+- description: The main package manifest file
+  type: file
+  contentMediaType: "application/x-yaml"
+  name: "manifest.yml"
+  required: true
+  specRef: "manifest.spec.yml"
+- description: Folder containing dataset definitions
+  type: folder
+  name: dataset
+  required: true
+  specRef: "dataset/spec.yml"
+- description: Folder containing documentation for the package
+  type: folder
+  name: docs
+  required: true
+- description: Folder containing Kibana assets used by the package
+  type: folder
+  name: kibana
+  required: false
+  specRef: "kibana/spec.yml"
