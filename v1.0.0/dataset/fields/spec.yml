@@ -4,24 +4,24 @@ spec:
   type: file
   name: "base-fields.yml"
   required: true
-  fileMimeType: "application/x-yaml"
+  contentMediaType: "application/x-yaml"
   specRef: "base.spec.yml"
 - name: dataset fields
   description: Dataset-specific fields definitions
   type: file
   name: "fields.yml"
   required: true
-  fileMimeType: "application/x-yaml"
+  contentMediaType: "application/x-yaml"
   specRef: "fields.spec.yml"
 - name: package fields
   description: Package-specific fields definitions
   type: file
   name: "package-fields.yml"
-  fileMimeType: "application/x-yaml"
+  contentMediaType: "application/x-yaml"
   specRef: "package.spec.yml"
 - name: ECS fields
   description: ECS fields definitions
   type: file
   name: "ecs.yml"
-  fileMimeType: "application/x-yaml"
+  contentMediaType: "application/x-yaml"
   specRef: "ecs.spec.yml"

@@ -1,45 +1,37 @@
   spec:
-  - title: dashboards
-    description: Folder containing Kibana dashboard assets
+  - description: Folder containing Kibana dashboard assets
     type: folder
     name: dashboard
     required: false
     spec:
-    - title: dashboard file
-      description: A dashboard asset file
+    - description: A dashboard asset file
       type: file
-      fileMimeType: "application/json"
-      nameRegex: "*.json"
-  - title: visualizations
-    description: Folder containing Kibana visualization assets
+      contentMediaType: "application/json"
+      pattern: ".+\.json"
+  - description: Folder containing Kibana visualization assets
     type: folder
     name: visualization
     required: false
     spec:
-    - title: visualization file
-      description: A visualization asset file
+    - description: A visualization asset file
       type: file
-      fileMimeType: "application/json"
-      nameRegex: "*.json"
-  - title: saved searches
-    description: Folder containing Kibana saved search assets
+      contentMediaType: "application/json"
+      pattern: ".+\.json"
+  - description: Folder containing Kibana saved search assets
     type: folder
     name: search
     required: false
     spec:
-    - title: saved search file
-      description: A saved search asset file
+    - description: A saved search asset file
       type: file
-      fileMimeType: "application/json"
-      nameRegex: "*.json"
-  - title: maps
-    description: Folder containing Kibana map assets
+      contentMediaType: "application/json"
+      pattern: ".+\.json"
+  - description: Folder containing Kibana map assets
     type: folder
     name: map
     required: false
     spec:
-    - title: map file
-      description: A map asset file
+    - description: A map asset file
       type: file
-      fileMimeType: "application/json"
-      nameRegex: "*.json"
+      contentMediaType: "application/json"
+      pattern: ".+\.json"

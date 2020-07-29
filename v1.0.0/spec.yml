@@ -4,26 +4,22 @@
 ## Describes the folders and files that make up a package.
 ## 
 spec:
-- title: package manifest
-  description: The main package manifest file
+- description: The main package manifest file
   type: file
-  fileMimeType: "application/x-yaml"
+  contentMediaType: "application/x-yaml"
   name: "manifest.yml"
   required: true
   specRef: "manifest.spec.yml"
-- title: dataset folder
-  description: Folder containing dataset definitions
+- description: Folder containing dataset definitions
   type: folder
   name: dataset
   required: true
   specRef: "dataset/spec.yml"
-- title: docs folder
-  description: Folder containing documentation for the package
+- description: Folder containing documentation for the package
   type: folder
   name: docs
   required: true
-- title: kibana assets
-  description: Folder containing Kibana assets used by the package
+- description: Folder containing Kibana assets used by the package
   type: folder
   name: kibana
   required: false
