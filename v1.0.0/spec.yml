@@ -1,3 +1,8 @@
+##
+## Entrypoint of package specification.
+##
+## Describes the folders and files that make up a package.
+## 
 spec:
 - title: package manifest
   description: The main package manifest file

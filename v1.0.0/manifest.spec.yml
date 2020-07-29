@@ -1,3 +1,6 @@
+##
+## Describes the specification for the package's main manifest.yml file
+##
 spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
