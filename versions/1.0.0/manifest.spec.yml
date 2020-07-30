@@ -4,6 +4,7 @@
 spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
+  additionalProperties: false
   properties:
     format_version:
       description: The version of the package specification format used by this package.
@@ -95,10 +96,12 @@ spec:
     conditions:
       description: Constraints under which this package can be installed.
       type: object
+      additionalProperties: false      
       properties:
         kibana:
           description: Kibana versions compatible with this package.
           type: object
+          additionalProperties: false
           properties:
             version:
               type: string
@@ -109,6 +112,7 @@ spec:
       type: array
       items:
         type: object
+        additionalProperties: false
         properties:
           src:
             description: Relative path to the icon's image file.
@@ -137,6 +141,7 @@ spec:
       type: array
       items:
         type: object
+        additionalProperties: false
         properties:
           src:
             description: Relative path to the scrennshot's image file.
@@ -169,6 +174,7 @@ spec:
       type: array
       items:
         type: object
+        additionalProperties: false
         properties:
           name:
             description: Name of configuration template.
@@ -194,6 +200,7 @@ spec:
             type: array
             items:
               type: object
+              additionalProperties: false
               properties:
                 type:
                   description: Type of input.
@@ -215,6 +222,7 @@ spec:
                   type: array
                   items:
                     type: object
+                    additionalProperties: false
                     properties:
                       name:
                         description: Variable name.
@@ -272,6 +280,7 @@ spec:
         - description
     owner:
       type: object
+      additionalProperties: false
       properties:
         github:
           description: GitHub repository name of package maintainer.

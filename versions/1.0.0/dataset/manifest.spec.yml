@@ -4,6 +4,7 @@
 spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
+  additionalProperties: false
   properties:
     title:
       description: Title of dataset.
@@ -31,6 +32,7 @@ spec:
       type: array
       items:
         type: object
+        additionalProperties: false
         properties:
           title:
             type: string
@@ -51,6 +53,7 @@ spec:
             type: array
             items:
               type: object
+              additionalProperties: false
               properties:
                 name:
                   description: Variable name.
