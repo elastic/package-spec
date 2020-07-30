@@ -11,7 +11,7 @@ This repository contains:
 
 Please use this repository to discuss any changes to the specification, either my making issues or PRs to the specification.
 
-# Specification Format 
+# Specification Format
 
 An Elastic Package specification describes:
 1. the folder structure of packages and expected files within these folders; and
