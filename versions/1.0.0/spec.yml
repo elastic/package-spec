@@ -9,18 +9,18 @@ spec:
   contentMediaType: "application/x-yaml"
   name: "manifest.yml"
   required: true
-  specRef: "manifest.spec.yml"
+  $ref: "./manifest.spec.yml"
 - description: The package's CHANGELOG file
   type: file
   contentMediaType: "application/x-yaml"
   name: "changelog.yml"
   required: true
-  specRef: "changelog.spec.yml"
+  $ref: "./changelog.spec.yml"
 - description: Folder containing dataset definitions
   type: folder
   name: dataset
   required: true
-  specRef: "dataset/spec.yml"
+  $ref: "./dataset/spec.yml"
 - description: Folder containing documentation for the package
   type: folder
   name: docs
@@ -29,4 +29,4 @@ spec:
   type: folder
   name: kibana
   required: false
-  specRef: "kibana/spec.yml"
+  $ref: "./kibana/spec.yml"

@@ -5,23 +5,23 @@ spec:
   name: "base-fields.yml"
   required: true
   contentMediaType: "application/x-yaml"
-  specRef: "fields.spec.yml"
+  $ref: "./fields.spec.yml"
 - name: dataset fields
   description: Dataset-specific fields definitions
   type: file
   name: "fields.yml"
   required: true
   contentMediaType: "application/x-yaml"
-  specRef: "fields.spec.yml"
+  $ref: "./fields.spec.yml"
 - name: package fields
   description: Package-specific fields definitions
   type: file
   name: "package-fields.yml"
   contentMediaType: "application/x-yaml"
-  specRef: "fields.spec.yml"
+  $ref: "./fields.spec.yml"
 - name: ECS fields
   description: ECS fields definitions
   type: file
   name: "ecs.yml"
   contentMediaType: "application/x-yaml"
-  specRef: "fields.spec.yml"
+  $ref: "./fields.spec.yml"
