@@ -1,4 +1,4 @@
-package epkg
+package validator
 
 import "fmt"
 
