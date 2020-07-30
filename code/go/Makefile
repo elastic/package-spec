@@ -11,3 +11,7 @@ check:
 # Builds the go module and installs it
 build:
 	go get github.com/elastic/package-spec/code/go
+
+# Runs tests
+test:
+	go test -v ./...
