@@ -232,7 +232,7 @@ spec:
                         examples:
                         - Hosts
                       multi:
-                        description: TODO
+                        description: Can variable can have multiple values?
                         type: boolean
                         default: false
                         examples:

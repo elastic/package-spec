@@ -70,7 +70,7 @@ spec:
                   examples:
                   - Hosts
                 multi:
-                  description: TODO
+                  description: Can variable contain multiple values?
                   type: boolean
                   default: false
                   examples:
