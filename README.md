@@ -18,7 +18,7 @@ There may be multiple versions of specifications. At the root of this repository
 
 Within each version folder, there must be a `spec.yml` file. This file is the entry point for the specification for a package's contents. It describes the the folder structure of packages and expected files within these folders (this is point 1. above). The specification is expressed using a schema similar to [JSON Schema](https://json-schema.org/), but with a couple of differences:
 - The `type` field can be either `folder` or `file`,
-- A new field field, `specRef` is introduced to (recursively) reference other specification files, and
+- A new field, `contents` iss introduced to (recursively) describe the contents of folders (i.e. when type == folder), and
 - The specification is written as YAML for readability.
 
 Expected package files, e.g. `manifest.yml` themselves have a structure to their contents. This structure is described in specification files using JSON schema (this is point 2. above). These specification files are also written as YAML for readability.
