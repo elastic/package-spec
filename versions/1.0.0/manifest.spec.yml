@@ -67,9 +67,29 @@ spec:
       items:
         type: string
         enum:
+        - aws
+        - azure
+        - cloud
+        - config_management
+        - containers
+        - crm
+        - custom
+        - datastore
+        - elastic_stack
+        - google_cloud
+        - kubernetes
+        - languages
+        - message_queue
+        - monitoring
+        - network
+        - notification
+        - os_system
+        - productivity
         - security
+        - support
+        - ticketing
+        - version_control
         - web
-        - TODO_ADD_MORE
         examples:
         - web
     conditions:
@@ -204,7 +224,6 @@ spec:
                         type: string
                         enum:
                         - text
-                        - TODO_ADD_MORE
                         examples:
                         - text
                       title:

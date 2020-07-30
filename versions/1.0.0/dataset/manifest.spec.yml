@@ -14,8 +14,8 @@ spec:
       description: Stability of dataset.
       type: string
       enum:
+      - experimental
       - beta
-      - TODO_ADD_MORE
       examples:
       - beta
     type:
@@ -23,7 +23,7 @@ spec:
       type: string
       enum:
       - metrics
-      - TODO_ADD_MORE
+      - logs
       examples:
       - metrics
     streams:
@@ -62,7 +62,6 @@ spec:
                   type: string
                   enum:
                   - text
-                  - TODO_ADD_MORE
                   examples:
                   - text
                 title:
