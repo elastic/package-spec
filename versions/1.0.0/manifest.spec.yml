@@ -208,6 +208,8 @@ spec:
                   type: string
                   examples: 
                   - Collecting Apache access and error logs
+                # TODO: address duplication of "vars" schema between here and dataset manifest spec, probably
+                # using "$ref" somehow.
                 vars:
                   description: Input configuration variables.
                   type: array
