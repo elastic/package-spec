@@ -6,13 +6,11 @@ This repository contains the specifications for Elastic Packages, as served up b
 | ----- |
 | The specifications in this repository are currently under active development. They are **NOT** ready for general use. |
 
-In the future it may also contain code for validating said specifications.
-
-# Purpose
+This repository also provides libraries for validating packages against specifications. These are located under the `code` folder at the root of the repository.
 
 Please use this repository to discuss any changes to the specification, either my making issues or PRs to the specification.
 
-# Specification Format 
+# Specification Format
 
 An Elastic Package specification describes:
 1. the folder structure of packages and expected files within these folders; and
