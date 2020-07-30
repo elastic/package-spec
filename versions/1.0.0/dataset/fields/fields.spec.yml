@@ -1,0 +1,41 @@
+##
+## Describes the specification for a dataset's various field definition files
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  properties:
+    name:
+      description: Name of field
+      type: string
+    title:
+      description: Title of field
+      type: string
+    type: 
+      description: Datatype of field
+      type: string
+      enum:
+      - constant_keyword
+      - date
+      - group
+    description:
+      description: Short description of field
+      type: string
+    group:
+      description: TODO
+      type: int
+    level:
+      description: TODO
+      type: string
+      enum:
+      - custom
+    default_field:
+      description: "Is this field a default? TODO: better description"
+      type: boolean
+      default: true
+    fields:
+      description: Sub-fields, when type is group
+      $ref: "#"     # JSON-schema syntax for pointing to the root of the schema
+  required:
+  - name
+  - type

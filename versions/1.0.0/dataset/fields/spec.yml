@@ -5,7 +5,7 @@ spec:
   name: "base-fields.yml"
   required: true
   contentMediaType: "application/x-yaml"
-  specRef: "base.spec.yml"
+  specRef: "fields.spec.yml"
 - name: dataset fields
   description: Dataset-specific fields definitions
   type: file
@@ -18,10 +18,10 @@ spec:
   type: file
   name: "package-fields.yml"
   contentMediaType: "application/x-yaml"
-  specRef: "package.spec.yml"
+  specRef: "fields.spec.yml"
 - name: ECS fields
   description: ECS fields definitions
   type: file
   name: "ecs.yml"
   contentMediaType: "application/x-yaml"
-  specRef: "ecs.spec.yml"
+  specRef: "fields.spec.yml"
