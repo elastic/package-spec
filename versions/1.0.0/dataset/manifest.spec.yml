@@ -62,6 +62,7 @@ spec:
                   type: string
                   enum:
                   - text
+                  - yaml
                   examples:
                   - text
                 title:
