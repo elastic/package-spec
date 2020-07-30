@@ -235,7 +235,7 @@ spec:
                         examples:
                         - Hosts
                       multi:
-                        description: Can variable can have multiple values?
+                        description: Can variable contain multiple values?
                         type: boolean
                         default: false
                         examples:
