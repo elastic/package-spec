@@ -6,7 +6,7 @@ import (
 )
 
 // ValidationErrors is an Error that contains a iterable collection of validation error messages.
-type ValidationErrors []string
+type ValidationErrors []error
 
 func (ve ValidationErrors) Error() string {
 	if len(ve) == 0 {
