@@ -1,7 +1,6 @@
 package validator
 
 import (
-	"os"
 	"path"
 	"testing"
 
@@ -27,11 +26,8 @@ func TestNewPackage(t *testing.T) {
 		},
 	}
 
-	cwd, err := os.Getwd()
-	require.NoError(t, err)
-
 	for pkgName, test := range tests {
-		pkgRootPath := path.Join(cwd, "test", "packages", pkgName)
+		pkgRootPath := path.Join("test", "packages", pkgName)
 		pkg, err := NewPackage(pkgRootPath)
 		if test.expectedErrContains == "" {
 			require.NoError(t, err)
