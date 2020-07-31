@@ -68,6 +68,7 @@ func (s Spec) ValidatePackage(pkg Package) ValidationErrors {
 }
 
 func (s Spec) toJsonSchema() (string, error) {
+	// TODO
 	// Stitch together specification YAML files into mega YAML specification
 	// Convert mega YAML non-JSON schema parts to JSON schema equivalents
 	// Convert mega YAML specification into mega JSON object (so we have a valid JSON schema)
