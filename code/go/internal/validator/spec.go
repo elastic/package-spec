@@ -1,11 +1,28 @@
 package validator
 
+import (
+	"fmt"
+	"os"
+	"path"
+
+	"github.com/pkg/errors"
+)
+
 type Spec struct {
 	version string
 }
 
 func NewSpec(version string) (*Spec, error) {
-	// Find spec for given format version
+	specPath := path.Join("..", "..", "resources", "spec", "versions", version)
+	info, err := os.Stat(specPath)
+	if os.IsNotExist(err) {
+		return nil, errors.Wrapf(err, "no specification found for version [%v]", version)
+	}
+
+	if !info.IsDir() {
+		return nil, fmt.Errorf("no valid specification found for version [%v]", version)
+	}
+
 	s := Spec{
 		version,
 	}
