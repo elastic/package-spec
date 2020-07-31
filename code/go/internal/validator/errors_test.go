@@ -1,6 +1,7 @@
 package validator
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -8,8 +9,8 @@ import (
 
 func TestValidationErrorsMultiple(t *testing.T) {
 	ve := ValidationErrors{}
-	ve = append(ve, "error 1")
-	ve = append(ve, "error 2")
+	ve = append(ve, errors.New("error 1"))
+	ve = append(ve, errors.New("error 2"))
 
 	require.Len(t, ve, 2)
 	require.Contains(t, ve.Error(), "found 2 validation errors:")
@@ -19,7 +20,7 @@ func TestValidationErrorsMultiple(t *testing.T) {
 
 func TestValidationErrorsSingle(t *testing.T) {
 	ve := ValidationErrors{}
-	ve = append(ve, "error 1")
+	ve = append(ve, errors.New("error 1"))
 
 	require.Len(t, ve, 1)
 	require.Contains(t, ve.Error(), "found 1 validation error:")
