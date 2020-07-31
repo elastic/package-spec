@@ -56,3 +56,8 @@ func NewPackage(pkgRootPath string) (*Package, error) {
 
 	return &p, nil
 }
+
+func (p Package) ToJson() (string, error) {
+	// Stitch together package contents into mega JSON object
+	return "", nil
+}
