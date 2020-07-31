@@ -14,6 +14,7 @@ spec:
     name:
       description: The name of the package.
       type: string
+      pattern: "[a-z0-9_]+"
       examples:
       - apache
     title:
@@ -66,9 +67,29 @@ spec:
       items:
         type: string
         enum:
+        - aws
+        - azure
+        - cloud
+        - config_management
+        - containers
+        - crm
+        - custom
+        - datastore
+        - elastic_stack
+        - google_cloud
+        - kubernetes
+        - languages
+        - message_queue
+        - monitoring
+        - network
+        - notification
+        - os_system
+        - productivity
         - security
+        - support
+        - ticketing
+        - version_control
         - web
-        - TODO_ADD_MORE
         examples:
         - web
     conditions:
@@ -187,6 +208,8 @@ spec:
                   type: string
                   examples: 
                   - Collecting Apache access and error logs
+                # TODO: address duplication of "vars" schema between here and dataset manifest spec, probably
+                # using "$ref" somehow.
                 vars:
                   description: Input configuration variables.
                   type: array
@@ -203,7 +226,7 @@ spec:
                         type: string
                         enum:
                         - text
-                        - TODO_ADD_MORE
+                        - yaml
                         examples:
                         - text
                       title:
@@ -212,7 +235,7 @@ spec:
                         examples:
                         - Hosts
                       multi:
-                        description: TODO
+                        description: Can variable contain multiple values?
                         type: boolean
                         default: false
                         examples:
@@ -224,7 +247,7 @@ spec:
                         examples:
                         - true
                       show_user:
-                        description: TODO
+                        description: Should this variable be shown to the user by default?
                         type: boolean
                         default: true
                         examples:

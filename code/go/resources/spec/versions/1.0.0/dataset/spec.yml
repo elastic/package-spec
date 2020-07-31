@@ -3,28 +3,28 @@ spec:
   type: folder
   pattern: "[a-z0-9][a-z0-9_]+[a-z0-9]"
   minOccurences: 1
-  spec:
+  contents:
   - description: A dataset's manifest file
     type: file
     contentMediaType: "application/x-yaml"
     name: "manifest.yml"
     required: true
-    specRef: "manifest.spec.yml"
+    $ref: "./manifest.spec.yml"
   - description: Folder containing field definitions
     type: folder
     name: fields
     required: true
-    specRef: "fields/spec.yml"
+    $ref: "./fields/spec.yml"
   - description: Folder containing agent-related definitions
     type: folder
     name: agent
     required: true
-    spec:
+    contents:
     - description: Folder containing agent stream definitions
       type: folder
       name: stream
       required: true
-      spec:
+      contents:
       - description: Agent stream definition
         type: file
         name: "stream.yml.hbs"
@@ -33,11 +33,11 @@ spec:
   - description: Folder containing Elasticsearch assets
     type: folder
     name: elasticsearch
-    spec:
+    contents:
     - description: Folder containing Elasticsearch Ingest Node pipeline definitions
       type: folder
       name: ingest_pipeline
-      spec:
+      contents:
       - description: Default ingest pipeline definition
         type: file
         name: "default.yml"

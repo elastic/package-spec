@@ -14,8 +14,8 @@ spec:
       description: Stability of dataset.
       type: string
       enum:
+      - experimental
       - beta
-      - TODO_ADD_MORE
       examples:
       - beta
     type:
@@ -23,7 +23,7 @@ spec:
       type: string
       enum:
       - metrics
-      - TODO_ADD_MORE
+      - logs
       examples:
       - metrics
     streams:
@@ -62,7 +62,7 @@ spec:
                   type: string
                   enum:
                   - text
-                  - TODO_ADD_MORE
+                  - yaml
                   examples:
                   - text
                 title:
@@ -71,7 +71,7 @@ spec:
                   examples:
                   - Hosts
                 multi:
-                  description: TODO
+                  description: Can variable contain multiple values?
                   type: boolean
                   default: false
                   examples:
@@ -83,7 +83,7 @@ spec:
                   examples:
                   - true
                 show_user:
-                  description: TODO
+                  description: Should this variable be shown to the user by default?
                   type: boolean
                   default: true
                   examples:
