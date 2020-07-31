@@ -5,3 +5,7 @@ update: code/*
 # Checks that language libraries have latest specs
 check: code/*
 	$(foreach lang,$^,make -C $(lang) check;)
+
+# Tests the language libraries' code
+test: code/*
+	$(foreach lang,$^,make -C $(lang) test;)
