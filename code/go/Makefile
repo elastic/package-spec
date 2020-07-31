@@ -2,6 +2,7 @@ SPEC_DIR=resources/spec
 
 # Updates the spec to the latest copy
 update:
+	rm -rf ${SPEC_DIR}/*
 	cp -r ../../versions ${SPEC_DIR}
 
 # Checks that the spec is up-to-date
