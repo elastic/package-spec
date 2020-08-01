@@ -166,9 +166,6 @@ spec:
         required:
         - src
         - title
-    removable:
-      description: Is this package removable form the package registry?
-      type: boolean
     config_templates:
       description: List of configuration templates offered by this package.
       type: array
