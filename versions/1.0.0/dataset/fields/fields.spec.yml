@@ -23,10 +23,10 @@ spec:
       description: Short description of field
       type: string
     group:
-      description: TODO
+      description: ECS group
       type: int
     level:
-      description: TODO
+      description: ECS level
       type: string
       enum:
       - custom
