@@ -38,10 +38,7 @@ spec:
       description: The license under which the package is being released.
       type: string
       enum:
-      - apache2
       - basic
-      - gold
-      - platinum
       default: basic
       examples:
       - basic
