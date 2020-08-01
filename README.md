@@ -14,7 +14,7 @@ An Elastic Package specification describes:
 1. the folder structure of packages and expected files within these folders; and
 2. the structure of the expected files' contents.
 
-There may be multiple versions of specifications. At the root of this repository is a `versions` folder. In this folder you will find sub-folders for each active major version of the specification, e.g. `versions/1.x.x`, `versions/2.x.x`, etc. Read more in the _Specification Versioning_ section below.
+There may be multiple versions of specifications. At the root of this repository is a `versions` folder. In this folder you will find sub-folders for each active major version of the specification, e.g. `versions/1`, `versions/2`, etc. Read more in the _Specification Versioning_ section below.
 
 Within each major version folder, there must be a `spec.yml` file. This file is the entry point for the specification for a package's contents. It describes the the folder structure of packages and expected files within these folders (this is point 1. above). The specification is expressed using a schema similar to [JSON Schema](https://json-schema.org/), but with a couple of differences:
 - The `type` field can be either `folder` or `file`,
