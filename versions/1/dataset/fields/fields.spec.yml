@@ -4,7 +4,7 @@
 spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
-  additionalProperties: false
+  additionalProperties: true
   properties:
     name:
       description: Name of field
@@ -22,14 +22,6 @@ spec:
     description:
       description: Short description of field
       type: string
-    group:
-      description: ECS group
-      type: int
-    level:
-      description: ECS level
-      type: string
-      enum:
-      - custom
     default_field:
       description: "Is this field a default? TODO: better description"
       type: boolean
