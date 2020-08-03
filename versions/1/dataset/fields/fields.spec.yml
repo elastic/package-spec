@@ -17,7 +17,26 @@ spec:
       type: string
       enum:
       - constant_keyword
+      - text
+      - keyword
+      - long
+      - integer
+      - short
+      - byte
+      - double
+      - float
+      - half_float
+      - scaled_float
       - date
+      - date_nanos
+      - boolean
+      - binary
+      - integer_range
+      - float_range
+      - long_range
+      - double_range
+      - date_range
+      - ip_range
       - group
     description:
       description: Short description of field
