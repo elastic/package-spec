@@ -2,6 +2,10 @@
 
 This repository contains the specifications for Elastic Packages, as served up by the [Elastic Package Registry (EPM)](https://github.com/elastic/package-registry).
 
+| :warning: **WARNING** :warning: |
+| ----- |
+| The specifications in this repository are currently under active development. They are **NOT** ready for general use. |
+
 In the future it may also contain code for validating said specifications.
 
 # Purpose
