@@ -29,13 +29,13 @@ Note that the specification files primarily defined the structure (syntax) of a 
 
 As mentioned above, package specifications are versioned. Versions follow the [semantic versioning](https://semver.org/) scheme. In the context of package specifications, this means the following.
 
-* Package's must specify the specification version they are using. This is done via the `format_version` property in the package's root `manifest.yml` file. The value of `format_version` must conform to the semantic versioning scheme.
+* Packages must specify the specification version they are using. This is done via the `format_version` property in the package's root `manifest.yml` file. The value of `format_version` must conform to the semantic versioning scheme.
 
-* Specifications are organized under the `versions` folder located at the root of this repository. The `versions` folder will contain a sub-folder for each **major version** of the specification, e.g. `versions/1.x.x`, `versions/2.x.x`, etc.
+* Specifications are organized under the `versions` folder located at the root of this repository. The `versions` folder will contain a sub-folder for each **major version** of the specification, e.g. `versions/1`, `versions/2`, etc.
 
-* Within each major version folder, there is be a `spec.yml` file. It contains a root-level propery called `version` which specifies the complete, current version of the specification. The value of `version` conforms to the semantic versioning scheme.
+* Within each major version folder, there is a `spec.yml` file. It contains a root-level property called `version` which specifies the complete, current version of the specification. The value of `version` conforms to the semantic versioning scheme.
 
-* Note that the latest version — and _only the latest_ version — of the specifications  may include a pre-release suffix, `e.g. 1.4.0-alpha1`. This indicates that this version is still under development and may be changed multiple times. Once the pre-relase suffix is removed, however, the specification at that version becomes immutable. Further changes must follow the process outlinedbelow in _Changing a Specification_.
+* Note that the latest version — and _only the latest_ version — of the specifications  may include a pre-release suffix, `e.g. 1.4.0-alpha1`. This indicates that this version is still under development and may be changed multiple times. Once the pre-relase suffix is removed, however, the specification at that version becomes immutable. Further changes must follow the process outlined below in _Changing a Specification_.
 
 ## Changing a Specification
 
@@ -57,4 +57,4 @@ As mentioned above, package specifications are versioned. Versions follow the [s
 
 ## Version Compatibility between Packages and Specifications
 
-A package specifying it's `format_version` as `x.y.z` must be valid against specifications in the semantic version range `[x.y.z, X.0.0)`, where `X = x + 1`.
+A package specifying its `format_version` as `x.y.z` must be valid against specifications in the semantic version range `[x.y.z, X.0.0)`, where `X = x + 1`.
