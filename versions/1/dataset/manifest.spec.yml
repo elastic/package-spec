@@ -6,11 +6,17 @@ spec:
   type: object
   additionalProperties: false
   properties:
+    # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L39
+    name:
+      description: Name of dataset
+      type: string
+    # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L41
     title:
       description: Title of dataset.
       type: string
       examples:
       - AWS billing metrics
+    # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L42
     release:
       description: Stability of dataset.
       type: string
@@ -19,6 +25,7 @@ spec:
       - beta
       examples:
       - beta
+    # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L38
     type:
       description: Type of dataset
       type: string
@@ -27,6 +34,7 @@ spec:
       - logs
       examples:
       - metrics
+    # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L46
     streams:
       description: Streams offered by dataset.
       type: array
@@ -34,20 +42,28 @@ spec:
         type: object
         additionalProperties: false
         properties:
-          title:
-            type: string
-            examples:
-            - AWS Billing metrics
-          description:
-            type: string
-            examples:
-            - Collect AWS billing metrics
+          # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L66
           input:
             type: string
             examples:
             - aws/metrics
             - s3
             - file
+          # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L71
+          title:
+            type: string
+            examples:
+            - AWS Billing metrics
+          # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L72
+          description:
+            type: string
+            examples:
+            - Collect AWS billing metrics
+          # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L70
+          template_path:
+            description: "Path to Elasticsearch index template for stream."
+            type: string
+          # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L67
           vars:
             description: Input variables.
             type: array
@@ -55,11 +71,13 @@ spec:
               type: object
               additionalProperties: false
               properties:
+                https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L77
                 name:
                   description: Variable name.
                   type: string
                   examples:
                   - hosts
+                # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L78
                 type:
                   description: Data type of variable.
                   type: string
@@ -68,29 +86,40 @@ spec:
                   - yaml
                   examples:
                   - text
+                # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L79
                 title:
-                  description: Title of variable
+                  description: Title of variable.
                   type: string
                   examples:
                   - Hosts
+                # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L80
+                description:
+                  description: Short description of variable.
+                  type: string
+                  examples:
+                  - "Hosts of integration service to connect to"
+                # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L81
                 multi:
                   description: Can variable contain multiple values?
                   type: boolean
                   default: false
                   examples:
                   - true
+                # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L82
                 required:
                   description: Is variable required?
                   type: boolean
                   default: false
                   examples:
                   - true
+                # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L83
                 show_user:
                   description: Should this variable be shown to the user by default?
                   type: boolean
                   default: true
                   examples:
                   - false
+                # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L84
                 default:
                   description: Default value(s) for variable
                   type: array
@@ -101,8 +130,13 @@ spec:
               required:
               - name
               - type                  
+          # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L73
+          enabled:
+            description: Is stream enabled?
+            type: boolean
         required:
         - title
         - description
+        - input
   required:
   - title
