@@ -41,10 +41,6 @@ spec:
     description:
       description: Short description of field
       type: string
-    default_field:
-      description: "Is this field a default? TODO: better description"
-      type: boolean
-      default: true
     fields:
       description: Sub-fields, when type is group
       $ref: "#"     # JSON-schema syntax for pointing to the root of the schema
