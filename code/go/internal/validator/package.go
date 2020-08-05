@@ -62,7 +62,7 @@ func NewPackage(pkgRootPath string) (*Package, error) {
 
 // ToJson returns the package as a JSON document
 func (p Package) ToJson() (string, error) {
-	// TODO
+	// TODO: not sure if we need this now?
 	// Stitch together package contents into mega JSON object
 	return "", nil
 }
