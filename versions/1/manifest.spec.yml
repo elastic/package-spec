@@ -6,40 +6,34 @@ spec:
   type: object
   additionalProperties: false
   properties:
-    # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L55
     format_version:
       description: The version of the package specification format used by this package.
       type: string
       pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
       examples:
       - "1.0.0"
-    # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L74
     name:
       description: The name of the package.
       type: string
       pattern: '[a-z0-9_]+'
       examples:
       - apache
-    # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L75
     title:
       description: The title of the package.
       type: string
       examples:
       - Apache
-    # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L78
     description:
       description: A longer description of the package.
       type: string
       examples:
       - Apache Integration
-    # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L76
     version:
       description: The version of the package.
       type: string
       pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
       examples:
       - "0.1.0"
-    # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L58
     license:
       description: The license under which the package is being released.
       type: string
@@ -48,7 +42,6 @@ spec:
       default: basic
       examples:
       - basic
-    # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L79
     type:
       description: The type of package.
       type: string
@@ -56,7 +49,6 @@ spec:
       - integration
       examples:
       - integration
-    # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L77
     release:
       description: The stability of the package.
       type: string
@@ -66,7 +58,6 @@ spec:
       - ga
       examples:
       - experimental
-    # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L60
     categories:
       description: Categories to which this package belongs.
       type: array
@@ -98,7 +89,6 @@ spec:
         - web
         examples:
         - web
-    # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L61
     conditions:
       description: Constraints under which this package can be installed.
       type: object
@@ -113,7 +103,6 @@ spec:
               type: string
               examples:
               - ">=7.9.0"
-    # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L82
     icons:
       description: List of icons for by this package.
       type: array
@@ -121,25 +110,21 @@ spec:
         type: object
         additionalProperties: false
         properties:
-          # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L109
           src:
             description: Relative path to the icon's image file.
             type: string
             examples:
             - "/img/logo_apache.svg"
-          # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L110
           title:
             description: Title of icon.
             type: string
             examples:
             - "Apache Logo"
-          # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L111
           size:
             description: Size of the icon.
             type: string
             examples:
             - "32x32"
-          # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L112
           type:
             description: MIME type of the icon image file.
             type: string
@@ -147,7 +132,6 @@ spec:
             - "image/svg+xml"
         required:
         - src
-    # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L62
     screenshots:
       description: List of screenshots of Kibana assets created by this package.
       type: array
@@ -155,25 +139,21 @@ spec:
         type: object
         additionalProperties: false
         properties:
-          # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L109
           src:
             description: Relative path to the scrennshot's image file.
             type: string
             examples:
             - "/img/apache_httpd_server_status.png"
-          # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L110
           title:
             description: Title of screenshot.
             type: string
             examples:
             - "Apache HTTPD Server Status"
-          # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L111
           size:
             description: Size of the screenshot.
             type: string
             examples:
             - "1215x1199"
-          # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L112
           type:
             description: MIME type of the screenshot image file.
             type: string
@@ -182,7 +162,6 @@ spec:
         required:
         - src
         - title
-    # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L64
     config_templates:
       description: List of configuration templates offered by this package.
       type: array
@@ -190,25 +169,21 @@ spec:
         type: object
         additionalProperties: false
         properties:
-          # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L87
           name:
             description: Name of configuration template.
             type: string
             examples:
             - apache
-          # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L88
           title:
             description: Title of configuration template.
             type: string
             examples:
             - Apache logs and metrics
-          # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L89
           description:
             description: Longer description of configuration template.
             type: string
             examples:
             - Collect logs and metrics from Apache instances
-          # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L90
           inputs:
             description: List of inputs supported by configuration template.
             type: array
@@ -216,42 +191,35 @@ spec:
               type: object
               additionalProperties: false
               properties:
-                # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L58
                 type:
                   description: Type of input.
                   type: string
-                # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L60
                 title:
                   description: Title of input.
                   type: string
                   examples:
                   - Collect logs from Apache instances
-                # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L61
                 description:
                   description: Longer description of input.
                   type: string
                   examples: 
                   - Collecting Apache access and error logs
-                # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L59
                 vars:
                   $ref: "./dataset/manifest.spec.yml#streams/items/properties/vars"
               required:
               - type
               - title
               - description
-          # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L91
           multiple:
             type: boolean
         required:
         - name
         - title
         - description
-    # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L65
     datasets:
       type: array
       items:
         $ref: "./dataset/manifest.spec.yml" 
-    # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L66
     owner:
       type: object
       additionalProperties: false
