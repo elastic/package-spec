@@ -1,0 +1,149 @@
+##
+## Describes the specification for a dataset's manifest.yml file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      description: Name of dataset
+      type: string
+    title:
+      description: Title of dataset.
+      type: string
+      examples:
+      - AWS billing metrics
+    release:
+      description: Stability of dataset.
+      type: string
+      enum:
+      - experimental
+      - beta
+      examples:
+      - beta
+    type:
+      description: Type of dataset
+      type: string
+      enum:
+      - metrics
+      - logs
+      examples:
+      - metrics
+    streams:
+      description: Streams offered by dataset.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          input:
+            type: string
+            examples:
+            - aws/metrics
+            - s3
+            - file
+          title:
+            type: string
+            examples:
+            - AWS Billing metrics
+          description:
+            type: string
+            examples:
+            - Collect AWS billing metrics
+          template_path:
+            description: "Path to Elasticsearch index template for stream."
+            type: string
+          vars:
+            description: Input variables.
+            type: array
+            items:
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  description: Variable name.
+                  type: string
+                  examples:
+                  - hosts
+                type:
+                  description: Data type of variable.
+                  type: string
+                  enum:
+                  - text
+                  - yaml
+                  examples:
+                  - text
+                title:
+                  description: Title of variable.
+                  type: string
+                  examples:
+                  - Hosts
+                description:
+                  description: Short description of variable.
+                  type: string
+                  examples:
+                  - "Hosts of integration service to connect to"
+                multi:
+                  description: Can variable contain multiple values?
+                  type: boolean
+                  default: false
+                  examples:
+                  - true
+                required:
+                  description: Is variable required?
+                  type: boolean
+                  default: false
+                  examples:
+                  - true
+                show_user:
+                  description: Should this variable be shown to the user by default?
+                  type: boolean
+                  default: true
+                  examples:
+                  - false
+                default:
+                  description: Default value(s) for variable
+                  type: array
+                  items:
+                    type: string
+                    examples:
+                    - "http://127.0.0.1"
+              required:
+              - name
+              - type                  
+          enabled:
+            description: Is stream enabled?
+            type: boolean
+        required:
+        - title
+        - description
+        - input
+    elasticsearch:
+      description: Elasticsearch asset definitions
+      type: object
+      additionalProperties: false
+      properties:
+        index_template:
+          description: Index template definition
+          type: object
+          additionalProperties: false
+          properties:
+            settings:
+              description: Settings section of index template
+              type: object
+            mappings:
+              description: Mappings section of index template
+              type: object
+            ingest_pipeline:
+              description: Elasticsearch ingest pipeline settings
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  description: Ingest pipeline name
+                  type: string
+              required:
+              - name
+  required:
+  - title
