@@ -3,6 +3,7 @@
 ##
 ## Describes the folders and files that make up a package.
 ## 
+version: 1.0.0-alpha1
 spec:
 - description: The main package manifest file
   type: file

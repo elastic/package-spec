@@ -3,6 +3,8 @@ package validator
 import (
 	"testing"
 
+	"github.com/Masterminds/semver/v3"
+
 	"github.com/stretchr/testify/require"
 )
 
@@ -11,13 +13,13 @@ func TestNewSpec(t *testing.T) {
 		expectedErrContains string
 	}{
 		"1.0.0": {},
-		"non_existent": {
-			"no specification found for version [non_existent]",
+		"9999.99.999": {
+			"no specification found for version [9999.99.999]",
 		},
 	}
 
 	for version, test := range tests {
-		spec, err := NewSpec(version)
+		spec, err := NewSpec(*semver.MustParse(version))
 		if test.expectedErrContains == "" {
 			require.NoError(t, err)
 			require.IsType(t, &Spec{}, spec)
