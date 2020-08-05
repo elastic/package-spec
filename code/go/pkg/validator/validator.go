@@ -12,7 +12,7 @@ func ValidateFromPath(packageRootPath string) error {
 		return err
 	}
 
-	spec, err := validator.NewSpec(pkg.SpecVersion)
+	spec, err := validator.NewSpec(*pkg.SpecVersion)
 	if err != nil {
 		return err
 	}

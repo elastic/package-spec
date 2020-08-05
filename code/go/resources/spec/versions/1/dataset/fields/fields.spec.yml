@@ -4,6 +4,7 @@
 spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
+  additionalProperties: true
   properties:
     name:
       description: Name of field
@@ -16,23 +17,30 @@ spec:
       type: string
       enum:
       - constant_keyword
+      - text
+      - keyword
+      - long
+      - integer
+      - short
+      - byte
+      - double
+      - float
+      - half_float
+      - scaled_float
       - date
+      - date_nanos
+      - boolean
+      - binary
+      - integer_range
+      - float_range
+      - long_range
+      - double_range
+      - date_range
+      - ip_range
       - group
     description:
       description: Short description of field
       type: string
-    group:
-      description: TODO
-      type: int
-    level:
-      description: TODO
-      type: string
-      enum:
-      - custom
-    default_field:
-      description: "Is this field a default? TODO: better description"
-      type: boolean
-      default: true
     fields:
       description: Sub-fields, when type is group
       $ref: "#"     # JSON-schema syntax for pointing to the root of the schema
