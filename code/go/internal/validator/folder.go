@@ -12,6 +12,9 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const ItemTypeFile = "file"
+const ItemTypeFolder = "folder"
+
 type folderSpec struct {
 	specPath  string
 	itemSpecs []folderItemSpec
@@ -73,8 +76,12 @@ func (fs *folderSpec) Validate(folderPath string) ValidationErrors {
 		}
 
 		if file.IsDir() {
-			if itemSpec.ItemType != "folder" {
+			if !itemSpec.isSameType(file) {
 				errs = append(errs, fmt.Errorf("[%s] is a folder but is expected to be a file", fileName))
+				continue
+			}
+
+			if itemSpec.Ref == "" {
 				continue
 			}
 
@@ -91,7 +98,7 @@ func (fs *folderSpec) Validate(folderPath string) ValidationErrors {
 				errs = append(errs, err)
 			}
 		} else {
-			if itemSpec.ItemType != "file" {
+			if !itemSpec.isSameType(file) {
 				errs = append(errs, fmt.Errorf("[%s] is a file but is expected to be a folder", fileName))
 				continue
 			}
@@ -99,7 +106,28 @@ func (fs *folderSpec) Validate(folderPath string) ValidationErrors {
 		}
 	}
 
-	// TODO: validate that required items in spec are all accounted for
+	// Validate that required items in spec are all accounted for
+	for _, itemSpec := range fs.itemSpecs {
+		if !itemSpec.Required {
+			continue
+		}
+
+		fileFound, err := itemSpec.matchingFileExists(files)
+		if err != nil {
+			errs = append(errs, err)
+			continue
+		}
+
+		if !fileFound {
+			var err error
+			if itemSpec.Name != "" {
+				err = fmt.Errorf("expecting to find %s matching name [%s] in folder [%s]", itemSpec.ItemType, itemSpec.Name, folderPath)
+			} else if itemSpec.Pattern != "" {
+				err = fmt.Errorf("expecting to find %s matching pattern [%s] in folder [%s]", itemSpec.ItemType, itemSpec.Name, folderPath)
+			}
+			errs = append(errs, err)
+		}
+	}
 	return errs
 }
 
@@ -121,4 +149,37 @@ func (fs *folderSpec) findItemSpec(folderItemName string) (*folderItemSpec, erro
 
 	// No item spec found
 	return nil, nil
+}
+
+func (is *folderItemSpec) matchingFileExists(files []os.FileInfo) (bool, error) {
+	if is.Name != "" {
+		for _, file := range files {
+			if file.Name() == is.Name {
+				return is.isSameType(file), nil
+			}
+		}
+	} else if is.Pattern != "" {
+		for _, file := range files {
+			isMatch, err := regexp.MatchString(is.Pattern, file.Name())
+			if err != nil {
+				return false, errors.Wrap(err, "invalid folder item spec pattern")
+			}
+			if isMatch {
+				return is.isSameType(file), nil
+			}
+		}
+	}
+
+	return false, nil
+}
+
+func (is *folderItemSpec) isSameType(file os.FileInfo) bool {
+	switch is.ItemType {
+	case ItemTypeFile:
+		return !file.IsDir()
+	case ItemTypeFolder:
+		return file.IsDir()
+	}
+
+	return false
 }
