@@ -35,3 +35,12 @@
       type: file
       contentMediaType: "application/json"
       pattern: ".+\.json"
+  - description: Folder containing Kibana index pattern assets
+    type: folder
+    name: "index_pattern"
+    required: false
+    contents:
+    - description: An index pattern asset file
+      type: file
+      contentMediaType: "application/json"
+      pattern: ".+\.json"

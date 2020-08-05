@@ -4,17 +4,20 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strconv"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
-	"github.com/xeipuuv/gojsonschema"
 )
 
 type Spec struct {
-	version string
+	version  semver.Version
+	specPath string
 }
 
-func NewSpec(version string) (*Spec, error) {
-	specPath := path.Join("..", "..", "resources", "spec", "versions", version)
+func NewSpec(version semver.Version) (*Spec, error) {
+	majorVersion := strconv.FormatUint(version.Major(), 10)
+	specPath := path.Join("..", "..", "resources", "spec", "versions", majorVersion)
 	info, err := os.Stat(specPath)
 	if os.IsNotExist(err) {
 		return nil, errors.Wrapf(err, "no specification found for version [%v]", version)
@@ -26,6 +29,7 @@ func NewSpec(version string) (*Spec, error) {
 
 	s := Spec{
 		version,
+		specPath,
 	}
 
 	return &s, nil
@@ -34,43 +38,12 @@ func NewSpec(version string) (*Spec, error) {
 func (s Spec) ValidatePackage(pkg Package) ValidationErrors {
 	var errs ValidationErrors
 
-	specJsonSchema, err := s.toJsonSchema()
+	rootSpecPath := path.Join(s.specPath, "spec.yml")
+	rootSpec, err := newFolderSpec(rootSpecPath)
 	if err != nil {
-		errs = append(errs, errors.Wrap(err, "could not convert specification to JSON schema"))
+		errs = append(errs, errors.Wrap(err, "could not read root folder spec file"))
 		return errs
 	}
 
-	packageJson, err := pkg.ToJson()
-	if err != nil {
-		errs = append(errs, errors.Wrap(err, "could not convert package contents to JSON"))
-		return errs
-	}
-
-	// Validate mega JSON object representing package against mega JSON schema
-	schemaLoader := gojsonschema.NewStringLoader(specJsonSchema)
-	documentLoader := gojsonschema.NewStringLoader(packageJson)
-	validationResult, err := gojsonschema.Validate(schemaLoader, documentLoader)
-
-	// Parse validation errors and make them friendlier so they make sense in the context of packages
-	if !validationResult.Valid() {
-		for _, err := range validationResult.Errors() {
-			// TODO: translate to friendlier errors before appending
-			errs = append(errs, errors.New(err.String()))
-		}
-
-		return errs
-	}
-
-	// TODO: Perform additional non-trivial semantic validations
-
-	// Return validation errors
-	return errs
-}
-
-func (s Spec) toJsonSchema() (string, error) {
-	// TODO
-	// Stitch together specification YAML files into mega YAML specification
-	// Convert mega YAML non-JSON schema parts to JSON schema equivalents
-	// Convert mega YAML specification into mega JSON object (so we have a valid JSON schema)
-	return "", nil
+	return rootSpec.Validate(pkg.RootPath)
 }

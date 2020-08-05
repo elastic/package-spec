@@ -6,13 +6,15 @@ import (
 	"os"
 	"path"
 
+	"github.com/Masterminds/semver/v3"
+
 	"gopkg.in/yaml.v3"
 
 	"github.com/pkg/errors"
 )
 
 type Package struct {
-	SpecVersion string
+	SpecVersion *semver.Version
 	RootPath    string
 }
 
@@ -44,13 +46,14 @@ func NewPackage(pkgRootPath string) (*Package, error) {
 		return nil, errors.Wrapf(err, "could not parse package manifest file [%v]", pkgManifestPath)
 	}
 
-	if manifest.SpecVersion == "" {
-		return nil, fmt.Errorf("could not read specification version from package manifest file [%v]", pkgManifestPath)
+	specVersion, err := semver.NewVersion(manifest.SpecVersion)
+	if err != nil {
+		return nil, errors.Wrapf(err, "could not read specification version from package manifest file [%v]", pkgManifestPath)
 	}
 
 	// Instantiate Package object and return it
 	p := Package{
-		manifest.SpecVersion,
+		specVersion,
 		pkgRootPath,
 	}
 

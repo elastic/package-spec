@@ -6,6 +6,7 @@ spec:
   type: array
   items:
     type: object
+    additionalProperties: false
     properties:
       version:
         description: Package version.
@@ -18,6 +19,7 @@ spec:
         type: array
         items:
           type: object
+          additionalProperties: false
           properties:
             description:
               description: Description of change.
