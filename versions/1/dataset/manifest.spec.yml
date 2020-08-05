@@ -138,5 +138,35 @@ spec:
         - title
         - description
         - input
+    # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L48
+    elasticsearch:
+      description: Elasticsearch asset definitinos
+      type: object
+      additionalProperties: false
+      properties:
+        index_template:
+          description: Index template definition
+          type: object
+          additionalProperties: false
+          properties:
+            # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L88
+            settings:
+              description: Settings section of index template
+              type: object
+            # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L89
+            mappings:
+              description: Mappings section of index template
+              type: object
+            # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L90
+            ingest_pipeline:
+              description: Elsaticsearch ingest pipeline settings
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  description: Ingest pipeline name
+                  type: string
+              required:
+              - name
   required:
   - title
