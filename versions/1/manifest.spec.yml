@@ -10,14 +10,14 @@ spec:
     format_version:
       description: The version of the package specification format used by this package.
       type: string
-      pattern: "^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$"
+      pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
       examples:
       - "1.0.0"
     # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L74
     name:
       description: The name of the package.
       type: string
-      pattern: "[a-z0-9_]+"
+      pattern: '[a-z0-9_]+'
       examples:
       - apache
     # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L75
@@ -36,7 +36,7 @@ spec:
     version:
       description: The version of the package.
       type: string
-      pattern: "^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$"
+      pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
       examples:
       - "0.1.0"
     # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L58

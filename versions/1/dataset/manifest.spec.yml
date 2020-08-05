@@ -71,7 +71,7 @@ spec:
               type: object
               additionalProperties: false
               properties:
-                https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L77
+                # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L77
                 name:
                   description: Variable name.
                   type: string
