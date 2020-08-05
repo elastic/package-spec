@@ -54,7 +54,6 @@ spec:
       type: string
       enum:
       - integration
-      - solution
       examples:
       - integration
     # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L77
@@ -243,8 +242,6 @@ spec:
           # https://github.com/elastic/package-registry/blob/v0.8.0/util/package.go#L91
           multiple:
             type: boolean
-          solution:
-            type: string
         required:
         - name
         - title
