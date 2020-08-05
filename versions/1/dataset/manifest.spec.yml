@@ -140,7 +140,7 @@ spec:
         - input
     # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L48
     elasticsearch:
-      description: Elasticsearch asset definitinos
+      description: Elasticsearch asset definitions
       type: object
       additionalProperties: false
       properties:
@@ -159,7 +159,7 @@ spec:
               type: object
             # https://github.com/elastic/package-registry/blob/v0.8.0/util/dataset.go#L90
             ingest_pipeline:
-              description: Elsaticsearch ingest pipeline settings
+              description: Elasticsearch ingest pipeline settings
               type: object
               additionalProperties: false
               properties:
