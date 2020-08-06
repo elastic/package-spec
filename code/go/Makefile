@@ -11,10 +11,6 @@ check:
 	@diff -qr ${SPEC_DIR}/spec temp/spec >/dev/null && echo "Specs are up to date!" || echo "Specs are not up to date. Please run make update."
 	@rm -rf temp
 
-# Builds the go module and installs it
-build:
-	@go get github.com/elastic/package-spec/code/go
-
 # Runs tests
 test:
 	@go test -v ./...
