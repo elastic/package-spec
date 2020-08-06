@@ -3,6 +3,7 @@ package validator
 import (
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
@@ -16,6 +17,7 @@ const ItemTypeFile = "file"
 const ItemTypeFolder = "folder"
 
 type folderSpec struct {
+	fs        http.FileSystem
 	specPath  string
 	itemSpecs []folderItemSpec
 }
@@ -31,12 +33,14 @@ type folderItemSpec struct {
 	Contents         []folderItemSpec `yaml:"contents"`
 }
 
-func newFolderSpec(specPath string) (*folderSpec, error) {
-	if _, err := os.Stat(specPath); os.IsNotExist(err) {
-		return nil, errors.Wrap(err, "no folder specification file found")
+func newFolderSpec(fs http.FileSystem, specPath string) (*folderSpec, error) {
+	specFile, err := fs.Open(specPath)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not open folder specification file")
 	}
+	defer specFile.Close()
 
-	data, err := ioutil.ReadFile(specPath)
+	data, err := ioutil.ReadAll(specFile)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not read folder specification file")
 	}
@@ -48,15 +52,16 @@ func newFolderSpec(specPath string) (*folderSpec, error) {
 		return nil, errors.Wrap(err, "could not parse folder specification file")
 	}
 
-	fs := folderSpec{
+	spec := folderSpec{
+		fs,
 		specPath,
 		wrapper.Spec,
 	}
 
-	return &fs, nil
+	return &spec, nil
 }
 
-func (fs *folderSpec) validate(folderPath string) ValidationErrors {
+func (s *folderSpec) validate(folderPath string) ValidationErrors {
 	var errs ValidationErrors
 	files, err := ioutil.ReadDir(folderPath)
 	if err != nil {
@@ -66,7 +71,7 @@ func (fs *folderSpec) validate(folderPath string) ValidationErrors {
 
 	for _, file := range files {
 		fileName := file.Name()
-		itemSpec, err := fs.findItemSpec(fileName)
+		itemSpec, err := s.findItemSpec(fileName)
 		if err != nil {
 			errs = append(errs, err)
 			continue
@@ -89,23 +94,24 @@ func (fs *folderSpec) validate(folderPath string) ValidationErrors {
 
 			var subFolderSpec *folderSpec
 			if itemSpec.Ref != "" {
-				subFolderSpecPath := path.Join(filepath.Dir(fs.specPath), itemSpec.Ref)
-				subFolderSpec, err = newFolderSpec(subFolderSpecPath)
+				subFolderSpecPath := path.Join(filepath.Dir(s.specPath), itemSpec.Ref)
+				subFolderSpec, err = newFolderSpec(s.fs, subFolderSpecPath)
 				if err != nil {
 					errs = append(errs, err)
 					continue
 				}
 			} else if itemSpec.Contents != nil {
 				subFolderSpec = &folderSpec{
+					fs:        s.fs,
 					itemSpecs: itemSpec.Contents,
-					specPath:  fs.specPath,
+					specPath:  s.specPath,
 				}
 			}
 
 			subFolderPath := path.Join(folderPath, fileName)
 			subErrs := subFolderSpec.validate(subFolderPath)
 			if len(subErrs) > 0 {
-				errs = append(errs, subErrs)
+				errs = append(errs, subErrs...)
 			}
 
 		} else {
@@ -118,7 +124,7 @@ func (fs *folderSpec) validate(folderPath string) ValidationErrors {
 	}
 
 	// validate that required items in spec are all accounted for
-	for _, itemSpec := range fs.itemSpecs {
+	for _, itemSpec := range s.itemSpecs {
 		if !itemSpec.Required {
 			continue
 		}
@@ -142,8 +148,8 @@ func (fs *folderSpec) validate(folderPath string) ValidationErrors {
 	return errs
 }
 
-func (fs *folderSpec) findItemSpec(folderItemName string) (*folderItemSpec, error) {
-	for _, itemSpec := range fs.itemSpecs {
+func (s *folderSpec) findItemSpec(folderItemName string) (*folderItemSpec, error) {
+	for _, itemSpec := range s.itemSpecs {
 		if itemSpec.Name != "" && itemSpec.Name == folderItemName {
 			return &itemSpec, nil
 		}
@@ -162,21 +168,21 @@ func (fs *folderSpec) findItemSpec(folderItemName string) (*folderItemSpec, erro
 	return nil, nil
 }
 
-func (is *folderItemSpec) matchingFileExists(files []os.FileInfo) (bool, error) {
-	if is.Name != "" {
+func (s *folderItemSpec) matchingFileExists(files []os.FileInfo) (bool, error) {
+	if s.Name != "" {
 		for _, file := range files {
-			if file.Name() == is.Name {
-				return is.isSameType(file), nil
+			if file.Name() == s.Name {
+				return s.isSameType(file), nil
 			}
 		}
-	} else if is.Pattern != "" {
+	} else if s.Pattern != "" {
 		for _, file := range files {
-			isMatch, err := regexp.MatchString(is.Pattern, file.Name())
+			isMatch, err := regexp.MatchString(s.Pattern, file.Name())
 			if err != nil {
 				return false, errors.Wrap(err, "invalid folder item spec pattern")
 			}
 			if isMatch {
-				return is.isSameType(file), nil
+				return s.isSameType(file), nil
 			}
 		}
 	}
@@ -184,8 +190,8 @@ func (is *folderItemSpec) matchingFileExists(files []os.FileInfo) (bool, error) 
 	return false, nil
 }
 
-func (is *folderItemSpec) isSameType(file os.FileInfo) bool {
-	switch is.ItemType {
+func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
+	switch s.ItemType {
 	case ItemTypeFile:
 		return !file.IsDir()
 	case ItemTypeFolder:

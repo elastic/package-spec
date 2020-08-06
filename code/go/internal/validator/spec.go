@@ -1,34 +1,38 @@
 package validator
 
 import (
-	"fmt"
-	"os"
+	"net/http"
 	"path"
 	"strconv"
 
 	"github.com/Masterminds/semver/v3"
+	_ "github.com/elastic/package-spec/code/go/internal/spec"
 	"github.com/pkg/errors"
+	"github.com/rakyll/statik/fs"
 )
 
 type Spec struct {
 	version  semver.Version
+	fs       http.FileSystem
 	specPath string
 }
 
 func NewSpec(version semver.Version) (*Spec, error) {
 	majorVersion := strconv.FormatUint(version.Major(), 10)
-	specPath := path.Join("..", "..", "resources", "spec", "versions", majorVersion)
-	info, err := os.Stat(specPath)
-	if os.IsNotExist(err) {
-		return nil, errors.Wrapf(err, "no specification found for version [%v]", version)
+
+	bundle, err := fs.New()
+	if err != nil {
+		return nil, errors.Wrap(err, "could not load specifications")
 	}
 
-	if !info.IsDir() {
-		return nil, fmt.Errorf("no valid specification found for version [%v]", version)
+	specPath := "/" + majorVersion
+	if _, err := bundle.Open(specPath); err != nil {
+		return nil, errors.Wrapf(err, "could not load specification for version [%s]", version.String())
 	}
 
 	s := Spec{
 		version,
+		bundle,
 		specPath,
 	}
 
@@ -39,7 +43,7 @@ func (s Spec) ValidatePackage(pkg Package) ValidationErrors {
 	var errs ValidationErrors
 
 	rootSpecPath := path.Join(s.specPath, "spec.yml")
-	rootSpec, err := newFolderSpec(rootSpecPath)
+	rootSpec, err := newFolderSpec(s.fs, rootSpecPath)
 	if err != nil {
 		errs = append(errs, errors.Wrap(err, "could not read root folder spec file"))
 		return errs

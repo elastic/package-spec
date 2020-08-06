@@ -19,8 +19,8 @@ func (ve ValidationErrors) Error() string {
 		errorWord = "error"
 	}
 	fmt.Fprintf(&message, "found %v validation %v:\n", len(ve), errorWord)
-	for _, err := range ve {
-		fmt.Fprintf(&message, "\t%v\n", err)
+	for idx, err := range ve {
+		fmt.Fprintf(&message, "%4d. %v\n", idx+1, err)
 	}
 
 	return message.String()
