@@ -5,6 +5,7 @@ spec:
     type: folder
     pattern: '[a-z0-9][a-z0-9_]+[a-z0-9]'
     required: true
+    additionalContents: false
     contents:
     - description: A dataset's manifest file
       type: file
@@ -21,11 +22,13 @@ spec:
       type: folder
       name: agent
       required: false
+      additionalContents: false
       contents:
       - description: Folder containing agent stream definitions
         type: folder
         name: stream
         required: true
+        additionalContents: false
         contents:
         - description: Agent stream definition
           type: file
@@ -35,13 +38,19 @@ spec:
     - description: Folder containing Elasticsearch assets
       type: folder
       name: elasticsearch
+      additionalContents: false
       contents:
       - description: Folder containing Elasticsearch Ingest Node pipeline definitions
         type: folder
         name: ingest_pipeline
+        additionalContents: false
         contents:
         - description: Default ingest pipeline definition
           type: file
           name: "default.yml"
           contentMediaType: "application/x-yaml"
           required: true
+    - description: Sample event file
+      type: file
+      name: "sample_event.json"
+      required: true
