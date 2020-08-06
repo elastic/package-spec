@@ -1,4 +1,5 @@
 spec:
+  additionalContents: false
   contents:
   - description: Folder containing a single dataset definition
     type: folder

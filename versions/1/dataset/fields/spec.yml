@@ -1,4 +1,5 @@
 spec:
+  additionalContents: false
   contents:
   - description: Fields definition
     type: file

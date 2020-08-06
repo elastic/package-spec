@@ -1,4 +1,5 @@
   spec:
+    additionalContents: false
     contents:
     - description: Folder containing Kibana dashboard assets
       type: folder
