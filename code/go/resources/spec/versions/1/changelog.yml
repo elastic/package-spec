@@ -1,8 +1,0 @@
-##
-## This file documents changes in the package specification. It is NOT a package specification file.
-##
-- version: 1.0.0-alpha1
-  changes:
-  - description: Initial version of the Elastic Package specifiction.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pulls/1
