@@ -4,5 +4,6 @@ package validator
 // appropriate specification and returns any errors.
 func ValidateFromPath(packageRootPath string) error {
 	// TODO: Noop for now. Implement actual validation.
-	return nil
+	var errs ValidationErrors
+	return errs
 }
