@@ -1,7 +1,7 @@
 spec:
 - description: Folder containing a single dataset definition
   type: folder
-  pattern: "[a-z0-9][a-z0-9_]+[a-z0-9]"
+  pattern: '[a-z0-9][a-z0-9_]+[a-z0-9]'
   minOccurences: 1
   contents:
   - description: A dataset's manifest file

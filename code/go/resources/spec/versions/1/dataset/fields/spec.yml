@@ -1,27 +1,7 @@
 spec:
-- name: base fields
-  description: Base fields definitions
+- description: Fields definition
   type: file
-  name: "base-fields.yml"
+  pattern: '[a-z0-9][a-z0-9_]+[a-z0-9]\.yml'
   required: true
-  contentMediaType: "application/x-yaml"
-  $ref: "./fields.spec.yml"
-- name: dataset fields
-  description: Dataset-specific fields definitions
-  type: file
-  name: "fields.yml"
-  required: true
-  contentMediaType: "application/x-yaml"
-  $ref: "./fields.spec.yml"
-- name: package fields
-  description: Package-specific fields definitions
-  type: file
-  name: "package-fields.yml"
-  contentMediaType: "application/x-yaml"
-  $ref: "./fields.spec.yml"
-- name: ECS fields
-  description: ECS fields definitions
-  type: file
-  name: "ecs.yml"
   contentMediaType: "application/x-yaml"
   $ref: "./fields.spec.yml"
