@@ -17,20 +17,25 @@ const ItemTypeFile = "file"
 const ItemTypeFolder = "folder"
 
 type folderSpec struct {
-	fs        http.FileSystem
-	specPath  string
-	itemSpecs []folderItemSpec
+	fs       http.FileSystem
+	specPath string
+	commonSpec
 }
 
 type folderItemSpec struct {
-	Description      string           `yaml:"description"`
-	ItemType         string           `yaml:"type"`
-	ContentMediaType string           `yaml:"contentMediaType"`
-	Name             string           `yaml:"name"`
-	Pattern          string           `yaml:"pattern"`
-	Required         bool             `yaml:"required"`
-	Ref              string           `yaml:"$ref"`
-	Contents         []folderItemSpec `yaml:"contents"`
+	Description      string `yaml:"description"`
+	ItemType         string `yaml:"type"`
+	ContentMediaType string `yaml:"contentMediaType"`
+	Name             string `yaml:"name"`
+	Pattern          string `yaml:"pattern"`
+	Required         bool   `yaml:"required"`
+	Ref              string `yaml:"$ref"`
+	commonSpec
+}
+
+type commonSpec struct {
+	AdditionalContents bool             `yaml:"additionalContents"`
+	Contents           []folderItemSpec `yaml:"contents"`
 }
 
 func newFolderSpec(fs http.FileSystem, specPath string) (*folderSpec, error) {
@@ -46,16 +51,16 @@ func newFolderSpec(fs http.FileSystem, specPath string) (*folderSpec, error) {
 	}
 
 	var wrapper struct {
-		Spec []folderItemSpec `yaml:",flow"`
+		Spec commonSpec `yaml:"spec"`
 	}
 	if err := yaml.Unmarshal(data, &wrapper); err != nil {
 		return nil, errors.Wrap(err, "could not parse folder specification file")
 	}
 
 	spec := folderSpec{
-		fs,
-		specPath,
-		wrapper.Spec,
+		fs:         fs,
+		specPath:   specPath,
+		commonSpec: wrapper.Spec,
 	}
 
 	return &spec, nil
@@ -76,8 +81,15 @@ func (s *folderSpec) validate(folderPath string) ValidationErrors {
 			errs = append(errs, err)
 			continue
 		}
-		if itemSpec == nil {
-			errs = append(errs, fmt.Errorf("filename [%s] does not match spec for folder [%s]", fileName, folderPath))
+
+		if itemSpec == nil && s.AdditionalContents {
+			// No spec found for current folder item but we do allow additional contents in folder.
+			continue
+		}
+
+		if itemSpec == nil && !s.AdditionalContents {
+			// No spec found for current folder item and we do not allow additional contents in folder.
+			errs = append(errs, fmt.Errorf("item [%s] is not allowed in folder [%s]", fileName, folderPath))
 			continue
 		}
 
@@ -102,9 +114,12 @@ func (s *folderSpec) validate(folderPath string) ValidationErrors {
 				}
 			} else if itemSpec.Contents != nil {
 				subFolderSpec = &folderSpec{
-					fs:        s.fs,
-					itemSpecs: itemSpec.Contents,
-					specPath:  s.specPath,
+					fs:       s.fs,
+					specPath: s.specPath,
+					commonSpec: commonSpec{
+						AdditionalContents: itemSpec.AdditionalContents,
+						Contents:           itemSpec.Contents,
+					},
 				}
 			}
 
@@ -124,7 +139,7 @@ func (s *folderSpec) validate(folderPath string) ValidationErrors {
 	}
 
 	// validate that required items in spec are all accounted for
-	for _, itemSpec := range s.itemSpecs {
+	for _, itemSpec := range s.Contents {
 		if !itemSpec.Required {
 			continue
 		}
@@ -149,7 +164,7 @@ func (s *folderSpec) validate(folderPath string) ValidationErrors {
 }
 
 func (s *folderSpec) findItemSpec(folderItemName string) (*folderItemSpec, error) {
-	for _, itemSpec := range s.itemSpecs {
+	for _, itemSpec := range s.Contents {
 		if itemSpec.Name != "" && itemSpec.Name == folderItemName {
 			return &itemSpec, nil
 		}
