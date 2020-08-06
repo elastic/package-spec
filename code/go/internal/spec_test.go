@@ -1,8 +1,9 @@
-package spec
+package internal
 
 import (
 	"testing"
 
+	_ "github.com/elastic/package-spec/code/go/internal/spec"
 	"github.com/rakyll/statik/fs"
 	"github.com/stretchr/testify/require"
 )
