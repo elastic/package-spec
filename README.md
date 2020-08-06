@@ -43,7 +43,7 @@ As mentioned above, package specifications are versioned. Versions follow the [s
 
 ## Changing a Specification
 
-* Consider the **latest** version of the specification. Say it is `x.y.z`. It will be located under the `versions/x` folder, where `x` is the highest major version of the specification.
+* Consider the **latest** version of the specification. Say it is `x.y.z`. It will be located under the `versions/x` folder, where `x` is the major version of the specification.
 * Now consider a proposal to change the specification in some way. The version number of the changed specification must be determined as follows:
   * If the proposed change makes the specification stricter than it is at `x.y.z`, the new version number will be `X.0.0`, where `X = x + 1`. That is, we bump up the major version. 
      * Add a new folder named `versions/X`, where `X` is the new major version number. 
