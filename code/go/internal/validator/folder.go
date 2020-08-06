@@ -30,7 +30,7 @@ type folderItemSpec struct {
 	Pattern          string `yaml:"pattern"`
 	Required         bool   `yaml:"required"`
 	Ref              string `yaml:"$ref"`
-	commonSpec
+	commonSpec       `yaml:",inline"`
 }
 
 type commonSpec struct {
