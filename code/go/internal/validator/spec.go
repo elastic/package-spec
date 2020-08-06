@@ -45,5 +45,5 @@ func (s Spec) ValidatePackage(pkg Package) ValidationErrors {
 		return errs
 	}
 
-	return rootSpec.Validate(pkg.RootPath)
+	return rootSpec.validate(pkg.RootPath)
 }

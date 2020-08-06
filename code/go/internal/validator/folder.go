@@ -21,13 +21,14 @@ type folderSpec struct {
 }
 
 type folderItemSpec struct {
-	Description      string `yaml:"description"`
-	ItemType         string `yaml:"type"`
-	ContentMediaType string `yaml:"contentMediaType"`
-	Name             string `yaml:"name"`
-	Pattern          string `yaml:"pattern"`
-	Required         bool   `yaml:"required"`
-	Ref              string `yaml:"$ref"`
+	Description      string           `yaml:"description"`
+	ItemType         string           `yaml:"type"`
+	ContentMediaType string           `yaml:"contentMediaType"`
+	Name             string           `yaml:"name"`
+	Pattern          string           `yaml:"pattern"`
+	Required         bool             `yaml:"required"`
+	Ref              string           `yaml:"$ref"`
+	Contents         []folderItemSpec `yaml:"contents"`
 }
 
 func newFolderSpec(specPath string) (*folderSpec, error) {
@@ -55,7 +56,7 @@ func newFolderSpec(specPath string) (*folderSpec, error) {
 	return &fs, nil
 }
 
-func (fs *folderSpec) Validate(folderPath string) ValidationErrors {
+func (fs *folderSpec) validate(folderPath string) ValidationErrors {
 	var errs ValidationErrors
 	files, err := ioutil.ReadDir(folderPath)
 	if err != nil {
@@ -81,22 +82,32 @@ func (fs *folderSpec) Validate(folderPath string) ValidationErrors {
 				continue
 			}
 
-			if itemSpec.Ref == "" {
+			if itemSpec.Ref == "" && itemSpec.Contents == nil {
+				// No recursive validation needed
 				continue
 			}
 
-			subFolderSpecPath := path.Join(filepath.Dir(fs.specPath), itemSpec.Ref)
-			subFolderSpec, err := newFolderSpec(subFolderSpecPath)
-			if err != nil {
-				errs = append(errs, err)
-				continue
+			var subFolderSpec *folderSpec
+			if itemSpec.Ref != "" {
+				subFolderSpecPath := path.Join(filepath.Dir(fs.specPath), itemSpec.Ref)
+				subFolderSpec, err = newFolderSpec(subFolderSpecPath)
+				if err != nil {
+					errs = append(errs, err)
+					continue
+				}
+			} else if itemSpec.Contents != nil {
+				subFolderSpec = &folderSpec{
+					itemSpecs: itemSpec.Contents,
+					specPath:  fs.specPath,
+				}
 			}
 
 			subFolderPath := path.Join(folderPath, fileName)
-			errs = subFolderSpec.Validate(subFolderPath)
-			if len(errs) > 0 {
-				errs = append(errs, err)
+			subErrs := subFolderSpec.validate(subFolderPath)
+			if len(subErrs) > 0 {
+				errs = append(errs, subErrs)
 			}
+
 		} else {
 			if !itemSpec.isSameType(file) {
 				errs = append(errs, fmt.Errorf("[%s] is a file but is expected to be a folder", fileName))
@@ -106,7 +117,7 @@ func (fs *folderSpec) Validate(folderPath string) ValidationErrors {
 		}
 	}
 
-	// Validate that required items in spec are all accounted for
+	// validate that required items in spec are all accounted for
 	for _, itemSpec := range fs.itemSpecs {
 		if !itemSpec.Required {
 			continue
@@ -123,7 +134,7 @@ func (fs *folderSpec) Validate(folderPath string) ValidationErrors {
 			if itemSpec.Name != "" {
 				err = fmt.Errorf("expecting to find %s matching name [%s] in folder [%s]", itemSpec.ItemType, itemSpec.Name, folderPath)
 			} else if itemSpec.Pattern != "" {
-				err = fmt.Errorf("expecting to find %s matching pattern [%s] in folder [%s]", itemSpec.ItemType, itemSpec.Name, folderPath)
+				err = fmt.Errorf("expecting to find %s matching pattern [%s] in folder [%s]", itemSpec.ItemType, itemSpec.Pattern, folderPath)
 			}
 			errs = append(errs, err)
 		}
