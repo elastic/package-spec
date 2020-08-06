@@ -153,7 +153,7 @@ func (s *folderSpec) validate(folderPath string) ValidationErrors {
 		if !fileFound {
 			var err error
 			if itemSpec.Name != "" {
-				err = fmt.Errorf("expecting to find %s matching name [%s] in folder [%s]", itemSpec.ItemType, itemSpec.Name, folderPath)
+				err = fmt.Errorf("expecting to find [%s] %s in folder [%s]", itemSpec.Name, itemSpec.ItemType, folderPath)
 			} else if itemSpec.Pattern != "" {
 				err = fmt.Errorf("expecting to find %s matching pattern [%s] in folder [%s]", itemSpec.ItemType, itemSpec.Pattern, folderPath)
 			}
