@@ -27,7 +27,7 @@ Within each major version folder, there must be a `spec.yml` file. This file is 
 
 Expected package files, e.g. `manifest.yml` themselves have a structure to their contents. This structure is described in specification files using JSON schema (this is point 2. above). These specification files are also written as YAML for readability.
 
-Note that the specification files primarily defined the structure (syntax) of a package's contents. To a limited extent they may also define some semantics, e.g. enumeration values for certain fields. Richer semantics, however, will need to be expressed as validation code.
+Note that the specification files primarily define the structure (syntax) of a package's contents. To a limited extent they may also define some semantics, e.g. enumeration values for certain fields. Richer semantics, however, will need to be expressed as validation code.
 
 # Specification Versioning
 
@@ -43,7 +43,7 @@ As mentioned above, package specifications are versioned. Versions follow the [s
 
 ## Changing a Specification
 
-* Consider the **latest** version of the specification. Say it is `x.y.z`. It will be located under the `versions/x` folder, where `x` is the highest major version of the specification.
+* Consider the **latest** version of the specification. Say it is `x.y.z`. It will be located under the `versions/x` folder, where `x` is the major version of the specification.
 * Now consider a proposal to change the specification in some way. The version number of the changed specification must be determined as follows:
   * If the proposed change makes the specification stricter than it is at `x.y.z`, the new version number will be `X.0.0`, where `X = x + 1`. That is, we bump up the major version. 
      * Add a new folder named `versions/X`, where `X` is the new major version number. 
@@ -54,7 +54,7 @@ As mentioned above, package specifications are versioned. Versions follow the [s
      * Apply the proposed changes to the existing specification under the `versions/x` folder, where `x` is the major version number of the specification being changed. 
      * Set the root-level `version` property in the specification's root `spec.yml` file to `x.Y.0`.
      * Modify the `CHANGELOG.yml` file at the root of the `versions/x` folder, add an section for `x.Y.0` and make an entry under it explaining your change. If there are multiple changes, please add multiple entries under the new section.
-* If the proposed change does not change the strictness of the specification at `x.y.z`, the new version number will be `x.y.Z`, where `Z = z + 1`. That is, we bump the patch version.
+  * If the proposed change does not change the strictness of the specification at `x.y.z`, the new version number will be `x.y.Z`, where `Z = z + 1`. That is, we bump the patch version.
      * Apply the proposed changes to the existing specification under the `versions/x` folder, where `x` is the major version number of the specification being changed. 
      * Set the root-level `version` property in the specification's root `spec.yml` file to `x.y.Z`.
      * Modify the `CHANGELOG.yml` file at the root of the `versions/x` folder, add an section for `x.y.Z` and make an entry under it explaining your change. If there are multiple changes, please add multiple entries under the new section.
