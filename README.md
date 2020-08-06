@@ -54,7 +54,7 @@ As mentioned above, package specifications are versioned. Versions follow the [s
      * Apply the proposed changes to the existing specification under the `versions/x` folder, where `x` is the major version number of the specification being changed. 
      * Set the root-level `version` property in the specification's root `spec.yml` file to `x.Y.0`.
      * Modify the `CHANGELOG.yml` file at the root of the `versions/x` folder, add an section for `x.Y.0` and make an entry under it explaining your change. If there are multiple changes, please add multiple entries under the new section.
-* If the proposed change does not change the strictness of the specification at `x.y.z`, the new version number will be `x.y.Z`, where `Z = z + 1`. That is, we bump the patch version.
+  * If the proposed change does not change the strictness of the specification at `x.y.z`, the new version number will be `x.y.Z`, where `Z = z + 1`. That is, we bump the patch version.
      * Apply the proposed changes to the existing specification under the `versions/x` folder, where `x` is the major version number of the specification being changed. 
      * Set the root-level `version` property in the specification's root `spec.yml` file to `x.y.Z`.
      * Modify the `CHANGELOG.yml` file at the root of the `versions/x` folder, add an section for `x.y.Z` and make an entry under it explaining your change. If there are multiple changes, please add multiple entries under the new section.
