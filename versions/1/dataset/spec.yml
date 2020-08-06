@@ -2,7 +2,7 @@ spec:
 - description: Folder containing a single dataset definition
   type: folder
   pattern: '[a-z0-9][a-z0-9_]+[a-z0-9]'
-  minOccurences: 1
+  required: true
   contents:
   - description: A dataset's manifest file
     type: file
@@ -18,7 +18,7 @@ spec:
   - description: Folder containing agent-related definitions
     type: folder
     name: agent
-    required: true
+    required: false
     contents:
     - description: Folder containing agent stream definitions
       type: folder
