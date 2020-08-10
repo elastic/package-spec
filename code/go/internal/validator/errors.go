@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// ValidationErrors is an Error that contains a iterable collection of validation error messages.
+// ValidationErrors is an error that contains an iterable collection of validation error messages.
 type ValidationErrors []error
 
 func (ve ValidationErrors) Error() string {
