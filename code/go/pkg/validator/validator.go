@@ -1,6 +1,8 @@
 package validator
 
 import (
+	"errors"
+
 	"github.com/elastic/package-spec/code/go/internal/validator"
 )
 
@@ -10,6 +12,10 @@ func ValidateFromPath(packageRootPath string) error {
 	pkg, err := validator.NewPackage(packageRootPath)
 	if err != nil {
 		return err
+	}
+
+	if pkg.SpecVersion == nil {
+		return errors.New("could not determine specification version for package")
 	}
 
 	spec, err := validator.NewSpec(*pkg.SpecVersion)
