@@ -13,8 +13,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const ItemTypeFile = "file"
-const ItemTypeFolder = "folder"
+const itemTypeFile = "file"
+const itemTypeFolder = "folder"
 
 type folderSpec struct {
 	fs       http.FileSystem
@@ -207,9 +207,9 @@ func (s *folderItemSpec) matchingFileExists(files []os.FileInfo) (bool, error) {
 
 func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
 	switch s.ItemType {
-	case ItemTypeFile:
+	case itemTypeFile:
 		return !file.IsDir()
-	case ItemTypeFolder:
+	case itemTypeFolder:
 		return file.IsDir()
 	}
 
