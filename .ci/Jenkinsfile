@@ -41,7 +41,7 @@ pipeline {
         cleanup()
         withMageEnv(){
           dir("${BASE_DIR}"){
-            sh(label: 'Check',script: 'make check')
+            sh(label: 'Check', script: 'make check')
           }
         }
       }
@@ -54,7 +54,7 @@ pipeline {
         cleanup()
         withMageEnv(){
           dir("${BASE_DIR}"){
-            sh(label: 'Check',script: 'make test')
+            sh(label: 'Check', script: 'make test')
           }
         }
       }
