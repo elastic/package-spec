@@ -7,10 +7,8 @@ import (
 	"path"
 
 	"github.com/Masterminds/semver/v3"
-
-	"gopkg.in/yaml.v3"
-
 	"github.com/pkg/errors"
+	"gopkg.in/yaml.v3"
 )
 
 type Package struct {

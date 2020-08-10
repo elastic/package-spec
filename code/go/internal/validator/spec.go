@@ -6,9 +6,10 @@ import (
 	"strconv"
 
 	"github.com/Masterminds/semver/v3"
-	_ "github.com/elastic/package-spec/code/go/internal/spec"
 	"github.com/pkg/errors"
 	"github.com/rakyll/statik/fs"
+
+	_ "github.com/elastic/package-spec/code/go/internal/spec"
 )
 
 type Spec struct {
