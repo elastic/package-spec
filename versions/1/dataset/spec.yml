@@ -1,7 +1,7 @@
 spec:
   additionalContents: false
   contents:
-  - description: Folder containing a single dataset definition
+  - description: Folder containing a single data stream definition
     type: folder
     pattern: '[a-z0-9][a-z0-9_]+[a-z0-9]'
     required: true

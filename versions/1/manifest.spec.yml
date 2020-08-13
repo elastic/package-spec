@@ -201,7 +201,7 @@ spec:
                   examples:
                   - Collecting Apache access and error logs
                 vars:
-                  $ref: "./dataset/manifest.spec.yml#/definitions/vars"
+                  $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
               required:
               - type
               - title
