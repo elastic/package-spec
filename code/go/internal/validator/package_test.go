@@ -4,16 +4,17 @@ import (
 	"path"
 	"testing"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNewPackage(t *testing.T) {
 	tests := map[string]struct {
 		expectedErrContains string
-		expectedSpecVersion string
+		expectedSpecVersion *semver.Version
 	}{
 		"good": {
-			expectedSpecVersion: "1.0.4",
+			expectedSpecVersion: semver.MustParse("1.0.4"),
 		},
 		"non_existent": {
 			expectedErrContains: "no package found at",

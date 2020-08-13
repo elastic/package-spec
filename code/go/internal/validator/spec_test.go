@@ -13,7 +13,7 @@ func TestNewSpec(t *testing.T) {
 	}{
 		"1.0.0": {},
 		"9999.99.999": {
-			"no specification found for version [9999.99.999]",
+			"could not load specification for version [9999.99.999]",
 		},
 	}
 
