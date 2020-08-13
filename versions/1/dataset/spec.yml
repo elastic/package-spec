@@ -29,12 +29,6 @@ spec:
         name: stream
         required: true
         additionalContents: false
-        contents:
-        - description: Agent stream definition
-          type: file
-          name: "stream.yml.hbs"
-          contentMediaType: "application/x-hbs"
-          required: true
     - description: Folder containing Elasticsearch assets
       type: folder
       name: elasticsearch
