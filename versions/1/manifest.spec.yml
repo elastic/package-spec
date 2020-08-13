@@ -234,3 +234,4 @@ spec:
   - description
   - version
   - release
+  - owner
