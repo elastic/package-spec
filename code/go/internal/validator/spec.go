@@ -9,15 +9,18 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rakyll/statik/fs"
 
+	// Loads package specs as an in-memory filesystem
 	_ "github.com/elastic/package-spec/code/go/internal/spec"
 )
 
+// Spec represents a package specification
 type Spec struct {
 	version  semver.Version
 	fs       http.FileSystem
 	specPath string
 }
 
+// NewSpec creates a new Spec for the given version
 func NewSpec(version semver.Version) (*Spec, error) {
 	majorVersion := strconv.FormatUint(version.Major(), 10)
 
@@ -40,6 +43,7 @@ func NewSpec(version semver.Version) (*Spec, error) {
 	return &s, nil
 }
 
+// ValidatePackage validates the given Package against the Spec
 func (s Spec) ValidatePackage(pkg Package) ValidationErrors {
 	var errs ValidationErrors
 

@@ -11,11 +11,13 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// Package represents an Elastic Package Registry package
 type Package struct {
 	SpecVersion *semver.Version
 	RootPath    string
 }
 
+// NewPackage creates a new Package from a path to the package's root folder
 func NewPackage(pkgRootPath string) (*Package, error) {
 	info, err := os.Stat(pkgRootPath)
 	if os.IsNotExist(err) {
