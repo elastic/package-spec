@@ -19,11 +19,11 @@ spec:
     name: "changelog.yml"
     required: false
     $ref: "./changelog.spec.yml"
-  - description: Folder containing dataset definitions
+  - description: Folder containing data stream definitions
     type: folder
-    name: dataset
+    name: data_stream
     required: true
-    $ref: "./dataset/spec.yml"
+    $ref: "./data_stream/spec.yml"
   - description: Folder containing documentation for the package
     type: folder
     name: docs

@@ -1,5 +1,5 @@
 ##
-## Describes the specification for a dataset's manifest.yml file
+## Describes the specification for a data stream's manifest.yml file
 ##
 spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
@@ -69,15 +69,15 @@ spec:
           - type
   properties:
     name:
-      description: Name of dataset
+      description: Name of data stream
       type: string
     title:
-      description: Title of dataset.
+      description: Title of data stream.
       type: string
       examples:
       - AWS billing metrics
     release:
-      description: Stability of dataset.
+      description: Stability of data stream.
       type: string
       enum:
       - experimental
@@ -85,7 +85,7 @@ spec:
       examples:
       - beta
     type:
-      description: Type of dataset
+      description: Type of data stream
       type: string
       enum:
       - metrics
@@ -93,7 +93,7 @@ spec:
       examples:
       - metrics
     streams:
-      description: Streams offered by dataset.
+      description: Streams offered by data stream.
       type: array
       items:
         type: object
