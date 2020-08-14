@@ -68,7 +68,7 @@ spec:
           - name
           - type
   properties:
-    name:
+    dataset:
       description: Name of data stream
       type: string
     title:
