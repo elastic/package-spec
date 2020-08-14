@@ -48,3 +48,7 @@ spec:
       type: file
       name: "sample_event.json"
       required: false
+    - description: Folder containing testing related files and sub-folders
+      type: folder
+      name: "test"
+      required: false
