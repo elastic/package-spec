@@ -37,13 +37,18 @@ spec:
       - description: Folder containing Elasticsearch Ingest Node pipeline definitions
         type: folder
         name: ingest_pipeline
-        additionalContents: true
+        additionalContents: false
         contents:
-        - description: Default ingest pipeline definition
+        - description: Default ingest pipeline definition in YAML
           type: file
           name: "default.yml"
           contentMediaType: "application/x-yaml"
           required: true
+        - description: Supporting ingest pipeline definitions in YAML
+          type: file
+          pattern: '.+\.yml'
+          contentMediaType: "application/x-yaml"
+          required: false
     - description: Sample event file
       type: file
       name: "sample_event.json"
