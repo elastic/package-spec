@@ -227,6 +227,8 @@ spec:
         github:
           description: GitHub repository name of package maintainer.
           type: string
+      required:
+      - github
   required:
   - format_version
   - name
