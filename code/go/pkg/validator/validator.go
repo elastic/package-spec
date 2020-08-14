@@ -23,5 +23,9 @@ func ValidateFromPath(packageRootPath string) error {
 		return err
 	}
 
-	return spec.ValidatePackage(*pkg)
+	if errs := spec.ValidatePackage(*pkg); errs != nil && len(errs) > 0 {
+		return errs
+	}
+
+	return nil
 }
