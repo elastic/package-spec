@@ -1,45 +1,64 @@
 spec:
-- description: Folder containing a single dataset definition
-  type: folder
-  pattern: '[a-z0-9][a-z0-9_]+[a-z0-9]'
-  minOccurences: 1
+  additionalContents: false
   contents:
-  - description: A dataset's manifest file
-    type: file
-    contentMediaType: "application/x-yaml"
-    name: "manifest.yml"
-    required: true
-    $ref: "./manifest.spec.yml"
-  - description: Folder containing field definitions
+  - description: Folder containing a single dataset definition
     type: folder
-    name: fields
+    pattern: '[a-z0-9][a-z0-9_]+[a-z0-9]'
     required: true
-    $ref: "./fields/spec.yml"
-  - description: Folder containing agent-related definitions
-    type: folder
-    name: agent
-    required: true
+    additionalContents: false
     contents:
-    - description: Folder containing agent stream definitions
-      type: folder
-      name: stream
+    - description: A dataset's manifest file
+      type: file
+      contentMediaType: "application/x-yaml"
+      name: "manifest.yml"
       required: true
-      contents:
-      - description: Agent stream definition
-        type: file
-        name: "stream.yml.hbs"
-        contentMediaType: "application/x-hbs"
-        required: true
-  - description: Folder containing Elasticsearch assets
-    type: folder
-    name: elasticsearch
-    contents:
-    - description: Folder containing Elasticsearch Ingest Node pipeline definitions
+      $ref: "./manifest.spec.yml"
+    - description: Folder containing field definitions
       type: folder
-      name: ingest_pipeline
+      name: fields
+      required: true
+      $ref: "./fields/spec.yml"
+    - description: Folder containing agent-related definitions
+      type: folder
+      name: agent
+      required: false
+      additionalContents: false
       contents:
-      - description: Default ingest pipeline definition
-        type: file
-        name: "default.yml"
-        contentMediaType: "application/x-yaml"
+      - description: Folder containing agent stream definitions
+        type: folder
+        name: stream
         required: true
+        additionalContents: false
+    - description: Folder containing Elasticsearch assets
+      type: folder
+      name: elasticsearch
+      additionalContents: false
+      contents:
+      - description: Folder containing Elasticsearch Ingest Node pipeline definitions
+        type: folder
+        name: ingest_pipeline
+        additionalContents: false
+        contents:
+        - description: Default ingest pipeline definition
+          type: file
+          pattern: '^default\.(yml|json)$'
+          required: true
+        - description: Supporting ingest pipeline definitions in YAML
+          type: file
+          pattern: '.+\.yml'
+          contentMediaType: "application/x-yaml"
+          required: false
+        - description: Supporting ingest pipeline definitions in JSON
+          type: file
+          pattern: '.+\.json'
+          contentMediaType: "application/json"
+          required: false
+    - description: Sample event file
+      type: file
+      name: "sample_event.json"
+      contentMediaType: "application/json"
+      required: false
+    - description: Folder containing testing related files and sub-folders
+      type: folder
+      name: "test"
+      required: false

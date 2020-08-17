@@ -1,7 +1,9 @@
 spec:
-- description: Fields definition
-  type: file
-  pattern: '[a-z0-9][a-z0-9_]+[a-z0-9]\.yml'
-  required: true
-  contentMediaType: "application/x-yaml"
-  $ref: "./fields.spec.yml"
+  additionalContents: false
+  contents:
+  - description: Fields definition
+    type: file
+    pattern: '[a-z0-9][a-z0-9_]+[a-z0-9]\.yml'
+    required: true
+    contentMediaType: "application/x-yaml"
+    $ref: "./fields.spec.yml"
