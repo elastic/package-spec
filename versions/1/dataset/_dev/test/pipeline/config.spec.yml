@@ -1,0 +1,49 @@
+##
+## Describes the specification for a dataset's various field definition files
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: true
+  properties:
+    name:
+      description: Name of field
+      type: string
+    title:
+      description: Title of field
+      type: string
+    type: 
+      description: Datatype of field
+      type: string
+      enum:
+      - constant_keyword
+      - text
+      - keyword
+      - long
+      - integer
+      - short
+      - byte
+      - double
+      - float
+      - half_float
+      - scaled_float
+      - date
+      - date_nanos
+      - boolean
+      - binary
+      - integer_range
+      - float_range
+      - long_range
+      - double_range
+      - date_range
+      - ip_range
+      - group
+    description:
+      description: Short description of field
+      type: string
+    fields:
+      description: Sub-fields, when type is group
+      $ref: "#"     # JSON-schema syntax for pointing to the root of the schema
+  required:
+  - name
+  - type
