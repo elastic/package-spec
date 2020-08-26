@@ -9,12 +9,18 @@ import (
 	"path/filepath"
 	"regexp"
 
+	"github.com/creasty/defaults"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 )
 
-const itemTypeFile = "file"
-const itemTypeFolder = "folder"
+const (
+	itemTypeFile   = "file"
+	itemTypeFolder = "folder"
+
+	visibilityTypePublic  = "public"
+	visibilityTypePrivate = "private"
+)
 
 type folderSpec struct {
 	fs       http.FileSystem
@@ -30,6 +36,7 @@ type folderItemSpec struct {
 	Pattern          string `yaml:"pattern"`
 	Required         bool   `yaml:"required"`
 	Ref              string `yaml:"$ref"`
+	Visibility         string           `yaml:"visibility" default:"public"`
 	commonSpec       `yaml:",inline"`
 }
 
@@ -53,6 +60,7 @@ func newFolderSpec(fs http.FileSystem, specPath string) (*folderSpec, error) {
 	var wrapper struct {
 		Spec commonSpec `yaml:"spec"`
 	}
+
 	if err := yaml.Unmarshal(data, &wrapper); err != nil {
 		return nil, errors.Wrap(err, "could not parse folder specification file")
 	}
@@ -63,6 +71,10 @@ func newFolderSpec(fs http.FileSystem, specPath string) (*folderSpec, error) {
 		commonSpec: wrapper.Spec,
 	}
 
+	err = setDefaultValues(&spec.commonSpec)
+	if err != nil {
+		return nil, errors.Wrap(err, "could not set default values")
+	}
 	return &spec, nil
 }
 
@@ -90,6 +102,11 @@ func (s *folderSpec) validate(folderPath string) ValidationErrors {
 		if itemSpec == nil && !s.AdditionalContents {
 			// No spec found for current folder item and we do not allow additional contents in folder.
 			errs = append(errs, fmt.Errorf("item [%s] is not allowed in folder [%s]", fileName, folderPath))
+			continue
+		}
+
+		if itemSpec != nil && itemSpec.Visibility != visibilityTypePrivate && itemSpec.Visibility != visibilityTypePublic {
+			errs = append(errs, fmt.Errorf("item [%s] visibility is expected to be private or public, not [%s]", fileName, itemSpec.Visibility))
 			continue
 		}
 
@@ -214,4 +231,23 @@ func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
 	}
 
 	return false
+}
+
+func setDefaultValues(spec *commonSpec) error {
+	err := defaults.Set(spec)
+	if err != nil {
+		return errors.Wrap(err, "could not set default values")
+	}
+
+	if len(spec.Contents) == 0 {
+		return nil
+	}
+
+	for i := range spec.Contents {
+		err = setDefaultValues(&spec.Contents[i].commonSpec)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

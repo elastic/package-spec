@@ -1,0 +1,8 @@
+spec:
+  additionalContents: false
+  contents:
+    - description: Folder containing pipeline tests
+      type: folder
+      name: pipeline
+      required: false
+      $ref: "./pipeline/spec.yml"

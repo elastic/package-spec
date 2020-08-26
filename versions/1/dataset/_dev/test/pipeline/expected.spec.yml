@@ -1,0 +1,15 @@
+##
+## Describes the specification for a dataset's various field definition files
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  properties:
+    expected:
+      description: Expected test result
+      type: array
+      items:
+        type: object
+        additionalProperties: true
+      required: true
