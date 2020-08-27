@@ -9,6 +9,6 @@ require (
 	github.com/rakyll/statik v0.1.7
 	github.com/stretchr/testify v1.6.1
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
-	golang.org/x/tools v0.0.0-20200826040757-bc8aaaa29e06 // indirect
+	golang.org/x/tools v0.0.0-20200827010519-17fd2f27a9e3 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )

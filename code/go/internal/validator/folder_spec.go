@@ -4,12 +4,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"path"
 	"path/filepath"
 	"regexp"
 
-	"github.com/creasty/defaults"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 )
@@ -26,23 +24,6 @@ type folderSpec struct {
 	fs       http.FileSystem
 	specPath string
 	commonSpec
-}
-
-type folderItemSpec struct {
-	Description      string `yaml:"description"`
-	ItemType         string `yaml:"type"`
-	ContentMediaType string `yaml:"contentMediaType"`
-	Name             string `yaml:"name"`
-	Pattern          string `yaml:"pattern"`
-	Required         bool   `yaml:"required"`
-	Ref              string `yaml:"$ref"`
-	Visibility         string           `yaml:"visibility" default:"public"`
-	commonSpec       `yaml:",inline"`
-}
-
-type commonSpec struct {
-	AdditionalContents bool             `yaml:"additionalContents"`
-	Contents           []folderItemSpec `yaml:"contents"`
 }
 
 func newFolderSpec(fs http.FileSystem, specPath string) (*folderSpec, error) {
@@ -151,7 +132,11 @@ func (s *folderSpec) validate(folderPath string) ValidationErrors {
 				errs = append(errs, fmt.Errorf("[%s] is a file but is expected to be a folder", fileName))
 				continue
 			}
-			// TODO: more validation for file item
+
+			err = itemSpec.validate(s.specPath, filepath.Join(folderPath, file.Name()))
+			if err != nil {
+				errs = append(errs, err)
+			}
 		}
 	}
 
@@ -198,56 +183,4 @@ func (s *folderSpec) findItemSpec(folderItemName string) (*folderItemSpec, error
 
 	// No item spec found
 	return nil, nil
-}
-
-func (s *folderItemSpec) matchingFileExists(files []os.FileInfo) (bool, error) {
-	if s.Name != "" {
-		for _, file := range files {
-			if file.Name() == s.Name {
-				return s.isSameType(file), nil
-			}
-		}
-	} else if s.Pattern != "" {
-		for _, file := range files {
-			isMatch, err := regexp.MatchString(s.Pattern, file.Name())
-			if err != nil {
-				return false, errors.Wrap(err, "invalid folder item spec pattern")
-			}
-			if isMatch {
-				return s.isSameType(file), nil
-			}
-		}
-	}
-
-	return false, nil
-}
-
-func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
-	switch s.ItemType {
-	case itemTypeFile:
-		return !file.IsDir()
-	case itemTypeFolder:
-		return file.IsDir()
-	}
-
-	return false
-}
-
-func setDefaultValues(spec *commonSpec) error {
-	err := defaults.Set(spec)
-	if err != nil {
-		return errors.Wrap(err, "could not set default values")
-	}
-
-	if len(spec.Contents) == 0 {
-		return nil
-	}
-
-	for i := range spec.Contents {
-		err = setDefaultValues(&spec.Contents[i].commonSpec)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
 }
