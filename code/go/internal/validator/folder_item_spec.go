@@ -55,7 +55,7 @@ func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
 
 func (s *folderItemSpec) validate(folderSpecPath string, itemPath string) error {
 	if s.Ref == "" {
-		return nil // no item schema defined
+		return nil // no item's schema defined
 	}
 
 	fmt.Println("folderItemSpec.validate()", folderSpecPath, itemPath, s.ContentMediaType)
