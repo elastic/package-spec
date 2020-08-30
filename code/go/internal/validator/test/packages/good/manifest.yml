@@ -4,5 +4,7 @@ title: GOOD
 description: This package is good.
 version: 0.1.2
 release: beta
+conditions:
+  kibana.version: '^7.9.0'
 owner:
   github: elastic/foobar
