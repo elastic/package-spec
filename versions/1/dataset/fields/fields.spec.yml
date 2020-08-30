@@ -40,6 +40,7 @@ spec:
         - date_range
         - ip_range
         - group
+        - geo_point
       description:
         description: Short description of field
         type: string

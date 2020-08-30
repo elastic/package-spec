@@ -104,7 +104,7 @@ spec:
                   - false
                 default:
                   description: Default value(s) for variable
-                  type: array
+                  type: [ "string", "array" ]
                   items:
                     type: string
                     examples:
