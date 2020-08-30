@@ -92,7 +92,7 @@ spec:
     conditions:
       description: Constraints under which this package can be installed.
       type: object
-      additionalProperties: false      
+      additionalProperties: false
       properties:
         kibana:
           description: Kibana versions compatible with this package.
@@ -202,10 +202,66 @@ spec:
                 description:
                   description: Longer description of input.
                   type: string
-                  examples: 
+                  examples:
                   - Collecting Apache access and error logs
                 vars:
-                  $ref: "./dataset/manifest.spec.yml#streams/items/properties/vars"
+                  description: Input variables.
+                  type: array
+                  items:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      name:
+                        description: Variable name.
+                        type: string
+                        examples:
+                          - hosts
+                      type:
+                        description: Data type of variable.
+                        type: string
+                        enum:
+                          - text
+                          - yaml
+                        examples:
+                          - text
+                      title:
+                        description: Title of variable.
+                        type: string
+                        examples:
+                          - Hosts
+                      description:
+                        description: Short description of variable.
+                        type: string
+                        examples:
+                          - "Hosts of integration service to connect to"
+                      multi:
+                        description: Can variable contain multiple values?
+                        type: boolean
+                        default: false
+                        examples:
+                          - true
+                      required:
+                        description: Is variable required?
+                        type: boolean
+                        default: false
+                        examples:
+                          - true
+                      show_user:
+                        description: Should this variable be shown to the user by default?
+                        type: boolean
+                        default: true
+                        examples:
+                          - false
+                      default:
+                        description: Default value(s) for variable
+                        type: array
+                        items:
+                          type: string
+                          examples:
+                            - "http://127.0.0.1"
+                    required:
+                      - name
+                      - type
               required:
               - type
               - title
@@ -216,10 +272,6 @@ spec:
         - name
         - title
         - description
-    datasets:
-      type: array
-      items:
-        $ref: "./dataset/manifest.spec.yml" 
     owner:
       type: object
       additionalProperties: false

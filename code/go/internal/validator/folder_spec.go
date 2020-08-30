@@ -133,9 +133,12 @@ func (s *folderSpec) validate(folderPath string) ValidationErrors {
 				continue
 			}
 
-			err = itemSpec.validate(s.fs, s.specPath, filepath.Join(folderPath, file.Name()))
-			if err != nil {
-				errs = append(errs, err)
+			itemPath := filepath.Join(folderPath, file.Name())
+			itemValidationErrs := itemSpec.validate(s.fs, s.specPath, itemPath)
+			if itemValidationErrs != nil {
+				for _, ive := range itemValidationErrs {
+					errs = append(errs, errors.Wrapf(ive, "file \"%s\" is invalid", itemPath))
+				}
 			}
 		}
 	}

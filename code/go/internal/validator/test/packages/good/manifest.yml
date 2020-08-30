@@ -1,1 +1,8 @@
 format_version: 1.0.4
+name: good
+title: GOOD
+description: This package is good.
+version: 0.1.2
+release: beta
+owner:
+  github: elastic/foobar

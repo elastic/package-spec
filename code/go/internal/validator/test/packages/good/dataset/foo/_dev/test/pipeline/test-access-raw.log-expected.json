@@ -1,5 +1,5 @@
 {
-    "1expected": [
+    "expected": [
         {
             "event.category": [
                 "web"
