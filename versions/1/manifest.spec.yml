@@ -216,6 +216,9 @@ spec:
                         description: Data type of variable.
                         type: string
                         enum:
+                          - integer
+                          - bool
+                          - password
                           - text
                           - yaml
                         examples:
@@ -250,7 +253,7 @@ spec:
                           - false
                       default:
                         description: Default value(s) for variable
-                        type: [ "string", "array" ]
+                        type: [ "string", "array", "integer", "boolean" ]
                         items:
                           type: string
                           examples:

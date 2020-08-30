@@ -41,6 +41,10 @@ spec:
         - ip_range
         - group
         - geo_point
+        - object
+        - ip
+        - nested
+        - array
       description:
         description: Short description of field
         type: string
