@@ -2,7 +2,11 @@ package validator
 
 import (
 	"fmt"
+	"gopkg.in/yaml.v3"
+	"io/ioutil"
+	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 
 	"github.com/pkg/errors"
@@ -53,11 +57,31 @@ func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
 	return false
 }
 
-func (s *folderItemSpec) validate(folderSpecPath string, itemPath string) error {
+func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, itemPath string) error {
 	if s.Ref == "" {
 		return nil // no item's schema defined
 	}
 
-	fmt.Println("folderItemSpec.validate()", folderSpecPath, itemPath, s.ContentMediaType)
+	itemSchemaPath := filepath.Join(filepath.Dir(folderSpecPath), s.Ref)
+	itemSchemaFile, err := fs.Open(itemSchemaPath)
+	if err != nil {
+		return errors.Wrap(err, "opening schema file failed")
+	}
+	defer itemSchemaFile.Close()
+
+	itemSchemaData, err := ioutil.ReadAll(itemSchemaFile)
+	if err != nil {
+		return errors.Wrap(err, "reading schema file failed")
+	}
+
+	var schema yaml.Node
+	err = yaml.Unmarshal(itemSchemaData, &schema)
+	if err != nil {
+		return errors.Wrapf(err, "schema unmarshalling failed (path: %s)", itemSchemaPath)
+	}
+
+	
+
+	fmt.Println("folderItemSpec.validate()", itemSchemaPath, itemPath, s.ContentMediaType)
 	return nil
 }

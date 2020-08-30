@@ -133,7 +133,7 @@ func (s *folderSpec) validate(folderPath string) ValidationErrors {
 				continue
 			}
 
-			err = itemSpec.validate(s.specPath, filepath.Join(folderPath, file.Name()))
+			err = itemSpec.validate(s.fs, s.specPath, filepath.Join(folderPath, file.Name()))
 			if err != nil {
 				errs = append(errs, err)
 			}
