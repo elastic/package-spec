@@ -71,13 +71,13 @@ func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, ite
 	schemaPath := filepath.Join(filepath.Dir(folderSpecPath), s.Ref)
 	schemaData, err := loadItemSchema(fs, schemaPath)
 	if err != nil {
-		return ValidationErrors{errors.Wrapf(err, "loading item schema failed (path :s)", schemaPath)}
+		return ValidationErrors{errors.Wrapf(err, "loading item schema failed (path %s)", schemaPath)}
 	}
 
 	// loading item content
 	itemData, err := loadItemContent(itemPath, s.ContentMediaType)
 	if err != nil {
-		return ValidationErrors{errors.Wrapf(err, "loading item content failed (path :s)", itemPath)}
+		return ValidationErrors{errors.Wrapf(err, "loading item content failed (path %s)", itemPath)}
 	}
 
 	// validation with schema
