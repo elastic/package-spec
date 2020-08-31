@@ -22,6 +22,29 @@ type yamlReferenceLoader struct {
 
 var _ gojsonschema.JSONLoader = new(yamlReferenceLoader)
 
+type rawReferenceLoader struct {
+	fs     http.FileSystem
+	source interface{}
+}
+
+var _ gojsonschema.JSONLoader = new(rawReferenceLoader)
+
+// NewReferenceLoaderFileSystem method creates new instance of `yamlReferenceLoader`.
+func NewReferenceLoaderFileSystem(source string, fs http.FileSystem) gojsonschema.JSONLoader {
+	return &yamlReferenceLoader{
+		fs:     fs,
+		source: source,
+	}
+}
+
+// NewRawLoaderFileSystem method creates new instance of `rawReferenceLoader`
+func NewRawLoaderFileSystem(source interface{}, fs http.FileSystem) gojsonschema.JSONLoader {
+	return &rawReferenceLoader{
+		fs:     fs,
+		source: source,
+	}
+}
+
 func (l *yamlReferenceLoader) JsonSource() interface{} { // golint:ignore
 	return l.source
 }
@@ -66,11 +89,21 @@ func (l *yamlReferenceLoader) LoaderFactory() gojsonschema.JSONLoaderFactory {
 	}
 }
 
-// NewReferenceLoaderFileSystem method creates new instance of `yamlReferenceLoader`.
-func NewReferenceLoaderFileSystem(source string, fs http.FileSystem) gojsonschema.JSONLoader {
-	return &yamlReferenceLoader{
-		fs:     fs,
-		source: source,
+func (l *rawReferenceLoader) JsonSource() interface{} {
+	return l.source
+}
+
+func (l *rawReferenceLoader) LoadJSON() (interface{}, error) {
+	return l.source, nil
+}
+
+func (l *rawReferenceLoader) JsonReference() (gojsonreference.JsonReference, error) {
+	return gojsonreference.NewJsonReference("#")
+}
+
+func (l *rawReferenceLoader) LoaderFactory() gojsonschema.JSONLoaderFactory {
+	return &fileSystemYAMLLoaderFactory{
+		fs: l.fs,
 	}
 }
 

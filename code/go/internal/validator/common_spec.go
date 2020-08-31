@@ -6,10 +6,10 @@ import (
 )
 
 type commonSpec struct {
-	AdditionalContents bool             `yaml:"additionalContents"`
-	Contents           []folderItemSpec `yaml:"contents"`
+	AdditionalContents bool                   `yaml:"additionalContents"`
+	Content            map[string]interface{} `yaml:"content"`
+	Contents           []folderItemSpec       `yaml:"contents"`
 }
-
 
 func setDefaultValues(spec *commonSpec) error {
 	err := defaults.Set(spec)

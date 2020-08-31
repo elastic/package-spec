@@ -3,6 +3,8 @@ package validator
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/elastic/package-spec/code/go/internal/yamlschema"
+	"github.com/xeipuuv/gojsonschema"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -10,10 +12,7 @@ import (
 	"regexp"
 
 	"github.com/pkg/errors"
-	"github.com/xeipuuv/gojsonschema"
 	"gopkg.in/yaml.v3"
-
-	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
 type folderItemSpec struct {
@@ -62,11 +61,15 @@ func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
 }
 
 func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, itemPath string) ValidationErrors {
-	if s.Ref == "" {
-		return nil // no item's schema defined
+	var schemaLoader gojsonschema.JSONLoader
+	if s.Ref != "" {
+		schemaPath := filepath.Join(filepath.Dir(folderSpecPath), s.Ref)
+		schemaLoader = yamlschema.NewReferenceLoaderFileSystem("file://"+schemaPath, fs)
+	} else if s.Content != nil {
+		schemaLoader = yamlschema.NewRawLoaderFileSystem(s.Content, fs)
+	} else {
+		return nil // item's schema is not defined
 	}
-
-	schemaPath := filepath.Join(filepath.Dir(folderSpecPath), s.Ref)
 
 	// loading item content
 	itemData, err := loadItemContent(itemPath, s.ContentMediaType)
@@ -75,11 +78,21 @@ func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, ite
 	}
 
 	// validation with schema
-	errs := validateData(schemaPath, fs, itemData)
-	if errs != nil {
-		return errs
+	documentLoader := gojsonschema.NewBytesLoader(itemData)
+	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
+	if err != nil {
+		return ValidationErrors{err}
 	}
-	return nil
+
+	if result.Valid() {
+		return nil // item content is valid according to the loaded schema
+	}
+
+	var errs ValidationErrors
+	for _, re := range result.Errors() {
+		errs = append(errs, fmt.Errorf("field %s: %s", re.Field(), re.Description()))
+	}
+	return errs
 }
 
 func loadItemContent(itemPath, mediaType string) ([]byte, error) {
@@ -109,23 +122,4 @@ func loadItemContent(itemPath, mediaType string) ([]byte, error) {
 		return nil, fmt.Errorf("unsupported media type (%s)", mediaType)
 	}
 	return itemData, nil
-}
-
-func validateData(schemaPath string, fs http.FileSystem, itemData []byte) ValidationErrors {
-	schemaLoader := yamlschema.NewReferenceLoaderFileSystem("file://" + schemaPath, fs)
-	documentLoader := gojsonschema.NewBytesLoader(itemData)
-	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
-	if err != nil {
-		return ValidationErrors{err}
-	}
-
-	if result.Valid() {
-		return nil // item content is valid according to the loaded schema
-	}
-
-	var errs ValidationErrors
-	for _, re := range result.Errors() {
-		errs = append(errs, fmt.Errorf("field %s: %s", re.Field(), re.Description()))
-	}
-	return errs
 }
