@@ -5,6 +5,68 @@ spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
   additionalProperties: false
+  definitions:
+    vars:
+      description: Input variables.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          name:
+            description: Variable name.
+            type: string
+            examples:
+              - hosts
+          type:
+            description: Data type of variable.
+            type: string
+            enum:
+              - integer
+              - bool
+              - password
+              - text
+              - yaml
+            examples:
+              - text
+          title:
+            description: Title of variable.
+            type: string
+            examples:
+              - Hosts
+          description:
+            description: Short description of variable.
+            type: string
+            examples:
+              - "Hosts of integration service to connect to"
+          multi:
+            description: Can variable contain multiple values?
+            type: boolean
+            default: false
+            examples:
+              - true
+          required:
+            description: Is variable required?
+            type: boolean
+            default: false
+            examples:
+              - true
+          show_user:
+            description: Should this variable be shown to the user by default?
+            type: boolean
+            default: true
+            examples:
+              - false
+          default:
+            description: Default value(s) for variable
+            type: [ "string", "array", "integer", "boolean" ]
+            items:
+              type: string
+              examples:
+                - "http://127.0.0.1"
+        required:
+          - name
+          - type
   properties:
     name:
       description: Name of dataset
@@ -55,66 +117,7 @@ spec:
             description: "Path to Elasticsearch index template for stream."
             type: string
           vars:
-            description: Input variables.
-            type: array
-            items:
-              type: object
-              additionalProperties: false
-              properties:
-                name:
-                  description: Variable name.
-                  type: string
-                  examples:
-                  - hosts
-                type:
-                  description: Data type of variable.
-                  type: string
-                  enum:
-                  - integer
-                  - bool
-                  - password
-                  - text
-                  - yaml
-                  examples:
-                  - text
-                title:
-                  description: Title of variable.
-                  type: string
-                  examples:
-                  - Hosts
-                description:
-                  description: Short description of variable.
-                  type: string
-                  examples:
-                  - "Hosts of integration service to connect to"
-                multi:
-                  description: Can variable contain multiple values?
-                  type: boolean
-                  default: false
-                  examples:
-                  - true
-                required:
-                  description: Is variable required?
-                  type: boolean
-                  default: false
-                  examples:
-                  - true
-                show_user:
-                  description: Should this variable be shown to the user by default?
-                  type: boolean
-                  default: true
-                  examples:
-                  - false
-                default:
-                  description: Default value(s) for variable
-                  type: [ "string", "array", "integer", "boolean" ]
-                  items:
-                    type: string
-                    examples:
-                    - "http://127.0.0.1"
-              required:
-              - name
-              - type                  
+            $ref: "#/definitions/vars"
           enabled:
             description: Is stream enabled?
             type: boolean

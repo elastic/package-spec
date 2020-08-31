@@ -3,7 +3,6 @@ package validator
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonschema"
+	"gopkg.in/yaml.v3"
 )
 
 type folderItemSpec struct {
@@ -69,10 +69,6 @@ func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, ite
 	}
 
 	schemaPath := filepath.Join(filepath.Dir(folderSpecPath), s.Ref)
-	schemaData, err := loadItemSchema(fs, schemaPath)
-	if err != nil {
-		return ValidationErrors{errors.Wrapf(err, "loading item schema failed (path %s)", schemaPath)}
-	}
 
 	// loading item content
 	itemData, err := loadItemContent(itemPath, s.ContentMediaType)
@@ -81,40 +77,11 @@ func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, ite
 	}
 
 	// validation with schema
-	errs := validateData(schemaData, itemData)
+	errs := validateData(schemaPath, fs, itemData)
 	if errs != nil {
 		return errs
 	}
 	return nil
-}
-
-func loadItemSchema(fs http.FileSystem, itemSchemaPath string) ([]byte, error) {
-	itemSchemaFile, err := fs.Open(itemSchemaPath)
-	if err != nil {
-		return nil, errors.Wrap(err, "opening schema file failed")
-	}
-	defer itemSchemaFile.Close()
-
-	itemSchemaData, err := ioutil.ReadAll(itemSchemaFile)
-	if err != nil {
-		return nil, errors.Wrap(err, "reading schema file failed")
-	}
-
-	if len(itemSchemaData) == 0 {
-		return nil, errors.New("schema file is empty")
-	}
-
-	var schema itemSchemaSpec
-	err = yaml.Unmarshal(itemSchemaData, &schema)
-	if err != nil {
-		return nil, errors.Wrapf(err, "schema unmarshalling failed (path: %s)", itemSchemaPath)
-	}
-
-	schemaData, err := json.Marshal(&schema.Spec)
-	if err != nil {
-		return nil, errors.Wrapf(err, "marshalling schema to JSON format failed")
-	}
-	return schemaData, nil
 }
 
 func loadItemContent(itemPath, mediaType string) ([]byte, error) {
@@ -146,8 +113,8 @@ func loadItemContent(itemPath, mediaType string) ([]byte, error) {
 	return itemData, nil
 }
 
-func validateData(schemaData, itemData []byte) ValidationErrors {
-	schemaLoader := gojsonschema.NewBytesLoader(schemaData)
+func validateData(schemaPath string, fs http.FileSystem, itemData []byte) ValidationErrors {
+	schemaLoader := newReferenceLoaderFileSystem("file://" + schemaPath, fs)
 	documentLoader := gojsonschema.NewBytesLoader(itemData)
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 	if err != nil {
