@@ -28,10 +28,6 @@ type folderItemSpec struct {
 	commonSpec       `yaml:",inline"`
 }
 
-type itemSchemaSpec struct {
-	Spec map[string]interface{} `json:"spec" yaml:"spec"`
-}
-
 func (s *folderItemSpec) matchingFileExists(files []os.FileInfo) (bool, error) {
 	if s.Name != "" {
 		for _, file := range files {

@@ -11,6 +11,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type itemSchemaSpec struct {
+	Spec map[string]interface{} `json:"spec" yaml:"spec"`
+}
+
 type yamlReferenceLoader struct {
 	fs     http.FileSystem
 	source string
