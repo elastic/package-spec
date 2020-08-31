@@ -1,4 +1,4 @@
-package validator
+package yamlschema
 
 import (
 	"io/ioutil"
@@ -18,7 +18,7 @@ type yamlReferenceLoader struct {
 
 var _ gojsonschema.JSONLoader = new(yamlReferenceLoader)
 
-func (l *yamlReferenceLoader) JsonSource() interface{} {
+func (l *yamlReferenceLoader) JsonSource() interface{} { // golint:ignore
 	return l.source
 }
 
@@ -62,7 +62,8 @@ func (l *yamlReferenceLoader) LoaderFactory() gojsonschema.JSONLoaderFactory {
 	}
 }
 
-func newReferenceLoaderFileSystem(source string, fs http.FileSystem) gojsonschema.JSONLoader {
+// NewReferenceLoaderFileSystem method creates new instance of `yamlReferenceLoader`.
+func NewReferenceLoaderFileSystem(source string, fs http.FileSystem) gojsonschema.JSONLoader {
 	return &yamlReferenceLoader{
 		fs:     fs,
 		source: source,

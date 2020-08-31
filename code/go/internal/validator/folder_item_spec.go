@@ -12,6 +12,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonschema"
 	"gopkg.in/yaml.v3"
+
+	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
 type folderItemSpec struct {
@@ -114,7 +116,7 @@ func loadItemContent(itemPath, mediaType string) ([]byte, error) {
 }
 
 func validateData(schemaPath string, fs http.FileSystem, itemData []byte) ValidationErrors {
-	schemaLoader := newReferenceLoaderFileSystem("file://" + schemaPath, fs)
+	schemaLoader := yamlschema.NewReferenceLoaderFileSystem("file://" + schemaPath, fs)
 	documentLoader := gojsonschema.NewBytesLoader(itemData)
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 	if err != nil {
