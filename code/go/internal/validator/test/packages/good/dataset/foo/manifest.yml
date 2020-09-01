@@ -1,0 +1,23 @@
+title: Nginx access logs
+type: logs
+release: experimental
+streams:
+  - input: logfile
+    vars:
+      - name: paths
+        type: text
+        title: Paths
+        multi: true
+        required: true
+        show_user: true
+        default:
+          - /var/log/nginx/access.log*
+      - name: server_status_path
+        type: text
+        title: Server Status Path
+        multi: false
+        required: true
+        show_user: false
+        default: /server-status
+    title: Nginx access logs
+    description: Collect Nginx access logs

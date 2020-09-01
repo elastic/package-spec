@@ -92,17 +92,13 @@ spec:
     conditions:
       description: Constraints under which this package can be installed.
       type: object
-      additionalProperties: false      
+      additionalProperties: false
       properties:
-        kibana:
+        kibana.version:
+          type: string
           description: Kibana versions compatible with this package.
-          type: object
-          additionalProperties: false
-          properties:
-            version:
-              type: string
-              examples:
-              - ">=7.9.0"
+          examples:
+            - ">=7.9.0"
     icons:
       description: List of icons for by this package.
       type: array
@@ -202,10 +198,10 @@ spec:
                 description:
                   description: Longer description of input.
                   type: string
-                  examples: 
+                  examples:
                   - Collecting Apache access and error logs
                 vars:
-                  $ref: "./dataset/manifest.spec.yml#streams/items/properties/vars"
+                  $ref: "./dataset/manifest.spec.yml#/definitions/vars"
               required:
               - type
               - title
@@ -216,10 +212,6 @@ spec:
         - name
         - title
         - description
-    datasets:
-      type: array
-      items:
-        $ref: "./dataset/manifest.spec.yml" 
     owner:
       type: object
       additionalProperties: false
