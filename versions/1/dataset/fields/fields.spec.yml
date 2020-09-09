@@ -45,6 +45,7 @@ spec:
         - ip
         - nested
         - array
+        - flattened
       description:
         description: Short description of field
         type: string
