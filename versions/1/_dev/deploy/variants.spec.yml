@@ -8,10 +8,12 @@ spec:
   additionalProperties: false
   properties:
     variants:
-      description: Variables describing variations
-      type: array
-      items:
-        type: object
-        additionalProperties: true
+      description: Variant names and their configurations
+      type: object
+      additionalProperties: true
+    default:
+      description: Default variant to use
+      type: string
   required:
   - variants
+  - default
