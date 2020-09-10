@@ -1,0 +1,17 @@
+##
+## Describes the specification for variations available when deploying a package's
+## integration service(s).
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  properties:
+    variants:
+      description: Variables describing variations
+      type: array
+      items:
+        type: object
+        additionalProperties: true
+  required:
+  - variants

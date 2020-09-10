@@ -1,0 +1,8 @@
+spec:
+  additionalContents: false
+  contents:
+    - description: System test configuration
+      type: file
+      pattern: '^config.yml$'
+      contentMediaType: "application/x-yaml"
+      required: false
