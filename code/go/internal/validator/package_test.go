@@ -1,7 +1,7 @@
 package validator
 
 import (
-	"path"
+	"path/filepath"
 	"testing"
 
 	"github.com/Masterminds/semver/v3"
@@ -25,14 +25,11 @@ func TestNewPackage(t *testing.T) {
 		"no_spec_version": {
 			expectedErrContains: "could not read specification version",
 		},
-		"bad_deploy_variants": {
-			expectedErrContains: "TODO",
-		},
 	}
 
 	for pkgName, test := range tests {
 		t.Run(pkgName, func(t *testing.T) {
-			pkgRootPath := path.Join("test", "packages", pkgName)
+			pkgRootPath := filepath.Join("test", "packages", pkgName)
 			pkg, err := NewPackage(pkgRootPath)
 			if test.expectedErrContains == "" {
 				require.NoError(t, err)
