@@ -23,4 +23,6 @@ check-spec:
 
 # Runs tests
 test:
-	@go test -v ./... -count=1 # count is there to bust the test cache
+    # -count=1 is included to bust the test cache. This way, if you run "make test" multiple times
+    # you will get fresh test results each time.
+	@go test -v ./... -count=1
