@@ -1,6 +1,7 @@
 package validator
 
 import (
+	"fmt"
 	"path/filepath"
 	"testing"
 
@@ -11,11 +12,13 @@ import (
 
 func TestValidate(t *testing.T) {
 	tests := map[string]struct {
+		invalidPkgFilePath  string
 		expectedErrContains []string
 	}{
 		"good": {},
 		"bad_deploy_variants": {
-			expectedErrContains: []string{
+			"_dev/deploy/variants.yml",
+			[]string{
 				"field (root): default is required",
 				"field variants: Invalid type. Expected: object, given: array",
 			},
@@ -25,6 +28,8 @@ func TestValidate(t *testing.T) {
 	for pkgName, test := range tests {
 		t.Run(pkgName, func(t *testing.T) {
 			pkgRootPath := filepath.Join("..", "..", "internal", "validator", "test", "packages", pkgName)
+			errPrefix := fmt.Sprintf("file \"%s/%s\" is invalid: ", pkgRootPath, test.invalidPkgFilePath)
+
 			errs := ValidateFromPath(pkgRootPath)
 			if test.expectedErrContains == nil {
 				require.NoError(t, errs)
@@ -34,7 +39,7 @@ func TestValidate(t *testing.T) {
 				vErrs, ok := errs.(validator.ValidationErrors)
 				require.True(t, ok)
 				for idx, err := range vErrs {
-					expectedErr := test.expectedErrContains[idx]
+					expectedErr := errPrefix + test.expectedErrContains[idx]
 					require.Contains(t, err.Error(), expectedErr)
 				}
 			}
