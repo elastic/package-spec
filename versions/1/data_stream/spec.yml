@@ -7,7 +7,7 @@ spec:
     required: true
     additionalContents: false
     contents:
-    - description: A dataset's manifest file
+    - description: A data stream's manifest file
       type: file
       contentMediaType: "application/x-yaml"
       name: "manifest.yml"
