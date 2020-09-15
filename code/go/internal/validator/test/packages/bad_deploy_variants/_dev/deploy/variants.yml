@@ -1,0 +1,5 @@
+# This file should fail validation against the spec for two reasons:
+# 1. "variants" needs to be an object, not an array.
+# 2. there needs to be a top-level "default" key.
+variants:
+  - FOO: bar

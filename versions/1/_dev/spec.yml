@@ -1,0 +1,8 @@
+spec:
+  additionalContents: false
+  contents:
+    - description: Folder containing configuration related to deploying the package's integration service(s)
+      type: folder
+      name: deploy
+      required: false
+      $ref: "./deploy/spec.yml"

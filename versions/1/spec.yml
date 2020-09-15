@@ -33,3 +33,9 @@ spec:
     name: kibana
     required: false
     $ref: "./kibana/spec.yml"
+  - description: Folder containing development resources
+    type: folder
+    name: _dev
+    required: false
+    visibility: private
+    $ref: "./_dev/spec.yml"

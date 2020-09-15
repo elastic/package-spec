@@ -1,7 +1,7 @@
 package validator
 
 import (
-	"path"
+	"path/filepath"
 	"testing"
 
 	"github.com/Masterminds/semver/v3"
@@ -28,16 +28,18 @@ func TestNewPackage(t *testing.T) {
 	}
 
 	for pkgName, test := range tests {
-		pkgRootPath := path.Join("test", "packages", pkgName)
-		pkg, err := NewPackage(pkgRootPath)
-		if test.expectedErrContains == "" {
-			require.NoError(t, err)
-			require.Equal(t, test.expectedSpecVersion, pkg.SpecVersion)
-			require.Equal(t, pkgRootPath, pkg.RootPath)
-		} else {
-			require.Error(t, err)
-			require.Contains(t, err.Error(), test.expectedErrContains)
-			require.Nil(t, pkg)
-		}
+		t.Run(pkgName, func(t *testing.T) {
+			pkgRootPath := filepath.Join("test", "packages", pkgName)
+			pkg, err := NewPackage(pkgRootPath)
+			if test.expectedErrContains == "" {
+				require.NoError(t, err)
+				require.Equal(t, test.expectedSpecVersion, pkg.SpecVersion)
+				require.Equal(t, pkgRootPath, pkg.RootPath)
+			} else {
+				require.Error(t, err)
+				require.Contains(t, err.Error(), test.expectedErrContains)
+				require.Nil(t, pkg)
+			}
+		})
 	}
 }

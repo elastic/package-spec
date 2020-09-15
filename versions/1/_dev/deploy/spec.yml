@@ -1,0 +1,14 @@
+spec:
+  additionalContents: false
+  contents:
+    - description: Docker Compose configuration file for deploying package's integration service(s)
+      type: file
+      name: "docker-compose.yml"
+      contentMediaType: "application/x-yaml"
+      required: false
+    - description: Configuration file describing variations available for deployment
+      type: file
+      name: "variants.yml"
+      contentMediaType: "application/x-yaml"
+      required: false
+      $ref: "./variants.spec.yml"

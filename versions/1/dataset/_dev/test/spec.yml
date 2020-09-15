@@ -6,3 +6,8 @@ spec:
       name: pipeline
       required: false
       $ref: "./pipeline/spec.yml"
+    - description: Folder containing system tests
+      type: folder
+      name: system
+      required: false
+      $ref: "./system/spec.yml"
