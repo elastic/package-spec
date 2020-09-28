@@ -158,30 +158,30 @@ spec:
         required:
         - src
         - title
-    config_templates:
-      description: List of configuration templates offered by this package.
+    policy_templates:
+      description: List of policy templates offered by this package.
       type: array
       items:
         type: object
         additionalProperties: false
         properties:
           name:
-            description: Name of configuration template.
+            description: Name of policy template.
             type: string
             examples:
             - apache
           title:
-            description: Title of configuration template.
+            description: Title of policy template.
             type: string
             examples:
             - Apache logs and metrics
           description:
-            description: Longer description of configuration template.
+            description: Longer description of policy template.
             type: string
             examples:
             - Collect logs and metrics from Apache instances
           inputs:
-            description: List of inputs supported by configuration template.
+            description: List of inputs supported by policy template.
             type: array
             items:
               type: object

@@ -6,7 +6,7 @@ version: 0.1.2
 release: beta
 conditions:
   kibana.version: '^7.9.0'
-config_templates:
+policy_templates:
   - name: apache
     title: Apache logs and metrics
     description: Collect logs and metrics from Apache instances
