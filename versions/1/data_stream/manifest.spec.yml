@@ -68,8 +68,8 @@ spec:
           - name
           - type
   properties:
-    data_stream:
-      description: Name of data stream
+    dataset:
+      description: Name of data set.
       type: string
     title:
       description: Title of data stream.

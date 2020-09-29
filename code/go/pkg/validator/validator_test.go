@@ -15,7 +15,8 @@ func TestValidate(t *testing.T) {
 		invalidPkgFilePath  string
 		expectedErrContains []string
 	}{
-		"good": {},
+		"good":          {},
+		"deploy_docker": {},
 		"bad_deploy_variants": {
 			"_dev/deploy/variants.yml",
 			[]string{
