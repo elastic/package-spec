@@ -18,6 +18,7 @@ spec:
         description: Datatype of field
         type: string
         enum:
+        - histogram
         - constant_keyword
         - text
         - keyword
