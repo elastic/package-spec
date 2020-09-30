@@ -6,3 +6,6 @@
   - description: Initial version of the Elastic Package specifiction.
     type: enhancement
     link: https://github.com/elastic/package-spec/pulls/1
+  - description: Adding the histogram field as a valid ES field type.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/52
