@@ -61,6 +61,12 @@ func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
 }
 
 func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, itemPath string) ValidationErrors {
+	// loading item content
+	itemData, err := loadItemContent(itemPath, s.ContentMediaType)
+	if err != nil {
+		return ValidationErrors{errors.Wrapf(err, "loading item content failed (path %s)", itemPath)}
+	}
+
 	var schemaLoader gojsonschema.JSONLoader
 	if s.Ref != "" {
 		schemaPath := filepath.Join(filepath.Dir(folderSpecPath), s.Ref)
@@ -69,12 +75,6 @@ func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, ite
 		schemaLoader = yamlschema.NewRawLoaderFileSystem(s.Content, fs)
 	} else {
 		return nil // item's schema is not defined
-	}
-
-	// loading item content
-	itemData, err := loadItemContent(itemPath, s.ContentMediaType)
-	if err != nil {
-		return ValidationErrors{errors.Wrapf(err, "loading item content failed (path %s)", itemPath)}
 	}
 
 	// validation with schema
@@ -118,6 +118,7 @@ func loadItemContent(itemPath, mediaType string) ([]byte, error) {
 			return nil, errors.Wrapf(err, "converting YAML file to JSON failed (path: %s)", itemPath)
 		}
 	case "application/json": // no need to convert the item content
+	case "": // undefined item content is consider as text/plain
 	default:
 		return nil, fmt.Errorf("unsupported media type (%s)", mediaType)
 	}

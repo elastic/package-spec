@@ -39,10 +39,6 @@ spec:
         name: ingest_pipeline
         additionalContents: false
         contents:
-        - description: Default ingest pipeline definition
-          type: file
-          pattern: '^default\.(yml|json)$'
-          required: true
         - description: Supporting ingest pipeline definitions in YAML
           type: file
           pattern: '.+\.yml'
