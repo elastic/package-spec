@@ -1,11 +1,13 @@
 package validator
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 	"github.com/xeipuuv/gojsonschema"
 	"io/ioutil"
+	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -64,7 +66,7 @@ func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, ite
 	// loading item content
 	itemData, err := loadItemContent(itemPath, s.ContentMediaType)
 	if err != nil {
-		return ValidationErrors{errors.Wrapf(err, "loading item content failed (path %s)", itemPath)}
+		return ValidationErrors{err}
 	}
 
 	var schemaLoader gojsonschema.JSONLoader
@@ -105,8 +107,21 @@ func loadItemContent(itemPath, mediaType string) ([]byte, error) {
 		return nil, errors.New("file is empty")
 	}
 
-	switch mediaType {
+	if mediaType == "" {
+		return itemData, nil // no item's schema defined
+	}
+
+	basicMediaType, params, err := mime.ParseMediaType(mediaType)
+	if err != nil {
+		return nil, errors.Wrapf(err, "invalid media type (%s)", mediaType)
+	}
+
+	switch basicMediaType {
 	case "application/x-yaml":
+		if v, _ := params["require-document-dashes"]; v == "true" && !bytes.HasPrefix(itemData, []byte("---\n")) {
+			return nil, errors.New("document dashes are required (start the document with '---')")
+		}
+
 		var c interface{}
 		err = yaml.Unmarshal(itemData, &c)
 		if err != nil {
@@ -118,7 +133,6 @@ func loadItemContent(itemPath, mediaType string) ([]byte, error) {
 			return nil, errors.Wrapf(err, "converting YAML file to JSON failed (path: %s)", itemPath)
 		}
 	case "application/json": // no need to convert the item content
-	case "": // undefined item content is consider as text/plain
 	default:
 		return nil, fmt.Errorf("unsupported media type (%s)", mediaType)
 	}

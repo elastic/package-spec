@@ -42,7 +42,7 @@ spec:
         - description: Supporting ingest pipeline definitions in YAML
           type: file
           pattern: '.+\.yml'
-          contentMediaType: "application/x-yaml"
+          contentMediaType: "application/x-yaml; require-document-dashes=true"
           required: false
         - description: Supporting ingest pipeline definitions in JSON
           type: file
