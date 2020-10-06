@@ -1,20 +1,16 @@
 package validator
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"github.com/elastic/package-spec/code/go/internal/yamlschema"
-	"github.com/xeipuuv/gojsonschema"
-	"io/ioutil"
-	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
 
 	"github.com/pkg/errors"
-	"gopkg.in/yaml.v3"
+	"github.com/xeipuuv/gojsonschema"
+
+	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
 type folderItemSpec struct {
@@ -95,47 +91,4 @@ func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, ite
 		errs = append(errs, fmt.Errorf("field %s: %s", re.Field(), re.Description()))
 	}
 	return errs
-}
-
-func loadItemContent(itemPath, mediaType string) ([]byte, error) {
-	itemData, err := ioutil.ReadFile(itemPath)
-	if err != nil {
-		return nil, errors.Wrap(err, "reading item file failed")
-	}
-
-	if len(itemData) == 0 {
-		return nil, errors.New("file is empty")
-	}
-
-	if mediaType == "" {
-		return itemData, nil // no item's schema defined
-	}
-
-	basicMediaType, params, err := mime.ParseMediaType(mediaType)
-	if err != nil {
-		return nil, errors.Wrapf(err, "invalid media type (%s)", mediaType)
-	}
-
-	switch basicMediaType {
-	case "application/x-yaml":
-		// TODO Determine if special handling of `---` is required (issue: https://github.com/elastic/package-spec/pull/54)
-		if v, _ := params["require-document-dashes"]; v == "true" && !bytes.HasPrefix(itemData, []byte("---\n")) {
-			return nil, errors.New("document dashes are required (start the document with '---')")
-		}
-
-		var c interface{}
-		err = yaml.Unmarshal(itemData, &c)
-		if err != nil {
-			return nil, errors.Wrapf(err, "unmarshalling YAML file failed (path: %s)", itemPath)
-		}
-
-		itemData, err = json.Marshal(&c)
-		if err != nil {
-			return nil, errors.Wrapf(err, "converting YAML file to JSON failed (path: %s)", itemPath)
-		}
-	case "application/json": // no need to convert the item content
-	default:
-		return nil, fmt.Errorf("unsupported media type (%s)", mediaType)
-	}
-	return itemData, nil
 }
