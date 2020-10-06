@@ -2,14 +2,15 @@ package validator
 
 import (
 	"fmt"
-	"github.com/elastic/package-spec/code/go/internal/yamlschema"
-	"github.com/xeipuuv/gojsonschema"
 	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
 
 	"github.com/pkg/errors"
+	"github.com/xeipuuv/gojsonschema"
+	
+	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
 type folderItemSpec struct {

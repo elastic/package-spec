@@ -42,6 +42,7 @@ spec:
         - description: Supporting ingest pipeline definitions in YAML
           type: file
           pattern: '.+\.yml'
+          # TODO Determine if special handling of `---` is required (issue: https://github.com/elastic/package-spec/pull/54)
           contentMediaType: "application/x-yaml; require-document-dashes=true"
           required: false
         - description: Supporting ingest pipeline definitions in JSON
