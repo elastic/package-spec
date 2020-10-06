@@ -9,7 +9,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonschema"
-	
+
 	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
