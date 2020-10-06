@@ -118,6 +118,7 @@ func loadItemContent(itemPath, mediaType string) ([]byte, error) {
 
 	switch basicMediaType {
 	case "application/x-yaml":
+		// TODO Determine if special handling of `---` is required (issue: https://github.com/elastic/package-spec/pull/54)
 		if v, _ := params["require-document-dashes"]; v == "true" && !bytes.HasPrefix(itemData, []byte("---\n")) {
 			return nil, errors.New("document dashes are required (start the document with '---')")
 		}
