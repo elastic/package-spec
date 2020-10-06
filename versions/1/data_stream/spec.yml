@@ -39,14 +39,11 @@ spec:
         name: ingest_pipeline
         additionalContents: false
         contents:
-        - description: Default ingest pipeline definition
-          type: file
-          pattern: '^default\.(yml|json)$'
-          required: true
         - description: Supporting ingest pipeline definitions in YAML
           type: file
           pattern: '.+\.yml'
-          contentMediaType: "application/x-yaml"
+          # TODO Determine if special handling of `---` is required (issue: https://github.com/elastic/package-spec/pull/54)
+          contentMediaType: "application/x-yaml; require-document-dashes=true"
           required: false
         - description: Supporting ingest pipeline definitions in JSON
           type: file

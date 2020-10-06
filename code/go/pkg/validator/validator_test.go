@@ -24,6 +24,12 @@ func TestValidate(t *testing.T) {
 				"field variants: Invalid type. Expected: object, given: array",
 			},
 		},
+		"missing_pipeline_dashes": {
+			"data_stream/foo/elasticsearch/ingest_pipeline/default.yml",
+			[]string{
+				"document dashes are required (start the document with '---')",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {

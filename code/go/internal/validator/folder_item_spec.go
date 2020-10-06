@@ -1,11 +1,13 @@
 package validator
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 	"github.com/xeipuuv/gojsonschema"
 	"io/ioutil"
+	"mime"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -61,6 +63,12 @@ func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
 }
 
 func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, itemPath string) ValidationErrors {
+	// loading item content
+	itemData, err := loadItemContent(itemPath, s.ContentMediaType)
+	if err != nil {
+		return ValidationErrors{err}
+	}
+
 	var schemaLoader gojsonschema.JSONLoader
 	if s.Ref != "" {
 		schemaPath := filepath.Join(filepath.Dir(folderSpecPath), s.Ref)
@@ -69,12 +77,6 @@ func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, ite
 		schemaLoader = yamlschema.NewRawLoaderFileSystem(s.Content, fs)
 	} else {
 		return nil // item's schema is not defined
-	}
-
-	// loading item content
-	itemData, err := loadItemContent(itemPath, s.ContentMediaType)
-	if err != nil {
-		return ValidationErrors{errors.Wrapf(err, "loading item content failed (path %s)", itemPath)}
 	}
 
 	// validation with schema
@@ -105,8 +107,22 @@ func loadItemContent(itemPath, mediaType string) ([]byte, error) {
 		return nil, errors.New("file is empty")
 	}
 
-	switch mediaType {
+	if mediaType == "" {
+		return itemData, nil // no item's schema defined
+	}
+
+	basicMediaType, params, err := mime.ParseMediaType(mediaType)
+	if err != nil {
+		return nil, errors.Wrapf(err, "invalid media type (%s)", mediaType)
+	}
+
+	switch basicMediaType {
 	case "application/x-yaml":
+		// TODO Determine if special handling of `---` is required (issue: https://github.com/elastic/package-spec/pull/54)
+		if v, _ := params["require-document-dashes"]; v == "true" && !bytes.HasPrefix(itemData, []byte("---\n")) {
+			return nil, errors.New("document dashes are required (start the document with '---')")
+		}
+
 		var c interface{}
 		err = yaml.Unmarshal(itemData, &c)
 		if err != nil {
