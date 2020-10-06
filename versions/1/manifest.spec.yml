@@ -90,15 +90,20 @@ spec:
         examples:
         - web
     conditions:
-      description: Constraints under which this package can be installed.
+      description: Conditions under which this package can be installed.
       type: object
       additionalProperties: false
       properties:
-        kibana.version:
-          type: string
-          description: Kibana versions compatible with this package.
-          examples:
-            - ">=7.9.0"
+        kibana:
+          description: Kibana conditions
+          type: object
+          additionalProperties: false
+          properties:
+            version:
+              type: string
+              description: Kibana versions compatible with this package.
+              examples:
+                - ">=7.9.0"
     icons:
       description: List of icons for by this package.
       type: array

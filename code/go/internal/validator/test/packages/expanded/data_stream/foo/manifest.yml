@@ -21,7 +21,3 @@ streams:
         default: /server-status
     title: Nginx access logs
     description: Collect Nginx access logs
-elasticsearch.index_template.mappings:
-  a:
-    b: 1
-elasticsearch.index_template.ingest_pipeline.name: foobar
