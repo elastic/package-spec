@@ -4,6 +4,13 @@ release: experimental
 streams:
   - input: logfile
     vars:
+      - name: empty_array
+        type: text
+        title: Empty array
+        multi: true
+        required: false
+        show_user: true
+        default: []
       - name: paths
         type: text
         title: Paths

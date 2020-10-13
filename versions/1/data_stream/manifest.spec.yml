@@ -59,7 +59,10 @@ spec:
               - false
           default:
             description: Default value(s) for variable
-            type: [ "string", "array", "integer", "boolean" ]
+            # The "null" type is a workaround for empty array which is a valid default value for a variable.
+            # It's because of the implementation of the YAML parser (`[]interface(nil)` is just `nil`).
+            # For reference: https://github.com/xeipuuv/gojsonschema/issues/141
+            type: [ "string", "array", "integer", "boolean", "null" ]
             items:
               type: string
               examples:
