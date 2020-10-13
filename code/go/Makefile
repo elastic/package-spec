@@ -18,8 +18,15 @@ lint:
 check-spec:
 	@go get github.com/rakyll/statik
 	@statik -m -f -src ../../versions -dest temp -p spec
-	@diff -qr ${SPEC_DIR}/spec temp/spec >/dev/null && echo "Specs are up to date!" || echo "Specs are not up to date. Please run make update."
-	@rm -rf temp
+	@diff -qr ${SPEC_DIR}/spec temp/spec >/dev/null; \
+		retval=$$?; \
+		rm -rf temp; \
+		if [ $$retval -eq 0 ]; then \
+			echo "Specs are up to date!"; \
+		else \
+			echo "Specs are not up to date. Please run make update."; \
+		fi; \
+		exit $$retval
 
 # Runs tests
 test:
