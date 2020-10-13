@@ -11,7 +11,7 @@ spec:
     type: file
     contentMediaType: "application/x-yaml"
     name: "manifest.yml"
-    required: false
+    required: true
     $ref: "./manifest.spec.yml"
   - description: The package's CHANGELOG file
     type: file
