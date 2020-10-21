@@ -60,8 +60,8 @@ func TestValidateItemNotAllowed(t *testing.T) {
 		invalidItems []string
 	}{
 		"wrong_dashboard_filename": {
-			itemFolder: "kibana/dashboard",
-			invalidItems: []string{
+			"kibana/dashboard",
+			[]string{
 				"b7e55b73-97cc-44fd-8555-d01b7e13e70d.json",
 				"bad-dashboard.json",
 			},
