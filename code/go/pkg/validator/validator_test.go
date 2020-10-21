@@ -54,7 +54,7 @@ func TestValidateFile(t *testing.T) {
 	}
 }
 
-func TestItemNotAllowed(t *testing.T) {
+func TestValidateItemNotAllowed(t *testing.T) {
 	tests := map[string]struct {
 		itemFolder   string
 		invalidItems []string
