@@ -18,15 +18,15 @@ func TestValidateFile(t *testing.T) {
 		"good":          {},
 		"deploy_docker": {},
 		"bad_deploy_variants": {
-			invalidPkgFilePath: "_dev/deploy/variants.yml",
-			expectedErrContains: []string{
+			"_dev/deploy/variants.yml",
+			[]string{
 				"field (root): default is required",
 				"field variants: Invalid type. Expected: object, given: array",
 			},
 		},
 		"missing_pipeline_dashes": {
-			invalidPkgFilePath: "data_stream/foo/elasticsearch/ingest_pipeline/default.yml",
-			expectedErrContains: []string{
+			"data_stream/foo/elasticsearch/ingest_pipeline/default.yml",
+			[]string{
 				"document dashes are required (start the document with '---')",
 			},
 		},
