@@ -9,7 +9,7 @@
       - description: A dashboard asset file
         type: file
         contentMediaType: "application/json"
-        pattern: '{PACKAGE_NAME}+-.+\.json'
+        pattern: '{PACKAGE_NAME}-.+\.json'
     - description: Folder containing Kibana visualization assets
       type: folder
       name: visualization
