@@ -1,0 +1,27 @@
+format_version: 1.0.4
+name: good
+title: GOOD
+description: This package is good.
+version: 0.1.2
+release: beta
+conditions:
+  kibana.version: '^7.9.0'
+policy_templates:
+  - name: apache
+    title: Apache logs and metrics
+    description: Collect logs and metrics from Apache instances
+    inputs:
+      - type: apache/metrics
+        title: Collect metrics from Apache instances
+        description: Collecting Apache status metrics
+        vars:
+          - name: hosts
+            type: text
+            title: Hosts
+            multi: true
+            required: true
+            show_user: true
+            default:
+            - http://127.0.0.1
+owner:
+  github: elastic/foobar

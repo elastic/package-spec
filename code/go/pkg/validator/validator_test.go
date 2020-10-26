@@ -10,7 +10,7 @@ import (
 	"github.com/elastic/package-spec/code/go/internal/validator"
 )
 
-func TestValidate(t *testing.T) {
+func TestValidateFile(t *testing.T) {
 	tests := map[string]struct {
 		invalidPkgFilePath  string
 		expectedErrContains []string
@@ -49,6 +49,37 @@ func TestValidate(t *testing.T) {
 					expectedErr := errPrefix + test.expectedErrContains[idx]
 					require.Contains(t, err.Error(), expectedErr)
 				}
+			}
+		})
+	}
+}
+
+func TestValidateItemNotAllowed(t *testing.T) {
+	tests := map[string]struct {
+		itemFolder   string
+		invalidItems []string
+	}{
+		"wrong_dashboard_filename": {
+			"kibana/dashboard",
+			[]string{
+				"b7e55b73-97cc-44fd-8555-d01b7e13e70d.json",
+				"bad-dashboard.json",
+			},
+		},
+	}
+
+	for pkgName, test := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			pkgRootPath := filepath.Join("..", "..", "internal", "validator", "test", "packages", pkgName)
+
+			errs := ValidateFromPath(pkgRootPath)
+			require.Error(t, errs)
+			require.Len(t, errs, len(test.invalidItems))
+			vErrs, ok := errs.(validator.ValidationErrors)
+			require.True(t, ok)
+			for idx, err := range vErrs {
+				expected := fmt.Sprintf("item [%s] is not allowed in folder [%s/%s]", test.invalidItems[idx], pkgRootPath, test.itemFolder)
+				require.Contains(t, err.Error(), expected)
 			}
 		})
 	}
