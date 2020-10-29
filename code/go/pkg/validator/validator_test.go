@@ -55,32 +55,50 @@ func TestValidateFile(t *testing.T) {
 }
 
 func TestValidateItemNotAllowed(t *testing.T) {
-	tests := map[string]struct {
-		itemFolder   string
-		invalidItems []string
-	}{
-		"wrong_dashboard_filename": {
-			"kibana/dashboard",
-			[]string{
+	tests := map[string]map[string][]string{
+		"wrong_kibana_filename": {
+			"kibana/dashboard": []string{
 				"b7e55b73-97cc-44fd-8555-d01b7e13e70d.json",
 				"bad-dashboard.json",
+			},
+			"kibana/map": []string{
+				"06149856-cbc1-4988-a93a-815915c4408e.json",
+				"bad-map.json",
+			},
+			"kibana/search": []string{
+				"691240b5-7ec9-4fd7-8750-4ef97944f960.json",
+				"bad-search.json",
+			},
+			"kibana/visualization": []string{
+				"defa1bcc-1ab6-4069-adec-8c997b069a5e.json",
+				"bad-visualization.json",
 			},
 		},
 	}
 
-	for pkgName, test := range tests {
+	for pkgName, invalidItemsPerFolder := range tests {
 		t.Run(pkgName, func(t *testing.T) {
 			pkgRootPath := filepath.Join("..", "..", "internal", "validator", "test", "packages", pkgName)
 
 			errs := ValidateFromPath(pkgRootPath)
 			require.Error(t, errs)
-			require.Len(t, errs, len(test.invalidItems))
 			vErrs, ok := errs.(validator.ValidationErrors)
 			require.True(t, ok)
-			for idx, err := range vErrs {
-				expected := fmt.Sprintf("item [%s] is not allowed in folder [%s/%s]", test.invalidItems[idx], pkgRootPath, test.itemFolder)
-				require.Contains(t, err.Error(), expected)
+
+			var errMessages []string
+			for _, vErr := range vErrs {
+				errMessages = append(errMessages, vErr.Error())
 			}
+
+			var c int
+			for itemFolder, invalidItems := range invalidItemsPerFolder {
+				for _, invalidItem := range invalidItems {
+					c++
+					expected := fmt.Sprintf("item [%s] is not allowed in folder [%s/%s]", invalidItem, pkgRootPath, itemFolder)
+					require.Contains(t, errMessages, expected)
+				}
+			}
+			require.Len(t, errs, c)
 		})
 	}
 }

@@ -18,7 +18,7 @@
       - description: A visualization asset file
         type: file
         contentMediaType: "application/json"
-        pattern: '.+\.json'
+        pattern: '{PACKAGE_NAME}-.+\.json'
     - description: Folder containing Kibana saved search assets
       type: folder
       name: search
@@ -27,7 +27,7 @@
       - description: A saved search asset file
         type: file
         contentMediaType: "application/json"
-        pattern: '.+\.json'
+        pattern: '{PACKAGE_NAME}-.+\.json'
     - description: Folder containing Kibana map assets
       type: folder
       name: map
@@ -36,7 +36,7 @@
       - description: A map asset file
         type: file
         contentMediaType: "application/json"
-        pattern: '.+\.json'
+        pattern: '{PACKAGE_NAME}-.+\.json'
     - description: Folder containing Kibana index pattern assets
       type: folder
       name: "index_pattern"
