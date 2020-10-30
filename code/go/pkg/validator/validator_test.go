@@ -59,19 +59,21 @@ func TestValidateItemNotAllowed(t *testing.T) {
 		"wrong_kibana_filename": {
 			"kibana/dashboard": []string{
 				"b7e55b73-97cc-44fd-8555-d01b7e13e70d.json",
-				"bad-dashboard.json",
+				"bad-ecs.json",
+				"bad-foobar-ecs.json",
+				"bad-Foobaz-ECS.json",
 			},
 			"kibana/map": []string{
 				"06149856-cbc1-4988-a93a-815915c4408e.json",
-				"bad-map.json",
+				"missed-map.json",
 			},
 			"kibana/search": []string{
 				"691240b5-7ec9-4fd7-8750-4ef97944f960.json",
-				"bad-search.json",
+				"missed-search.json",
 			},
 			"kibana/visualization": []string{
 				"defa1bcc-1ab6-4069-adec-8c997b069a5e.json",
-				"bad-visualization.json",
+				"missed-visualization.json",
 			},
 		},
 	}
