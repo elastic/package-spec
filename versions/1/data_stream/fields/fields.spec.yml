@@ -52,6 +52,24 @@ spec:
       description:
         description: Short description of field
         type: string
+      metric_type:
+        description: Metric type
+        type: string
+        enum:
+        - counter
+        - gauge
+      unit:
+        description: Unit
+        type: string
+        enum:
+        - byte
+        - percent
+        - b
+        - kb
+        - mb
+        - gb
+        - tb
+        - pb
       fields:
         description: Sub-fields, when type is group
         $ref: "#"     # JSON-schema syntax for pointing to the root of the schema
