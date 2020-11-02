@@ -3,7 +3,7 @@ spec:
   contents:
   - description: Folder containing a single data stream definition
     type: folder
-    pattern: '([a-z0-9][a-z0-9]|[a-z0-9][a-z0-9_][a-z0-9]+)'
+    pattern: '([a-z0-9][a-z0-9]|[a-z0-9][a-z0-9_]+[a-z0-9_])'
     required: true
     additionalContents: false
     contents:
