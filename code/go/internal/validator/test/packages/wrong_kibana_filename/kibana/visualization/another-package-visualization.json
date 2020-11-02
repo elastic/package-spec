@@ -1,1 +1,7 @@
-{}
+{
+  "attributes": {
+    "description": "Unexpected Kibana visualization dedicated for a different package."
+  },
+  "id": "another-package-visualization",
+  "type": "visualization"
+}

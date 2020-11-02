@@ -1,1 +1,7 @@
-{}
+{
+  "attributes": {
+    "description": "Unexpected Kibana map dedicated for a different package."
+  },
+  "id": "another-package-map",
+  "type": "map"
+}

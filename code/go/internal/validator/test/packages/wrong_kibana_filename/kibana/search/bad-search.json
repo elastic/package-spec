@@ -1,1 +1,7 @@
-{}
+{
+  "attributes": {
+    "description": "Expected Kibana search."
+  },
+  "id": "bad-search",
+  "type": "search"
+}
