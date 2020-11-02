@@ -64,12 +64,13 @@ spec:
         enum:
         - byte
         - percent
-        - b
-        - kb
-        - mb
-        - gb
-        - tb
-        - pb
+        - d
+        - h
+        - m
+        - s
+        - ms
+        - micros
+        - nanos
       fields:
         description: Sub-fields, when type is group
         $ref: "#"     # JSON-schema syntax for pointing to the root of the schema
