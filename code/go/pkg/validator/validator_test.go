@@ -65,15 +65,15 @@ func TestValidateItemNotAllowed(t *testing.T) {
 			},
 			"kibana/map": []string{
 				"06149856-cbc1-4988-a93a-815915c4408e.json",
-				"missed-map.json",
+				"not-bad-map.json",
 			},
 			"kibana/search": []string{
 				"691240b5-7ec9-4fd7-8750-4ef97944f960.json",
-				"missed-search.json",
+				"not-bad-search.json",
 			},
 			"kibana/visualization": []string{
 				"defa1bcc-1ab6-4069-adec-8c997b069a5e.json",
-				"missed-visualization.json",
+				"not-bad-visualization.json",
 			},
 		},
 	}
