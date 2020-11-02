@@ -10,6 +10,8 @@
         type: file
         contentMediaType: "application/json"
         pattern: '{PACKAGE_NAME}-.+\.json'
+        forbiddenPatterns:
+          - '.+-(ecs|ECS)\.json' # ECS suffix is forbidden
     - description: Folder containing Kibana visualization assets
       type: folder
       name: visualization
@@ -19,6 +21,8 @@
         type: file
         contentMediaType: "application/json"
         pattern: '{PACKAGE_NAME}-.+\.json'
+        forbiddenPatterns:
+          - '.+-(ecs|ECS)\.json' # ECS suffix is forbidden
     - description: Folder containing Kibana saved search assets
       type: folder
       name: search
@@ -28,6 +32,8 @@
         type: file
         contentMediaType: "application/json"
         pattern: '{PACKAGE_NAME}-.+\.json'
+        forbiddenPatterns:
+          - '.+-(ecs|ECS)\.json' # ECS suffix is forbidden
     - description: Folder containing Kibana map assets
       type: folder
       name: map
@@ -37,6 +43,8 @@
         type: file
         contentMediaType: "application/json"
         pattern: '{PACKAGE_NAME}-.+\.json'
+        forbiddenPatterns:
+          - '.+-(ecs|ECS)\.json' # ECS suffix is forbidden
     - description: Folder containing Kibana index pattern assets
       type: folder
       name: "index_pattern"

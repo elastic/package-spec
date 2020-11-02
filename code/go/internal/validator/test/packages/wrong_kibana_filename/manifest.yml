@@ -1,7 +1,7 @@
 format_version: 1.0.4
-name: good
-title: GOOD
-description: This package is good.
+name: bad
+title: BAD
+description: This package is bad.
 version: 0.1.2
 release: beta
 conditions:

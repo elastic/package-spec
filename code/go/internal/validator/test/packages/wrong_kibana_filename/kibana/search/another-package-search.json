@@ -1,0 +1,7 @@
+{
+  "attributes": {
+    "description": "Unexpected Kibana search dedicated for a different package."
+  },
+  "id": "another-package-search",
+  "type": "search"
+}
