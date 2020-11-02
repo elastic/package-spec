@@ -1,1 +1,7 @@
-{}
+{
+  "attributes": {
+    "description": "Expected Kibana map."
+  },
+  "id": "bad-map",
+  "type": "map"
+}

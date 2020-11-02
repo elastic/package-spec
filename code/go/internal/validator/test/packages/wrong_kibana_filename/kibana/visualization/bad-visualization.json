@@ -1,1 +1,7 @@
-{}
+{
+  "attributes": {
+    "description": "Expected Kibana visualization."
+  },
+  "id": "bad-visualization",
+  "type": "visualization"
+}

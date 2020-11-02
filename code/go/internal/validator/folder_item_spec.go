@@ -14,15 +14,16 @@ import (
 )
 
 type folderItemSpec struct {
-	Description      string `yaml:"description"`
-	ItemType         string `yaml:"type"`
-	ContentMediaType string `yaml:"contentMediaType"`
-	Name             string `yaml:"name"`
-	Pattern          string `yaml:"pattern"`
-	Required         bool   `yaml:"required"`
-	Ref              string `yaml:"$ref"`
-	Visibility       string `yaml:"visibility" default:"public"`
-	commonSpec       `yaml:",inline"`
+	Description       string   `yaml:"description"`
+	ItemType          string   `yaml:"type"`
+	ContentMediaType  string   `yaml:"contentMediaType"`
+	ForbiddenPatterns []string `yaml:"forbiddenPatterns"`
+	Name              string   `yaml:"name"`
+	Pattern           string   `yaml:"pattern"`
+	Required          bool     `yaml:"required"`
+	Ref               string   `yaml:"$ref"`
+	Visibility        string   `yaml:"visibility" default:"public"`
+	commonSpec        `yaml:",inline"`
 }
 
 func (s *folderItemSpec) matchingFileExists(files []os.FileInfo) (bool, error) {
