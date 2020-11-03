@@ -93,6 +93,7 @@ spec:
       enum:
       - metrics
       - logs
+      - traces
       examples:
       - metrics
     streams:
