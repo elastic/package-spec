@@ -12,3 +12,6 @@
   - description: Add `metric_type` and `unit` to fields.yml.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/73
+  - description: Add "agent/input" folder for top level configuration.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/79

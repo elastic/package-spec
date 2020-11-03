@@ -28,6 +28,17 @@ spec:
     type: folder
     name: docs
     required: true
+  - description: Folder containing agent-related definitions
+    type: folder
+    name: agent
+    required: false
+    additionalContents: false
+    contents:
+    - description: Folder containing input definitions
+      type: folder
+      name: input
+      required: true
+      additionalContents: false
   - description: Folder containing Kibana assets used by the package
     type: folder
     name: kibana
