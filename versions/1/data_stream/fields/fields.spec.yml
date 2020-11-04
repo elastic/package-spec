@@ -71,6 +71,9 @@ spec:
         - ms
         - micros
         - nanos
+      pattern:
+        description: Field value pattern
+        type: string
       fields:
         description: Sub-fields, when type is group
         $ref: "#"     # JSON-schema syntax for pointing to the root of the schema
