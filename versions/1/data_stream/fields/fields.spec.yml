@@ -74,7 +74,7 @@ spec:
       pattern:
         description: Regular expression pattern of the field value
         type: string
-        example:
+        examples:
           - '^[a-zA-Z]$'
       fields:
         description: Sub-fields, when type is group
