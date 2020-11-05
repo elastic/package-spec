@@ -25,4 +25,4 @@
 - name: foobar
   type: text
   description: A field with a pattern defined
-  pattern: '[a-zA-Z]'
+  pattern: '^[a-zA-Z]$'
