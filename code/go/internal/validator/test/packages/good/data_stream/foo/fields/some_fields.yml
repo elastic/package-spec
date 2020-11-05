@@ -22,3 +22,7 @@
       type: keyword
       description: Region name.
       ignore_above: 1024
+- name: foobar
+  type: text
+  description: A field with a pattern defined
+  pattern: '^[a-zA-Z]$'

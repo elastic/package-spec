@@ -71,6 +71,11 @@ spec:
         - ms
         - micros
         - nanos
+      pattern:
+        description: Regular expression pattern of the field value
+        type: string
+        examples:
+          - '^[a-zA-Z]$'
       fields:
         description: Sub-fields, when type is group
         $ref: "#"     # JSON-schema syntax for pointing to the root of the schema
