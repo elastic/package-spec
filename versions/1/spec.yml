@@ -39,6 +39,12 @@ spec:
       name: input
       required: true
       additionalContents: false
+      contents:
+        - description: Package-level template file
+          type: file
+          pattern: '^[a-z0-9][a-z0-9_-]+[a-z0-9]\.hbs$'
+          required: true
+          additionalContents: false
   - description: Folder containing Kibana assets used by the package
     type: folder
     name: kibana
