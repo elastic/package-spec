@@ -1,6 +1,6 @@
 ---
 - job:
-    name: Beats/package-spec
+    name: Ingest-manager/package-spec
     display-name: Package Spec
     description: Jenkins pipeline for the Package Spec project
     view: Beats
