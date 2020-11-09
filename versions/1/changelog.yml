@@ -5,13 +5,16 @@
   changes:
   - description: Initial version of the Elastic Package specifiction.
     type: enhancement
-    link: https://github.com/elastic/package-spec/pulls/1
+    link: https://github.com/elastic/package-spec/pull/1
   - description: Adding the histogram field as a valid ES field type.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/52
   - description: Add `metric_type` and `unit` to fields.yml.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/73
+  - description: Adding "traces" as a valid data stream type.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/78
   - description: Add "agent/input" folder for top level configuration.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/79
