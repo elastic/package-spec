@@ -9,5 +9,5 @@ spec:
     contents:
     - description: Package-level template file
       type: file
-      pattern: '^.+.hbs$'
+      pattern: '^.+.yml.hbs$'
       required: true
