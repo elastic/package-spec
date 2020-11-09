@@ -7,7 +7,7 @@ spec:
     required: true
     additionalContents: false
     contents:
-    - description: Package-level template file
+    - description: Config template file for inputs defined in the policy_templates section of the top level manifest
       type: file
       pattern: '^.+.yml.hbs$'
       required: true
