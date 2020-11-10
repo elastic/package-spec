@@ -10,5 +10,10 @@
         "event.category": [
             "web"
         ]
-    }
+    },
+    "ignored_fields": [
+        "foobar",
+        "world",
+        "hello"
+    ]
 }

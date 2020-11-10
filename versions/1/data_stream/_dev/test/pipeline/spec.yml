@@ -24,6 +24,9 @@ spec:
             description: Field definitions
             type: object
             additionalProperties: true
+          ignored_fields:
+            description: Ignored fields
+            type: array
           multiline:
             description: Multi-line configuration
             type: object
