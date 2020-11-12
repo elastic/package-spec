@@ -13,7 +13,6 @@
     },
     "dynamic_fields": {
         "foobar": ".+",
-        "world": "\\d+",
-        "hello": ".+"
+        "a_numeric_field": "\\d+"
     }
 }
