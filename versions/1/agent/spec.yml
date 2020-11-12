@@ -11,3 +11,4 @@ spec:
       type: file
       pattern: '^.+.yml.hbs$'
       required: true
+      $ref: "./agent.spec.yml"
