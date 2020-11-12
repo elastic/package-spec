@@ -24,6 +24,9 @@ spec:
             description: Field definitions
             type: object
             additionalProperties: true
+          dynamic_fields:
+            description: Dynamic fields with regular expressions defining their variable values.
+            type: object
           multiline:
             description: Multi-line configuration
             type: object

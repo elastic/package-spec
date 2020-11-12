@@ -10,5 +10,9 @@
         "event.category": [
             "web"
         ]
+    },
+    "dynamic_fields": {
+        "foobar": ".+",
+        "a_numeric_field": "\\d+"
     }
 }
