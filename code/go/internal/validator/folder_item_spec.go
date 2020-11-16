@@ -78,6 +78,7 @@ func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, ite
 
 	// validation with schema
 	documentLoader := gojsonschema.NewBytesLoader(itemData)
+	refreshFormatCheckersContext(filepath.Dir(itemPath))
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 	if err != nil {
 		return ValidationErrors{err}
@@ -92,4 +93,10 @@ func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, ite
 		errs = append(errs, fmt.Errorf("field %s: %s", re.Field(), re.Description()))
 	}
 	return errs
+}
+
+func refreshFormatCheckersContext(currentPath string) {
+	gojsonschema.FormatCheckers.Add("relative-path", RelativePathChecker{
+		currentPath: currentPath,
+	})
 }

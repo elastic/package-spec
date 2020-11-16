@@ -25,3 +25,17 @@ policy_templates:
             - http://127.0.0.1
 owner:
   github: elastic/foobar
+screenshots:
+  - src: /img/kibana-system.png
+    title: kibana system
+    size: 1220x852
+    type: image/png
+  - src: /img/metricbeat_system_dashboard.png
+    title: metricbeat system dashboard
+    size: 2097x1933
+    type: image/png
+icons:
+  - src: /img/system.svg
+    title: system
+    size: 1000x1000
+    type: image/svg+xml
