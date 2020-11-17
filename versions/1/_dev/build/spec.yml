@@ -1,0 +1,8 @@
+spec:
+  additionalContents: false
+  contents:
+    - description: Folder containing resources related to docs.
+      type: folder
+      name: docs
+      required: false
+      $ref: "./docs/spec.yml"

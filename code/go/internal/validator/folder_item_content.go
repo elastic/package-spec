@@ -49,6 +49,7 @@ func loadItemContent(itemPath, mediaType string) ([]byte, error) {
 			return nil, errors.Wrapf(err, "converting YAML file to JSON failed (path: %s)", itemPath)
 		}
 	case "application/json": // no need to convert the item content
+	case "text/markdown":
 	default:
 		return nil, fmt.Errorf("unsupported media type (%s)", mediaType)
 	}
