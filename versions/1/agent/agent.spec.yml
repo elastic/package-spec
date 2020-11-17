@@ -4,9 +4,4 @@
 spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
-  additionalProperties: false
-  properties:
-    config:
-      description: Arbitrary input configuration
-      type: object
-      additionalProperties: true
+  additionalProperties: true
