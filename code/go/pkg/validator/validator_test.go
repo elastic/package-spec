@@ -30,6 +30,7 @@ func TestValidateFile(t *testing.T) {
 				"document dashes are required (start the document with '---')",
 			},
 		},
+		"input_template": {},
 	}
 
 	for pkgName, test := range tests {
