@@ -142,7 +142,7 @@ spec:
         additionalProperties: false
         properties:
           src:
-            description: Relative path to the scrennshot's image file.
+            description: Relative path to the screenshot's image file.
             type: string
             format: relative-path
             examples:

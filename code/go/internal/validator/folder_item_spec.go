@@ -14,6 +14,8 @@ import (
 	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
+const relativePathFormat = "relative-path"
+
 type folderItemSpec struct {
 	Description       string   `yaml:"description"`
 	ItemType          string   `yaml:"type"`
@@ -106,11 +108,11 @@ func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, ite
 }
 
 func loadRelativePathFormatChecker(currentPath string) {
-	gojsonschema.FormatCheckers.Add("relative-path", RelativePathChecker{
+	gojsonschema.FormatCheckers.Add(relativePathFormat, RelativePathChecker{
 		currentPath: currentPath,
 	})
 }
 
 func unloadRelativePathFormatChecker() {
-	gojsonschema.FormatCheckers.Remove("relative-path")
+	gojsonschema.FormatCheckers.Remove(relativePathFormat)
 }
