@@ -1,0 +1,8 @@
+spec:
+  additionalContents: false
+  contents:
+    - description: Template file for the package README.
+      type: file
+      name: "README.md"
+      contentMediaType: "text/markdown"
+      required: true
