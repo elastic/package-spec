@@ -28,6 +28,11 @@ spec:
     type: folder
     name: docs
     required: true
+  - description: Folder containing agent-related definitions
+    type: folder
+    name: agent
+    required: false
+    $ref: "./agent/spec.yml"
   - description: Folder containing Kibana assets used by the package
     type: folder
     name: kibana

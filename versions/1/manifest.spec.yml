@@ -205,6 +205,11 @@ spec:
                   type: string
                   examples:
                   - Collecting Apache access and error logs
+                template_path:
+                  description: Path of the config template for the input.
+                  type: string
+                  examples:
+                  - ./agent/input/template.yml.hbs
                 vars:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
               required:
