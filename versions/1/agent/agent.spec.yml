@@ -1,7 +1,0 @@
-##
-## Describes the specification for an input template file
-##
-spec:
-  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
-  type: object
-  additionalProperties: true
