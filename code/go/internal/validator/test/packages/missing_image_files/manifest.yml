@@ -1,7 +1,7 @@
 format_version: 1.0.4
-name: good
-title: GOOD
-description: This package is good.
+name: missing_image_files
+title: Missing Image Files
+description: This package is bad.
 version: 0.1.2
 release: beta
 conditions:
@@ -26,7 +26,7 @@ policy_templates:
 owner:
   github: elastic/foobar
 screenshots:
-  - src: /img/kibana-system.png
+  - src: /img/kibana-system-wrong.png
     title: kibana system
     size: 1220x852
     type: image/png
@@ -35,6 +35,10 @@ screenshots:
     size: 2097x1933
     type: image/png
 icons:
+  - src: /img/system-wrong.svg
+    title: system
+    size: 1000x1000
+    type: image/svg+xml
   - src: /img/system.svg
     title: system
     size: 1000x1000
