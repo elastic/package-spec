@@ -1,0 +1,19 @@
+format_version: 1.0.4
+name: integration
+title: integration
+description: integration, really
+version: 0.1.2
+release: beta
+conditions:
+  kibana.version: '^7.9.0'
+policy_templates:
+  - name: apm
+    title: APM
+    description: APM stuff
+    inputs:
+      - type: apm
+        title: Collect traces
+        description: Collect traces
+        template_path: ./agent/input/template.yml.hbs
+owner:
+  github: elastic/foobar

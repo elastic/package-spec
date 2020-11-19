@@ -15,3 +15,6 @@
   - description: Adding "traces" as a valid data stream type.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/78
+  - description: Add "agent/input" folder for top level configuration.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/79

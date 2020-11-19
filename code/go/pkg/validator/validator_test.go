@@ -30,13 +30,14 @@ func TestValidateFile(t *testing.T) {
 				"document dashes are required (start the document with '---')",
 			},
 		},
-		"missing_image_files":          {
+		"missing_image_files": {
 			"manifest.yml",
 			[]string{
 				"field screenshots.0.src: relative path is invalid or target doesn't exist",
 				"field icons.0.src: relative path is invalid or target doesn't exist",
 			},
 		},
+		"input_template": {},
 	}
 
 	for pkgName, test := range tests {
