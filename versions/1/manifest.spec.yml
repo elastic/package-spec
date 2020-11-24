@@ -207,19 +207,16 @@ spec:
                   type: string
                   examples:
                   - Collecting Apache access and error logs
-<<<<<<< Updated upstream
                 template_path:
                   description: Path of the config template for the input.
                   type: string
                   examples:
                   - ./agent/input/template.yml.hbs
-=======
                 condition:
                   description: Condition under which input can be used
                   type: string
                   examples:
                   - "${host.platform} == 'linux'"
->>>>>>> Stashed changes
                 vars:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
               required:
