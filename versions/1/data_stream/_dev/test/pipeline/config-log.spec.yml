@@ -1,0 +1,14 @@
+##
+## Describes the configuration of test case in raw format
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: true
+  allOf:
+  - $ref: "./config-common.spec.yml"
+  - properties:
+      multiline:
+        description: Multi-line configuration
+        type: object
+        additionalProperties: true

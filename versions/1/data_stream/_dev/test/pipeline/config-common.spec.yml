@@ -1,0 +1,15 @@
+##
+## Describes the common configuration of test case in any format
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: true
+  properties:
+    fields:
+      description: Field definitions
+      type: object
+      additionalProperties: true
+    dynamic_fields:
+      description: Dynamic fields with regular expressions defining their variable values.
+      type: object
