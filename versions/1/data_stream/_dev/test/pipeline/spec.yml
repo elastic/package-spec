@@ -31,6 +31,22 @@ spec:
             description: Multi-line configuration
             type: object
             additionalProperties: true
+    - description: Configuration of test case in JSON format
+      type: file
+      pattern: '^test-[a-z0-9-]+\.json-config.json$'
+      contentMediaType: "application/json"
+      required: false
+      content:
+        type: object
+        additionalProperties: false
+        properties:
+          fields:
+            description: Field definitions
+            type: object
+            additionalProperties: true
+          dynamic_fields:
+            description: Dynamic fields with regular expressions defining their variable values.
+            type: object
     - description: Expected test results
       type: file
       pattern: '^test-[a-z0-9-]+\.(json|log)-expected.json$'
