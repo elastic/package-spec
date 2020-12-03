@@ -87,6 +87,14 @@ spec:
       - beta
       examples:
       - beta
+    ilm_policy:
+      description: The name of an existing ILM (Index Lifecycle Management) policy
+      type: string
+      examples:
+      - diagnotics
+    hidden:
+      description: Specifies if a datastream is hidden
+      type: boolean
     type:
       description: Type of data stream
       type: string
