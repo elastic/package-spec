@@ -92,6 +92,9 @@ spec:
       type: string
       examples:
       - diagnostics
+    hidden:
+      description: Specifies if a datastream is hidden
+      type: boolean
     type:
       description: Type of data stream
       type: string
