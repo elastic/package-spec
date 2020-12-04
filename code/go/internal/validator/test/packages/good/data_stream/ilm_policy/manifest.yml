@@ -1,6 +1,5 @@
 title: Hidden data stream and ilm policy overrride
 type: metrics
-hidden: true
 ilm_policy: diagnostics
 elasticsearch:
   index_template.mappings:

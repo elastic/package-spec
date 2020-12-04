@@ -92,9 +92,6 @@ spec:
       type: string
       examples:
       - diagnostics
-    hidden:
-      description: Specifies if a data stream is hidden in Elasticsearch
-      type: boolean
     type:
       description: Type of data stream
       type: string
