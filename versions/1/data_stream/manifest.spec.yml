@@ -93,7 +93,7 @@ spec:
       examples:
       - diagnostics
     hidden:
-      description: Specifies if a data stream is hidden in ElasticSearch
+      description: Specifies if a data stream is hidden in Elasticsearch
       type: boolean
     type:
       description: Type of data stream

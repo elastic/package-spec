@@ -1,4 +1,4 @@
-title: Hidden datastream and ilm policy overrride
+title: Hidden data stream and ilm policy overrride
 type: metrics
 hidden: true
 ilm_policy: diagnostics
