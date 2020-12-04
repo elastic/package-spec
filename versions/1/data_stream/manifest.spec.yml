@@ -91,9 +91,9 @@ spec:
       description: The name of an existing ILM (Index Lifecycle Management) policy
       type: string
       examples:
-      - diagnotics
+      - diagnostics
     hidden:
-      description: Specifies if a datastream is hidden
+      description: Specifies if a data stream is hidden in ElasticSearch
       type: boolean
     type:
       description: Type of data stream
