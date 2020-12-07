@@ -21,6 +21,6 @@
   - description: Allow `condition` under inputs.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/87
-  - description: Add `ilm_policy` and `hidden` to data stream manifest.yml
+  - description: Add `ilm_policy` to data stream manifest.yml
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/90
