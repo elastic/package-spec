@@ -96,6 +96,9 @@ spec:
       - traces
       examples:
       - metrics
+    hidden:
+      description: Specifies if a data stream is hidden
+      type: boolean
     streams:
       description: Streams offered by data stream.
       type: array
