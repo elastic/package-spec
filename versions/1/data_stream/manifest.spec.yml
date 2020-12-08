@@ -87,6 +87,11 @@ spec:
       - beta
       examples:
       - beta
+    ilm_policy:
+      description: The name of an existing ILM (Index Lifecycle Management) policy
+      type: string
+      examples:
+      - diagnostics
     type:
       description: Type of data stream
       type: string
