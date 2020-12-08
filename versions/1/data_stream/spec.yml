@@ -45,7 +45,7 @@ spec:
           # TODO Determine if special handling of `---` is required (issue: https://github.com/elastic/package-spec/pull/54)
           contentMediaType: "application/x-yaml; require-document-dashes=true"
           required: false
-        - description: Supporting ingest policy definitions in JSON
+        - description: Supporting ilm policy definitions in JSON
           type: file
           pattern: '^.+\.json$'
           contentMediaType: "application/json"
