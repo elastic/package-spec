@@ -212,11 +212,6 @@ spec:
                   type: string
                   examples:
                   - ./agent/input/template.yml.hbs
-                condition:
-                  description: Condition under which input can be used
-                  type: string
-                  examples:
-                  - "${host.platform} == 'linux'"
                 vars:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
               required:
