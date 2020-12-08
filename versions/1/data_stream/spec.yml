@@ -34,18 +34,18 @@ spec:
       name: elasticsearch
       additionalContents: false
       contents:
-      - description: Folder containing Elasticsearch Ilm Policy Definition
+      - description: Folder containing Elasticsearch ILM Policy Definition
         type: folder
         name: ilm
         additionalContents: false
         contents:
-        - description: Supporting ilm policy definitions in YAML
+        - description: Supporting ILM policy definitions in YAML
           type: file
           pattern: '^.+\.yml$'
           # TODO Determine if special handling of `---` is required (issue: https://github.com/elastic/package-spec/pull/54)
           contentMediaType: "application/x-yaml; require-document-dashes=true"
           required: false
-        - description: Supporting ilm policy definitions in JSON
+        - description: Supporting ILM policy definitions in JSON
           type: file
           pattern: '^.+\.json$'
           contentMediaType: "application/json"
