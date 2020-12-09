@@ -31,6 +31,9 @@ spec:
             description: Multi-line configuration
             type: object
             additionalProperties: true
+          numeric_keyword_fields:
+            description: List of keyword type fields allowed to have a numeric value.
+            type: array
     - description: Configuration of test case in JSON format
       type: file
       pattern: '^test-[a-z0-9-]+\.json-config.json$'
@@ -47,6 +50,9 @@ spec:
           dynamic_fields:
             description: Dynamic fields with regular expressions defining their variable values.
             type: object
+          numeric_keyword_fields:
+            description: List of keyword type fields allowed to have a numeric value.
+            type: array
     - description: Expected test results
       type: file
       pattern: '^test-[a-z0-9-]+\.(json|log)-expected.json$'
