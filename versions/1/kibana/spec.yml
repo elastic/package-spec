@@ -45,6 +45,17 @@
         pattern: '^{PACKAGE_NAME}-.+\.json$'
         forbiddenPatterns:
           - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
+    - description: Folder containing Kibana lens assets
+      type: folder
+      name: lens
+      required: false
+      contents:
+        - description: A lens asset file
+          type: file
+          contentMediaType: "application/json"
+          pattern: '^{PACKAGE_NAME}-.+\.json$'
+          forbiddenPatterns:
+            - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
     - description: Folder containing Kibana index pattern assets
       type: folder
       name: "index_pattern"
