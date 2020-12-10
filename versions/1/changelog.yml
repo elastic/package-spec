@@ -30,3 +30,6 @@
   - description: Revert: Allow `condition` under inputs.
     type: bugfix
     link: https://github.com/elastic/package-spec/pull/93
+  - description: Support `lens` Kibana type.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/94
