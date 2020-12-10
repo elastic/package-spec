@@ -11,5 +11,8 @@
     "dynamic_fields": {
         "foobar": ".+",
         "a_numeric_field": "\\d+"
-    }
+    },
+    "numeric_keyword_fields": [
+        "a_numeric_field"
+    ]
 }

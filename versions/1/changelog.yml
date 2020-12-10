@@ -33,3 +33,6 @@
   - description: Support `lens` Kibana type.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/94
+  - description: Add numeric_keyword_fields option for pipeline tests.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/95
