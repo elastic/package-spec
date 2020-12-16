@@ -6,6 +6,32 @@ spec:
   type: object
   additionalProperties: false
   definitions:
+    # Would like to use `null` type for an empty array which is a valid value
+    # Need to use `"null"` to workaround a bug in the YAML parser implementation (`[]interface(nil)` is just `nil`)
+    # For reference: https://github.com/xeipuuv/gojsonschema/issues/141
+    input_variable_value:
+      anyOf:
+        - type:
+            - string
+            - integer
+            - boolean
+            - "null"
+        - type: array
+          items:
+             $ref: "#/definitions/input_variable_value"
+      examples:
+        - "null"
+        - ""
+        - some string
+        - 1234
+        - true
+        - - 3
+          - mixed
+          - true
+        - - - array
+            - 1
+          - - array
+            - 2
     vars:
       description: Input variables.
       type: array
@@ -59,14 +85,7 @@ spec:
               - false
           default:
             description: Default value(s) for variable
-            # The "null" type is a workaround for empty array which is a valid default value for a variable.
-            # It's because of the implementation of the YAML parser (`[]interface(nil)` is just `nil`).
-            # For reference: https://github.com/xeipuuv/gojsonschema/issues/141
-            type: [ "string", "array", "integer", "boolean", "null" ]
-            items:
-              type: string
-              examples:
-                - "http://127.0.0.1"
+            $ref: "#/definitions/input_variable_value"
         required:
           - name
           - type
