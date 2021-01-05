@@ -1,8 +1,35 @@
 spec:
   additionalContents: false
   contents:
-    - description: System test configuration
+    - description: Configuration of test case in yaml format.
       type: file
-      pattern: '^config.yml$'
+      pattern: '^test-[a-z0-9_.-]+-config.yml$'
       contentMediaType: "application/x-yaml"
       required: false
+      content:
+        type: object
+        additionalProperties: false
+        properties:
+          input:
+            description: Input to use for test case.
+            type: string
+            additionalProperties: false
+          service:
+            description: Docker-compose service to start.
+            type: string
+            additionalProperties: false
+          vars:
+            description: Package-level vars.
+            additionalProperties: true
+          data_stream:
+            description: Data-stream configuration.
+            type: object
+            additionalProperties: false
+            properties:
+              vars:
+                description: Data-stream vars.
+                type: object
+                additionalProperties: true
+          numeric_keyword_fields:
+            description: List of keyword type fields allowed to have a numeric value.
+            type: array
