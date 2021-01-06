@@ -166,6 +166,14 @@ spec:
           type: object
           additionalProperties: false
           properties:
+            index_patterns:
+              description: index_patterns section of index template
+              type: array
+              items:
+                type: string
+                description: Index pattern
+                examples:
+                  - metrics*
             settings:
               description: Settings section of index template
               type: object
