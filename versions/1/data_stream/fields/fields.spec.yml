@@ -49,6 +49,7 @@ spec:
         - flattened
         - wildcard
         - version
+        - unsigned_long
       description:
         description: Short description of field
         type: string
