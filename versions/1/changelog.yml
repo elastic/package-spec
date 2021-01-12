@@ -42,6 +42,6 @@
   - description: Support unsigned_long Elasticsearch type.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/103
-  - description: Support unsigned_long Elasticsearch type.
+  - description: Clean up go.mod and go.sum and add go mod tidy command
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/103
+    link: https://github.com/elastic/package-spec/pull/104
