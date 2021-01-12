@@ -46,3 +46,6 @@
   - description: Clean up go.mod and go.sum and add go mod tidy command.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/104
+  - description: Add field for skipping tests.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/105
