@@ -36,3 +36,6 @@
   - description: Add numeric_keyword_fields option for pipeline tests.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/95
+  - description: Support multiple test cases in system tests.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/101
