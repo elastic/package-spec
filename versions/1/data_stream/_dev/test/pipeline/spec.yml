@@ -20,6 +20,9 @@ spec:
         type: object
         additionalProperties: false
         properties:
+          skip:
+            description: If this test should be skipped, the reason for skipping it.
+            type: string
           fields:
             description: Field definitions
             type: object
