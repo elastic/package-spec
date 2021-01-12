@@ -4,7 +4,7 @@
 spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
-  additionalProperties: false
+  additionalProperties: true
   properties:
     skip:
       description: If this test should be skipped, the reason for skipping it.
