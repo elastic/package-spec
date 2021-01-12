@@ -1,0 +1,7 @@
+skip: Link to GitHub issue with details about skipped test
+input: foo
+vars: ~
+data_stream:
+  vars:
+    paths:
+      - "{{SERVICE_LOGS_DIR}}/access.log"
