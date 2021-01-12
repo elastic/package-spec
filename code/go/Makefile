@@ -5,6 +5,7 @@ update:
 	@go get github.com/rakyll/statik
 	@statik -m -f -src ../../versions -dest ${SPEC_DIR} -p spec
 	@echo "Specs updated to latest."
+	@go mod tidy
 
 check: lint check-spec 
 
@@ -13,6 +14,7 @@ check: lint check-spec
 lint:
 	@go get -u golang.org/x/lint/golint
 	@go list ./... | grep -v yamlschema | xargs -n 1 golint -set_exit_status
+	@go mod tidy
 
 # Checks that the spec is up-to-date
 check-spec:
@@ -27,6 +29,7 @@ check-spec:
 			echo "Specs are not up to date. Please run make update."; \
 		fi; \
 		exit $$retval
+	@go mod tidy
 
 # Runs tests
 test:

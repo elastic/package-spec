@@ -27,7 +27,7 @@
   - description: Add `hidden` fields to data stream manifest file.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/91
-  - description: Revert: Allow `condition` under inputs.
+  - description: 'Revert: Allow `condition` under inputs.'
     type: bugfix
     link: https://github.com/elastic/package-spec/pull/93
   - description: Support `lens` Kibana type.
@@ -39,3 +39,9 @@
   - description: Support multiple test cases in system tests.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/101
+  - description: Support unsigned_long Elasticsearch type.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/103
+  - description: Support unsigned_long Elasticsearch type.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/103
