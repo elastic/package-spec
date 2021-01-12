@@ -111,6 +111,10 @@ spec:
       type: string
       examples:
       - diagnostics
+    match_all:
+      description: if true, the generated index pattern will be `<type>-<dataset>.*-*` instead of `<type>-<dataset>-*`
+      type: boolean
+      default: false
     type:
       description: Type of data stream
       type: string
@@ -166,14 +170,6 @@ spec:
           type: object
           additionalProperties: false
           properties:
-            index_patterns:
-              description: index_patterns section of index template
-              type: array
-              items:
-                type: string
-                description: Index pattern
-                examples:
-                  - metrics*
             settings:
               description: Settings section of index template
               type: object
