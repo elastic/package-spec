@@ -1,4 +1,6 @@
-skip: Link to GitHub issue with details about skipped test
+skip:
+  reason: Test was skipped to test skipped test feature in spec.
+  link: https://github.com/elastic/integrations/issues/520
 input: foo
 vars: ~
 data_stream:
