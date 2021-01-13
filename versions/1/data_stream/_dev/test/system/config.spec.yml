@@ -18,5 +18,6 @@ spec:
         link:
           description: Link to issue with more details about skipped test or to track re-enabling skipped test.
           type: string
+          format: uri
           example: https://github.com/elastic/integrations/issues/520
       required: [ "reason", "link" ]
