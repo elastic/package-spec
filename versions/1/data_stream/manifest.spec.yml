@@ -112,7 +112,7 @@ spec:
       examples:
       - diagnostics
     dataset_is_prefix:
-      description: if true, the generated index pattern will contain the dataset as a prefix only
+      description: if true, the index pattern is the ES template will contain the dataset as a prefix only
       type: boolean
       default: false
     type:
