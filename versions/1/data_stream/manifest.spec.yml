@@ -111,8 +111,8 @@ spec:
       type: string
       examples:
       - diagnostics
-    match_all:
-      description: if true, the generated index pattern will be `<type>-<dataset>.*-*` instead of `<type>-<dataset>-*`
+    dataset_is_prefix:
+      description: if true, the generated index pattern will contain the dataset as a prefix only
       type: boolean
       default: false
     type:
