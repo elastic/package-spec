@@ -16,7 +16,13 @@ spec:
       pattern: '^test-[a-z0-9-]+\.log-config.json$'
       contentMediaType: "application/json"
       required: false
-      $ref: "./config.spec.yml"
+      $ref: "./config_raw.spec.yml"
+    - description: Configuration of test case in JSON format
+      type: file
+      pattern: '^test-[a-z0-9-]+\.json-config.json$'
+      contentMediaType: "application/json"
+      required: false
+      $ref: "./config_json.spec.yml"
     - description: Expected test results
       type: file
       pattern: '^test-[a-z0-9-]+\.(json|log)-expected.json$'
