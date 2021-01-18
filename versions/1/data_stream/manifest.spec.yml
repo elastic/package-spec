@@ -111,6 +111,10 @@ spec:
       type: string
       examples:
       - diagnostics
+    dataset_is_prefix:
+      description: if true, the index pattern in the ES template will contain the dataset as a prefix only
+      type: boolean
+      default: false
     type:
       description: Type of data stream
       type: string

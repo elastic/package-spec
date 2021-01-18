@@ -49,3 +49,6 @@
   - description: Add field for skipping tests.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/105
+  - description: Add fields for matching datasets dynamically
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/102
