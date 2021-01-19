@@ -28,6 +28,7 @@ streams:
         default: /server-status
     title: Nginx access logs
     description: Collect Nginx access logs
+    multi: true
 dataset_is_prefix: true
 elasticsearch.index_template.mappings:
   a:
