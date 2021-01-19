@@ -157,6 +157,12 @@ spec:
           enabled:
             description: Is stream enabled?
             type: boolean
+          multi:
+            description: Can stream be defined multiple times
+            type: boolean
+            default: false
+            examples:
+              - true
         required:
         - title
         - description
