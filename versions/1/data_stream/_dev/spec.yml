@@ -10,4 +10,4 @@ spec:
       type: folder
       name: deploy
       required: false
-      $ref: "./deploy/spec.yml"
+      $ref: "./../../_dev/deploy/spec.yml" # Use "deploy" spec for package

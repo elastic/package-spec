@@ -1,8 +1,0 @@
-spec:
-  additionalContents: false
-  contents:
-    - description: Folder containing deployment files for a Terraform-based service deployment
-      type: folder
-      name: tf
-      $ref: "./tf/spec.yml"
-      required: true # to be adjusted when we add other deployment models
