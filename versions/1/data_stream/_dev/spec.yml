@@ -6,3 +6,8 @@ spec:
       name: test
       required: false
       $ref: "./test/spec.yml"
+    - description: Folder containing configuration related to deploying the package's integration service(s)
+      type: folder
+      name: deploy
+      required: false
+      $ref: "./deploy/spec.yml"
