@@ -52,3 +52,6 @@
   - description: Add fields for matching datasets dynamically
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/102
+  - description: Support Terraform deployment files. Enable "deploy" definitions for data stream
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/111
