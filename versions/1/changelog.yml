@@ -54,4 +54,4 @@
     link: https://github.com/elastic/package-spec/pull/102
   - description: Make data_stream folder optional in the package 
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/112
+    link: https://github.com/elastic/package-spec/pull/113
