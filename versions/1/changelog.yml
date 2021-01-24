@@ -52,3 +52,6 @@
   - description: Add fields for matching datasets dynamically
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/102
+  - description: Replace ioutil for Go1.16 update
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/115

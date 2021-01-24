@@ -2,7 +2,6 @@ package validator
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 
@@ -35,7 +34,7 @@ func NewPackage(pkgRootPath string) (*Package, error) {
 		return nil, errors.Wrapf(err, "no package manifest file found at path [%v]", pkgManifestPath)
 	}
 
-	data, err := ioutil.ReadFile(pkgManifestPath)
+	data, err := os.ReadFile(pkgManifestPath)
 	if err != nil {
 		return nil, fmt.Errorf("could not read package manifest file [%v]", pkgManifestPath)
 	}

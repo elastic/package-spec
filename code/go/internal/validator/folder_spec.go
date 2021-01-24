@@ -2,8 +2,9 @@ package validator
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
+	"os"
 	"path"
 	"path/filepath"
 	"regexp"
@@ -34,7 +35,7 @@ func newFolderSpec(fs http.FileSystem, specPath string) (*folderSpec, error) {
 	}
 	defer specFile.Close()
 
-	data, err := ioutil.ReadAll(specFile)
+	data, err := io.ReadAll(specFile)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not read folder specification file")
 	}
@@ -62,7 +63,7 @@ func newFolderSpec(fs http.FileSystem, specPath string) (*folderSpec, error) {
 
 func (s *folderSpec) validate(packageName string, folderPath string) ValidationErrors {
 	var errs ValidationErrors
-	files, err := ioutil.ReadDir(folderPath)
+	files, err := os.ReadDir(folderPath)
 	if err != nil {
 		errs = append(errs, errors.Wrapf(err, "could not read folder [%s]", folderPath))
 		return errs
