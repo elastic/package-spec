@@ -52,3 +52,6 @@
   - description: Add fields for matching datasets dynamically
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/102
+  - description: Enforce README.md file
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/116
