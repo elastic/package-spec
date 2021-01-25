@@ -1,0 +1,8 @@
+  spec:
+    additionalContents: true
+    contents:
+    - description: Main README file
+      type: file
+      contentMediaType: "text/markdown"
+      name: "README.md"
+      required: true
