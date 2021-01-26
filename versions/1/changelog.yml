@@ -52,6 +52,12 @@
   - description: Add fields for matching datasets dynamically
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/102
+  - description: Make data_stream folder optional in the package
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/113
+  - description: Enforce README.md file
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/116
   - description: Support Terraform deployment files. Enable "deploy" definitions for data stream
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/111

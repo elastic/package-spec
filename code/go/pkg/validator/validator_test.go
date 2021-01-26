@@ -15,8 +15,9 @@ func TestValidateFile(t *testing.T) {
 		invalidPkgFilePath  string
 		expectedErrContains []string
 	}{
-		"good":          {},
-		"deploy_docker": {},
+		"good":                {},
+		"deploy_docker":       {},
+		"missing_data_stream": {},
 		"bad_deploy_variants": {
 			"_dev/deploy/variants.yml",
 			[]string{
@@ -94,27 +95,47 @@ func TestValidateItemNotAllowed(t *testing.T) {
 
 	for pkgName, invalidItemsPerFolder := range tests {
 		t.Run(pkgName, func(t *testing.T) {
-			pkgRootPath := filepath.Join("..", "..", "internal", "validator", "test", "packages", pkgName)
-
-			errs := ValidateFromPath(pkgRootPath)
-			require.Error(t, errs)
-			vErrs, ok := errs.(validator.ValidationErrors)
-			require.True(t, ok)
-
-			var errMessages []string
-			for _, vErr := range vErrs {
-				errMessages = append(errMessages, vErr.Error())
-			}
-
-			var c int
-			for itemFolder, invalidItems := range invalidItemsPerFolder {
-				for _, invalidItem := range invalidItems {
-					c++
-					expected := fmt.Sprintf("item [%s] is not allowed in folder [%s/%s]", invalidItem, pkgRootPath, itemFolder)
-					require.Contains(t, errMessages, expected)
-				}
-			}
-			require.Len(t, errs, c)
+			requireErrorMessage(t, pkgName, invalidItemsPerFolder, "item [%s] is not allowed in folder [%s/%s]")
 		})
 	}
+}
+
+func TestValidateItemNotExpected(t *testing.T) {
+	tests := map[string]map[string][]string{
+		"docs_extra_files": {
+			"docs": []string{
+				".missing",
+			},
+		},
+	}
+
+	for pkgName, invalidItemsPerFolder := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			requireErrorMessage(t, pkgName, invalidItemsPerFolder, "item [%s] is not allowed in folder [%s/%s]")
+		})
+	}
+}
+
+func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {
+	pkgRootPath := filepath.Join("..", "..", "internal", "validator", "test", "packages", pkgName)
+
+	errs := ValidateFromPath(pkgRootPath)
+	require.Error(t, errs)
+	vErrs, ok := errs.(validator.ValidationErrors)
+	require.True(t, ok)
+
+	var errMessages []string
+	for _, vErr := range vErrs {
+		errMessages = append(errMessages, vErr.Error())
+	}
+
+	var c int
+	for itemFolder, invalidItems := range invalidItemsPerFolder {
+		for _, invalidItem := range invalidItems {
+			c++
+			expected := fmt.Sprintf(expectedErrorMessage, invalidItem, pkgRootPath, itemFolder)
+			require.Contains(t, errMessages, expected)
+		}
+	}
+	require.Len(t, errs, c)
 }
