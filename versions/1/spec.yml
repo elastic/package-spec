@@ -28,6 +28,7 @@ spec:
     type: folder
     name: docs
     required: true
+    $ref: "./docs/spec.yml"
   - description: Folder containing agent-related definitions
     type: folder
     name: agent
