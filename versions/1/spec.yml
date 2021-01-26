@@ -22,7 +22,7 @@ spec:
   - description: Folder containing data stream definitions
     type: folder
     name: data_stream
-    required: true
+    required: false
     $ref: "./data_stream/spec.yml"
   - description: Folder containing documentation for the package
     type: folder
