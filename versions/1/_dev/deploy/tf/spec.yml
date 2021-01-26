@@ -1,0 +1,7 @@
+spec:
+  additionalContents: false
+  contents:
+    - description: Terraform infrastructure definition
+      pattern: '^*.tf$'
+      type: file
+      required: true

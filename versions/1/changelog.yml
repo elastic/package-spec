@@ -58,6 +58,9 @@
   - description: Enforce README.md file
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/116
+  - description: Support Terraform deployment files. Enable "deploy" definitions for data stream
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/111
   - description: Replace ioutil for Go1.16 update
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/115
