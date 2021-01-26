@@ -5,7 +5,10 @@ spec:
       type: folder
       name: docker
       $ref: "./docker/spec.yml"
-      required: true # to be adjusted when we add other deployment models
+    - description: Folder containing deployment files for a Terraform-based service deployment
+      type: folder
+      name: tf
+      $ref: "./tf/spec.yml"
     - description: Configuration file describing variations available for deployment
       type: file
       name: "variants.yml"
