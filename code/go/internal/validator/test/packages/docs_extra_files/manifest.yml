@@ -1,6 +1,6 @@
 format_version: 1.0.4
-name: missing_docs
-title: Missing README.md file in docs
+name: docs_extra_files
+title: Extra files in docs
 description: This package is bad.
 version: 0.1.2
 release: beta

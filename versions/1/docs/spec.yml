@@ -1,5 +1,5 @@
   spec:
-    additionalContents: true
+    additionalContents: false
     contents:
     - description: Main README file
       type: file

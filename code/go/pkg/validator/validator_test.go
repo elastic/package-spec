@@ -99,18 +99,18 @@ func TestValidateItemNotAllowed(t *testing.T) {
 	}
 }
 
-func TestValidateItemExpected(t *testing.T) {
+func TestValidateItemNotExpected(t *testing.T) {
 	tests := map[string]map[string][]string{
-		"missing_docs": {
+		"docs_extra_files": {
 			"docs": []string{
-				"README.md",
+				".missing",
 			},
 		},
 	}
 
 	for pkgName, invalidItemsPerFolder := range tests {
 		t.Run(pkgName, func(t *testing.T) {
-			requireErrorMessage(t, pkgName, invalidItemsPerFolder, "expecting to find [%s] file in folder [%s/%s]")
+			requireErrorMessage(t, pkgName, invalidItemsPerFolder, "item [%s] is not allowed in folder [%s/%s]")
 		})
 	}
 }
