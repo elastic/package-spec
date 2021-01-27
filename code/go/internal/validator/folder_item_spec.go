@@ -2,8 +2,8 @@ package validator
 
 import (
 	"fmt"
+	"io/fs"
 	"net/http"
-	"os"
 	"path/filepath"
 	"regexp"
 	"sync"
@@ -31,7 +31,7 @@ type folderItemSpec struct {
 
 var formatCheckersMutex sync.Mutex
 
-func (s *folderItemSpec) matchingFileExists(files []os.FileInfo) (bool, error) {
+func (s *folderItemSpec) matchingFileExists(files []fs.DirEntry) (bool, error) {
 	if s.Name != "" {
 		for _, file := range files {
 			if file.Name() == s.Name {
@@ -53,7 +53,7 @@ func (s *folderItemSpec) matchingFileExists(files []os.FileInfo) (bool, error) {
 	return false, nil
 }
 
-func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
+func (s *folderItemSpec) isSameType(file fs.DirEntry) bool {
 	switch s.ItemType {
 	case itemTypeFile:
 		return !file.IsDir()
