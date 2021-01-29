@@ -61,3 +61,7 @@
   - description: Support Terraform deployment files. Enable "deploy" definitions for data stream
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/111
+  - description: Add `alias` type to fields spec.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/120
+
