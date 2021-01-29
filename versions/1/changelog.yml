@@ -61,3 +61,7 @@
   - description: Support Terraform deployment files. Enable "deploy" definitions for data stream
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/111
+  - description: Add "synthetics" to data stream type enum in manifest spec
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/119
+
