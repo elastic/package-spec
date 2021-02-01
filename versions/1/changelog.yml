@@ -4,64 +4,66 @@
 ##
 - version: 1.0.0-alpha1
   changes:
-  - description: Initial version of the Elastic Package specifiction.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/1
-  - description: Adding the histogram field as a valid ES field type.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/52
-  - description: Add `metric_type` and `unit` to fields.yml.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/73
-  - description: Adding "traces" as a valid data stream type.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/78
-  - description: Add "agent/input" folder for top level configuration.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/79
-  - description: Allow `condition` under inputs.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/87
-  - description: Add `ilm_policy` to data stream manifest.yml
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/90
-  - description: Add `hidden` fields to data stream manifest file.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/91
-  - description: 'Revert: Allow `condition` under inputs.'
-    type: bugfix
-    link: https://github.com/elastic/package-spec/pull/93
-  - description: Support `lens` Kibana type.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/94
-  - description: Add numeric_keyword_fields option for pipeline tests.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/95
-  - description: Support multiple test cases in system tests.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/101
-  - description: Support unsigned_long Elasticsearch type.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/103
-  - description: Clean up go.mod and go.sum and add go mod tidy command.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/104
-  - description: Add field for skipping tests.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/105
-  - description: Add fields for matching datasets dynamically
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/102
-  - description: Make data_stream folder optional in the package
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/113
-  - description: Enforce README.md file
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/116
-  - description: Support Terraform deployment files. Enable "deploy" definitions for data stream
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/111
-  - description: Add `alias` type to fields spec.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/120
-
+    - description: Initial version of the Elastic Package specifiction.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1
+    - description: Adding the histogram field as a valid ES field type.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/52
+    - description: Add `metric_type` and `unit` to fields.yml.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/73
+    - description: Adding "traces" as a valid data stream type.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/78
+    - description: Add "agent/input" folder for top level configuration.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/79
+    - description: Allow `condition` under inputs.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/87
+    - description: Add `ilm_policy` to data stream manifest.yml
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/90
+    - description: Add `hidden` fields to data stream manifest file.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/91
+    - description: "Revert: Allow `condition` under inputs."
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/93
+    - description: Support `lens` Kibana type.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/94
+    - description: Add numeric_keyword_fields option for pipeline tests.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/95
+    - description: Support multiple test cases in system tests.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/101
+    - description: Support unsigned_long Elasticsearch type.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/103
+    - description: Clean up go.mod and go.sum and add go mod tidy command.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/104
+    - description: Add field for skipping tests.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/105
+    - description: Add fields for matching datasets dynamically
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/102
+    - description: Make data_stream folder optional in the package
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/113
+    - description: Enforce README.md file
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/116
+    - description: Support Terraform deployment files. Enable "deploy" definitions for data stream
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/111
+    - description: Add "synthetics" to data stream type enum in manifest spec
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/119
+    - description: Add `alias` type to fields spec.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/120

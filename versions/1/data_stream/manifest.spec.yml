@@ -121,6 +121,7 @@ spec:
       enum:
       - metrics
       - logs
+      - synthetics
       - traces
       examples:
       - metrics
