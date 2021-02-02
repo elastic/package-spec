@@ -67,3 +67,7 @@
   - description: "Terraform service deployer: support user-defined environment variables"
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/123
+  - description: Add `alias` type to fields spec.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/120
+
