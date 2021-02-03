@@ -5,7 +5,5 @@ labels: discuss
 title: "[Change Proposal] "
 ---
 
-<!--
 Please read the section on [Change Proposals in the Contributing Guide](link TODO) and flesh out
 this issue accordingly. Thank you!
--->
