@@ -5,5 +5,5 @@ labels: discuss
 title: "[Change Proposal] "
 ---
 
-Please read the section on [Change Proposals in the Contributing Guide](/CONTRIBUTING.md#change-proposals) and flesh out
-this issue accordingly. Thank you!
+Please read the section on [Change Proposals in the Contributing Guide](/CONTRIBUTING.md#change-proposals) 
+and flesh out this issue accordingly. Thank you!
