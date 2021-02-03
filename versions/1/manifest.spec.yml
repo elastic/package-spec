@@ -233,6 +233,74 @@ spec:
           type: string
       required:
       - github
+    services:
+      description: List of services offered by this package.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          name:
+            description: Name of the service.
+            type: string
+            examples:
+              - aws_ec2
+          title:
+            description: Title of the service.
+            type: string
+            examples:
+              - AWS EC2
+          release:
+            description: The stability of the service.
+            type: string
+            enum:
+              - experimental
+              - beta
+              - ga
+            examples:
+              - beta
+          description:
+            description: Longer description of the service.
+            type: string
+            examples:
+              - Collect logs and metrics from AWS EC2 instances
+          icons:
+            description: List of icons for this service.
+            type: array
+            items:
+              type: object
+              additionalProperties: false
+              properties:
+                src:
+                  description: Relative path to the icon's image file.
+                  type: string
+                  format: relative-path
+                  examples:
+                    - "/img/logo_aws_ec2.svg"
+                title:
+                  description: Title of icon.
+                  type: string
+                  examples:
+                    - "AWS EC2 Logo"
+                size:
+                  description: Size of the icon.
+                  type: string
+                  examples:
+                    - "32x32"
+                type:
+                  description: MIME type of the icon image file.
+                  type: string
+                  examples:
+                    - "image/svg+xml"
+              required:
+                - src
+          data_streams:
+            description: List of data stream names supported for the service.
+              type: array
+              items:
+                type: string
+                examples:
+                  - "ec2_logs"
   required:
   - format_version
   - name

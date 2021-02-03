@@ -6,6 +6,19 @@ version: 0.1.2
 release: beta
 conditions:
   kibana.version: '^7.9.0'
+services:
+  - name: aws_ec2
+    title: AWS EC2
+    release: beta
+    description: AWS EC2 Integration
+    icons:
+      - src: /img/logo_aws_ec2.svg
+        title: logo aws ec2
+        size: 32x32
+        type: image/svg+xml
+    data_streams:
+      - ec2_logs
+      - ec2_metrics
 policy_templates:
   - name: apache
     title: Apache logs and metrics
