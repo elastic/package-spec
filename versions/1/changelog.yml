@@ -70,4 +70,6 @@
   - description: Add `alias` type to fields spec.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/120
-
+  - description: Add services field into package manifest.yml
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/125
