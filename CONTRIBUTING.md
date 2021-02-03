@@ -5,7 +5,7 @@
 Any changes to Elastic Stack products or Elastic Packages that require changes to the Elastic Package Specification 
 must be discussed first. At a high level, this process looks something like this:
 
-1. The change must be proposed via a [new Change Proposal issue](https://github.com/elastic/package-spec/issues/new) 
+1. The change must be proposed via a [new Change Proposal issue](https://github.com/elastic/package-spec/issues/new/choose) 
    in the `package-spec` repository (i.e. this repository). This gives us an opportunity to understand which parts of the 
    Elastic Stack might be impacted by this change and pull in relevant experts to get their opinions. The initial proposal 
    should cover these areas:
