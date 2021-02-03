@@ -296,11 +296,11 @@ spec:
                 - src
           data_streams:
             description: List of data stream names supported for the service.
-              type: array
-              items:
-                type: string
-                examples:
-                  - "ec2_logs"
+            type: array
+            items:
+              type: string
+              examples:
+                - "ec2_logs"
   required:
   - format_version
   - name
