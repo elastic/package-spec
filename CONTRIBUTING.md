@@ -12,6 +12,7 @@ must be discussed first. At a high level, this process looks something like this
    - What problem the proposal is solving. This provides context and could help shape the solution.
    - Where the solution will need to be implemented, i.e. which parts, if any, of the Elastic Stack will be impacted. It's 
      okay if the initial proposal doesn't get this 100% right; the discussion in the proposal issue should provide clarity.
+     Feel free to tag relevant experts to get their opinions.
 
 2. Once we have consensus on the proposal issue, we modify the issue description to include an **ordered** checklist of 
    tasks that need to be resolved to make the change happen in a safe way.  For example, maybe Kibana needs to implement 
