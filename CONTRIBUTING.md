@@ -17,7 +17,7 @@ something like this:
 
 2. Discussion ensues and eventually we hope to reach some consensus.
 
-3. Once ther's consensus on the proposal issue, modify the issue description to include an **ordered** checklist of 
+3. Once there's consensus on the proposal issue, modify the issue description to include an **ordered** checklist of 
    tasks that need to be resolved to make the change happen in a safe way.  For example, maybe Kibana needs to implement 
    support for a new property in the Package Specification first, then only when that support is implemented, the Package
    Specification can itself be modified, which would then allow packages to define this property and have these packages 
