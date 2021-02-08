@@ -17,8 +17,8 @@ func loadItemContent(itemPath, mediaType string) ([]byte, error) {
 		return nil, errors.Wrap(err, "reading item file failed")
 	}
 
-	if len(itemData) == 0 {
-		return nil, errors.New("file is empty")
+	if len(itemData) == 0 && mediaType != "" {
+		return nil, errors.New("file is empty, but media type is defined")
 	}
 
 	if mediaType == "" {
