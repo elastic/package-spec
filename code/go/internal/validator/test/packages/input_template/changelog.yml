@@ -1,0 +1,4 @@
+- version: 0.1.2
+  changes:
+    - description: initial release
+      link: https://github.com/elastic/package-spec/pull/131
