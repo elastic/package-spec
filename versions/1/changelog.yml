@@ -73,4 +73,7 @@
   - description: Support Kubernetes service deployer
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/130
+  - description: Add specification for package CHANGELOG files.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/131
 
