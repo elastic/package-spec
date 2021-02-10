@@ -70,4 +70,7 @@
   - description: Add `alias` type to fields spec.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/120
+  - description: Support Kubernetes service deployer
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/130
 

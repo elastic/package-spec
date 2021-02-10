@@ -9,6 +9,10 @@ spec:
       type: folder
       name: tf
       $ref: "./tf/spec.yml"
+    - description: Folder containing deployment files for a Kubernetes service deployment
+      type: folder
+      name: k8s
+      $ref: "./k8s/spec.yml"
     - description: Configuration file describing variations available for deployment
       type: file
       name: "variants.yml"
