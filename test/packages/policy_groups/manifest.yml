@@ -79,6 +79,8 @@ policy_templates:
   - name: dynamodb
     title: AWS DynamoDB
     description: Collect logs and metrics from DynamoDB service
+    categories:
+      - datastore
     inputs:
       - type: s3
         title: Collect logs from the DynamoDB service
