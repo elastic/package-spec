@@ -14,18 +14,14 @@ release: beta
 conditions:
   kibana.version: '^7.9.0'
 icons:
-  - src: /img/logo_aws.svg
+  - src: /img/aws-logo.svg
     title: logo aws
     size: 32x32
     type: image/svg+xml
 screenshots:
-  - src: /img/filebeat-aws-cloudtrail.png
-    title: filebeat aws cloudtrail
+  - src: /img/aws-general-dashboard.png
+    title: General AWS dashboard
     size: 1702x1063
-    type: image/png
-  - src: /img/filebeat-aws-elb-overview.png
-    title: filebeat aws elb overview
-    size: 5120x2704
     type: image/png
 vars:
   - name: access_key_id
