@@ -76,4 +76,7 @@
   - description: Add specification for package CHANGELOG files.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/131
+  - description: Deprecate JSON-formatted pipeline test configs in favor of YAML-formatted ones
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/139
 
