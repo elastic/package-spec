@@ -6,5 +6,5 @@ fields:
     event.category:
     - web
 dynamic_fields:
-    foobar: ".+",
+    foobar: ".+"
     a_numeric_field: "\\d+"
