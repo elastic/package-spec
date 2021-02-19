@@ -42,7 +42,7 @@ policy_templates:
       - type: s3
         title: Collect logs from EC2 service
         description: Collecting EC2 logs using S3 input
-        policy_group: ec2_logs
+        policy_group: logs
         vars:
           - name: visibility_timeout
             type: text
@@ -55,7 +55,7 @@ policy_templates:
       - type: aws/metrics
         title: Collect metrics from EC2 service
         description: Collecting EC2 metrics using AWS CloudWatch
-        policy_group: ec2_metrics
+        policy_group: metrics
         vars:
           - name: endpoint
             type: text
@@ -83,11 +83,11 @@ policy_templates:
       - type: s3
         title: Collect logs from the DynamoDB service
         description: Collecting DynamoDB logs using S3 input
-        policy_group: dynamodb_logs
+        policy_group: logs
       - type: aws/metrics
         title: Collect metrics from DynamoDB service
         description: Collecting DynamoDB metrics using AWS CloudWatch
-        policy_group: dynamodb_metrics
+        policy_group: metrics
     icons:
       - src: /img/aws-dynamodb.svg
         title: AWS DynamoDB logo
@@ -103,17 +103,11 @@ policy_templates:
         type: bool
         title: DynamoDB Specific Property
 policy_groups:
-  - name: ec2_logs
+  - name: logs
     title: "Logs"
-    description: "Collect logs from EC2 service"
-  - name: ec2_metrics
+    description: "Collect logs from AWS service"
+  - name: metrics
     title: "Metrics"
-    description: "Collect metrics from EC2 service"
-  - name: dynamodb_logs
-    title: "Logs"
-    description: "Collect logs from DynamoDB service"
-  - name: dynamodb_metrics
-    title: "Metrics"
-    description: "Collect metrics from DynamoDB service"
+    description: "Collect metrics from AWS service"
 owner:
   github: elastic/integrations-platforms
