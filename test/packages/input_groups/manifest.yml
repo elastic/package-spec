@@ -121,6 +121,10 @@ policy_templates:
         title: Barracuda logo
         size: 32x32
         type: image/svg+xml
+    vars:
+      - name: barracuda_foobar_property
+        type: bool
+        title: Barracuda Specific Property
 input_groups:
   - name: logs
     title: "Logs"
