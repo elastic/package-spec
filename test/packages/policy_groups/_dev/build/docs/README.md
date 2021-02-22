@@ -1,1 +1,1 @@
-README template for integration
+README for integration
