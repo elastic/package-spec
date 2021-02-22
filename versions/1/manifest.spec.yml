@@ -168,7 +168,7 @@ spec:
               description: Kibana versions compatible with this package.
               examples:
                 - ">=7.9.0"
-    policy_groups:
+    input_groups:
       description: List of policy groups offered by this package.
       type: array
       items:
@@ -247,7 +247,7 @@ spec:
                   type: string
                   examples:
                     - ./agent/input/template.yml.hbs
-                policy_group:
+                input_group:
                   description: Name of the policy group
                   type: string
                   examples:
