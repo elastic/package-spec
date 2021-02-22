@@ -116,6 +116,11 @@ policy_templates:
         title: Collect logs from Barracuda via file
         description: Collecting syslog from Barracuda via file.
         policy_group: logs
+    icons:
+      - src: /img/barracuda-log.svg
+        title: Barracuda logo
+        size: 32x32
+        type: image/svg+xml
 policy_groups:
   - name: logs
     title: "Logs"
