@@ -100,6 +100,22 @@ policy_templates:
       - name: dynamodb_foobar_property
         type: bool
         title: DynamoDB Specific Property
+  - name: barracuda
+    title: Barracuda logs
+    description: Collect Barracuda logs from syslog or a file.
+    inputs:
+      - type: udp
+        title: Collect logs from Barracuda via UDP
+        description: Collecting syslog from Barracuda via UDP
+        policy_group: logs
+      - type: tcp
+        title: Collect logs from Barracuda via TCP
+        description: Collecting syslog from Barracuda via TCP
+        policy_group: logs
+      - type: logfile
+        title: Collect logs from Barracuda via file
+        description: Collecting syslog from Barracuda via file.
+        policy_group: logs
 policy_groups:
   - name: logs
     title: "Logs"
