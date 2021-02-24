@@ -34,6 +34,9 @@ policy_templates:
   - name: ec2
     title: AWS EC2
     description: Collect logs and metrics from EC2 service
+    data_streams:
+      - ec2_logs
+      - ec2_metrics
     inputs:
       - type: s3
         title: Collect logs from EC2 service
@@ -103,6 +106,8 @@ policy_templates:
   - name: barracuda
     title: Barracuda logs
     description: Collect Barracuda logs from syslog or a file.
+    data_streams:
+      - spamfirewall
     inputs:
       - type: udp
         title: Collect logs from Barracuda via UDP
