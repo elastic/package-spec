@@ -67,3 +67,6 @@
   - description: "Terraform service deployer: support user-defined environment variables"
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/123
+  - description: Add rules package type with kibana/rules and kibana/timelines
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/142
