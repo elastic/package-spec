@@ -1,3 +1,5 @@
+.PHONY: test
+
 # Updates the spec in language libraries
 update: code/*
 	@$(foreach lang,$^,make -C $(lang) update;)

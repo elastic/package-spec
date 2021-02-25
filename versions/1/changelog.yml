@@ -67,6 +67,19 @@
   - description: "Terraform service deployer: support user-defined environment variables"
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/123
+  - description: Add `alias` type to fields spec.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/120
+  - description: Support Kubernetes service deployer
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/130
+  - description: Add specification for package CHANGELOG files.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/131
+  - description: Deprecate JSON-formatted pipeline test configs in favor of YAML-formatted ones
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/139
   - description: Add rules package type with kibana/rules and kibana/timelines
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/142
+ 

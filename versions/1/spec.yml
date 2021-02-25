@@ -17,7 +17,7 @@ spec:
     type: file
     contentMediaType: "application/x-yaml"
     name: "changelog.yml"
-    required: false
+    required: true
     $ref: "./changelog.spec.yml"
   - description: Folder containing data stream definitions
     type: folder

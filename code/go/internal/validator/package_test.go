@@ -29,7 +29,7 @@ func TestNewPackage(t *testing.T) {
 
 	for pkgName, test := range tests {
 		t.Run(pkgName, func(t *testing.T) {
-			pkgRootPath := filepath.Join("test", "packages", pkgName)
+			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 			pkg, err := NewPackage(pkgRootPath)
 			if test.expectedErrContains == "" {
 				require.NoError(t, err)

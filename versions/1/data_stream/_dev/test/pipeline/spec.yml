@@ -11,16 +11,30 @@ spec:
       type: file
       pattern: '^test-[a-z0-9-]+\.log$'
       required: false
-    - description: Configuration of test case in raw format
+    - description: JSON-formatted configuration for a test case in raw format
       type: file
       pattern: '^test-[a-z0-9-]+\.log-config.json$'
       contentMediaType: "application/json"
       required: false
+      deprecated: true # use "YAML-formatted configuration for a test case in raw format"
       $ref: "./config_raw.spec.yml"
-    - description: Configuration of test case in JSON format
+    - description: JSON-formatted configuration for a test case in JSON format
       type: file
       pattern: '^test-[a-z0-9-]+\.json-config.json$'
       contentMediaType: "application/json"
+      required: false
+      deprecated: true # use "YAML-formatted configuration for a test case in JSON format"
+      $ref: "./config_json.spec.yml"
+    - description: YAML-formatted configuration for a test case in raw format
+      type: file
+      pattern: '^test-[a-z0-9-]+\.log-config.yml'
+      contentMediaType: "application/x-yaml"
+      required: false
+      $ref: "./config_raw.spec.yml"
+    - description: YAML-formatted configuration for a test case in JSON format
+      type: file
+      pattern: '^test-[a-z0-9-]+\.json-config.yml'
+      contentMediaType: "application/x-yaml"
       required: false
       $ref: "./config_json.spec.yml"
     - description: Expected test results

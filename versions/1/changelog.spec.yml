@@ -33,12 +33,11 @@ spec:
               - "breaking-change"
               - "bugfix"
               - "enhancement"
-              - "known-issue"
             link:
               description: Link to issue or PR describing change in detail.
               type: string
               examples:
-              - "https://github.com/elastic/beats/issues/13507"
+              - "https://github.com/elastic/integrations/pull/550"
           required:
           - description
           - type
