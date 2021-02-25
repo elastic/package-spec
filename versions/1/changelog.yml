@@ -79,4 +79,6 @@
   - description: Deprecate JSON-formatted pipeline test configs in favor of YAML-formatted ones
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/139
-
+  - description: Support static tests
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/141
