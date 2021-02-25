@@ -82,4 +82,3 @@
   - description: Add rules package type with kibana/rules and kibana/timelines
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/142
- 
