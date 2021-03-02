@@ -6,3 +6,8 @@ spec:
       name: "README.md"
       contentMediaType: "text/markdown"
       required: true
+    - description: Other README template files (can be used by policy templates)
+      type: file
+      contentMediaType: "text/markdown"
+      pattern: '^.+.md'
+      required: false

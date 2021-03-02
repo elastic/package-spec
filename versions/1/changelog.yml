@@ -82,3 +82,6 @@
   - description: Support static tests
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/141
+  - description: Add policy groups
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/137

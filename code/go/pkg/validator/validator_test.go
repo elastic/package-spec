@@ -39,6 +39,7 @@ func TestValidateFile(t *testing.T) {
 			},
 		},
 		"input_template": {},
+		"input_groups": {},
 	}
 
 	for pkgName, test := range tests {

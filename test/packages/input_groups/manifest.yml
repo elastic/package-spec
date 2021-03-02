@@ -1,0 +1,141 @@
+format_version: 1.0.0
+name: aws
+title: AWS
+version: 0.3.17
+license: basic
+description: AWS Integration
+type: integration
+categories:
+  - aws
+  - cloud
+  - network
+  - security
+release: beta
+conditions:
+  kibana.version: '^7.9.0'
+icons:
+  - src: /img/aws-logo.svg
+    title: logo aws
+    size: 32x32
+    type: image/svg+xml
+screenshots:
+  - src: /img/aws-general-dashboard.png
+    title: General AWS dashboard
+    size: 1702x1063
+    type: image/png
+vars:
+  - name: access_key_id
+    type: text
+    title: Access Key ID
+  - name: secret_access_key
+    type: text
+    title: Secret Access Key
+policy_templates:
+  - name: ec2
+    title: AWS EC2
+    description: Collect logs and metrics from EC2 service
+    data_streams:
+      - ec2_logs
+      - ec2_metrics
+    inputs:
+      - type: s3
+        title: Collect logs from EC2 service
+        description: Collecting EC2 logs using S3 input
+        input_group: logs
+        vars:
+          - name: visibility_timeout
+            type: text
+            title: Visibility Timeout
+            description: The duration that the received messages are hidden from subsequent retrieve requests after being retrieved by a ReceiveMessage request.  The maximum is 12 hours.
+          - name: api_timeout
+            type: text
+            title: API Timeout
+            description: The maximum duration of AWS API can take. The maximum is half of the visibility timeout value.
+      - type: aws/metrics
+        title: Collect metrics from EC2 service
+        description: Collecting EC2 metrics using AWS CloudWatch
+        input_group: metrics
+        vars:
+          - name: endpoint
+            type: text
+            title: Endpoint
+            default: "amazonaws.com"
+            description: URL of the entry point for an AWS web service.
+    icons:
+      - src: /img/aws-ec2.svg
+        title: AWS EC2 logo
+        size: 32x32
+        type: image/svg+xml
+    screenshots:
+      - src: /img/aws-ec2-overview.png
+        title: AWS EC2 Overview
+        size: 1702x1063
+        type: image/png
+    vars:
+      - name: ec2_foobar_property
+        type: bool
+        title: EC2 Specific Property
+  - name: dynamodb
+    title: AWS DynamoDB
+    description: Collect logs and metrics from DynamoDB service
+    categories:
+      - datastore
+    inputs:
+      - type: s3
+        title: Collect logs from the DynamoDB service
+        description: Collecting DynamoDB logs using S3 input
+        input_group: logs
+      - type: aws/metrics
+        title: Collect metrics from DynamoDB service
+        description: Collecting DynamoDB metrics using AWS CloudWatch
+        input_group: metrics
+    icons:
+      - src: /img/aws-dynamodb.svg
+        title: AWS DynamoDB logo
+        size: 32x32
+        type: image/svg+xml
+    screenshots:
+      - src: /img/aws-dynamodb-overview.png
+        title: AWS DynamoDB Overview
+        size: 1702x1063
+        type: image/png
+    vars:
+      - name: dynamodb_foobar_property
+        type: bool
+        title: DynamoDB Specific Property
+  - name: barracuda
+    title: Barracuda logs
+    description: Collect Barracuda logs from syslog or a file.
+    data_streams:
+      - spamfirewall
+    inputs:
+      - type: udp
+        title: Collect logs from Barracuda via UDP
+        description: Collecting syslog from Barracuda via UDP
+        input_group: logs
+      - type: tcp
+        title: Collect logs from Barracuda via TCP
+        description: Collecting syslog from Barracuda via TCP
+        input_group: logs
+      - type: logfile
+        title: Collect logs from Barracuda via file
+        description: Collecting syslog from Barracuda via file.
+        input_group: logs
+    icons:
+      - src: /img/barracuda-logo.svg
+        title: Barracuda logo
+        size: 32x32
+        type: image/svg+xml
+    vars:
+      - name: barracuda_foobar_property
+        type: bool
+        title: Barracuda Specific Property
+input_groups:
+  - name: logs
+    title: "Logs"
+    description: "Collect logs from AWS service"
+  - name: metrics
+    title: "Metrics"
+    description: "Collect metrics from AWS service"
+owner:
+  github: elastic/integrations-platforms
