@@ -85,3 +85,6 @@
   - description: Add policy groups
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/137
+  - description: Add multi property to inputs
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/110

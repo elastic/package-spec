@@ -263,6 +263,10 @@ spec:
                   examples:
                     - logs
                     - metrics
+                multi:
+                  description: Can input be defined multiple times
+                  type: boolean
+                  default: false
                 vars:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
               required:
