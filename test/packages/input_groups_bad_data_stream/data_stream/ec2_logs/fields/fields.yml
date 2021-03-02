@@ -1,0 +1,2 @@
+- name: aws.ec2
+  type: group

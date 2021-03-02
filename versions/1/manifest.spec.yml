@@ -228,6 +228,7 @@ spec:
             items:
               type: string
               description: Data stream name
+              format: data-stream-name
               examples:
                 - ec2_logs
                 - spamfirewall

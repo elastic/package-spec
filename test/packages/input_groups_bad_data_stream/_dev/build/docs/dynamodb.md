@@ -1,0 +1,1 @@
+DynamoDB README template file
