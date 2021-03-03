@@ -40,6 +40,12 @@ func TestValidateFile(t *testing.T) {
 		},
 		"input_template": {},
 		"input_groups": {},
+		"input_groups_bad_data_stream": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.2.data_streams.1: data stream doesn't exist",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {

@@ -88,3 +88,6 @@
   - description: Add multi property to inputs
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/110
+  - description: Ensure integrity between input groups and data streams
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/143

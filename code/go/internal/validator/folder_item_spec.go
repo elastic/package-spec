@@ -14,7 +14,10 @@ import (
 	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
-const relativePathFormat = "relative-path"
+const (
+	relativePathFormat = "relative-path"
+	dataStreamNameFormat = "data-stream-name"
+)
 
 type folderItemSpec struct {
 	Description       string   `yaml:"description"`
@@ -87,10 +90,12 @@ func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, ite
 	formatCheckersMutex.Lock()
 	defer func() {
 		unloadRelativePathFormatChecker()
+		unloadDataStreamNameFormatChecker()
 		formatCheckersMutex.Unlock()
 	}()
 
 	loadRelativePathFormatChecker(filepath.Dir(itemPath))
+	loadDataStreamNameFormatChecker(filepath.Dir(itemPath))
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 	if err != nil {
 		return ValidationErrors{err}
@@ -115,4 +120,14 @@ func loadRelativePathFormatChecker(currentPath string) {
 
 func unloadRelativePathFormatChecker() {
 	gojsonschema.FormatCheckers.Remove(relativePathFormat)
+}
+
+func loadDataStreamNameFormatChecker(currentPath string) {
+	gojsonschema.FormatCheckers.Add(dataStreamNameFormat, RelativePathChecker{
+		currentPath: filepath.Join(currentPath, "data_stream"),
+	})
+}
+
+func unloadDataStreamNameFormatChecker() {
+	gojsonschema.FormatCheckers.Remove(dataStreamNameFormat)
 }

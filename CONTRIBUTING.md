@@ -63,3 +63,4 @@ Currently, the following custom formats are available:
 
 * `relative-path`: Relative path to the package root directory. The format checker verifies if the path is correct and
   the file exists.
+* `data-stream-name`: Name of a data stream. The format checker verifies if the data stream exists.
