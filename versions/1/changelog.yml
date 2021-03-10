@@ -91,3 +91,6 @@
   - description: Ensure integrity between input groups and data streams
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/143
+  - description: Pipeline test results can be optional
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/147

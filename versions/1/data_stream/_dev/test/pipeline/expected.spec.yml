@@ -5,11 +5,16 @@ spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
   additionalProperties: false
+  definitions:
+    optionalTestResult:
+      anyOf:
+        - type: object
+          additionalProperties: true
+        - type: "null"
   properties:
     expected:
       description: Expected test result
       type: array
       items:
-        type: object
-        additionalProperties: true
+        $ref: "#/definitions/optionalTestResult"
   required: [ "expected" ]
