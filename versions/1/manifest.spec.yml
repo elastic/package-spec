@@ -47,10 +47,8 @@ spec:
       type: string
       enum:
       - integration
-      - rules
       examples:
       - integration
-      - rules
     release:
       description: The stability of the package.
       type: string

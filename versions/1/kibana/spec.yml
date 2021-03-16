@@ -67,23 +67,10 @@
         pattern: '^.+\.json$'
     - description: Folder containing rules
       type: folder
-      name: "rules"
+      name: "security-rule"
       required: false
       contents:
       - description: An individual rule file for the detection engine
         type: file
         contentMediaType: "application/json"
-        pattern: '^{PACKAGE_NAME}-rule-.+\.json$'
-      - description: Changelog for all of the rules in the folder
-        type: file
-        contentMediaType: "application/json"
-        pattern: '^{PACKAGE_NAME}-CHANGELOG\.json$'
-    - description: Folder containing timeline templates
-      type: folder
-      name: "timelines"
-      required: false
-      contents:
-      - description: A Kibana timeline template
-        type: file
-        contentMediaType: "application/json"
-        pattern: '^{PACKAGE_NAME}-.+\.json$'
+        pattern: '^rule-.+\.json$'
