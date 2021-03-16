@@ -43,7 +43,7 @@ func TestValidateFile(t *testing.T) {
 
 	for pkgName, test := range tests {
 		t.Run(pkgName, func(t *testing.T) {
-			pkgRootPath := filepath.Join("..", "..", "internal", "validator", "test", "packages", pkgName)
+			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 			errPrefix := fmt.Sprintf("file \"%s/%s\" is invalid: ", pkgRootPath, test.invalidPkgFilePath)
 
 			errs := ValidateFromPath(pkgRootPath)
@@ -117,7 +117,7 @@ func TestValidateItemNotExpected(t *testing.T) {
 }
 
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {
-	pkgRootPath := filepath.Join("..", "..", "internal", "validator", "test", "packages", pkgName)
+	pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 
 	errs := ValidateFromPath(pkgRootPath)
 	require.Error(t, errs)

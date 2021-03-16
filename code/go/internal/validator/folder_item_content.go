@@ -17,8 +17,11 @@ func loadItemContent(itemPath, mediaType string) ([]byte, error) {
 		return nil, errors.Wrap(err, "reading item file failed")
 	}
 
-	if len(itemData) == 0 {
-		return nil, errors.New("file is empty")
+	// There might be a situation in which we'd like to keep a directory without any file content under version control.
+	// Usually it can be solved by adding the .empty file. There is no media type defined for this file.
+	// It's expected of the file with media type defined not to be empty - the file can be marked as non-required.
+	if len(itemData) == 0 && mediaType != "" {
+		return nil, errors.New("file is empty, but media type is defined")
 	}
 
 	if mediaType == "" {
