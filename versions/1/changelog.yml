@@ -97,3 +97,6 @@
   - description: Remove deprecated JSON-formatted pipeline test configs
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/150
+  - description: Add optional NOTICE.txt file to a package
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/151
