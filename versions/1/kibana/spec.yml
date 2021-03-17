@@ -73,4 +73,4 @@
       - description: An individual rule file for the detection engine
         type: file
         contentMediaType: "application/json"
-        pattern: '^rule-.+\.json$'
+        pattern: '^.+\.json$'
