@@ -79,6 +79,21 @@
   - description: Deprecate JSON-formatted pipeline test configs in favor of YAML-formatted ones
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/139
+  - description: Support static tests
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/141
+  - description: Add policy groups
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/137
+  - description: Add multi property to inputs
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/110
+  - description: Ensure integrity between input groups and data streams
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/143
+  - description: Pipeline test results can be optional
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/147
   - description: Add kibana/security-rule asset
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/142

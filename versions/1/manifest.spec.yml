@@ -5,6 +5,99 @@ spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
   additionalProperties: false
+  definitions:
+    categories:
+      description: Categories to which this package belongs.
+      type: array
+      items:
+        type: string
+        enum:
+          - aws
+          - azure
+          - cloud
+          - config_management
+          - containers
+          - crm
+          - custom
+          - datastore
+          - elastic_stack
+          - google_cloud
+          - kubernetes
+          - languages
+          - message_queue
+          - monitoring
+          - network
+          - notification
+          - os_system
+          - productivity
+          - security
+          - support
+          - ticketing
+          - version_control
+          - web
+        examples:
+          - web
+    icons:
+      description: List of icons for by this package.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          src:
+            description: Relative path to the icon's image file.
+            type: string
+            format: relative-path
+            examples:
+              - "/img/logo_apache.svg"
+          title:
+            description: Title of icon.
+            type: string
+            examples:
+              - "Apache Logo"
+          size:
+            description: Size of the icon.
+            type: string
+            examples:
+              - "32x32"
+          type:
+            description: MIME type of the icon image file.
+            type: string
+            examples:
+              - "image/svg+xml"
+        required:
+          - src
+    screenshots:
+      description: List of screenshots of Kibana assets created by this package.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          src:
+            description: Relative path to the screenshot's image file.
+            type: string
+            format: relative-path
+            examples:
+              - "/img/apache_httpd_server_status.png"
+          title:
+            description: Title of screenshot.
+            type: string
+            examples:
+              - "Apache HTTPD Server Status"
+          size:
+            description: Size of the screenshot.
+            type: string
+            examples:
+              - "1215x1199"
+          type:
+            description: MIME type of the screenshot image file.
+            type: string
+            examples:
+              - "image/png"
+        required:
+          - src
+          - title
   properties:
     format_version:
       description: The version of the package specification format used by this package.
@@ -59,36 +152,7 @@ spec:
       examples:
       - experimental
     categories:
-      description: Categories to which this package belongs.
-      type: array
-      items:
-        type: string
-        enum:
-        - aws
-        - azure
-        - cloud
-        - config_management
-        - containers
-        - crm
-        - custom
-        - datastore
-        - elastic_stack
-        - google_cloud
-        - kubernetes
-        - languages
-        - message_queue
-        - monitoring
-        - network
-        - notification
-        - os_system
-        - productivity
-        - security
-        - support
-        - ticketing
-        - version_control
-        - web
-        examples:
-        - web
+      $ref: "#/definitions/categories"
     conditions:
       description: Conditions under which this package can be installed.
       type: object
@@ -104,67 +168,36 @@ spec:
               description: Kibana versions compatible with this package.
               examples:
                 - ">=7.9.0"
-    icons:
-      description: List of icons for by this package.
+    input_groups:
+      description: List of policy groups offered by this package.
       type: array
       items:
         type: object
         additionalProperties: false
         properties:
-          src:
-            description: Relative path to the icon's image file.
+          name:
+            description: Name of policy group.
             type: string
-            format: relative-path
             examples:
-            - "/img/logo_apache.svg"
+              - Logs
+              - Metrics
           title:
-            description: Title of icon.
+            description: Title of policy group.
             type: string
             examples:
-            - "Apache Logo"
-          size:
-            description: Size of the icon.
+              - Logs
+              - Metrics
+              - Checks
+          description:
+            description: Longer description of the policy group.
             type: string
             examples:
-            - "32x32"
-          type:
-            description: MIME type of the icon image file.
-            type: string
-            examples:
-            - "image/svg+xml"
+              - Collect logs from AWS service
+              - Collect metrics from AWS service
         required:
-        - src
-    screenshots:
-      description: List of screenshots of Kibana assets created by this package.
-      type: array
-      items:
-        type: object
-        additionalProperties: false
-        properties:
-          src:
-            description: Relative path to the screenshot's image file.
-            type: string
-            format: relative-path
-            examples:
-            - "/img/apache_httpd_server_status.png"
-          title:
-            description: Title of screenshot.
-            type: string
-            examples:
-            - "Apache HTTPD Server Status"
-          size:
-            description: Size of the screenshot.
-            type: string
-            examples:
-            - "1215x1199"
-          type:
-            description: MIME type of the screenshot image file.
-            type: string
-            examples:
-            - "image/png"
-        required:
-        - src
-        - title
+          - name
+          - title
+          - description
     policy_templates:
       description: List of policy templates offered by this package.
       type: array
@@ -176,17 +209,30 @@ spec:
             description: Name of policy template.
             type: string
             examples:
-            - apache
+              - apache
           title:
             description: Title of policy template.
             type: string
             examples:
-            - Apache logs and metrics
+              - Apache logs and metrics
+          categories:
+            $ref: "#/definitions/categories"
           description:
             description: Longer description of policy template.
             type: string
             examples:
-            - Collect logs and metrics from Apache instances
+              - Collect logs and metrics from Apache instances
+          data_streams:
+            description: List of data streams compatible with the policy template.
+            type: array
+            items:
+              type: string
+              description: Data stream name
+              format: data-stream-name
+              examples:
+                - ec2_logs
+                - spamfirewall
+                - access
           inputs:
             description: List of inputs supported by policy template.
             type: array
@@ -201,29 +247,51 @@ spec:
                   description: Title of input.
                   type: string
                   examples:
-                  - Collect logs from Apache instances
+                    - Collect logs from Apache instances
                 description:
                   description: Longer description of input.
                   type: string
                   examples:
-                  - Collecting Apache access and error logs
+                    - Collecting Apache access and error logs
                 template_path:
                   description: Path of the config template for the input.
                   type: string
                   examples:
-                  - ./agent/input/template.yml.hbs
+                    - ./agent/input/template.yml.hbs
+                input_group:
+                  description: Name of the policy group
+                  type: string
+                  examples:
+                    - logs
+                    - metrics
+                multi:
+                  description: Can input be defined multiple times
+                  type: boolean
+                  default: false
                 vars:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
               required:
-              - type
-              - title
-              - description
+                - type
+                - title
+                - description
           multiple:
             type: boolean
+          icons:
+            $ref: "#/definitions/icons"
+          screenshots:
+            $ref: "#/definitions/screenshots"
+          vars:
+            $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
         required:
-        - name
-        - title
-        - description
+          - name
+          - title
+          - description
+    icons:
+      $ref: "#/definitions/icons"
+    screenshots:
+      $ref: "#/definitions/screenshots"
+    vars:
+      $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
     owner:
       type: object
       additionalProperties: false
