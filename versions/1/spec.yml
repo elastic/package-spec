@@ -19,6 +19,11 @@ spec:
     name: "changelog.yml"
     required: true
     $ref: "./changelog.spec.yml"
+  - description: The package's NOTICE file
+    type: file
+    contentMediaType: "text/plain"
+    name: "NOTICE.txt"
+    required: false
   - description: Folder containing data stream definitions
     type: folder
     name: data_stream

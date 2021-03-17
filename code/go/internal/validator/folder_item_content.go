@@ -53,6 +53,7 @@ func loadItemContent(itemPath, mediaType string) ([]byte, error) {
 		}
 	case "application/json": // no need to convert the item content
 	case "text/markdown": // text/markdown can't be transformed into JSON format
+	case "text/plain": // text/plain should be left as-is
 	default:
 		return nil, fmt.Errorf("unsupported media type (%s)", mediaType)
 	}

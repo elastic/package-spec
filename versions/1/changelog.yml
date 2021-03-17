@@ -94,3 +94,4 @@
   - description: Pipeline test results can be optional
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/147
+  - description: Add optional NOTICE.txt file to a package
