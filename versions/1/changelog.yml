@@ -95,3 +95,5 @@
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/147
   - description: Add optional NOTICE.txt file to a package
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/151
