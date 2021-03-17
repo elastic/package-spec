@@ -67,7 +67,7 @@
         pattern: '^.+\.json$'
     - description: Folder containing rules
       type: folder
-      name: "security-rule"
+      name: "security_rule"
       required: false
       contents:
       - description: An individual rule file for the detection engine

@@ -79,7 +79,6 @@
   - description: Deprecate JSON-formatted pipeline test configs in favor of YAML-formatted ones
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/139
-  - description: Add rules package type with kibana/rules and kibana/timelines
   - description: Add kibana/security-rule asset
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/142
