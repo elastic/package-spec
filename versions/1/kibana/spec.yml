@@ -74,3 +74,12 @@
         type: file
         contentMediaType: "application/json"
         pattern: '^.+\.json$'
+    - description: Folder containing ML module assets
+      type: folder
+      name: ml_module
+      required: false
+      contents:
+        - description: An ML module asset file
+          type: file
+          contentMediaType: "application/json"
+          pattern: '^{PACKAGE_NAME}-.+\.json$'
