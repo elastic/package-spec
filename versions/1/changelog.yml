@@ -103,3 +103,6 @@
   - description: Add kibana/security-rule asset
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/142
+  - description: Support `ML module` Kibana type.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/152
