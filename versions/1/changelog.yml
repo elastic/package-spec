@@ -100,3 +100,6 @@
   - description: Add optional NOTICE.txt file to a package
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/151
+  - description: Add kibana/security-rule asset
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/142
