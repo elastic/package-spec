@@ -103,6 +103,8 @@ spec:
       pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
       examples:
         - "1.0.0"
+        - "1.0.0-SNAPSHOT"
+        - "1.0.0-dev.1"
   properties:
     format_version:
       description: The version of the package specification format used by this package.
