@@ -11,7 +11,7 @@ spec:
       version:
         description: Package version.
         type: string
-        pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
+        pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
         examples:
         - "1.0.4"
       changes:

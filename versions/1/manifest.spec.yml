@@ -98,11 +98,13 @@ spec:
         required:
           - src
           - title
+    version_pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
   properties:
     format_version:
       description: The version of the package specification format used by this package.
       type: string
-      pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
+      pattern:
+        $ref: "#/definitions/version_pattern"
       examples:
       - "1.0.0"
     name:
@@ -124,7 +126,8 @@ spec:
     version:
       description: The version of the package.
       type: string
-      pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
+      pattern:
+        $ref: "#/definitions/version_pattern"
       examples:
       - "0.1.0"
     license:
