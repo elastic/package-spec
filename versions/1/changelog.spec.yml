@@ -10,10 +10,7 @@ spec:
     properties:
       version:
         description: Package version.
-        type: string
-        pattern: '^[0-9]+\.[0-9]+\.[0-9]+$'
-        examples:
-        - "1.0.4"
+        $ref: "./manifest.spec.yml#/definitions/version"
       changes:
         description: List of changes in package version.
         type: array
