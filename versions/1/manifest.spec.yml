@@ -98,15 +98,15 @@ spec:
         required:
           - src
           - title
-    version_pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
+    version:
+      type: string
+      pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
+      examples:
+        - "1.0.0"
   properties:
     format_version:
       description: The version of the package specification format used by this package.
-      type: string
-      pattern:
-        $ref: "#/definitions/version_pattern"
-      examples:
-      - "1.0.0"
+      $ref: "#/definitions/version"
     name:
       description: The name of the package.
       type: string
@@ -125,11 +125,7 @@ spec:
       - Apache Integration
     version:
       description: The version of the package.
-      type: string
-      pattern:
-        $ref: "#/definitions/version_pattern"
-      examples:
-      - "0.1.0"
+      $ref: "#/definitions/version"
     license:
       description: The license under which the package is being released.
       type: string
