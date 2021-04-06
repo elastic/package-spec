@@ -170,27 +170,26 @@ spec:
               examples:
                 - ">=7.9.0"
     input_groups:
-      description: List of policy groups offered by this package.
+      description: List of input groups offered by this package.
       type: array
       items:
         type: object
         additionalProperties: false
         properties:
           name:
-            description: Name of policy group.
+            description: Name of input group.
             type: string
             examples:
-              - Logs
-              - Metrics
+              - logs
+              - metrics
           title:
-            description: Title of policy group.
+            description: Title of input group.
             type: string
             examples:
               - Logs
               - Metrics
-              - Checks
           description:
-            description: Longer description of the policy group.
+            description: Longer description of the input group.
             type: string
             examples:
               - Collect logs from AWS service
@@ -260,7 +259,7 @@ spec:
                   examples:
                     - ./agent/input/template.yml.hbs
                 input_group:
-                  description: Name of the policy group
+                  description: Name of the input group
                   type: string
                   examples:
                     - logs
