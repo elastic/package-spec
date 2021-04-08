@@ -179,6 +179,7 @@ spec:
           name:
             description: Name of input group.
             type: string
+            pattern: '[a-z][a-z_]+'
             examples:
               - logs
               - metrics
@@ -261,6 +262,7 @@ spec:
                 input_group:
                   description: Name of the input group
                   type: string
+                  pattern: '[a-z][a-z_]+'
                   examples:
                     - logs
                     - metrics
