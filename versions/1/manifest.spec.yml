@@ -187,8 +187,8 @@ spec:
             description: Title of input group.
             type: string
             examples:
-              - Logs
-              - Metrics
+              - Access Logs
+              - Health Metrics
           description:
             description: Longer description of the input group.
             type: string
