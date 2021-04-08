@@ -109,3 +109,6 @@
   - description: Make input groups language consistent.
     type: bugfix
     link: https://github.com/elastic/package-spec/pull/157
+  - description: Predefine input groups
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/158
