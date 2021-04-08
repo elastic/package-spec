@@ -169,36 +169,6 @@ spec:
               description: Kibana versions compatible with this package.
               examples:
                 - ">=7.9.0"
-    input_groups:
-      description: List of input groups offered by this package.
-      type: array
-      items:
-        type: object
-        additionalProperties: false
-        properties:
-          name:
-            description: Name of input group.
-            type: string
-            pattern: '[a-z][a-z_]+'
-            examples:
-              - logs
-              - metrics
-          title:
-            description: Title of input group.
-            type: string
-            examples:
-              - Access Logs
-              - Health Metrics
-          description:
-            description: Longer description of the input group.
-            type: string
-            examples:
-              - Collect logs from AWS service
-              - Collect metrics from AWS service
-        required:
-          - name
-          - title
-          - description
     policy_templates:
       description: List of policy templates offered by this package.
       type: array
@@ -262,8 +232,7 @@ spec:
                 input_group:
                   description: Name of the input group
                   type: string
-                  pattern: '[a-z][a-z_]+'
-                  examples:
+                  enum:
                     - logs
                     - metrics
                 multi:
