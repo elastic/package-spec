@@ -394,7 +394,7 @@
       }
     ]
   },
-  "id": "nginx-Logs-ml",
+  "id": "good-ml-module-abc-1",
   "migrationVersion": {
     "search": "7.9.3"
   },

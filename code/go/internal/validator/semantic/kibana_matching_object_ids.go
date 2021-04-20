@@ -30,16 +30,23 @@ func ValidateKibanaObjectIDs(pkgRoot string) ve.ValidationErrors {
 	}
 
 	for _, objectFile := range objectFiles {
-		name := objectFile.Name()
-		objectID, err := objectFile.Values("$.id")
+		filePath := objectFile.Path()
+
+		idPath := "$.id"
+		// Special case: object is of type 'security_rule'
+		if filepath.Base(filepath.Dir(filePath)) == "security_rule" {
+			idPath = "$.rule_id"
+		}
+
+		objectID, err := objectFile.Values(idPath)
 		if err != nil {
-			errs = append(errs, errors.Wrapf(err, "unable to get Kibana object ID in file '%s'", name))
+			errs = append(errs, errors.Wrapf(err, "unable to get Kibana object ID in file '%s'", filePath))
 			continue
 		}
 
-		fileID := strings.TrimRight(name, ".json")
+		fileID := strings.TrimRight(filepath.Base(filePath), ".json")
 		if fileID != objectID {
-			err := fmt.Errorf("kibana object file '%s' defines non-matching ID '%s'", name, objectID)
+			err := fmt.Errorf("kibana object file '%s' defines non-matching ID '%s'", filePath, objectID)
 			errs = append(errs, err)
 		}
 	}

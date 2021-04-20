@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/PaesslerAG/jsonpath"
 	"github.com/joeshaw/multierror"
@@ -19,6 +20,7 @@ import (
 
 // File represents a file in the package.
 type File struct {
+	path string
 	os.FileInfo
 }
 
@@ -38,7 +40,7 @@ func Files(glob string) ([]File, error) {
 			continue
 		}
 
-		file := File{info}
+		file := File{path, info}
 		files = append(files, file)
 	}
 
@@ -50,13 +52,13 @@ func Files(glob string) ([]File, error) {
 // for YAML and JSON files.
 func (f File) Values(path string) (interface{}, error) {
 	fileName := f.Name()
-	fileExt := filepath.Ext(fileName)
+	fileExt := strings.TrimLeft(filepath.Ext(fileName), ".")
 
 	if fileExt != "json" && fileExt != "yaml" && fileExt != "yml" {
 		return nil, fmt.Errorf("cannot extract values from file type = %s", fileExt)
 	}
 
-	contents, err := ioutil.ReadFile(fileName)
+	contents, err := ioutil.ReadFile(f.path)
 	if err != nil {
 		return nil, errors.Wrap(err, "reading file content failed")
 	}
@@ -73,4 +75,9 @@ func (f File) Values(path string) (interface{}, error) {
 	}
 
 	return jsonpath.Get(path, v)
+}
+
+// Path returns the complete path to the file.
+func (f File) Path() string {
+	return f.path
 }
