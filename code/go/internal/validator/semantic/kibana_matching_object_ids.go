@@ -19,14 +19,16 @@ import (
 // object files that define IDs not matching the file's name. That is, it returns
 // validation errors if a Kibana object file, foo.json, in the package defines
 // an object ID other than foo inside it.
-func ValidateKibanaObjectIDs(pkgRoot string) error {
+func ValidateKibanaObjectIDs(pkgRoot string) ve.ValidationErrors {
+	var errs ve.ValidationErrors
+
 	filePaths := filepath.Join(pkgRoot, "kibana", "*", "*.json")
 	objectFiles, err := pkgpath.Files(filePaths)
 	if err != nil {
-		return errors.Wrap(err, "unable to find Kibana object files")
+		errs = append(errs, errors.Wrap(err, "error finding Kibana object files"))
+		return errs
 	}
 
-	var errs ve.ValidationErrors
 	for _, objectFile := range objectFiles {
 		name := objectFile.Name()
 		objectID, err := objectFile.Values("$.id")
