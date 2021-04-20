@@ -17,10 +17,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// File represents a file in the package.
 type File struct {
 	os.FileInfo
 }
 
+// Files finds files for the given glob
 func Files(glob string) ([]File, error) {
 	paths, err := filepath.Glob(glob)
 	if err != nil {
@@ -43,6 +45,9 @@ func Files(glob string) ([]File, error) {
 	return files, errs.Err()
 }
 
+// Values returns values within the file matching the given path. Paths
+// should be expressed using JSONPath syntax. This method is only supported
+// for YAML and JSON files.
 func (f File) Values(path string) (interface{}, error) {
 	fileName := f.Name()
 	fileExt := filepath.Ext(fileName)
