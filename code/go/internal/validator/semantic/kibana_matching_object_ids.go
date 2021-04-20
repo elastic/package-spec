@@ -9,9 +9,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/elastic/package-spec/code/go/internal/pkgpath"
-	"github.com/elastic/package-spec/code/go/internal/validator"
+	errors2 "github.com/elastic/package-spec/code/go/internal/errors"
 
+	"github.com/elastic/package-spec/code/go/internal/pkgpath"
 	"github.com/pkg/errors"
 )
 
@@ -26,7 +26,7 @@ func ValidateKibanaObjectIDs(pkgRoot string) error {
 		return errors.Wrap(err, "unable to find Kibana object files")
 	}
 
-	var errs validator.ValidationErrors
+	var errs errors2.ValidationErrors
 	for _, objectFile := range objectFiles {
 		name := objectFile.Name()
 		objectID, err := objectFile.Values("$.id")

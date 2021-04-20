@@ -8,6 +8,8 @@ import (
 	"regexp"
 	"sync"
 
+	errors2 "github.com/elastic/package-spec/code/go/internal/errors"
+
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonschema"
 
@@ -15,7 +17,7 @@ import (
 )
 
 const (
-	relativePathFormat = "relative-path"
+	relativePathFormat   = "relative-path"
 	dataStreamNameFormat = "data-stream-name"
 )
 
@@ -67,11 +69,11 @@ func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
 	return false
 }
 
-func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, itemPath string) ValidationErrors {
+func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, itemPath string) errors2.ValidationErrors {
 	// loading item content
 	itemData, err := loadItemContent(itemPath, s.ContentMediaType)
 	if err != nil {
-		return ValidationErrors{err}
+		return errors2.ValidationErrors{err}
 	}
 
 	var schemaLoader gojsonschema.JSONLoader
@@ -98,14 +100,14 @@ func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, ite
 	loadDataStreamNameFormatChecker(filepath.Dir(itemPath))
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 	if err != nil {
-		return ValidationErrors{err}
+		return errors2.ValidationErrors{err}
 	}
 
 	if result.Valid() {
 		return nil // item content is valid according to the loaded schema
 	}
 
-	var errs ValidationErrors
+	var errs errors2.ValidationErrors
 	for _, re := range result.Errors() {
 		errs = append(errs, fmt.Errorf("field %s: %s", re.Field(), adjustErrorDescription(re.Description())))
 	}

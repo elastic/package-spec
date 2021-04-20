@@ -9,6 +9,8 @@ import (
 	"regexp"
 	"strings"
 
+	errors2 "github.com/elastic/package-spec/code/go/internal/errors"
+
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 )
@@ -60,8 +62,8 @@ func newFolderSpec(fs http.FileSystem, specPath string) (*folderSpec, error) {
 	return &spec, nil
 }
 
-func (s *folderSpec) validate(packageName string, folderPath string) ValidationErrors {
-	var errs ValidationErrors
+func (s *folderSpec) validate(packageName string, folderPath string) errors2.ValidationErrors {
+	var errs errors2.ValidationErrors
 	files, err := ioutil.ReadDir(folderPath)
 	if err != nil {
 		errs = append(errs, errors.Wrapf(err, "could not read folder [%s]", folderPath))

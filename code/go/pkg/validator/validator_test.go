@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/elastic/package-spec/code/go/internal/errors"
 
-	"github.com/elastic/package-spec/code/go/internal/validator"
+	"github.com/stretchr/testify/require"
 )
 
 func TestValidateFile(t *testing.T) {
@@ -39,7 +39,7 @@ func TestValidateFile(t *testing.T) {
 			},
 		},
 		"input_template": {},
-		"input_groups": {},
+		"input_groups":   {},
 		"input_groups_bad_data_stream": {
 			"manifest.yml",
 			[]string{
@@ -59,7 +59,7 @@ func TestValidateFile(t *testing.T) {
 			} else {
 				require.Error(t, errs)
 				require.Len(t, errs, len(test.expectedErrContains))
-				vErrs, ok := errs.(validator.ValidationErrors)
+				vErrs, ok := errs.(errors.ValidationErrors)
 				require.True(t, ok)
 
 				var errMessages []string
@@ -128,7 +128,7 @@ func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map
 
 	errs := ValidateFromPath(pkgRootPath)
 	require.Error(t, errs)
-	vErrs, ok := errs.(validator.ValidationErrors)
+	vErrs, ok := errs.(errors.ValidationErrors)
 	require.True(t, ok)
 
 	var errMessages []string
