@@ -33,7 +33,8 @@ func ValidateKibanaObjectIDs(pkgRoot string) ve.ValidationErrors {
 		name := objectFile.Name()
 		objectID, err := objectFile.Values("$.id")
 		if err != nil {
-			return errors.Wrap(err, "unable to get Kibana object ID")
+			errs = append(errs, errors.Wrapf(err, "unable to get Kibana object ID in file '%s'", name))
+			continue
 		}
 
 		fileID := strings.TrimRight(name, ".json")
