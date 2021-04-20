@@ -5,7 +5,7 @@ import (
 	"path"
 	"strconv"
 
-	errors2 "github.com/elastic/package-spec/code/go/internal/errors"
+	ve "github.com/elastic/package-spec/code/go/internal/errors"
 
 	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
 
@@ -48,8 +48,8 @@ func NewSpec(version semver.Version) (*Spec, error) {
 }
 
 // ValidatePackage validates the given Package against the Spec
-func (s Spec) ValidatePackage(pkg Package) errors2.ValidationErrors {
-	var errs errors2.ValidationErrors
+func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
+	var errs ve.ValidationErrors
 
 	rootSpecPath := path.Join(s.specPath, "spec.yml")
 	rootSpec, err := newFolderSpec(s.fs, rootSpecPath)
