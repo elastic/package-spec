@@ -5,6 +5,8 @@ import (
 	"path"
 	"strconv"
 
+	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
+
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
 	"github.com/rakyll/statik/fs"
@@ -54,5 +56,11 @@ func (s Spec) ValidatePackage(pkg Package) ValidationErrors {
 		return errs
 	}
 
-	return rootSpec.validate(pkg.Name, pkg.RootPath)
+	// Syntactic validations
+	errs = rootSpec.validate(pkg.Name, pkg.RootPath)
+
+	// Semantic validations
+	errs = append(errs, semantic.ValidateKibanaObjectIDs(pkg.RootPath)...)
+
+	return errs
 }
