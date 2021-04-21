@@ -25,3 +25,15 @@ func (ve ValidationErrors) Error() string {
 
 	return message.String()
 }
+
+func (ve *ValidationErrors) Append(moreErrs ValidationErrors) {
+	fmt.Println("len moreErrs = ", len(moreErrs))
+	if len(moreErrs) == 0 {
+		return
+	}
+
+	errs := *ve
+	errs = append(errs, moreErrs...)
+
+	*ve = errs
+}
