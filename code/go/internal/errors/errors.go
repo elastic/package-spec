@@ -27,7 +27,6 @@ func (ve ValidationErrors) Error() string {
 }
 
 func (ve *ValidationErrors) Append(moreErrs ValidationErrors) {
-	fmt.Println("len moreErrs = ", len(moreErrs))
 	if len(moreErrs) == 0 {
 		return
 	}
