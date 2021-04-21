@@ -8,7 +8,15 @@ import (
 )
 
 const (
-	RelativePathFormat   = "relative-path"
+	// RelativePathFormat defines the ID of the relative path format checker. This format checker
+	// should be used when a field's value refers to a relative filesystem path. The checker will
+	// ensure that the location pointed to by that relative filesystem path actually exists on
+	// the filesystem, relative to the file in which the field is defined.
+	RelativePathFormat = "relative-path"
+
+	// DataStreamNameFormat defines the ID of the data stream name format checker. This format checker
+	// should be used when a field's value refers to a data stream name. The checker will ensure
+	// that a folder with that data stream name exists on the filesystem.
 	DataStreamNameFormat = "data-stream-name"
 )
 
