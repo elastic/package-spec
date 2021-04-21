@@ -24,6 +24,8 @@ type Spec struct {
 	specPath string
 }
 
+type validationRules []func(pkgRoot string) ve.ValidationErrors
+
 // NewSpec creates a new Spec for the given version
 func NewSpec(version semver.Version) (*Spec, error) {
 	majorVersion := strconv.FormatUint(version.Major(), 10)
@@ -62,7 +64,20 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	errs = rootSpec.validate(pkg.Name, pkg.RootPath)
 
 	// Semantic validations
-	errs = append(errs, semantic.ValidateKibanaObjectIDs(pkg.RootPath)...)
+	rules := validationRules{
+		semantic.ValidateKibanaObjectIDs,
+	}
+	errs = append(errs, rules.validate(pkg.RootPath)...)
+
+	return errs
+}
+
+func (vr validationRules) validate(pkgRoot string) ve.ValidationErrors {
+	var errs ve.ValidationErrors
+	for _, validationRule := range vr {
+		err := validationRule(pkgRoot)
+		errs = append(errs, err)
+	}
 
 	return errs
 }
