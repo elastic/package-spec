@@ -44,7 +44,10 @@ func ValidateKibanaObjectIDs(pkgRoot string) ve.ValidationErrors {
 			continue
 		}
 
-		fileID := strings.Replace(filepath.Base(filePath), filepath.Ext(filePath), "", -1)
+		// fileID == filename without the extension == expected ID of Kibana object defined inside file.
+		fileName := filepath.Base(filePath)
+		fileExt := filepath.Ext(filePath)
+		fileID := strings.Replace(fileName, fileExt, "", -1)
 		if fileID != objectID {
 			err := fmt.Errorf("kibana object file [%s] defines non-matching ID [%s]", filePath, objectID)
 			errs = append(errs, err)
