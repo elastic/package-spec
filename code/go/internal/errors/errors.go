@@ -1,4 +1,4 @@
-package validator
+package errors
 
 import (
 	"fmt"
@@ -24,4 +24,16 @@ func (ve ValidationErrors) Error() string {
 	}
 
 	return message.String()
+}
+
+// Append adds more validation errors.
+func (ve *ValidationErrors) Append(moreErrs ValidationErrors) {
+	if len(moreErrs) == 0 {
+		return
+	}
+
+	errs := *ve
+	errs = append(errs, moreErrs...)
+
+	*ve = errs
 }

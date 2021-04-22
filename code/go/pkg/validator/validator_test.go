@@ -5,9 +5,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/elastic/package-spec/code/go/internal/errors"
 
-	"github.com/elastic/package-spec/code/go/internal/validator"
+	"github.com/stretchr/testify/require"
 )
 
 func TestValidateFile(t *testing.T) {
@@ -39,7 +39,7 @@ func TestValidateFile(t *testing.T) {
 			},
 		},
 		"input_template": {},
-		"input_groups": {},
+		"input_groups":   {},
 		"input_groups_bad_data_stream": {
 			"manifest.yml",
 			[]string{
@@ -59,7 +59,7 @@ func TestValidateFile(t *testing.T) {
 			} else {
 				require.Error(t, errs)
 				require.Len(t, errs, len(test.expectedErrContains))
-				vErrs, ok := errs.(validator.ValidationErrors)
+				vErrs, ok := errs.(errors.ValidationErrors)
 				require.True(t, ok)
 
 				var errMessages []string
@@ -123,12 +123,53 @@ func TestValidateItemNotExpected(t *testing.T) {
 	}
 }
 
+func TestValidateBadKibanaIDs(t *testing.T) {
+	tests := map[string]map[string][]string{
+		"bad_kibana_ids": {
+			"kibana/dashboard": []string{
+				"bad_kibana_ids-bar-baz.json",
+			},
+			"kibana/security_rule": []string{
+				"bad_kibana_ids-bar-baz.json",
+			},
+		},
+	}
+
+	for pkgName, invalidItemsPerFolder := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
+
+			errs := ValidateFromPath(pkgRootPath)
+			require.Error(t, errs)
+			vErrs, ok := errs.(errors.ValidationErrors)
+			require.True(t, ok)
+
+			var errMessages []string
+			for _, vErr := range vErrs {
+				errMessages = append(errMessages, vErr.Error())
+			}
+
+			var c int
+			for itemFolder, invalidItems := range invalidItemsPerFolder {
+				for _, invalidItem := range invalidItems {
+					objectFilePath := filepath.Join(pkgRootPath, itemFolder, invalidItem)
+					expected := fmt.Sprintf("kibana object file [%s] defines non-matching ID", objectFilePath)
+					require.Contains(t, errMessages[c], expected)
+					c++
+				}
+			}
+			require.Len(t, errs, c)
+
+		})
+	}
+}
+
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {
 	pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 
 	errs := ValidateFromPath(pkgRootPath)
 	require.Error(t, errs)
-	vErrs, ok := errs.(validator.ValidationErrors)
+	vErrs, ok := errs.(errors.ValidationErrors)
 	require.True(t, ok)
 
 	var errMessages []string
