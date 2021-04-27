@@ -8,13 +8,11 @@ import (
 	"regexp"
 	"sync"
 
-	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
-
-	ve "github.com/elastic/package-spec/code/go/internal/errors"
-
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonschema"
 
+	ve "github.com/elastic/package-spec/code/go/internal/errors"
+	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
 	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
