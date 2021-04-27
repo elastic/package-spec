@@ -8,17 +8,12 @@ import (
 	"regexp"
 	"sync"
 
-	ve "github.com/elastic/package-spec/code/go/internal/errors"
-
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonschema"
 
+	ve "github.com/elastic/package-spec/code/go/internal/errors"
+	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
 	"github.com/elastic/package-spec/code/go/internal/yamlschema"
-)
-
-const (
-	relativePathFormat   = "relative-path"
-	dataStreamNameFormat = "data-stream-name"
 )
 
 type folderItemSpec struct {
@@ -91,13 +86,13 @@ func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, ite
 
 	formatCheckersMutex.Lock()
 	defer func() {
-		unloadRelativePathFormatChecker()
-		unloadDataStreamNameFormatChecker()
+		semantic.UnloadRelativePathFormatChecker()
+		semantic.UnloadDataStreamNameFormatChecker()
 		formatCheckersMutex.Unlock()
 	}()
 
-	loadRelativePathFormatChecker(filepath.Dir(itemPath))
-	loadDataStreamNameFormatChecker(filepath.Dir(itemPath))
+	semantic.LoadRelativePathFormatChecker(filepath.Dir(itemPath))
+	semantic.LoadDataStreamNameFormatChecker(filepath.Dir(itemPath))
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 	if err != nil {
 		return ve.ValidationErrors{err}
@@ -112,24 +107,4 @@ func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, ite
 		errs = append(errs, fmt.Errorf("field %s: %s", re.Field(), adjustErrorDescription(re.Description())))
 	}
 	return errs
-}
-
-func loadRelativePathFormatChecker(currentPath string) {
-	gojsonschema.FormatCheckers.Add(relativePathFormat, RelativePathChecker{
-		currentPath: currentPath,
-	})
-}
-
-func unloadRelativePathFormatChecker() {
-	gojsonschema.FormatCheckers.Remove(relativePathFormat)
-}
-
-func loadDataStreamNameFormatChecker(currentPath string) {
-	gojsonschema.FormatCheckers.Add(dataStreamNameFormat, RelativePathChecker{
-		currentPath: filepath.Join(currentPath, "data_stream"),
-	})
-}
-
-func unloadDataStreamNameFormatChecker() {
-	gojsonschema.FormatCheckers.Remove(dataStreamNameFormat)
 }
