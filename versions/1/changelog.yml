@@ -112,3 +112,6 @@
   - description: Predefine input groups
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/158
+  - description: Define Github owner field pattern
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/164

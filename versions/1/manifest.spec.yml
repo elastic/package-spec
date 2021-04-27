@@ -270,6 +270,7 @@ spec:
         github:
           description: GitHub repository name of package maintainer.
           type: string
+          pattern: '^(([a-zA-Z0-9-]+)|([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+))$'
       required:
       - github
   required:
