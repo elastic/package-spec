@@ -61,3 +61,40 @@ As mentioned above, package specifications are versioned. Versions follow the [s
 ## Version Compatibility between Packages and Specifications
 
 A package specifying its `format_version` as `x.y.z` must be valid against specifications in the semantic version range `[x.y.z, X.0.0)`, where `X = x + 1`.
+
+
+# What is an Elastic Package?
+
+An Elastic Package is a collection of assets for the Elastic Stack. In addition, it contains manifest files which contain additional information about the package. The exact content and structure of a package are described by the package spec. In the following is a high level overview of a package.
+
+A package is downloaded as a .zip file for the package-registry by Fleet inside Kibana. The zip file is then unpacked and each asset is installed into the related API.
+
+## Asset organisation
+
+In general, the assets are organised by {stack-component}/{asset-type}. For example assets for Elasticsearch ingest pipelines are in the directory `elasticsearch/ingest-pipeline`. The same logic applies to all Elasticsearch, Kibana and Elastic Agent assets.
+
+There is a special directory `data_stream`. All assets inside the data_stream directory must follow the [Data Stream naming scheme](https://www.elastic.co/blog/an-introduction-to-the-elastic-data-stream-naming-scheme). `data_stream` can contain multiple directory, each with the name of the dataset (or postfix). Inside this directory, the same structure as before for {stack-component}/{asset-type} applies. The difference is that for all these assets, Fleet during installation enforces naming rules related to the [Data Stream naming scheme](https://www.elastic.co/blog/an-introduction-to-the-elastic-data-stream-naming-scheme). All assets in this directory belong directly or indirectly to data streams.
+
+In contrast, any asset added on the top level will be picked up as json document, pushed to the corresponding Elasticsearch / Kibana API and used as is. In most scenarios, only the data_stream assets are need, there are exceptions where global assets are required to get more flexibility.
+
+## Supported assets
+
+In the following each currently supported asset type is listed for a quick overview. The package spec will always contain the fully up-to-date list:
+
+* Elasticsearch
+  * Ingest Pipeline
+  * Index Template
+  * Transform
+  * Index template settings
+* Kibana
+  * Dashboards
+  * Visualization
+  * Index patterns
+  * ML Modules
+  * Map
+  * Search
+  * Security rules
+* Other
+  * fields.yml
+
+The special asset `fields.yml` is used to generate out of a single definition Elasticsearch Index Templates and Kibana index patterns. The exact definition can be found in the package spec.
