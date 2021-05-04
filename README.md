@@ -67,7 +67,7 @@ A package specifying its `format_version` as `x.y.z` must be valid against speci
 
 An Elastic Package is a collection of assets for the Elastic Stack. In addition, it contains manifest files which contain additional information about the package. The exact content and structure of a package are described by the package spec. In the following is a high level overview of a package.
 
-A package is downloaded as a .zip file for the package-registry by Fleet inside Kibana. The zip file is then unpacked and each asset is installed into the related API.
+A package is downloaded as a .zip file from the package-registry by Fleet inside Kibana. The zip file is then unpacked and each asset is installed into the related API.
 
 ## Asset organisation
 
