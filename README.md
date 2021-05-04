@@ -79,7 +79,7 @@ In contrast, any asset added on the top level will be picked up as json document
 
 ## Supported assets
 
-In the following each currently supported asset type is listed for a quick overview. The package spec will always contain the fully up-to-date list:
+For a quick overview, these are the assets typically found in an Elastic Package. The package spec will always contain the fully up-to-date list.
 
 * Elasticsearch
   * Ingest Pipeline
