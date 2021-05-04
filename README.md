@@ -71,7 +71,7 @@ A package is downloaded as a .zip file for the package-registry by Fleet inside 
 
 ## Asset organisation
 
-In general, the assets are organised by {stack-component}/{asset-type}. For example assets for Elasticsearch ingest pipelines are in the directory `elasticsearch/ingest-pipeline`. The same logic applies to all Elasticsearch, Kibana and Elastic Agent assets.
+In general, assets within a package are organised by {stack-component}/{asset-type}. For example assets for Elasticsearch ingest pipelines are in the folder `elasticsearch/ingest-pipeline`. The same logic applies to all Elasticsearch, Kibana and Elastic Agent assets.
 
 There is a special directory `data_stream`. All assets inside the data_stream directory must follow the [Data Stream naming scheme](https://www.elastic.co/blog/an-introduction-to-the-elastic-data-stream-naming-scheme). `data_stream` can contain multiple directory, each with the name of the dataset (or postfix). Inside this directory, the same structure as before for {stack-component}/{asset-type} applies. The difference is that for all these assets, Fleet during installation enforces naming rules related to the [Data Stream naming scheme](https://www.elastic.co/blog/an-introduction-to-the-elastic-data-stream-naming-scheme). All assets in this directory belong directly or indirectly to data streams.
 
