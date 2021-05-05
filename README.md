@@ -26,7 +26,7 @@ In general, assets within a package are organised by {stack-component}/{asset-ty
 
 There is a special folder `data_stream`. All assets inside the `data_stream` folder must follow the [Data Stream naming scheme](https://www.elastic.co/blog/an-introduction-to-the-elastic-data-stream-naming-scheme). `data_stream` can contain multiple folders, each with the name of that describes the content. Inside this folder, the same structure as before for {stack-component}/{asset-type} applies. The difference is that for all these assets, Fleet during installation enforces naming rules related to the [Data Stream naming scheme](https://www.elastic.co/blog/an-introduction-to-the-elastic-data-stream-naming-scheme). All assets in this folder belong directly or indirectly to data streams.
 
-In contrast, any asset added on the top level will be picked up as json document, pushed to the corresponding Elasticsearch / Kibana APIs and used as is. In most scenarios, only data stream assets are needed. There are exceptions where global assets are required to get more flexibility. This could be for example an ILM policy that applies to all data streams.
+In contrast, any asset added on the top level will be picked up as json document, pushed to the corresponding Elasticsearch / Kibana APIs and used as is. In most scenarios, only data stream assets are needed. There are exceptions where global assets are required to get more flexibility. This could be, for example, an ILM policy that applies to all data streams.
 
 ## Supported assets
 
@@ -101,4 +101,3 @@ As mentioned above, package specifications are versioned. Versions follow the [s
 ## Version Compatibility between Packages and Specifications
 
 A package specifying its `format_version` as `x.y.z` must be valid against specifications in the semantic version range `[x.y.z, X.0.0)`, where `X = x + 1`.
-
