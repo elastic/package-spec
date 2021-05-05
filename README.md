@@ -11,6 +11,46 @@ This repository contains:
 
 Please use this repository to discuss any changes to the specification, either my making issues or PRs to the specification.
 
+
+# What is an Elastic Package?
+
+An Elastic Package is a collection of assets for the Elastic Stack. In addition, it contains manifest files which contain additional information about the package. The exact content and structure of a package are described by the package spec.
+
+A package with all its assets is downloaded as a .zip file from the package-registry by Fleet inside Kibana. The assets are then unpacked and each asset is installed into the related API and the package can be configured.
+
+In the following is a high level overview of a package.
+
+## Asset organisation
+
+In general, assets within a package are organised by {stack-component}/{asset-type}. For example assets for Elasticsearch ingest pipelines are in the folder `elasticsearch/ingest-pipeline`. The same logic applies to all Elasticsearch, Kibana and Elastic Agent assets.
+
+There is a special folder `data_stream`. All assets inside the `data_stream` folder must follow the [Data Stream naming scheme](https://www.elastic.co/blog/an-introduction-to-the-elastic-data-stream-naming-scheme). `data_stream` can contain multiple folders, each with the name of that describes the content. Inside this folder, the same structure as before for {stack-component}/{asset-type} applies. The difference is that for all these assets, Fleet during installation enforces naming rules related to the [Data Stream naming scheme](https://www.elastic.co/blog/an-introduction-to-the-elastic-data-stream-naming-scheme). All assets in this folder belong directly or indirectly to data streams.
+
+In contrast, any asset added on the top level will be picked up as json document, pushed to the corresponding Elasticsearch / Kibana APIs and used as is. In most scenarios, only data stream assets are needed. There are exceptions where global assets are required to get more flexibility. This could be, for example, an ILM policy that applies to all data streams.
+
+## Supported assets
+
+For a quick overview, these are the assets typically found in an Elastic Package. The package spec will always contain the fully up-to-date list.
+
+* Elasticsearch
+  * Ingest Pipeline
+  * Index Template
+  * Transform
+  * Index template settings
+* Kibana
+  * Dashboards
+  * Visualization
+  * Index patterns
+  * ML Modules
+  * Map
+  * Search
+  * Security rules
+* Other
+  * fields.yml
+
+The special asset `fields.yml` is used to generate out of a single definition Elasticsearch Index Templates and Kibana index patterns. The exact definition can be found in the package spec.
+
+
 # Specification Format
 
 An Elastic Package specification describes:
