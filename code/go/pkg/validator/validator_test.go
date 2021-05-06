@@ -3,6 +3,7 @@ package validator
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/elastic/package-spec/code/go/internal/errors"
@@ -167,6 +168,17 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 			require.Len(t, errs, c)
 
 		})
+	}
+}
+
+func TestValidateVersionIntegrity(t *testing.T) {
+	errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", "inconsistent_version"))
+	require.Error(t, errs)
+	vErrs, ok := errs.(errors.ValidationErrors)
+	require.True(t, ok)
+
+	for _, vErr := range vErrs {
+		require.True(t, strings.Contains(vErr.Error(), "inconsistent versions between manifest"))
 	}
 }
 
