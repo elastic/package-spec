@@ -115,3 +115,6 @@
   - description: Define Github owner field pattern
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/164
+  - description: Ensure version consistency between manifest and changelog
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/172
