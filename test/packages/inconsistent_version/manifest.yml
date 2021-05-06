@@ -10,16 +10,6 @@ categories:
 release: experimental
 conditions:
   kibana.version: "^7.13.0"
-screenshots:
-  - src: /img/sample-screenshot.png
-    title: Sample screenshot
-    size: 600x600
-    type: image/png
-icons:
-  - src: /img/sample-logo.svg
-    title: Sample logo
-    size: 32x32
-    type: image/svg+xml
 policy_templates:
   - name: sample
     title: Sample logs
