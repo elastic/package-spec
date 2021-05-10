@@ -178,7 +178,7 @@ func TestValidateVersionIntegrity(t *testing.T) {
 	require.True(t, ok)
 
 	for _, vErr := range vErrs {
-		require.True(t, strings.Contains(vErr.Error(), "inconsistent versions between manifest"))
+		require.True(t, strings.Contains(vErr.Error(), "current manifest version doesn't have changelog entry"))
 	}
 }
 

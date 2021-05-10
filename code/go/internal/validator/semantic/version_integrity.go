@@ -1,15 +1,11 @@
 package semantic
 
 import (
-	"fmt"
-	"io/ioutil"
 	"path/filepath"
-
-	"github.com/pkg/errors"
-	"gopkg.in/yaml.v3"
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/pkgpath"
+	"github.com/pkg/errors"
 )
 
 // ValidateVersionIntegrity returns validation errors if the version defined in manifest isn't referenced in the latest
@@ -20,16 +16,17 @@ func ValidateVersionIntegrity(pkgRoot string) ve.ValidationErrors {
 		return ve.ValidationErrors{err}
 	}
 
-	latestChangelogVersion, err := readLatestChangelogVersion(pkgRoot)
+	changelogVersions, err := readChangelogVersions(pkgRoot)
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}
 
-	if manifestVersion != latestChangelogVersion {
-		return ve.ValidationErrors{fmt.Errorf("inconsistent versions between manifest (%s) and changelog (%s)",
-			manifestVersion, latestChangelogVersion)}
+	for _, v := range changelogVersions {
+		if v == manifestVersion {
+			return nil
+		}
 	}
-	return nil
+	return ve.ValidationErrors{errors.New("current manifest version doesn't have changelog entry")}
 }
 
 func readManifestVersion(pkgRoot string) (string, error) {
@@ -50,23 +47,42 @@ func readManifestVersion(pkgRoot string) (string, error) {
 	return val.(string), nil
 }
 
-func readLatestChangelogVersion(pkgRoot string) (string, error) {
-	var manifest []struct {
-		Version string `yaml:"version"`
-	}
-
-	body, err := ioutil.ReadFile(filepath.Join(pkgRoot, "changelog.yml"))
+func readChangelogVersions(pkgRoot string) ([]string, error) {
+	manifestPath := filepath.Join(pkgRoot, "changelog.yml")
+	f, err := pkgpath.Files(manifestPath)
 	if err != nil {
-		return "", errors.Wrap(err, "can't read changelog file")
+		return nil, errors.Wrap(err, "can't locate changelog file")
 	}
 
-	err = yaml.Unmarshal(body, &manifest)
+	if len(f) != 1 {
+		return nil, errors.New("single changelog file expected")
+	}
+
+	vals, err := f[0].Values("$[*].version")
 	if err != nil {
-		return "", errors.Wrap(err, "can't unmarshal changelog file")
+		return nil, errors.Wrap(err, "can't changelog entries")
 	}
 
-	if len(manifest) == 0 {
-		return "", errors.Wrap(err, "changelog file is empty")
+	versions, err := toStringSlice(vals)
+	if err != nil {
+		return nil, errors.Wrap(err, "can't convert slice entries")
 	}
-	return manifest[0].Version, nil
+	return versions, nil
+}
+
+func toStringSlice(val interface{}) ([]string, error) {
+	vals, ok := val.([]interface{})
+	if !ok {
+		return nil, errors.New("conversion error")
+	}
+
+	var s []string
+	for _, v := range vals {
+		str, ok := v.(string)
+		if !ok {
+			return nil, errors.New("conversion error")
+		}
+		s = append(s, str)
+	}
+	return s, nil
 }
