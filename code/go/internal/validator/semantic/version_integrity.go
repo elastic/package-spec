@@ -9,6 +9,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
+	"github.com/elastic/package-spec/code/go/internal/pkgpath"
 )
 
 // ValidateVersionIntegrity returns validation errors if the version defined in manifest isn't referenced in the latest
@@ -32,20 +33,21 @@ func ValidateVersionIntegrity(pkgRoot string) ve.ValidationErrors {
 }
 
 func readManifestVersion(pkgRoot string) (string, error) {
-	var manifest = struct {
-		Version string `yaml:"version"`
-	}{}
-
-	body, err := ioutil.ReadFile(filepath.Join(pkgRoot, "manifest.yml"))
+	manifestPath := filepath.Join(pkgRoot, "manifest.yml")
+	f, err := pkgpath.Files(manifestPath)
 	if err != nil {
-		return "", errors.Wrap(err, "can't read manifest file")
+		return "", errors.Wrap(err, "can't locate manifest file")
 	}
 
-	err = yaml.Unmarshal(body, &manifest)
-	if err != nil {
-		return "", errors.Wrap(err, "can't unmarshal manifest file")
+	if len(f) != 1 {
+		return "", errors.New("single manifest file expected")
 	}
-	return manifest.Version, nil
+
+	val, err := f[0].Values("version")
+	if err != nil {
+		return "", errors.Wrap(err, "can't read manifest version")
+	}
+	return val.(string), nil
 }
 
 func readLatestChangelogVersion(pkgRoot string) (string, error) {
