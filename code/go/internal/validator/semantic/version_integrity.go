@@ -40,7 +40,7 @@ func readManifestVersion(pkgRoot string) (string, error) {
 		return "", errors.New("single manifest file expected")
 	}
 
-	val, err := f[0].Values("version")
+	val, err := f[0].Values("$.version")
 	if err != nil {
 		return "", errors.Wrap(err, "can't read manifest version")
 	}
