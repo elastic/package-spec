@@ -161,12 +161,22 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 				for _, invalidItem := range invalidItems {
 					objectFilePath := filepath.Join(pkgRootPath, itemFolder, invalidItem)
 					expected := fmt.Sprintf("kibana object file [%s] defines non-matching ID", objectFilePath)
-					require.Contains(t, errMessages[c], expected)
-					c++
+
+					var found bool
+					for _, e := range errMessages {
+						if strings.HasPrefix(e, expected) {
+							found = true
+						}
+					}
+
+					if found {
+						c++
+						continue
+					}
+					require.True(t, found, "Missing item: " + expected)
 				}
 			}
-			require.Len(t, errs, c)
-
+			require.Equal(t, c, len(errMessages))
 		})
 	}
 }
