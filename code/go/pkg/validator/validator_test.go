@@ -3,6 +3,7 @@ package validator
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/elastic/package-spec/code/go/internal/errors"
@@ -160,13 +161,34 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 				for _, invalidItem := range invalidItems {
 					objectFilePath := filepath.Join(pkgRootPath, itemFolder, invalidItem)
 					expected := fmt.Sprintf("kibana object file [%s] defines non-matching ID", objectFilePath)
-					require.Contains(t, errMessages[c], expected)
-					c++
+
+					var found bool
+					for _, e := range errMessages {
+						if strings.HasPrefix(e, expected) {
+							found = true
+						}
+					}
+
+					if found {
+						c++
+						continue
+					}
+					require.True(t, found, "Missing item: " + expected)
 				}
 			}
-			require.Len(t, errs, c)
-
+			require.Equal(t, c, len(errMessages))
 		})
+	}
+}
+
+func TestValidateVersionIntegrity(t *testing.T) {
+	errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", "inconsistent_version"))
+	require.Error(t, errs)
+	vErrs, ok := errs.(errors.ValidationErrors)
+	require.True(t, ok)
+
+	for _, vErr := range vErrs {
+		require.True(t, strings.Contains(vErr.Error(), "current manifest version doesn't have changelog entry"))
 	}
 }
 

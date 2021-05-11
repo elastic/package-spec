@@ -1,4 +1,9 @@
-- version: 1.0.4
+- version: 1.0.0-next
+  changes:
+    - description: release candidate
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/172
+- version: 0.1.2
   changes:
     - description: initial release
       type: enhancement
