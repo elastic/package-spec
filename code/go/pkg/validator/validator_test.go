@@ -188,6 +188,17 @@ func TestValidateVersionIntegrity(t *testing.T) {
 	}
 }
 
+func TestMissingVersionIntegrity(t *testing.T) {
+	errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", "missing_version"))
+	require.Error(t, errs)
+	vErrs, ok := errs.(errors.ValidationErrors)
+	require.True(t, ok)
+
+	for _, vErr := range vErrs {
+		require.True(t, strings.Contains(vErr.Error(), "version is undefined"))
+	}
+}
+
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {
 	pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 

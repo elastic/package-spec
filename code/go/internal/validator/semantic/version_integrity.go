@@ -44,7 +44,12 @@ func readManifestVersion(pkgRoot string) (string, error) {
 	if err != nil {
 		return "", errors.Wrap(err, "can't read manifest version")
 	}
-	return val.(string), nil
+
+	sVal, ok := val.(string)
+	if !ok {
+		return "", errors.New("version is undefined")
+	}
+	return sVal, nil
 }
 
 func readChangelogVersions(pkgRoot string) ([]string, error) {
