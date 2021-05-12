@@ -178,24 +178,24 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 }
 
 func TestValidateVersionIntegrity(t *testing.T) {
-	errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", "inconsistent_version"))
-	require.Error(t, errs)
-	vErrs, ok := errs.(errors.ValidationErrors)
-	require.True(t, ok)
-
-	for _, vErr := range vErrs {
-		require.True(t, strings.Contains(vErr.Error(), "current manifest version doesn't have changelog entry"))
+	tests := map[string]string{
+		"inconsistent_version": "current manifest version doesn't have changelog entry",
+		"missing_version": "version is undefined",
 	}
-}
 
-func TestMissingVersionIntegrity(t *testing.T) {
-	errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", "missing_version"))
-	require.Error(t, errs)
-	vErrs, ok := errs.(errors.ValidationErrors)
-	require.True(t, ok)
+	for pkgName, expectedErrorMessage := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			require.Error(t, errs)
+			vErrs, ok := errs.(errors.ValidationErrors)
+			require.True(t, ok)
 
-	for _, vErr := range vErrs {
-		require.True(t, strings.Contains(vErr.Error(), "version is undefined"))
+			var errMessages []string
+			for _, vErr := range vErrs {
+				errMessages = append(errMessages, vErr.Error())
+			}
+			require.Contains(t, errMessages, expectedErrorMessage)
+		})
 	}
 }
 
