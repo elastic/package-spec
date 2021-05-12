@@ -168,12 +168,8 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 							found = true
 						}
 					}
-
-					if found {
-						c++
-						continue
-					}
 					require.True(t, found, "Missing item: " + expected)
+					c++
 				}
 			}
 			require.Equal(t, c, len(errMessages))
