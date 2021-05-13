@@ -118,3 +118,6 @@
   - description: Ensure version consistency between manifest and changelog
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/172
+  - description: Improve version consistency in case of missing/undefined version
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/174

@@ -53,6 +53,12 @@ func TestValidateFile(t *testing.T) {
 				"field owner.github: Does not match pattern '^(([a-zA-Z0-9-]+)|([a-zA-Z0-9-]+\\/[a-zA-Z0-9-]+))$'",
 			},
 		},
+		"missing_version": {
+			"manifest.yml",
+			[]string{
+				"field version: Invalid type. Expected: string, given: null",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
@@ -168,12 +174,8 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 							found = true
 						}
 					}
-
-					if found {
-						c++
-						continue
-					}
 					require.True(t, found, "Missing item: " + expected)
+					c++
 				}
 			}
 			require.Equal(t, c, len(errMessages))
@@ -182,13 +184,23 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 }
 
 func TestValidateVersionIntegrity(t *testing.T) {
-	errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", "inconsistent_version"))
-	require.Error(t, errs)
-	vErrs, ok := errs.(errors.ValidationErrors)
-	require.True(t, ok)
+	tests := map[string]string{
+		"inconsistent_version": "current manifest version doesn't have changelog entry",
+	}
 
-	for _, vErr := range vErrs {
-		require.True(t, strings.Contains(vErr.Error(), "current manifest version doesn't have changelog entry"))
+	for pkgName, expectedErrorMessage := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			require.Error(t, errs)
+			vErrs, ok := errs.(errors.ValidationErrors)
+			require.True(t, ok)
+
+			var errMessages []string
+			for _, vErr := range vErrs {
+				errMessages = append(errMessages, vErr.Error())
+			}
+			require.Contains(t, errMessages, expectedErrorMessage)
+		})
 	}
 }
 

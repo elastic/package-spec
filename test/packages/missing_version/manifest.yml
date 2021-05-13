@@ -1,0 +1,22 @@
+format_version: 1.0.0
+name: inconsistent_version
+title: "Missing Version"
+license: basic
+description: "This is a test package."
+type: integration
+version:
+categories:
+  - custom
+release: experimental
+conditions:
+  kibana.version: "^7.13.0"
+policy_templates:
+  - name: sample
+    title: Sample logs
+    description: Collect sample logs
+    inputs:
+      - type: logfile
+        title: Collect sample logs from instances
+        description: Collecting sample logs
+owner:
+  github: elastic/integrations
