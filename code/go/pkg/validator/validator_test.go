@@ -53,6 +53,12 @@ func TestValidateFile(t *testing.T) {
 				"field owner.github: Does not match pattern '^(([a-zA-Z0-9-]+)|([a-zA-Z0-9-]+\\/[a-zA-Z0-9-]+))$'",
 			},
 		},
+		"missing_version": {
+			"manifest.yml",
+			[]string{
+				"field version: Invalid type. Expected: string, given: null",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
@@ -180,7 +186,6 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 func TestValidateVersionIntegrity(t *testing.T) {
 	tests := map[string]string{
 		"inconsistent_version": "current manifest version doesn't have changelog entry",
-		"missing_version": "version is undefined",
 	}
 
 	for pkgName, expectedErrorMessage := range tests {

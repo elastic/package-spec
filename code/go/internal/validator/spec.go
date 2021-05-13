@@ -61,16 +61,17 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	}
 
 	// Syntactic validations
-	errs.Append(rootSpec.validate(pkg.Name, pkg.RootPath))
+	errs = rootSpec.validate(pkg.Name, pkg.RootPath)
+	if len(errs) != 0 {
+		return errs
+	}
 
 	// Semantic validations
 	rules := validationRules{
 		semantic.ValidateKibanaObjectIDs,
 		semantic.ValidateVersionIntegrity,
 	}
-	errs.Append(rules.validate(pkg.RootPath))
-
-	return errs
+	return rules.validate(pkg.RootPath)
 }
 
 func (vr validationRules) validate(pkgRoot string) ve.ValidationErrors {
