@@ -121,3 +121,6 @@
   - description: Improve version consistency in case of missing/undefined version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/174
+  - description: Fix security_rule format
+    type: bugfix
+    link: https://github.com/elastic/package-spec/pull/175
