@@ -1,3 +1,6 @@
 {
-  "rule_id": "something-else"
+  "attributes": {
+    "rule_id": "something-else"
+  },
+  "id": "something-else"
 }

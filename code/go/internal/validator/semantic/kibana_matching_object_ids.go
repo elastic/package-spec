@@ -32,16 +32,24 @@ func ValidateKibanaObjectIDs(pkgRoot string) ve.ValidationErrors {
 	for _, objectFile := range objectFiles {
 		filePath := objectFile.Path()
 
-		idPath := "$.id"
-		// Special case: object is of type 'security_rule'
-		if filepath.Base(filepath.Dir(filePath)) == "security_rule" {
-			idPath = "$.rule_id"
-		}
-
-		objectID, err := objectFile.Values(idPath)
+		objectID, err := objectFile.Values("$.id")
 		if err != nil {
 			errs = append(errs, errors.Wrapf(err, "unable to get Kibana object ID in file [%s]", filePath))
 			continue
+		}
+
+		// Special case: object is of type 'security_rule'
+		if filepath.Base(filepath.Dir(filePath)) == "security_rule" {
+			ruleID, err := objectFile.Values("$.attributes.rule_id")
+			if err != nil {
+				errs = append(errs, errors.Wrapf(err, "unable to get rule ID in file [%s]", filePath))
+				continue
+			}
+
+			if ruleID != objectID {
+				errs = append(errs, errors.New("rule ID is different from the object ID"))
+				continue
+			}
 		}
 
 		// fileID == filename without the extension == expected ID of Kibana object defined inside file.
