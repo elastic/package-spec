@@ -124,3 +124,6 @@
   - description: Fix security_rule format
     type: bugfix
     link: https://github.com/elastic/package-spec/pull/175
+  - description: Define common test config for pipeline tests
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/176
