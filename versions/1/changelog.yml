@@ -127,6 +127,6 @@
   - description: Define common test config for pipeline tests
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/176
-  - description: Introduce "source" property for fields
+  - description: Introduce "reference" property for fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/179
