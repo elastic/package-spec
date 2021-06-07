@@ -78,8 +78,8 @@ spec:
         type: string
         examples:
           - '^[a-zA-Z]$'
-      source:
-        description: External source
+      reference:
+        description: External source reference
         type: string
         enum:
           - ecs
