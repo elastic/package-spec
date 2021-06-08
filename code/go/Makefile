@@ -8,15 +8,12 @@ update: tools
 	# Add license headers
 	@go-licenser -license Elastic
 
-	@go mod tidy
-
 check: lint check-license check-spec
 
 # "yamlschema" directory has been excluded from linting, because it contains implementations of gojsonschema interfaces
 # which are not compliant with linter rules. The golint tool doesn't support ignore comments.
 lint: tools
 	@go list ./... | grep -v yamlschema | xargs -n 1 golint -set_exit_status
-	@go mod tidy
 
 check-license: tools
 	@go-licenser -license Elastic -d
@@ -35,7 +32,6 @@ check-spec: tools
 			echo "Specs are not up to date. Please run make update."; \
 		fi; \
 		exit $$retval
-	@go mod tidy
 
 # Runs tests
 test:
@@ -48,3 +44,4 @@ tools:
 	@go get -u golang.org/x/lint/golint
 	@go get github.com/rakyll/statik
 	@go get github.com/elastic/go-licenser
+	@go mod tidy
