@@ -127,3 +127,6 @@
   - description: Define common test config for pipeline tests
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/176
+  - description: Validate if field groups don't have units defined
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/183
