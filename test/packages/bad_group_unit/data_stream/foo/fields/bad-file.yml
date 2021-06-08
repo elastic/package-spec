@@ -3,4 +3,5 @@
   metric_type: counter
   fields:
     - name: world
-      type: string
+      type: integer
+      metric_type: gauge
