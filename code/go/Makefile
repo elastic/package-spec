@@ -5,11 +5,12 @@ update:
 	@go get github.com/rakyll/statik
 	@statik -m -f -src ../../versions -dest ${SPEC_DIR} -p spec
 	@echo "Specs updated to latest."
-	@go mod tidy
 
 	# Add license headers
 	@go get github.com/elastic/go-licenser
 	@go-licenser -license Elastic
+	
+	@go mod tidy
 
 check: lint check-license check-spec
 
