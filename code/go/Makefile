@@ -41,7 +41,7 @@ test:
 	@go test -v ./... -count=1
 
 tools:
-	@go get -u golang.org/x/lint/golint
+	@go get golang.org/x/lint/golint
 	@go get github.com/rakyll/statik
 	@go get github.com/elastic/go-licenser
 	@go mod tidy
