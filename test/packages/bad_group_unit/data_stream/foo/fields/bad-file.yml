@@ -1,6 +1,6 @@
 - name: fff
   type: group
-  unit: ms
+  metric_type: counter
   fields:
     - name: world
       type: string

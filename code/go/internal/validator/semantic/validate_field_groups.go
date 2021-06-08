@@ -32,15 +32,16 @@ import (
 type fields []field
 
 type field struct {
-	Name string `yaml:"name"`
-	Type string `yaml:"type"`
-	Unit string `yaml:"unit"`
+	Name       string `yaml:"name"`
+	Type       string `yaml:"type"`
+	Unit       string `yaml:"unit"`
+	MetricType string `yaml:"metric_type"`
 
 	Fields fields `yaml:"fields"`
 }
 
-// ValidateFieldGroupWithoutUnit verifies if field groups don't have units defined.
-func ValidateFieldGroupWithoutUnit(pkgRoot string) ve.ValidationErrors {
+// ValidateFieldGroups verifies if field groups don't have units and metric types defined.
+func ValidateFieldGroups(pkgRoot string) ve.ValidationErrors {
 	fieldsFiles, err := listFieldsFiles(pkgRoot)
 	if err != nil {
 		return ve.ValidationErrors{errors.Wrapf(err, "can't list fields files")}
@@ -110,6 +111,10 @@ func unmarshalFields(fieldsPath string) (fields, error) {
 func validateFieldUnit(f field) ve.ValidationErrors {
 	if f.Type == "group" && f.Unit != "" {
 		return ve.ValidationErrors{fmt.Errorf(`field "%s" can't have unit property'`, f.Name)}
+	}
+
+	if f.Type == "group" && f.MetricType != "" {
+		return ve.ValidationErrors{fmt.Errorf(`field "%s" can't have metric type property'`, f.Name)}
 	}
 
 	var vErrs ve.ValidationErrors
