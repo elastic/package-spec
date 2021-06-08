@@ -1,13 +1,17 @@
 SPEC_DIR=internal
 
-# Updates the spec to the latest copy
 update:
+	# Update the spec to the latest copy
 	@go get github.com/rakyll/statik
 	@statik -m -f -src ../../versions -dest ${SPEC_DIR} -p spec
 	@echo "Specs updated to latest."
 	@go mod tidy
 
-check: lint licenser check-spec
+	# Add license headers
+	@go get github.com/elastic/go-licenser
+	@go-licenser -license Elastic
+
+check: lint check-license check-spec
 
 # "yamlschema" directory has been excluded from linting, because it contains implementations of gojsonschema interfaces
 # which are not compliant with linter rules. The golint tool doesn't support ignore comments.
@@ -16,9 +20,9 @@ lint:
 	@go list ./... | grep -v yamlschema | xargs -n 1 golint -set_exit_status
 	@go mod tidy
 
-licenser:
+check-license:
 	@go get github.com/elastic/go-licenser
-	@go-licenser -license Elastic
+	@go-licenser -license Elastic -d
 
 # Checks that the spec is up-to-date
 check-spec:
