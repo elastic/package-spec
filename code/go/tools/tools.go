@@ -8,4 +8,6 @@ package tools
 
 import (
 	_ "github.com/elastic/go-licenser"
+	_ "github.com/rakyll/statik"
+	_ "golang.org/x/lint/golint"
 )

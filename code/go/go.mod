@@ -13,5 +13,6 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415
 	github.com/xeipuuv/gojsonschema v1.2.0
+	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
 	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
 )

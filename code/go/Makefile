@@ -1,34 +1,31 @@
 SPEC_DIR=internal
 
-update:
+update: tools
 	# Update the spec to the latest copy
-	@go get github.com/rakyll/statik
 	@statik -m -f -src ../../versions -dest ${SPEC_DIR} -p spec
 	@echo "Specs updated to latest."
 
 	# Add license headers
-	@go get github.com/elastic/go-licenser
 	@go-licenser -license Elastic
-	
+
 	@go mod tidy
 
 check: lint check-license check-spec
 
 # "yamlschema" directory has been excluded from linting, because it contains implementations of gojsonschema interfaces
 # which are not compliant with linter rules. The golint tool doesn't support ignore comments.
-lint:
-	@go get -u golang.org/x/lint/golint
+lint: tools
 	@go list ./... | grep -v yamlschema | xargs -n 1 golint -set_exit_status
 	@go mod tidy
 
-check-license:
-	@go get github.com/elastic/go-licenser
+check-license: tools
 	@go-licenser -license Elastic -d
 
 # Checks that the spec is up-to-date
-check-spec:
+check-spec: tools
 	@go get github.com/rakyll/statik
 	@statik -m -f -src ../../versions -dest temp -p spec
+	@go-licenser -license Elastic
 	@diff -qr ${SPEC_DIR}/spec temp/spec >/dev/null; \
 		retval=$$?; \
 		rm -rf temp; \
@@ -46,3 +43,8 @@ test:
     # you will get fresh test results each time. For instance, changing the source of mocked packages
     # does not invalidate the cache so having the -count=1 to invalidate the test cache is useful.
 	@go test -v ./... -count=1
+
+tools:
+	@go get -u golang.org/x/lint/golint
+	@go get github.com/rakyll/statik
+	@go get github.com/elastic/go-licenser
