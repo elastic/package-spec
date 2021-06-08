@@ -1,3 +1,5 @@
+.PHONY: tools
+
 SPEC_DIR=internal
 
 update: tools
