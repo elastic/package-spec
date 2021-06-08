@@ -7,7 +7,7 @@ update:
 	@echo "Specs updated to latest."
 	@go mod tidy
 
-check: lint check-spec 
+check: lint licenser check-spec
 
 # "yamlschema" directory has been excluded from linting, because it contains implementations of gojsonschema interfaces
 # which are not compliant with linter rules. The golint tool doesn't support ignore comments.
@@ -15,6 +15,10 @@ lint:
 	@go get -u golang.org/x/lint/golint
 	@go list ./... | grep -v yamlschema | xargs -n 1 golint -set_exit_status
 	@go mod tidy
+
+licenser:
+	@go get github.com/elastic/go-licenser
+	@go-licenser -license Elastic
 
 # Checks that the spec is up-to-date
 check-spec:
