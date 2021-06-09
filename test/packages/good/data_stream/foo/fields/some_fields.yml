@@ -26,3 +26,6 @@
   type: text
   description: A field with a pattern defined
   pattern: '^[a-zA-Z]$'
+- name: aaa
+  type: integer
+  metric_type: gauge
