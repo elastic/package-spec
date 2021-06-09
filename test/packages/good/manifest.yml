@@ -40,8 +40,3 @@ icons:
     title: system
     size: 1000x1000
     type: image/svg+xml
-build:
-  dependencies:
-    - name: ecs
-      version: "1.9"
-      reference: "git@7a11f3e1f7d8f05e8f06623fd98254b8cb34c441"
