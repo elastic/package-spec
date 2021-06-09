@@ -3,4 +3,4 @@
   description: Event family
   fields:
     - name: category
-      reference: ecs
+      external: ecs

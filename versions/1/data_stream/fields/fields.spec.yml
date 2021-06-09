@@ -78,7 +78,7 @@ spec:
         type: string
         examples:
           - '^[a-zA-Z]$'
-      reference:
+      external:
         description: External source reference
         type: string
         enum:
