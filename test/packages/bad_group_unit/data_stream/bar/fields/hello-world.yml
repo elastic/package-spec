@@ -1,0 +1,23 @@
+- name: hello
+  type: group
+  fields:
+    - name: world
+      type: string
+- name: aaa
+  type: group
+  fields:
+    - name: bbb
+      type: group
+      unit: ms
+      fields:
+        - name: ccc
+          type: integer
+- name: ddd
+  type: group
+  fields:
+    - name: eee
+      type: group
+      unit: cm
+      fields:
+        - name: ccc
+          type: integer

@@ -1,0 +1,7 @@
+- name: fff
+  type: group
+  metric_type: counter
+  fields:
+    - name: world
+      type: integer
+      metric_type: gauge
