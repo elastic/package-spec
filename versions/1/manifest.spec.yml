@@ -273,34 +273,6 @@ spec:
           pattern: '^(([a-zA-Z0-9-]+)|([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+))$'
       required:
       - github
-    build:
-      type: object
-      additionalProperties: false
-      properties:
-        dependencies:
-          type: array
-          description: Build-time dependencies
-          items:
-            type: object
-            additionalProperties: false
-            properties:
-              name:
-                type: string
-                description: Name of the dependency
-                enum:
-                  - ecs
-              version:
-                type: string
-                description: Version of the dependency
-              reference:
-                type: string
-                description: Source reference
-                pattern: 'git@[a-z0-9]{40}'
-            required:
-              - name
-              - reference
-      required:
-        - dependencies
   required:
   - format_version
   - name
