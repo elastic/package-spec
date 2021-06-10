@@ -6,9 +6,9 @@ spec:
   type: object
   additionalProperties: false
   properties:
-    build:
+    dependencies:
       type: array
-      description: Build-time dependencies
+      description: Package dependencies
       items:
         type: object
         additionalProperties: false
@@ -18,9 +18,6 @@ spec:
             description: Name of the dependency
             enum:
               - ecs
-          version:
-            type: string
-            description: Version of the dependency
           reference:
             type: string
             description: Source reference
@@ -29,4 +26,4 @@ spec:
           - name
           - reference
   required:
-  - build
+  - dependencies

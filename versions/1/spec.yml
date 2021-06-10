@@ -13,11 +13,11 @@ spec:
     name: "manifest.yml"
     required: true
     $ref: "./manifest.spec.yml"
-  - description: Package dependencies manifest
+  - description: Package build manifest
     type: file
     contentMediaType: "application/x-yaml"
-    name: "deps.yml"
-    $ref: "./deps.spec.yml"
+    name: "build.yml"
+    $ref: "./build.spec.yml"
   - description: The package's CHANGELOG file
     type: file
     contentMediaType: "application/x-yaml"
