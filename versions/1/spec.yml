@@ -13,11 +13,6 @@ spec:
     name: "manifest.yml"
     required: true
     $ref: "./manifest.spec.yml"
-  - description: Package build manifest
-    type: file
-    contentMediaType: "application/x-yaml"
-    name: "build.yml"
-    $ref: "./build.spec.yml"
   - description: The package's CHANGELOG file
     type: file
     contentMediaType: "application/x-yaml"
