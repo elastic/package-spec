@@ -130,6 +130,9 @@
   - description: Validate if field groups don't have units and metric types defined
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/183
+  - description: Introduce "reference" property for fields
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/179
   - description: Define build-time dependencies
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/181

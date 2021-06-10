@@ -78,9 +78,13 @@ spec:
         type: string
         examples:
           - '^[a-zA-Z]$'
+      external:
+        description: External source reference
+        type: string
+        enum:
+          - ecs
       fields:
         description: Sub-fields, when type is group
         $ref: "#"     # JSON-schema syntax for pointing to the root of the schema
     required:
     - name
-    - type
