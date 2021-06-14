@@ -1,6 +1,11 @@
 spec:
   additionalContents: false
   contents:
+    - description: Package build manifest
+      type: file
+      contentMediaType: "application/x-yaml"
+      name: "build.yml"
+      $ref: "./build.spec.yml"
     - description: Folder containing resources related to docs.
       type: folder
       name: docs
