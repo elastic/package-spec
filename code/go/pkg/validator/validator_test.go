@@ -63,6 +63,12 @@ func TestValidateFile(t *testing.T) {
 				"field version: Invalid type. Expected: string, given: null",
 			},
 		},
+		"bad_dynamic_template": {
+			"data_stream/foo/fields/some_fields.yml",
+			[]string{
+				"field 0.dynamic_template: Invalid type. Expected: boolean, given: integer",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
@@ -178,7 +184,7 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 							found = true
 						}
 					}
-					require.True(t, found, "Missing item: " + expected)
+					require.True(t, found, "Missing item: "+expected)
 					c++
 				}
 			}
