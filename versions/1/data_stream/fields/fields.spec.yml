@@ -83,6 +83,9 @@ spec:
         type: string
         enum:
           - ecs
+      dynamic_template:
+        description: Indication that this field represents an explicitly named dynamic template
+        type: boolean
       fields:
         description: Sub-fields, when type is group
         $ref: "#"     # JSON-schema syntax for pointing to the root of the schema
