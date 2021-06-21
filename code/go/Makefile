@@ -7,7 +7,7 @@ golint_cmd = go run golang.org/x/lint/golint
 
 update:
 	# Update the spec to the latest copy
-	@$(static_cmd) -m -f -src ../../versions -dest ${SPEC_DIR} -p spec
+	@$(statik_cmd) -m -f -src ../../versions -dest ${SPEC_DIR} -p spec
 	@echo "Specs updated to latest."
 
 	# Add license headers
