@@ -139,3 +139,6 @@
   - description: Introduce "dynamic_template" property for fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/188
+  - description: Relax ECS dependency in the build manifest
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/191
