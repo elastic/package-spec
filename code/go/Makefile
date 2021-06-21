@@ -1,30 +1,32 @@
-.PHONY: tools
-
 SPEC_DIR=internal
 
-update: tools
+statik_cmd = go run github.com/rakyll/statik
+golicenser_cmd = go run github.com/elastic/go-licenser
+golint_cmd = go run golang.org/x/lint/golint
+
+
+update:
 	# Update the spec to the latest copy
-	@statik -m -f -src ../../versions -dest ${SPEC_DIR} -p spec
+	@$(static_cmd) -m -f -src ../../versions -dest ${SPEC_DIR} -p spec
 	@echo "Specs updated to latest."
 
 	# Add license headers
-	@go-licenser -license Elastic
+	@$(golicenser_cmd) -license Elastic
 
 check: lint check-license check-spec
 
 # "yamlschema" directory has been excluded from linting, because it contains implementations of gojsonschema interfaces
 # which are not compliant with linter rules. The golint tool doesn't support ignore comments.
-lint: tools
-	@go list ./... | grep -v yamlschema | xargs -n 1 golint -set_exit_status
+lint:
+	@go list ./... | grep -v yamlschema | xargs -n 1 $(golint_cmd) -set_exit_status
 
-check-license: tools
-	@go-licenser -license Elastic -d
+check-license:
+	@$(golicenser_cmd) -license Elastic -d
 
 # Checks that the spec is up-to-date
-check-spec: tools
-	@go get github.com/rakyll/statik
-	@statik -m -f -src ../../versions -dest temp -p spec
-	@go-licenser -license Elastic
+check-spec:
+	@$(statik_cmd) -m -f -src ../../versions -dest temp -p spec
+	@$(golicenser_cmd) -license Elastic
 	@diff -qr ${SPEC_DIR}/spec temp/spec >/dev/null; \
 		retval=$$?; \
 		rm -rf temp; \
@@ -37,13 +39,7 @@ check-spec: tools
 
 # Runs tests
 test:
-    # -count=1 is included to invalidate the test cache. This way, if you run "make test" multiple times
-    # you will get fresh test results each time. For instance, changing the source of mocked packages
-    # does not invalidate the cache so having the -count=1 to invalidate the test cache is useful.
+	# -count=1 is included to invalidate the test cache. This way, if you run "make test" multiple times
+	# you will get fresh test results each time. For instance, changing the source of mocked packages
+	# does not invalidate the cache so having the -count=1 to invalidate the test cache is useful.
 	@go test -v ./... -count=1
-
-tools:
-	@go get golang.org/x/lint/golint
-	@go get github.com/rakyll/statik
-	@go get github.com/elastic/go-licenser
-	@go mod tidy
