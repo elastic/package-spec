@@ -3,19 +3,19 @@
   changes:
     - description: Third
       type: enhancement
-      link: https://github.com/elastic/integrations/pull/0 # FIXME Replace with the real PR link
+      link: https://github.com/elastic/integrations/pull/193
 - version: "0.0.2"
   changes:
     - description: Second, but it's an error
       type: enhancement
-      link: https://github.com/elastic/integrations/pull/0 # FIXME Replace with the real PR link
+      link: https://github.com/elastic/integrations/pull/193
 - version: "0.0.2"
   changes:
     - description: Second
       type: enhancement
-      link: https://github.com/elastic/integrations/pull/0 # FIXME Replace with the real PR link
+      link: https://github.com/elastic/integrations/pull/193
 - version: "0.0.1"
   changes:
     - description: First
       type: enhancement
-      link: https://github.com/elastic/integrations/pull/0 # FIXME Replace with the real PR link
+      link: https://github.com/elastic/integrations/pull/193

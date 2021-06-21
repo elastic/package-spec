@@ -142,3 +142,6 @@
   - description: Relax ECS dependency in the build manifest
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/191
+  - description: Improve semantic versioning for version integrity
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/193
