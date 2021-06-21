@@ -196,6 +196,7 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 func TestValidateVersionIntegrity(t *testing.T) {
 	tests := map[string]string{
 		"inconsistent_version": "current manifest version doesn't have changelog entry",
+		"same_version_twice":   "versions in changelog must be unique, found at least two same versions (0.0.2)",
 	}
 
 	for pkgName, expectedErrorMessage := range tests {
