@@ -19,7 +19,7 @@ spec:
             reference:
               type: string
               description: Source reference
-              pattern: 'git@[a-z0-9]{40}'
+              pattern: '^git@.+'
           required:
             - reference
   required:
