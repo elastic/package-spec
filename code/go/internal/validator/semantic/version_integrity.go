@@ -5,6 +5,7 @@
 package semantic
 
 import (
+	"fmt"
 	"path/filepath"
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
@@ -21,6 +22,11 @@ func ValidateVersionIntegrity(pkgRoot string) ve.ValidationErrors {
 	}
 
 	changelogVersions, err := readChangelogVersions(pkgRoot)
+	if err != nil {
+		return ve.ValidationErrors{err}
+	}
+
+	err = ensureUniqueVersions(changelogVersions)
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}
@@ -94,4 +100,15 @@ func toStringSlice(val interface{}) ([]string, error) {
 		s = append(s, str)
 	}
 	return s, nil
+}
+
+func ensureUniqueVersions(versions []string) error {
+	m := map[string]struct{}{}
+	for _, v := range versions {
+		if _, ok := m[v]; ok {
+			return fmt.Errorf("versions in changelog must be unique, found at least two same versions (%s)", v)
+		}
+		m[v] = struct{}{}
+	}
+	return nil
 }
