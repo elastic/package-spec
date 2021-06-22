@@ -5,11 +5,14 @@
 package semantic
 
 import (
+	"fmt"
 	"path/filepath"
+	"strings"
+
+	"github.com/pkg/errors"
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/pkgpath"
-	"github.com/pkg/errors"
 )
 
 // ValidateVersionIntegrity returns validation errors if the version defined in manifest isn't referenced in the latest
@@ -25,12 +28,16 @@ func ValidateVersionIntegrity(pkgRoot string) ve.ValidationErrors {
 		return ve.ValidationErrors{err}
 	}
 
-	for _, v := range changelogVersions {
-		if v == manifestVersion {
-			return nil
-		}
+	err = ensureUniqueVersions(changelogVersions)
+	if err != nil {
+		return ve.ValidationErrors{err}
 	}
-	return ve.ValidationErrors{errors.New("current manifest version doesn't have changelog entry")}
+
+	err = ensureManifestVersionHasChangelogEntry(manifestVersion, changelogVersions)
+	if err != nil {
+		return ve.ValidationErrors{err}
+	}
+	return nil
 }
 
 func readManifestVersion(pkgRoot string) (string, error) {
@@ -94,4 +101,29 @@ func toStringSlice(val interface{}) ([]string, error) {
 		s = append(s, str)
 	}
 	return s, nil
+}
+
+func ensureUniqueVersions(versions []string) error {
+	m := map[string]struct{}{}
+	for _, v := range versions {
+		if _, ok := m[v]; ok {
+			return fmt.Errorf("versions in changelog must be unique, found at least two same versions (%s)", v)
+		}
+		m[v] = struct{}{}
+	}
+	return nil
+}
+
+func ensureManifestVersionHasChangelogEntry(manifestVersion string, versions []string) error {
+	if manifestVersion == versions[0] {
+		return nil
+	}
+
+	for _, v := range versions {
+		// It's allowed to keep additional record with "-next" suffix for changes that will be released in the future.
+		if v == manifestVersion && strings.HasSuffix(versions[0], "-next") {
+			return nil
+		}
+	}
+	return errors.New("current manifest version doesn't have changelog entry")
 }

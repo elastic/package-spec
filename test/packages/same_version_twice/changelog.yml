@@ -1,0 +1,30 @@
+# newer versions go on top
+- version: "0.0.3"
+  changes:
+    - description: Third A
+      type: enhancement
+      link: https://github.com/elastic/integrations/pull/193
+    - description: Third B
+      type: enhancement
+      link: https://github.com/elastic/integrations/pull/193
+    - description: Third C
+      type: enhancement
+      link: https://github.com/elastic/integrations/pull/193
+- version: "0.0.2"
+  changes:
+    - description: Second, but it's an error
+      type: enhancement
+      link: https://github.com/elastic/integrations/pull/193
+- version: "0.0.2"
+  changes:
+    - description: Second A
+      type: enhancement
+      link: https://github.com/elastic/integrations/pull/193
+    - description: Second B
+      type: enhancement
+      link: https://github.com/elastic/integrations/pull/193
+- version: "0.0.1"
+  changes:
+    - description: First
+      type: enhancement
+      link: https://github.com/elastic/integrations/pull/193
