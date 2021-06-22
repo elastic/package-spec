@@ -54,6 +54,9 @@ spec:
       description:
         description: Short description of field
         type: string
+      value:
+        description: The value to associate with a constant_keyword field.
+        type: string
       metric_type:
         description: Metric type
         type: string

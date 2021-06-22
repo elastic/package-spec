@@ -4,3 +4,6 @@
   fields:
     - name: category
       external: ecs
+    - name: module
+      type: constant_keyword
+      value: good
