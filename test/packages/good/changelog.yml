@@ -3,6 +3,17 @@
     - description: release candidate
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/172
+- version: 0.1.1
+  changes:
+    - description: Change A
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/193
+    - description: Change B
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/193
+    - description: Change C
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/193
 - version: 0.1.2
   changes:
     - description: initial release
