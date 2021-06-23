@@ -32,3 +32,6 @@
 - name: dynamic_histogram
   type: histogram
   dynamic_template: true
+- name: vehicle_type
+  type: constant_keyword
+  value: truck

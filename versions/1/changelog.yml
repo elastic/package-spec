@@ -145,3 +145,6 @@
   - description: Improve semantic versioning for version integrity
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/193
+  - description: Introduce "value" property for constant_keyword fields
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/194
