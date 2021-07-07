@@ -3,7 +3,7 @@ module github.com/elastic/package-spec/code/go
 go 1.15
 
 require (
-	github.com/Masterminds/semver/v3 v3.1.0
+	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/PaesslerAG/jsonpath v0.1.1
 	github.com/creasty/defaults v1.5.1
 	github.com/elastic/go-licenser v0.3.1
