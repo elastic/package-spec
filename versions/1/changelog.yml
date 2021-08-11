@@ -2,6 +2,11 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
+- version: 1.0.0
+  changes:
+  - description: Release as GA
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/207
 - version: 1.0.0-alpha1
   changes:
   - description: Initial version of the Elastic Package specifiction.
