@@ -2,6 +2,11 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
+- version: 1.0.1-next
+  changes:
+    - description: Prepare for 1.0.1
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/?
 - version: 1.0.0
   changes:
   - description: Release as GA
