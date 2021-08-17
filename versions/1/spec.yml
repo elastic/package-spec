@@ -3,7 +3,7 @@
 ##
 ## Describes the folders and files that make up a package.
 ## 
-version: 1.0.0
+version: 1.0.1-next
 spec:
   additionalContents: true
   contents:
