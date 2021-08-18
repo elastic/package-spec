@@ -187,5 +187,15 @@ spec:
                   type: string
               required:
               - name
+        privileges:
+          description: Elasticsearch privilege requirements
+          type: object
+          additionalProperties: false
+          properties:
+            indices:
+              description: Elasticsearch index privilege requirements
+              type: array
+              items:
+                type: string
   required:
   - title

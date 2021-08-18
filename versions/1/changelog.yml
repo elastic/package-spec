@@ -7,6 +7,9 @@
     - description: Prepare for 1.0.1
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/208
+    - description: Add "elasticsearch.privileges.indices" to data stream manifest
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/211
 - version: 1.0.0
   changes:
   - description: Release as GA
