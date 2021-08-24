@@ -1,4 +1,0 @@
-- name: foo
-  type: histogram
-  dynamic_template: 123
-
