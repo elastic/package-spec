@@ -5,26 +5,23 @@
 package validator
 
 import (
-	"net/http"
+	"io/fs"
 	"path"
 	"strconv"
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 
+	spec "github.com/elastic/package-spec"
 	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
-	"github.com/rakyll/statik/fs"
-
-	// Loads package specs as an in-memory filesystem
-	_ "github.com/elastic/package-spec/code/go/internal/spec"
 )
 
 // Spec represents a package specification
 type Spec struct {
 	version  semver.Version
-	fs       http.FileSystem
+	fs       fs.FS
 	specPath string
 }
 
@@ -34,19 +31,15 @@ type validationRules []func(pkgRoot string) ve.ValidationErrors
 func NewSpec(version semver.Version) (*Spec, error) {
 	majorVersion := strconv.FormatUint(version.Major(), 10)
 
-	bundle, err := fs.New()
-	if err != nil {
-		return nil, errors.Wrap(err, "could not load specifications")
-	}
-
-	specPath := "/" + majorVersion
-	if _, err := bundle.Open(specPath); err != nil {
+	specFS := spec.FS()
+	specPath := majorVersion
+	if _, err := specFS.Open(specPath); err != nil {
 		return nil, errors.Wrapf(err, "could not load specification for version [%s]", version.String())
 	}
 
 	s := Spec{
 		version,
-		bundle,
+		specFS,
 		specPath,
 	}
 

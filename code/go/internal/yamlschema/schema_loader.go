@@ -5,9 +5,10 @@
 package yamlschema
 
 import (
+	"io/fs"
 	"io/ioutil"
-	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonreference"
@@ -20,21 +21,21 @@ type itemSchemaSpec struct {
 }
 
 type yamlReferenceLoader struct {
-	fs     http.FileSystem
+	fs     fs.FS
 	source string
 }
 
 var _ gojsonschema.JSONLoader = new(yamlReferenceLoader)
 
 type rawReferenceLoader struct {
-	fs     http.FileSystem
+	fs     fs.FS
 	source interface{}
 }
 
 var _ gojsonschema.JSONLoader = new(rawReferenceLoader)
 
 // NewReferenceLoaderFileSystem method creates new instance of `yamlReferenceLoader`.
-func NewReferenceLoaderFileSystem(source string, fs http.FileSystem) gojsonschema.JSONLoader {
+func NewReferenceLoaderFileSystem(source string, fs fs.FS) gojsonschema.JSONLoader {
 	return &yamlReferenceLoader{
 		fs:     fs,
 		source: source,
@@ -42,7 +43,7 @@ func NewReferenceLoaderFileSystem(source string, fs http.FileSystem) gojsonschem
 }
 
 // NewRawLoaderFileSystem method creates new instance of `rawReferenceLoader`
-func NewRawLoaderFileSystem(source interface{}, fs http.FileSystem) gojsonschema.JSONLoader {
+func NewRawLoaderFileSystem(source interface{}, fs fs.FS) gojsonschema.JSONLoader {
 	return &rawReferenceLoader{
 		fs:     fs,
 		source: source,
@@ -58,7 +59,7 @@ func (l *yamlReferenceLoader) LoadJSON() (interface{}, error) {
 	if err != nil {
 		return nil, errors.Wrapf(err, "parsing source failed (source: %s)", l.source)
 	}
-	resourcePath := parsed.Path
+	resourcePath := strings.TrimPrefix(parsed.Path, "/")
 
 	itemSchemaFile, err := l.fs.Open(resourcePath)
 	if err != nil {
@@ -112,7 +113,7 @@ func (l *rawReferenceLoader) LoaderFactory() gojsonschema.JSONLoaderFactory {
 }
 
 type fileSystemYAMLLoaderFactory struct {
-	fs http.FileSystem
+	fs fs.FS
 }
 
 var _ gojsonschema.JSONLoaderFactory = new(fileSystemYAMLLoaderFactory)

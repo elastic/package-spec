@@ -1,6 +1,6 @@
-module github.com/elastic/package-spec/code/go
+module github.com/elastic/package-spec
 
-go 1.15
+go 1.16
 
 require (
 	github.com/Masterminds/semver/v3 v3.1.1
@@ -9,7 +9,6 @@ require (
 	github.com/elastic/go-licenser v0.3.1
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901
 	github.com/pkg/errors v0.9.1
-	github.com/rakyll/statik v0.1.7
 	github.com/stretchr/testify v1.7.0
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415
 	github.com/xeipuuv/gojsonschema v1.2.0
