@@ -4,9 +4,12 @@
 ##
 - version: 1.0.1-next
   changes:
-    - description: Prepare for 1.0.1
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/208
+  - description: Prepare for 1.0.1
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/208
+  - description: Revert "dynamic_template" field property
+    type: bugfix
+    link: https://github.com/elastic/package-spec/pull/212
 - version: 1.0.0
   changes:
   - description: Release as GA

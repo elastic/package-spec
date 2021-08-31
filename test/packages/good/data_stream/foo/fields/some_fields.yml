@@ -29,9 +29,6 @@
 - name: aaa
   type: integer
   metric_type: gauge
-- name: dynamic_histogram
-  type: histogram
-  dynamic_template: true
 - name: vehicle_type
   type: constant_keyword
   value: truck
