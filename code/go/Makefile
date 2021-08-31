@@ -1,15 +1,10 @@
 SPEC_DIR=internal
 
-statik_cmd = go run github.com/rakyll/statik
 golicenser_cmd = go run github.com/elastic/go-licenser
 golint_cmd = go run golang.org/x/lint/golint
 
 
 update:
-	# Update the spec to the latest copy
-	@$(statik_cmd) -m -f -src ../../versions -dest ${SPEC_DIR} -p spec
-	@echo "Specs updated to latest."
-
 	# Add license headers
 	@$(golicenser_cmd) -license Elastic
 
@@ -25,17 +20,7 @@ check-license:
 
 # Checks that the spec is up-to-date
 check-spec:
-	@$(statik_cmd) -m -f -src ../../versions -dest temp -p spec
 	@$(golicenser_cmd) -license Elastic
-	@diff -qr ${SPEC_DIR}/spec temp/spec >/dev/null; \
-		retval=$$?; \
-		rm -rf temp; \
-		if [ $$retval -eq 0 ]; then \
-			echo "Specs are up to date!"; \
-		else \
-			echo "Specs are not up to date. Please run make update."; \
-		fi; \
-		exit $$retval
 
 # Runs tests
 test:
