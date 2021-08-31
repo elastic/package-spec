@@ -6,7 +6,7 @@ package validator
 
 import (
 	"fmt"
-	"net/http"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -68,7 +68,7 @@ func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
 	return false
 }
 
-func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, itemPath string) ve.ValidationErrors {
+func (s *folderItemSpec) validate(fs fs.FS, folderSpecPath string, itemPath string) ve.ValidationErrors {
 	// loading item content
 	itemData, err := loadItemContent(itemPath, s.ContentMediaType)
 	if err != nil {
@@ -78,7 +78,7 @@ func (s *folderItemSpec) validate(fs http.FileSystem, folderSpecPath string, ite
 	var schemaLoader gojsonschema.JSONLoader
 	if s.Ref != "" {
 		schemaPath := filepath.Join(filepath.Dir(folderSpecPath), s.Ref)
-		schemaLoader = yamlschema.NewReferenceLoaderFileSystem("file://"+schemaPath, fs)
+		schemaLoader = yamlschema.NewReferenceLoaderFileSystem("file:///"+schemaPath, fs)
 	} else if s.Content != nil {
 		schemaLoader = yamlschema.NewRawLoaderFileSystem(s.Content, fs)
 	} else {

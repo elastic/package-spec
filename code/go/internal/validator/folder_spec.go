@@ -6,8 +6,8 @@ package validator
 
 import (
 	"fmt"
+	"io/fs"
 	"io/ioutil"
-	"net/http"
 	"path"
 	"path/filepath"
 	"regexp"
@@ -28,12 +28,12 @@ const (
 )
 
 type folderSpec struct {
-	fs       http.FileSystem
+	fs       fs.FS
 	specPath string
 	commonSpec
 }
 
-func newFolderSpec(fs http.FileSystem, specPath string) (*folderSpec, error) {
+func newFolderSpec(fs fs.FS, specPath string) (*folderSpec, error) {
 	specFile, err := fs.Open(specPath)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not open folder specification file")
