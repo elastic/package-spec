@@ -2,7 +2,7 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
-- version: 1.0.1-next
+- version: 1.1
   changes:
   - description: Prepare for 1.0.1
     type: enhancement
@@ -13,6 +13,9 @@
   - description: Add "elasticsearch.privileges.indices" to data stream manifest
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/211
+  - description: Release v1.1
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/218
 - version: 1.0.0
   changes:
   - description: Release as GA
