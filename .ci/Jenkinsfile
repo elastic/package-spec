@@ -20,7 +20,7 @@ pipeline {
     quietPeriod(10)
   }
   triggers {
-		issueCommentTrigger("${obltGitHubComments()}")
+    issueCommentTrigger("${obltGitHubComments()}")
   }
   stages {
     /**
