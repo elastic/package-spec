@@ -5,7 +5,7 @@
         "name": "abc"
     },
     "coreMigrationVersion": "7.15.0",
-    "id": "abc",
+    "id": "good-tag-abc-1",
     "references": [],
     "type": "tag"
 }
