@@ -1,0 +1,11 @@
+{
+    "attributes": {
+        "color": "#e20b7f",
+        "description": "",
+        "name": "abc"
+    },
+    "coreMigrationVersion": "7.15.0",
+    "id": "abc",
+    "references": [],
+    "type": "tag"
+}
