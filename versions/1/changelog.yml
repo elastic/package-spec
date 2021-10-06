@@ -175,3 +175,6 @@
   - description: Introduce "value" property for constant_keyword fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/194
+  - description: Support `ML model` Elasticsearch type.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/204
