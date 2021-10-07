@@ -10,6 +10,9 @@
   - description: Add tag support for elastic export
     type: bugfix
     link: https://github.com/elastic/package-spec/pull/223
+  - description: Support `ML model` Elasticsearch type.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/204
 - version: 1.1
   changes:
   - description: Prepare for 1.0.1
@@ -175,6 +178,3 @@
   - description: Introduce "value" property for constant_keyword fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/194
-  - description: Support `ML model` Elasticsearch type.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/204

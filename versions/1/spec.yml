@@ -2,7 +2,7 @@
 ## Entrypoint of package specification.
 ##
 ## Describes the folders and files that make up a package.
-## 
+##
 version: 1.1.1-next
 spec:
   additionalContents: true
@@ -50,3 +50,8 @@ spec:
     required: false
     visibility: private
     $ref: "./_dev/spec.yml"
+  - description: Folder containing Elasticsearch assets used by the package
+    type: folder
+    name: elasticsearch
+    required: false
+    $ref: "./elasticsearch/spec.yml"
