@@ -10,7 +10,7 @@
   - description: Add tag support for elastic export
     type: bugfix
     link: https://github.com/elastic/package-spec/pull/223
-  - description: Support `ML model` Elasticsearch type.
+  - description: Support ML model Elasticsearch type.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/204
 - version: 1.1
