@@ -106,6 +106,16 @@ spec:
         - "1.0.0-SNAPSHOT"
         - "1.0.0-dev.1"
   properties:
+    elasticsearch:
+      description: Elasticsearch cluster requirements
+      type: object
+      additionalProperties: false
+      properties:
+        cluster:
+          description: Elasticsearch cluster requirements
+          type: array
+          items:
+            type: string
     format_version:
       description: The version of the package specification format used by this package.
       $ref: "#/definitions/version"
