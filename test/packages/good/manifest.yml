@@ -40,4 +40,4 @@ icons:
     title: system
     size: 1000x1000
     type: image/svg+xml
-elasticsearch.cluster: [monitor/main]
+elasticsearch.privileges.cluster: [monitor/main]

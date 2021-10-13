@@ -111,11 +111,16 @@ spec:
       type: object
       additionalProperties: false
       properties:
-        cluster:
-          description: Elasticsearch cluster requirements
-          type: array
-          items:
-            type: string
+        privileges:
+          description: Elasticsearch privilege requirements
+          type: object
+          additionalProperties: false
+          properties:
+            cluster:
+              description: Elasticsearch cluster privilege requirements
+              type: array
+              items:
+                type: string
     format_version:
       description: The version of the package specification format used by this package.
       $ref: "#/definitions/version"
