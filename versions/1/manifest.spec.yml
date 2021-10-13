@@ -107,7 +107,7 @@ spec:
         - "1.0.0-dev.1"
   properties:
     elasticsearch:
-      description: Elasticsearch cluster requirements
+      description: Elasticsearch requirements
       type: object
       additionalProperties: false
       properties:
