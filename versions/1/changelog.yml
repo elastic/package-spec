@@ -2,11 +2,8 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
-- version: 1.1.1-next
+- version: 1.2.0
   changes:
-  - description: Prepare v1.1.1-next
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/?
   - description: Add tag support for elastic export
     type: bugfix
     link: https://github.com/elastic/package-spec/pull/223
