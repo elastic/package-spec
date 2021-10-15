@@ -13,7 +13,7 @@ spec:
     - description: Folder containing Elasticsearch Ingest Node pipeline definitions
       type: folder
       name: ingest_pipeline
-      additionalContents: false
+      additionalContents: true
       contents:
         - description: Supporting ingest pipeline definitions in YAML
           type: file
