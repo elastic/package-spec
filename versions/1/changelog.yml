@@ -4,6 +4,9 @@
 ##
 - version: 1.2.1-next
   changes:
+  - description: Support wait-for-data timeout
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/237
 - version: 1.2.0
   changes:
   - description: Add tag support for elastic export
