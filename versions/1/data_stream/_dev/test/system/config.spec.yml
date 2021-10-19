@@ -8,3 +8,7 @@ spec:
   properties:
     skip:
       $ref: "./../skip.spec.yml#/definitions/skip"
+    wait_for_data_timeout:
+      description: Short explanation for why test has been skipped.
+      type: string
+      example: 10m
