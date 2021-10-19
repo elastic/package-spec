@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/pkg/errors"
 
@@ -23,6 +24,7 @@ type field struct {
 	Type       string `yaml:"type"`
 	Unit       string `yaml:"unit"`
 	MetricType string `yaml:"metric_type"`
+	Dimension  bool   `yaml:"dimension"`
 
 	Fields fields `yaml:"fields"`
 }
@@ -31,18 +33,18 @@ type field struct {
 func ValidateFieldGroups(pkgRoot string) ve.ValidationErrors {
 	fieldsFiles, err := listFieldsFiles(pkgRoot)
 	if err != nil {
-		return ve.ValidationErrors{errors.Wrapf(err, "can't list fields files")}
+		return ve.ValidationErrors{errors.Wrap(err, "can't list fields files")}
 	}
 
 	var vErrs ve.ValidationErrors
 	for _, fieldsFile := range fieldsFiles {
 		unmarshaled, err := unmarshalFields(fieldsFile)
 		if err != nil {
-			vErrs = append(vErrs, errors.Wrap(err, "can't unmarshal fields"))
+			vErrs = append(vErrs, errors.Wrapf(err, `file "%s" is invalid: can't unmarshal fields`, fieldsFile))
 		}
 
 		for _, u := range unmarshaled {
-			errs := validateFieldUnit(u)
+			errs := validateFieldUnit(fieldsFile, u)
 			if len(errs) > 0 {
 				vErrs = append(vErrs, errs...)
 			}
@@ -95,21 +97,46 @@ func unmarshalFields(fieldsPath string) (fields, error) {
 	return f, nil
 }
 
-func validateFieldUnit(f field) ve.ValidationErrors {
+func validateFieldUnit(fieldsFile string, f field) ve.ValidationErrors {
 	if f.Type == "group" && f.Unit != "" {
-		return ve.ValidationErrors{fmt.Errorf(`field "%s" can't have unit property'`, f.Name)}
+		return ve.ValidationErrors{fmt.Errorf(`file "%s" is invalid: field "%s" can't have unit property'`, fieldsFile, f.Name)}
 	}
 
 	if f.Type == "group" && f.MetricType != "" {
-		return ve.ValidationErrors{fmt.Errorf(`field "%s" can't have metric type property'`, f.Name)}
+		return ve.ValidationErrors{fmt.Errorf(`file "%s" is invalid: field "%s" can't have metric type property'`, fieldsFile, f.Name)}
+	}
+
+	if f.Dimension && !isAllowedDimensionType(f.Type) {
+		return ve.ValidationErrors{fmt.Errorf(`file "%s" is invalid: field "%s" of type %s can't be a dimension, allowed types for dimensions: %s`, fieldsFile, f.Name, f.Type, strings.Join(allowedDimensionTypes, ", "))}
 	}
 
 	var vErrs ve.ValidationErrors
 	for _, aField := range f.Fields {
-		errs := validateFieldUnit(aField)
+		errs := validateFieldUnit(fieldsFile, aField)
 		if len(errs) > 0 {
 			vErrs = append(vErrs, errs...)
 		}
 	}
 	return vErrs
+}
+
+var allowedDimensionTypes = []string{
+	// Keywords
+	"constant_keyword", "keyword",
+
+	// Numeric types
+	"long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long",
+
+	// IPs
+	"ip",
+}
+
+func isAllowedDimensionType(fieldType string) bool {
+	for _, allowedType := range allowedDimensionTypes {
+		if fieldType == allowedType {
+			return true
+		}
+	}
+
+	return false
 }
