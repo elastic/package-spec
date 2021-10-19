@@ -8,3 +8,7 @@ spec:
   properties:
     skip:
       $ref: "./../skip.spec.yml#/definitions/skip"
+    wait_for_data_timeout:
+      description: Timeout for waiting for metrics data during a system test.
+      type: string
+      example: 10m
