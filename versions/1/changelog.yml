@@ -4,12 +4,12 @@
 ##
 - version: 1.2.1-next
   changes:
-  - description: Add support for dimension fields.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/236
   - description: Support wait-for-data timeout
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/237
+  - description: Add support for dimension fields.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/236
 - version: 1.2.0
   changes:
   - description: Add tag support for elastic export
