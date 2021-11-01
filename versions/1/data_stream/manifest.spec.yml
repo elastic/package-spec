@@ -48,10 +48,13 @@ spec:
             description: Data type of variable.
             type: string
             enum:
-              - integer
               - bool
+              - email
+              - integer
               - password
               - text
+              - timezone
+              - url
               - yaml
             examples:
               - text

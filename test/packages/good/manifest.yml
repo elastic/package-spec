@@ -17,7 +17,7 @@ policy_templates:
         multi: false
         vars:
           - name: hosts
-            type: text
+            type: url
             title: Hosts
             multi: true
             required: true

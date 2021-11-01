@@ -7,6 +7,9 @@
   - description: Support wait-for-data timeout
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/237
+  - description:  Add email, timezone and url config types
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/241
 - version: 1.2.0
   changes:
   - description: Add tag support for elastic export
