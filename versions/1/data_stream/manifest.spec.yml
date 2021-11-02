@@ -87,7 +87,7 @@ spec:
             examples:
               - false
           url_allowed_schemes:
-            description: Allowed URL schemes for the url type.
+            description: Allowed URL schemes for the url type. If not set, any scheme is allowed.
             type: array
             items:
               type: string
