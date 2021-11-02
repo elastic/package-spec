@@ -86,6 +86,14 @@ spec:
             default: true
             examples:
               - false
+          url_allowed_schemes:
+            description: Allowed URL schemes for the url type.
+            type: array
+            items:
+              type: string
+            examples:
+              - ['http', 'https']
+              - ['redis', 'rediss']
           default:
             description: Default value(s) for variable
             $ref: "#/definitions/input_variable_value"
