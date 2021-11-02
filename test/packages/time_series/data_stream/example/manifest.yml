@@ -9,3 +9,9 @@ streams:
         type: text
         title: Period
         default: 10s
+
+elasticsearch:
+  index_template:
+    settings:
+      # Defaults to 16
+      index.mapping.dimension_fields.limit: 32
