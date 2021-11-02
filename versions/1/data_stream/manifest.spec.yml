@@ -53,7 +53,7 @@ spec:
               - integer
               - password
               - text
-              - timezone
+              - time_zone
               - url
               - yaml
             examples:
