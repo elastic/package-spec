@@ -22,6 +22,7 @@ func TestValidateFile(t *testing.T) {
 	}{
 		"good":                {},
 		"deploy_docker":       {},
+		"time_series":         {},
 		"missing_data_stream": {},
 		"bad_deploy_variants": {
 			"_dev/deploy/variants.yml",
@@ -61,6 +62,12 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				"field version: Invalid type. Expected: string, given: null",
+			},
+		},
+		"bad_time_series": {
+			"data_stream/example/fields/fields.yml",
+			[]string{
+				"field \"example.agent.call_duration\" of type histogram can't be a dimension, allowed types for dimensions: constant_keyword, keyword, long, integer, short, byte, double, float, half_float, scaled_float, unsigned_long, ip",
 			},
 		},
 	}

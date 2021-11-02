@@ -76,6 +76,10 @@ spec:
         - ms
         - micros
         - nanos
+      dimension:
+        description: Declare a field as dimension of time series
+        type: boolean
+        default: false
       pattern:
         description: Regular expression pattern of the field value
         type: string
