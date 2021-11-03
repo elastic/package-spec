@@ -26,6 +26,17 @@ streams:
         required: true
         show_user: false
         default: /server-status
+      - name: data_stream.dataset
+        type: text
+        format:
+          pattern: '[\\/*?\"<>|\s,#-]+'
+          negate: true
+        required: true
+        default: generic
+        title: Dataset name
+        description: >
+          Set the name for your dataset. Changing the dataset will send the data to a different index. You can't use `-` in the name of a dataset and only valid characters for [Elasticsearch index names](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html).
+
     title: Nginx access logs
     description: Collect Nginx access logs
 dataset_is_prefix: true

@@ -19,7 +19,11 @@ require (
 require (
 	github.com/PaesslerAG/gval v1.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.0 // indirect
+	github.com/dlclark/regexp2 v1.4.1-0.20201116162257-a2a8dda75c91 // indirect
+	github.com/dop251/goja v0.0.0-20211022113120-dc8c55024d06 // indirect
+	github.com/go-sourcemap/sourcemap v2.1.3+incompatible // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
+	golang.org/x/text v0.3.6 // indirect
 	golang.org/x/tools v0.0.0-20200130002326-2f3ba24bd6e7 // indirect
 )

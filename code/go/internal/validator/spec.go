@@ -69,6 +69,7 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 		semantic.ValidateVersionIntegrity,
 		semantic.ValidateFieldGroups,
 		semantic.ValidateDimensionFields,
+		semantic.ValidateFormatPatterns,
 	}
 	return rules.validate(pkg.RootPath)
 }

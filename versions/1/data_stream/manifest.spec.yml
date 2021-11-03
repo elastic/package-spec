@@ -65,6 +65,19 @@ spec:
             type: string
             examples:
               - "Hosts of integration service to connect to"
+          format:
+            type: object
+            additionalProperties: false
+            properties:
+              pattern:
+                description: Regular expression with the allowed format for the variable.
+                type: string
+                examples:
+                  - '^[a-z][a-z_]*$'
+              negate:
+                description: If true, the value of the variable is valid only if it doesn't match the pattern.
+                type: boolean
+                default: false
           multi:
             description: Can variable contain multiple values?
             type: boolean

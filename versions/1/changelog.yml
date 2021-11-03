@@ -10,6 +10,9 @@
   - description: Add support for dimension fields.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/236
+  - description: Add settings to define format for fields validation.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/241
 - version: 1.2.0
   changes:
   - description: Add tag support for elastic export
