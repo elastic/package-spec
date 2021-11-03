@@ -7,6 +7,9 @@
   - description: Support wait-for-data timeout
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/237
+  - description: Add support for dimension fields.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/236
   - description: Add email, time_zone and url config types.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/241

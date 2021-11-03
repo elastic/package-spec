@@ -1,0 +1,17 @@
+title: "Example data stream for time series"
+type: metrics
+streams:
+  - input: sample/metrics
+    title: Sample metrics
+    description: Collect sample metrics
+    vars:
+      - name: period
+        type: text
+        title: Period
+        default: 10s
+
+elasticsearch:
+  index_template:
+    settings:
+      # Defaults to 16
+      index.mapping.dimension_fields.limit: 32
