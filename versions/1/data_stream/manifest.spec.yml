@@ -87,13 +87,17 @@ spec:
             examples:
               - false
           url_allowed_schemes:
-            description: Allowed URL schemes for the url type. If not set, any scheme is allowed.
+            description: >
+              List of allowed URL schemes for the url type. If empty, any scheme is allowed.
+              An empty string can be used to indicate that the scheme is not mandatory.
             type: array
             items:
               type: string
+            default: []
             examples:
               - ['http', 'https']
               - ['redis', 'rediss']
+              - ['', 'mysql']
           default:
             description: Default value(s) for variable
             $ref: "#/definitions/input_variable_value"
