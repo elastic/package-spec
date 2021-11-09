@@ -22,7 +22,7 @@ streams:
         show_user: true
         default: 9540
       - name: tz_offset
-        type: text
+        type: time_zone
         title: Timezone offset (+HH:mm format)
         required: false
         show_user: true
