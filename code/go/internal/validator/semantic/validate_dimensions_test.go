@@ -69,6 +69,15 @@ func TestValidateDimensionFields(t *testing.T) {
 			},
 			valid: false,
 		},
+		{
+			title: "external field as dimension should be supported",
+			field: field{
+				Name:      "container.id",
+				External:  "ecs",
+				Dimension: true,
+			},
+			valid: true,
+		},
 	}
 
 	for _, c := range cases {
