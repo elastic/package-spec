@@ -23,6 +23,7 @@ type field struct {
 	Unit       string `yaml:"unit"`
 	MetricType string `yaml:"metric_type"`
 	Dimension  bool   `yaml:"dimension"`
+	External   string `yaml:"external"`
 
 	Fields fields `yaml:"fields"`
 }
