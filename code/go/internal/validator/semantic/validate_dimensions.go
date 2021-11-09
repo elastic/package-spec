@@ -18,7 +18,7 @@ func ValidateDimensionFields(pkgRoot string) errors.ValidationErrors {
 
 func validateDimensionField(fieldsFile string, f field) errors.ValidationErrors {
 	if f.External != "" {
-		// External fields can be used as dimensions, but we cannot resolve
+		// TODO: External fields can be used as dimensions, but we cannot resolve
 		// them at this point, so accept them as they are by now.
 		return nil
 	}
