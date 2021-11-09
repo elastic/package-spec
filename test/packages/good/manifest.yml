@@ -17,7 +17,8 @@ policy_templates:
         multi: false
         vars:
           - name: hosts
-            type: text
+            type: url
+            url_allowed_schemes: ['http', 'https']
             title: Hosts
             multi: true
             required: true

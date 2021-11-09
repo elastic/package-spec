@@ -10,6 +10,9 @@
   - description: Add support for dimension fields.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/236
+  - description: Add email, time_zone and url config types.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/241
   - description: Add support for dimension fields from external sources.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/248
