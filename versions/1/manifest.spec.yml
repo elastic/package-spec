@@ -99,6 +99,7 @@ spec:
           - src
           - title
     version:
+      description: Version of the package, following semantic versioning. It can include pre-release labels.
       type: string
       pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
       examples:
