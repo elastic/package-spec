@@ -9,7 +9,7 @@
     link: https://github.com/elastic/package-spec/pull/250
   - description: Deprecate the release attribute, make it optional and set to ga by default
     type: enhancement
-    link: https://github.com/elastic/package-spec/issues/225
+    link: https://github.com/elastic/package-spec/pull/256
 - version: 1.3.0
   changes:
   - description: Support wait-for-data timeout
