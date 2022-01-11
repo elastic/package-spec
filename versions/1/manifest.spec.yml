@@ -145,11 +145,13 @@ spec:
       - integration
     release:
       description: The stability of the package.
+      deprecated: true # See https://github.com/elastic/package-spec/issues/225
       type: string
       enum:
       - experimental
       - beta
       - ga
+      default: ga
       examples:
       - experimental
     categories:
@@ -295,5 +297,4 @@ spec:
   - title
   - description
   - version
-  - release
   - owner

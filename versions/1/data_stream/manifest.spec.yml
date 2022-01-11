@@ -115,6 +115,7 @@ spec:
       - AWS billing metrics
     release:
       description: Stability of data stream.
+      deprecated: true # See https://github.com/elastic/package-spec/issues/225
       type: string
       enum:
       - experimental
