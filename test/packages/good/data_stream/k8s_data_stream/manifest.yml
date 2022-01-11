@@ -1,6 +1,5 @@
 title: Data stream using Kubernetes service deployer for tests
 type: logs
-release: experimental
 streams:
   - input: logfile
     vars:

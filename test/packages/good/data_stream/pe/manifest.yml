@@ -1,6 +1,5 @@
 title: pe sample
 type: logs
-release: experimental
 streams:
   - input: logfile
     vars:
