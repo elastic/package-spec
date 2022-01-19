@@ -5,4 +5,4 @@ labels: discuss
 title: "[Change Proposal] "
 ---
 
-Please read the section on [Change Proposals in the Contributing Guide](https://github.com/elastic/package-spec/blob/master/CONTRIBUTING.md#change-proposals) and flesh out this issue accordingly. Thank you!
+Please read the section on [Change Proposals in the Contributing Guide](https://github.com/elastic/package-spec/blob/main/CONTRIBUTING.md#change-proposals) and flesh out this issue accordingly. Thank you!
