@@ -84,6 +84,13 @@ func (s *folderSpec) validate(packageName string, folderPath string) ve.Validati
 
 		if itemSpec == nil && s.AdditionalContents {
 			// No spec found for current folder item but we do allow additional contents in folder.
+			// Package registry LoadAssets API expects the name not have "-" in it. Check that here
+			// so the issue is caught at validation / lint time of the package.
+			if strings.Contains(fileName, "-") {
+				errs = append(errs,
+					fmt.Errorf(`file "%s/%s" is invalid: directory name inside package %s contains -: %s`,
+						folderPath, fileName, packageName, fileName))
+			}
 			continue
 		}
 
