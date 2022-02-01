@@ -24,6 +24,12 @@ func TestValidateFile(t *testing.T) {
 		"deploy_docker":       {},
 		"time_series":         {},
 		"missing_data_stream": {},
+		"bad_additional_content": {
+			"bad-bad",
+			[]string{
+				"directory name inside package bad_additional_content contains -: bad-bad",
+			},
+		},
 		"bad_deploy_variants": {
 			"_dev/deploy/variants.yml",
 			[]string{
