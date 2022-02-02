@@ -62,7 +62,9 @@ func validatePrerelease(manifestVersion string) error {
 	return nil
 }
 
-const prereleaseNumberPattern = "([0-9-.]+([0-9A-Za-z-.]*[0-9A-Za-z])?)?"
+// prereleaseNumberPattern is the pattern that the number after the prerelease tag must match.
+// It has to start with a number, hyphen or dot, and end with number or letter.
+const prereleaseNumberPattern = "(([0-9]|[.-][0-9A-Za-z])([0-9A-Za-z-.]*[0-9A-Za-z])?)?"
 
 func validatePrereleaseTag(tag string) error {
 	if tag == "" {

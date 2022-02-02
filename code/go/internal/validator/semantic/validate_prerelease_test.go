@@ -31,6 +31,15 @@ func TestValidatePrerelease(t *testing.T) {
 		{"1.0.0-alphabeta", false},
 		{"1.0.0-123", false},
 		{"1.0.0-123", false},
+		{"1.0.0-beta.", false},
+		{"1.0.0-beta..", false},
+		{"1.0.0-beta-", false},
+		{"1.0.0-beta--", false},
+		{"1.0.0-beta---", false},
+		{"1.0.0-beta1.", false},
+		{"1.0.0-beta1-", false},
+		{"1.0.0-.", false},
+		{"1.0.0--", false},
 
 		// For convenience with previous recommendations
 		{"1.0.0-SNAPSHOT", true},
