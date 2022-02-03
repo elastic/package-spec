@@ -22,7 +22,7 @@ var (
 		"SNAPSHOT",
 	}
 
-	// Prereleased allowed, potentially with additional numbering.
+	// Prereleases allowed, potentially with additional numbering.
 	numberedPrereleases = []string{
 		"beta",
 		"rc",
