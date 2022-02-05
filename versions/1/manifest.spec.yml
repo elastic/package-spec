@@ -135,6 +135,7 @@ spec:
       type: string
       enum:
       - basic
+      - platinum
       default: basic
       examples:
       - basic
