@@ -9,6 +9,9 @@
     link: https://github.com/elastic/package-spec/pull/265
 - version: 1.4.0
   changes:
+  - description: Support platinum license type.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/267
   - description: Report error when a directory name inside a package contains hyphens (-).
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/259
