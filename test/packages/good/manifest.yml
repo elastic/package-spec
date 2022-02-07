@@ -3,6 +3,7 @@ name: good
 title: Good package
 description: This package is good.
 version: 1.0.0
+license: platinum
 conditions:
   kibana.version: '^7.9.0'
 policy_templates:

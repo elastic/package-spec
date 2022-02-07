@@ -9,7 +9,7 @@ spec:
         - description: An ML model file
           type: file
           contentMediaType: "application/json"
-          pattern: '^{PACKAGE_NAME}_.+\.json$'
+          pattern: '^{PACKAGE_NAME}-.+\.json$'
     - description: Folder containing Elasticsearch Ingest Node pipeline definitions
       type: folder
       name: ingest_pipeline
