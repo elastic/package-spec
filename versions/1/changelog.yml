@@ -9,6 +9,9 @@
     link: https://github.com/elastic/package-spec/pull/265
 - version: 1.4.0
   changes:
+  - description: Updates the ml_model file format pattern for validation.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/268
   - description: Report error when a directory name inside a package contains hyphens (-).
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/259
