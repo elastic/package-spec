@@ -13,6 +13,7 @@ type commonSpec struct {
 	AdditionalContents bool                   `yaml:"additionalContents"`
 	Content            map[string]interface{} `yaml:"content"`
 	Contents           []folderItemSpec       `yaml:"contents"`
+	DevelopmentFolder  bool                   `yaml:"developmentFolder"`
 }
 
 func setDefaultValues(spec *commonSpec) error {
