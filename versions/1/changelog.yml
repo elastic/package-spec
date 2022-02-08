@@ -4,9 +4,9 @@
 ##
 - version: 1.4.1-next
   changes:
-  - description: Prepare for next version
+  - description: Allow directory names with hyphens inside _dev directories.
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/265
+    link: https://github.com/elastic/package-spec/pull/270
 - version: 1.4.0
   changes:
   - description: Report error when a directory name inside a package contains hyphens (-).

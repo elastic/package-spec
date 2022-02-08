@@ -30,6 +30,7 @@ const (
 type folderSpec struct {
 	fs       fs.FS
 	specPath string
+	inDevDir bool // inDevDir is true if current folder is a subfolder of a _dev directory
 	commonSpec
 }
 
@@ -85,7 +86,7 @@ func (s *folderSpec) validate(packageName string, folderPath string) ve.Validati
 		if itemSpec == nil && s.AdditionalContents {
 			// No spec found for current folder item but we do allow additional contents in folder.
 			if file.IsDir() {
-				if strings.Contains(fileName, "-") {
+				if !s.inDevDir && strings.Contains(fileName, "-") {
 					errs = append(errs,
 						fmt.Errorf(`file "%s/%s" is invalid: directory name inside package %s contains -: %s`,
 							folderPath, fileName, packageName, fileName))
@@ -133,6 +134,10 @@ func (s *folderSpec) validate(packageName string, folderPath string) ve.Validati
 						Contents:           itemSpec.Contents,
 					},
 				}
+			}
+
+			if fileName == "_dev" || s.inDevDir {
+				subFolderSpec.inDevDir = true
 			}
 
 			subFolderPath := path.Join(folderPath, fileName)
