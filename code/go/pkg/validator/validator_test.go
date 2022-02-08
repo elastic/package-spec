@@ -21,6 +21,7 @@ func TestValidateFile(t *testing.T) {
 		expectedErrContains []string
 	}{
 		"good":                {},
+		"platinum_good":       {},
 		"deploy_docker":       {},
 		"time_series":         {},
 		"missing_data_stream": {},
