@@ -1,0 +1,5 @@
+variants:
+  foo:
+    BAR: baz
+    QUX: 17
+default: foo
