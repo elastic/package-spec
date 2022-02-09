@@ -7,6 +7,9 @@
   - description: ML model file name now matches the id of the model.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/268
+  - description: Support auxiliary files in terraform deploy spec
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/272
   - description: Add `developmentFolder` flag to mark directories with files intended for development.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/270
