@@ -5,9 +5,23 @@ spec:
       pattern: '^*.tf$'
       type: file
       required: true
+    - description: Terraform dependency lock file
+      pattern: ".terraform.lock.hcl"
+      type: file
+      # TODO: change it to true, but it is a breaking change
+      required: false
+    - description: Terraform template files
+      pattern: '^*.tftpl$'
+      type: file
+      required: false
     - description: Environment variables exposed for Terraform
       type: file
       name: "env.yml"
       contentMediaType: "application/x-yaml"
       required: false
       $ref: "./env.spec.yml"
+    - description: Fixture JSON files
+      pattern: '^*.json$'
+      type: file
+      contentMediaType: "application/json"
+      required: false
