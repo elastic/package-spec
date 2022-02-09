@@ -20,3 +20,8 @@ spec:
       contentMediaType: "application/x-yaml"
       required: false
       $ref: "./env.spec.yml"
+    - description: Fixture JSON files
+      pattern: '^*.json$'
+      type: file
+      contentMediaType: "application/json"
+      required: false
