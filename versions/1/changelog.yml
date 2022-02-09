@@ -7,12 +7,15 @@
   - description: ML model file name now matches the id of the model.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/268
-  - description: Prepare for next version
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/265
   - description: Support auxiliary files in terraform deploy spec
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/272
+  - description: Add `developmentFolder` flag to mark directories with files intended for development.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/270
+  - description: Allow directory names with hyphens inside _dev directories.
+    type: bugfix
+    link: https://github.com/elastic/package-spec/pull/270
 - version: 1.4.0
   changes:
   - description: Report error when a directory name inside a package contains hyphens (-).

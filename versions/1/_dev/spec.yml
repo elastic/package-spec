@@ -1,5 +1,6 @@
 spec:
   additionalContents: false
+  developmentFolder: true
   contents:
     - description: Folder containing resources related to building the package.
       type: folder
