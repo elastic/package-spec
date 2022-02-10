@@ -39,6 +39,7 @@ For a quick overview, these are the assets typically found in an Elastic Package
   * Map
   * Search
   * Security rules
+  * CSP (cloud security posture) rule templates
 * Other
   * fields.yml
 

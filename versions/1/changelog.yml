@@ -7,6 +7,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/275
+  - description: Add kibana/csp-rule-template asset
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/276
 - version: 1.4.1
   changes:
   - description: ML model file name now matches the id of the model.
