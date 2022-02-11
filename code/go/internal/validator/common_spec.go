@@ -7,12 +7,16 @@ package validator
 import (
 	"github.com/creasty/defaults"
 	"github.com/pkg/errors"
+
+	"github.com/elastic/package-spec/code/go/internal/spectypes"
 )
 
 type commonSpec struct {
-	AdditionalContents bool             `yaml:"additionalContents"`
-	Contents           []folderItemSpec `yaml:"contents"`
-	DevelopmentFolder  bool             `yaml:"developmentFolder"`
+	AdditionalContents bool               `yaml:"additionalContents"`
+	Contents           []folderItemSpec   `yaml:"contents"`
+	DevelopmentFolder  bool               `yaml:"developmentFolder"`
+	MaxSize            spectypes.FileSize `yaml:"maxSize"`
+	MaxContents        int                `yaml:"maxContents"`
 }
 
 func setDefaultValues(spec *commonSpec) error {

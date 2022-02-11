@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+
+	"gopkg.in/yaml.v3"
 )
 
 const (
@@ -43,14 +45,22 @@ func (s *FileSize) UnmarshalJSON(d []byte) error {
 		return err
 	}
 
+	return s.unmarshalString(text)
+}
+
+func (s *FileSize) UnmarshalYAML(value *yaml.Node) error {
+	return s.unmarshalString(value.Value)
+}
+
+func (s *FileSize) unmarshalString(text string) error {
 	match := bytesPattern.FindStringSubmatch(text)
 	if len(match) < 3 {
-		return fmt.Errorf("invalid format for file size (%s)", string(d))
+		return fmt.Errorf("invalid format for file size (%s)", text)
 	}
 
 	q, err := strconv.ParseUint(match[1], 10, 64)
 	if err != nil {
-		return fmt.Errorf("invalid format for file size (%s): %w", string(d), err)
+		return fmt.Errorf("invalid format for file size (%s): %w", text, err)
 	}
 
 	unit := match[2]
@@ -62,7 +72,7 @@ func (s *FileSize) UnmarshalJSON(d []byte) error {
 	case byteString, "":
 		*s = FileSize(q) * Byte
 	default:
-		return fmt.Errorf("invalid unit for filesize (%s): %s", string(d), unit)
+		return fmt.Errorf("invalid unit for filesize (%s): %s", text, unit)
 	}
 
 	return nil

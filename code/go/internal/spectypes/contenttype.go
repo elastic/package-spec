@@ -27,19 +27,16 @@ func (t *ContentType) UnmarshalJSON(d []byte) error {
 		return err
 	}
 
-	mediatype, params, err := mime.ParseMediaType(raw)
-	if err != nil {
-		return err
-	}
-
-	t.MediaType = mediatype
-	t.Params = params
-	return nil
+	return t.unmarshalString(raw)
 }
 
 func (t *ContentType) UnmarshalYAML(value *yaml.Node) error {
 	// For some reason go-yaml doesn't like the UnmarshalJSON function above.
-	mediatype, params, err := mime.ParseMediaType(value.Value)
+	return t.unmarshalString(value.Value)
+}
+
+func (t *ContentType) unmarshalString(text string) error {
+	mediatype, params, err := mime.ParseMediaType(text)
 	if err != nil {
 		return err
 	}

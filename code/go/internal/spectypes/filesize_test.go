@@ -65,7 +65,7 @@ func testFileSizeUnmarshalFormat(t *testing.T, unmarshaler func([]byte, interfac
 	for _, c := range cases {
 		t.Run(c.json, func(t *testing.T) {
 			var found FileSize
-			err := json.Unmarshal([]byte(c.json), &found)
+			err := unmarshaler([]byte(c.json), &found)
 			if c.valid {
 				require.NoError(t, err)
 				assert.Equal(t, c.expected, found)

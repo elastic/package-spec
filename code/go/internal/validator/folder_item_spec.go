@@ -67,8 +67,6 @@ func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
 		return file.IsDir()
 	}
 
-	// TODO: check max size
-
 	return false
 }
 
