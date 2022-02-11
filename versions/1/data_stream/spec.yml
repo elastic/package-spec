@@ -1,5 +1,6 @@
 spec:
   additionalContents: false
+  maxContents: 500
   contents:
   - description: Folder containing a single data stream definition
     type: folder

@@ -5,6 +5,7 @@ spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
   additionalProperties: false
+  maxSize: 5MB
   definitions:
     # Would like to use `null` type for an empty array which is a valid value
     # Need to use `"null"` to workaround a bug in the YAML parser implementation (`[]interface(nil)` is just `nil`)

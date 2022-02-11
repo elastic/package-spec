@@ -47,6 +47,7 @@ func (r relativePathChecker) IsFormat(input interface{}) bool {
 // LoadRelativePathFormatChecker loads the relative-path format checker into the
 // json-schema validation library.
 func LoadRelativePathFormatChecker(currentPath string) {
+	// TODO: Support maxSize check
 	gojsonschema.FormatCheckers.Add(RelativePathFormat, relativePathChecker{
 		currentPath: currentPath,
 	})

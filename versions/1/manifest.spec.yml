@@ -5,6 +5,7 @@ spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
   additionalProperties: false
+  maxSize: 5MB
   definitions:
     categories:
       description: Categories to which this package belongs.
@@ -48,6 +49,7 @@ spec:
             description: Relative path to the icon's image file.
             type: string
             format: relative-path
+            maxSize: 3MB
             examples:
               - "/img/logo_apache.svg"
           title:
@@ -78,6 +80,7 @@ spec:
             description: Relative path to the screenshot's image file.
             type: string
             format: relative-path
+            maxSize: 3MB
             examples:
               - "/img/apache_httpd_server_status.png"
           title:

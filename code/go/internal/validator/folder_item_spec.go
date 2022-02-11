@@ -65,6 +65,8 @@ func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
 		return file.IsDir()
 	}
 
+	// TODO: check max size
+
 	return false
 }
 
@@ -74,6 +76,8 @@ func (s *folderItemSpec) validate(fs fs.FS, folderSpecPath string, itemPath stri
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}
+
+	// TODO: Check size per content media type for YML: 5MB
 
 	var schemaLoader gojsonschema.JSONLoader
 	if s.Ref != "" {
