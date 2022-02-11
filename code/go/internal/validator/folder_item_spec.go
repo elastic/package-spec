@@ -7,6 +7,7 @@ package validator
 import (
 	"fmt"
 	"io/fs"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -16,20 +17,21 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
+	"github.com/elastic/package-spec/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
 	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
 type folderItemSpec struct {
-	Description       string   `yaml:"description"`
-	ItemType          string   `yaml:"type"`
-	ContentMediaType  string   `yaml:"contentMediaType"`
-	ForbiddenPatterns []string `yaml:"forbiddenPatterns"`
-	Name              string   `yaml:"name"`
-	Pattern           string   `yaml:"pattern"`
-	Required          bool     `yaml:"required"`
-	Ref               string   `yaml:"$ref"`
-	Visibility        string   `yaml:"visibility" default:"public"`
+	Description       string                 `yaml:"description"`
+	ItemType          string                 `yaml:"type"`
+	ContentMediaType  *spectypes.ContentType `yaml:"contentMediaType"`
+	ForbiddenPatterns []string               `yaml:"forbiddenPatterns"`
+	Name              string                 `yaml:"name"`
+	Pattern           string                 `yaml:"pattern"`
+	Required          bool                   `yaml:"required"`
+	Ref               string                 `yaml:"$ref"`
+	Visibility        string                 `yaml:"visibility" default:"public"`
 	commonSpec        `yaml:",inline"`
 }
 
@@ -71,13 +73,24 @@ func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
 }
 
 func (s *folderItemSpec) validate(fs fs.FS, folderSpecPath string, itemPath string) ve.ValidationErrors {
-	// loading item content
-	itemData, err := loadItemContent(itemPath, s.ContentMediaType)
-	if err != nil {
-		return ve.ValidationErrors{err}
+	if s.ContentMediaType != nil {
+		err := validateContentTypeSize(itemPath, *s.ContentMediaType)
+		if err != nil {
+			return ve.ValidationErrors{err}
+		}
 	}
 
-	// TODO: Check size per content media type for YML: 5MB
+	// loading item content
+	itemData, err := ioutil.ReadFile(itemPath)
+	if err != nil {
+		return ve.ValidationErrors{errors.Wrap(err, "reading item file failed")}
+	}
+	if s.ContentMediaType != nil {
+		itemData, err = processContentTypeData(itemData, *s.ContentMediaType)
+		if err != nil {
+			return ve.ValidationErrors{err}
+		}
+	}
 
 	var schemaLoader gojsonschema.JSONLoader
 	if s.Ref != "" {

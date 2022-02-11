@@ -8,60 +8,66 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"mime"
+	"os"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
+
+	"github.com/elastic/package-spec/code/go/internal/spectypes"
 )
 
-func loadItemContent(itemPath, mediaType string) ([]byte, error) {
-	itemData, err := ioutil.ReadFile(itemPath)
+const (
+	maxConfigurationFileSize = 5 * spectypes.MegaByte
+)
+
+func validateContentTypeSize(path string, contentType spectypes.ContentType) error {
+	info, err := os.Stat(path)
 	if err != nil {
-		return nil, errors.Wrap(err, "reading item file failed")
+		return err
+	}
+	size := spectypes.FileSize(info.Size())
+	if size <= 0 {
+		return errors.New("file is empty, but media type is defined")
 	}
 
-	// There might be a situation in which we'd like to keep a directory without any file content under version control.
-	// Usually it can be solved by adding the .empty file. There is no media type defined for this file.
-	// It's expected of the file with media type defined not to be empty - the file can be marked as non-required.
-	if len(itemData) == 0 && mediaType != "" {
-		return nil, errors.New("file is empty, but media type is defined")
+	var maxSize spectypes.FileSize
+	switch contentType.MediaType {
+	case "application/x-yaml":
+		maxSize = maxConfigurationFileSize
 	}
-
-	if mediaType == "" {
-		return itemData, nil // no item's schema defined
+	if maxSize > 0 && size > maxSize {
+		return errors.Errorf("file size (%s) is bigger than expected (%s)", size, maxSize)
 	}
+	return nil
+}
 
-	basicMediaType, params, err := mime.ParseMediaType(mediaType)
-	if err != nil {
-		return nil, errors.Wrapf(err, "invalid media type (%s)", mediaType)
-	}
-
-	switch basicMediaType {
+func processContentTypeData(data []byte, contentType spectypes.ContentType) ([]byte, error) {
+	switch contentType.MediaType {
 	case "application/x-yaml":
 		// TODO Determine if special handling of `---` is required (issue: https://github.com/elastic/package-spec/pull/54)
-		if v, _ := params["require-document-dashes"]; v == "true" && !bytes.HasPrefix(itemData, []byte("---\n")) {
+		v, _ := contentType.Params["require-document-dashes"]
+		if v == "true" && !bytes.HasPrefix(data, []byte("---\n")) {
 			return nil, errors.New("document dashes are required (start the document with '---')")
 		}
 
 		var c interface{}
-		err = yaml.Unmarshal(itemData, &c)
+		err := yaml.Unmarshal(data, &c)
 		if err != nil {
-			return nil, errors.Wrapf(err, "unmarshalling YAML file failed (path: %s)", itemPath)
+			return nil, errors.Wrapf(err, "unmarshalling YAML file failed")
 		}
 		c = expandItemKey(c)
 
-		itemData, err = json.Marshal(&c)
+		data, err = json.Marshal(&c)
 		if err != nil {
-			return nil, errors.Wrapf(err, "converting YAML file to JSON failed (path: %s)", itemPath)
+			return nil, errors.Wrapf(err, "converting YAML to JSON failed")
 		}
 	case "application/json": // no need to convert the item content
 	case "text/markdown": // text/markdown can't be transformed into JSON format
 	case "text/plain": // text/plain should be left as-is
 	default:
-		return nil, fmt.Errorf("unsupported media type (%s)", mediaType)
+		return nil, fmt.Errorf("unsupported media type (%s)", contentType)
 	}
-	return itemData, nil
+	return data, nil
 }
 
 func expandItemKey(c interface{}) interface{} {

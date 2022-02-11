@@ -21,25 +21,10 @@ const (
 	megaByteString = "MB"
 )
 
-type FileSize uint
+type FileSize int64 // os.FileInfo reports size as int64
 
 func (s FileSize) MarshalJSON() ([]byte, error) {
-	formatJSON := func(q FileSize, unit string) []byte {
-		return []byte(fmt.Sprintf(`"%d%s"`, uint(q), unit))
-	}
-
-	bytes := s
-	if bytes >= MegaByte && (bytes%MegaByte == 0) {
-		mb := bytes / MegaByte
-		return formatJSON(mb, megaByteString), nil
-	}
-
-	if bytes >= KiloByte && (bytes%KiloByte == 0) {
-		kb := bytes / KiloByte
-		return formatJSON(kb, kiloByteString), nil
-	}
-
-	return formatJSON(bytes, byteString), nil
+	return []byte(`"` + s.String() + `"`), nil
 }
 
 var bytesPattern = regexp.MustCompile(fmt.Sprintf(`^(\d+)(%s|%s|%s|)$`, byteString, kiloByteString, megaByteString))
@@ -81,4 +66,20 @@ func (s *FileSize) UnmarshalJSON(d []byte) error {
 	}
 
 	return nil
+}
+
+func (size FileSize) String() string {
+	format := func(q FileSize, unit string) string {
+		return fmt.Sprintf("%d%s", q, unit)
+	}
+
+	if size >= MegaByte && (size%MegaByte == 0) {
+		return format(size/MegaByte, megaByteString)
+	}
+
+	if size >= KiloByte && (size%KiloByte == 0) {
+		return format(size/KiloByte, kiloByteString)
+	}
+
+	return format(size, byteString)
 }

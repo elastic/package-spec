@@ -17,8 +17,7 @@ type ContentType struct {
 }
 
 func (t ContentType) MarshalJSON() ([]byte, error) {
-	formatted := mime.FormatMediaType(t.MediaType, t.Params)
-	return []byte(`"` + formatted + `"`), nil
+	return []byte(`"` + t.String() + `"`), nil
 }
 
 func (t *ContentType) UnmarshalJSON(d []byte) error {
@@ -48,4 +47,8 @@ func (t *ContentType) UnmarshalYAML(value *yaml.Node) error {
 	t.MediaType = mediatype
 	t.Params = params
 	return nil
+}
+
+func (t ContentType) String() string {
+	return mime.FormatMediaType(t.MediaType, t.Params)
 }
