@@ -79,8 +79,6 @@ func (s *folderItemSpec) validate(fs fs.FS, folderSpecPath string, itemPath stri
 	if s.Ref != "" {
 		schemaPath := filepath.Join(filepath.Dir(folderSpecPath), s.Ref)
 		schemaLoader = yamlschema.NewReferenceLoaderFileSystem("file:///"+schemaPath, fs)
-	} else if s.Content != nil {
-		schemaLoader = yamlschema.NewRawLoaderFileSystem(s.Content, fs)
 	} else {
 		return nil // item's schema is not defined
 	}
