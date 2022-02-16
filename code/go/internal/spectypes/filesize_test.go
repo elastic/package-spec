@@ -80,6 +80,8 @@ func testFileSizeUnmarshalFormat(t *testing.T, unmarshaler func([]byte, interfac
 		{`""`, 0, false},
 		{`"B"`, 0, false},
 		{`"-200MB"`, 0, false},
+		{`"-1"`, 0, false},
+		{`"10000000000000000000MB"`, 0, false},
 	}
 
 	for _, c := range cases {

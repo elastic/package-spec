@@ -23,7 +23,13 @@ const (
 	megaByteString = "MB"
 )
 
-type FileSize int64 // os.FileInfo reports size as int64
+type FileSize uint64
+
+func parseFileSizeInt(s string) (uint64, error) {
+	// os.FileInfo reports size as int64, don't support bigger numbers.
+	maxBitSize := 63
+	return strconv.ParseUint(s, 10, maxBitSize)
+}
 
 func (s FileSize) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + s.String() + `"`), nil
@@ -33,11 +39,9 @@ func (s FileSize) MarshalYAML() (interface{}, error) {
 	return s.String(), nil
 }
 
-var bytesPattern = regexp.MustCompile(fmt.Sprintf(`^(\d+)(%s|%s|%s|)$`, byteString, kiloByteString, megaByteString))
-
 func (s *FileSize) UnmarshalJSON(d []byte) error {
-	var bytes uint
-	err := json.Unmarshal(d, &bytes)
+	// Support unquoted plain numbers.
+	bytes, err := parseFileSizeInt(string(d))
 	if err == nil {
 		*s = FileSize(bytes)
 		return nil
@@ -53,8 +57,17 @@ func (s *FileSize) UnmarshalJSON(d []byte) error {
 }
 
 func (s *FileSize) UnmarshalYAML(value *yaml.Node) error {
+	// Support unquoted plain numbers.
+	bytes, err := parseFileSizeInt(value.Value)
+	if err == nil {
+		*s = FileSize(bytes)
+		return nil
+	}
+
 	return s.unmarshalString(value.Value)
 }
+
+var bytesPattern = regexp.MustCompile(fmt.Sprintf(`^(\d+)(%s|%s|%s|)$`, byteString, kiloByteString, megaByteString))
 
 func (s *FileSize) unmarshalString(text string) error {
 	match := bytesPattern.FindStringSubmatch(text)
@@ -62,7 +75,7 @@ func (s *FileSize) unmarshalString(text string) error {
 		return fmt.Errorf("invalid format for file size (%s)", text)
 	}
 
-	q, err := strconv.ParseUint(match[1], 10, 64)
+	q, err := parseFileSizeInt(match[1])
 	if err != nil {
 		return fmt.Errorf("invalid format for file size (%s): %w", text, err)
 	}

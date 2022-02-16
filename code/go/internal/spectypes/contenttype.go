@@ -6,6 +6,7 @@ package spectypes
 
 import (
 	"encoding/json"
+	"fmt"
 	"mime"
 
 	"gopkg.in/yaml.v3"
@@ -43,6 +44,10 @@ func (t *ContentType) unmarshalString(text string) error {
 	mediatype, params, err := mime.ParseMediaType(text)
 	if err != nil {
 		return err
+	}
+	if mime.FormatMediaType(mediatype, params) == "" {
+		// Bug in mime library? Happens when parsing something like "0;*0=0"
+		return fmt.Errorf("invalid token in media type")
 	}
 
 	t.MediaType = mediatype
