@@ -29,6 +29,10 @@ func (s FileSize) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + s.String() + `"`), nil
 }
 
+func (s FileSize) MarshalYAML() (interface{}, error) {
+	return s.String(), nil
+}
+
 var bytesPattern = regexp.MustCompile(fmt.Sprintf(`^(\d+)(%s|%s|%s|)$`, byteString, kiloByteString, megaByteString))
 
 func (s *FileSize) UnmarshalJSON(d []byte) error {

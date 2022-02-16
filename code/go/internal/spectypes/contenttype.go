@@ -20,6 +20,10 @@ func (t ContentType) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + t.String() + `"`), nil
 }
 
+func (t ContentType) MarshalYAML() (interface{}, error) {
+	return t.String(), nil
+}
+
 func (t *ContentType) UnmarshalJSON(d []byte) error {
 	var raw string
 	err := json.Unmarshal(d, &raw)

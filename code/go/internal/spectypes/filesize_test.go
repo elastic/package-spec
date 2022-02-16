@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFileSizeMarshall(t *testing.T) {
+func TestFileSizeMarshallJSON(t *testing.T) {
 	cases := []struct {
 		fileSize FileSize
 		expected string
@@ -28,6 +28,26 @@ func TestFileSizeMarshall(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.expected, func(t *testing.T) {
 			d, err := json.Marshal(c.fileSize)
+			require.NoError(t, err)
+			assert.Equal(t, c.expected, string(d))
+		})
+	}
+}
+
+func TestFileSizeMarshallYAML(t *testing.T) {
+	cases := []struct {
+		fileSize FileSize
+		expected string
+	}{
+		{FileSize(0), "0B\n"},
+		{FileSize(1024), "1KB\n"},
+		{FileSize(1025), "1025B\n"},
+		{5 * MegaByte, "5MB\n"},
+	}
+
+	for _, c := range cases {
+		t.Run(c.expected, func(t *testing.T) {
+			d, err := yaml.Marshal(c.fileSize)
 			require.NoError(t, err)
 			assert.Equal(t, c.expected, string(d))
 		})

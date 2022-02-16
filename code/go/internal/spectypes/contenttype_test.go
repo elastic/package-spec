@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestContentTypeMarshal(t *testing.T) {
+func TestContentTypeMarshalJSON(t *testing.T) {
 	jsonContentType := ContentType{"application/json", nil}
 	yamlContentType := ContentType{"application/x-yaml", map[string]string{
 		"require-document-dashes": "true",
@@ -32,6 +32,30 @@ func TestContentTypeMarshal(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.expected, func(t *testing.T) {
 			d, err := json.Marshal(c.contentType)
+			require.NoError(t, err)
+			assert.Equal(t, c.expected, string(d))
+		})
+	}
+}
+
+func TestContentTypeMarshalYAML(t *testing.T) {
+	jsonContentType := ContentType{"application/json", nil}
+	yamlContentType := ContentType{"application/x-yaml", map[string]string{
+		"require-document-dashes": "true",
+	}}
+
+	cases := []struct {
+		contentType ContentType
+		expected    string
+	}{
+		{ContentType{}, "\"\"\n"},
+		{jsonContentType, "application/json\n"},
+		{yamlContentType, "application/x-yaml; require-document-dashes=true\n"},
+	}
+
+	for _, c := range cases {
+		t.Run(c.expected, func(t *testing.T) {
+			d, err := yaml.Marshal(c.contentType)
 			require.NoError(t, err)
 			assert.Equal(t, c.expected, string(d))
 		})
