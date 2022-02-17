@@ -19,6 +19,7 @@ import (
 )
 
 const (
+	maxFileSize              = 150 * spectypes.MegaByte
 	maxConfigurationFileSize = 5 * spectypes.MegaByte
 )
 
@@ -95,8 +96,9 @@ func validateContentTypeSize(path string, contentType spectypes.ContentType) err
 }
 
 func validateMaxSize(path string, maxSize spectypes.FileSize) error {
-	if maxSize <= 0 {
-		return nil
+	limit := maxFileSize
+	if maxSize > 0 {
+		limit = maxSize
 	}
 
 	info, err := os.Stat(path)
@@ -104,8 +106,8 @@ func validateMaxSize(path string, maxSize spectypes.FileSize) error {
 		return err
 	}
 	size := spectypes.FileSize(info.Size())
-	if size > maxSize {
-		return errors.Errorf("file size (%s) is bigger than expected (%s)", size, maxSize)
+	if size > limit {
+		return errors.Errorf("file size (%s) is bigger than expected (%s)", size, limit)
 	}
 	return nil
 }

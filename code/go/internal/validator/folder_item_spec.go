@@ -70,6 +70,10 @@ func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
 }
 
 func (s *folderItemSpec) validate(fs fs.FS, folderSpecPath string, itemPath string) ve.ValidationErrors {
+	err := validateMaxSize(itemPath, s.MaxSize)
+	if err != nil {
+		return ve.ValidationErrors{err}
+	}
 	if s.ContentMediaType != nil {
 		err := validateContentType(itemPath, *s.ContentMediaType)
 		if err != nil {
@@ -79,10 +83,6 @@ func (s *folderItemSpec) validate(fs fs.FS, folderSpecPath string, itemPath stri
 		if err != nil {
 			return ve.ValidationErrors{err}
 		}
-	}
-	err := validateMaxSize(itemPath, s.MaxSize)
-	if err != nil {
-		return ve.ValidationErrors{err}
 	}
 
 	errs := s.validateSchema(fs, folderSpecPath, itemPath)
