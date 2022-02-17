@@ -43,14 +43,32 @@ func validateFields(pkgRoot string, validate validateFunc) ve.ValidationErrors {
 			vErrs = append(vErrs, errors.Wrapf(err, `file "%s" is invalid: can't unmarshal fields`, fieldsFile))
 		}
 
-		for _, u := range unmarshaled {
-			errs := validate(fieldsFile, u)
-			if len(errs) > 0 {
-				vErrs = append(vErrs, errs...)
-			}
+		errs := validateNestedFields("", fieldsFile, unmarshaled, validate)
+		if len(errs) > 0 {
+			vErrs = append(vErrs, errs...)
 		}
 	}
 	return vErrs
+}
+
+func validateNestedFields(parent string, fieldsFile string, fields fields, validate validateFunc) ve.ValidationErrors {
+	var result ve.ValidationErrors
+	for _, field := range fields {
+		if len(parent) > 0 {
+			field.Name = parent + "." + field.Name
+		}
+		errs := validate(fieldsFile, field)
+		if len(errs) > 0 {
+			result = append(result, errs...)
+		}
+		if len(field.Fields) > 0 {
+			errs := validateNestedFields(field.Name, fieldsFile, field.Fields, validate)
+			if len(errs) > 0 {
+				result = append(result, errs...)
+			}
+		}
+	}
+	return result
 }
 
 func listFieldsFiles(pkgRoot string) ([]string, error) {
