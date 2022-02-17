@@ -13,16 +13,20 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// Common units for file sizes.
 const (
 	Byte     = FileSize(1)
 	KiloByte = 1024 * Byte
 	MegaByte = 1024 * KiloByte
+)
 
+const (
 	byteString     = "B"
 	kiloByteString = "KB"
 	megaByteString = "MB"
 )
 
+// FileSize represents the size of a file.
 type FileSize uint64
 
 func parseFileSizeInt(s string) (uint64, error) {
@@ -31,14 +35,17 @@ func parseFileSizeInt(s string) (uint64, error) {
 	return strconv.ParseUint(s, 10, maxBitSize)
 }
 
+// MarshalJSON implements the json.Marshaler interface for FileSize.
 func (s FileSize) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + s.String() + `"`), nil
 }
 
+// MarshalYAML implements the yaml.Marshaler interface for FileSize.
 func (s FileSize) MarshalYAML() (interface{}, error) {
 	return s.String(), nil
 }
 
+// UnmarshalJSON implements the json.Unmarshaler interface for FileSize.
 func (s *FileSize) UnmarshalJSON(d []byte) error {
 	// Support unquoted plain numbers.
 	bytes, err := parseFileSizeInt(string(d))
@@ -56,6 +63,7 @@ func (s *FileSize) UnmarshalJSON(d []byte) error {
 	return s.unmarshalString(text)
 }
 
+// UnmarshalYAML implements the yaml.Unmarshaler interface for FileSize.
 func (s *FileSize) UnmarshalYAML(value *yaml.Node) error {
 	// Support unquoted plain numbers.
 	bytes, err := parseFileSizeInt(value.Value)
@@ -95,18 +103,19 @@ func (s *FileSize) unmarshalString(text string) error {
 	return nil
 }
 
-func (size FileSize) String() string {
+// String returns the string representation of the FileSize.
+func (s FileSize) String() string {
 	format := func(q FileSize, unit string) string {
 		return fmt.Sprintf("%d%s", q, unit)
 	}
 
-	if size >= MegaByte && (size%MegaByte == 0) {
-		return format(size/MegaByte, megaByteString)
+	if s >= MegaByte && (s%MegaByte == 0) {
+		return format(s/MegaByte, megaByteString)
 	}
 
-	if size >= KiloByte && (size%KiloByte == 0) {
-		return format(size/KiloByte, kiloByteString)
+	if s >= KiloByte && (s%KiloByte == 0) {
+		return format(s/KiloByte, kiloByteString)
 	}
 
-	return format(size, byteString)
+	return format(s, byteString)
 }

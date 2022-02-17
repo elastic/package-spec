@@ -12,19 +12,23 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// ContentType contains a content media type with its parameters.
 type ContentType struct {
 	MediaType string
 	Params    map[string]string
 }
 
+// MarshalJSON implements the json.Marshaler interface for ContentType.
 func (t ContentType) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + t.String() + `"`), nil
 }
 
+// MarshalYAML implements the yaml.Marshaler interface for ContentType.
 func (t ContentType) MarshalYAML() (interface{}, error) {
 	return t.String(), nil
 }
 
+// UnmarshalJSON implements the json.Marshaler interface for ContentType.
 func (t *ContentType) UnmarshalJSON(d []byte) error {
 	var raw string
 	err := json.Unmarshal(d, &raw)
@@ -35,6 +39,7 @@ func (t *ContentType) UnmarshalJSON(d []byte) error {
 	return t.unmarshalString(raw)
 }
 
+// UnmarshalYAML implements the yaml.Marshaler interface for ContentType.
 func (t *ContentType) UnmarshalYAML(value *yaml.Node) error {
 	// For some reason go-yaml doesn't like the UnmarshalJSON function above.
 	return t.unmarshalString(value.Value)
@@ -55,6 +60,7 @@ func (t *ContentType) unmarshalString(text string) error {
 	return nil
 }
 
+// String returns a string representation of the content type.
 func (t ContentType) String() string {
 	return mime.FormatMediaType(t.MediaType, t.Params)
 }
