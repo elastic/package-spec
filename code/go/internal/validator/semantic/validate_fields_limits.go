@@ -55,9 +55,10 @@ func dataStreamFromFieldsPath(pkgRoot, fieldsFile string) (string, error) {
 		return "", fmt.Errorf("looking for fields file (%s) in data streams path (%s): %w", fieldsFile, dataStreamPath, err)
 	}
 
-	dataStream, _, found := strings.Cut(relPath, string(filepath.Separator))
-	if !found {
+	parts := strings.SplitN(relPath, string(filepath.Separator), 2)
+	if len(parts) != 2 {
 		return "", errors.Errorf("could not find data stream for fields file %s", fieldsFile)
 	}
+	dataStream := parts[0]
 	return dataStream, nil
 }
