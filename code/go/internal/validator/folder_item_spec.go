@@ -7,7 +7,6 @@ package validator
 import (
 	"fmt"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -72,7 +71,11 @@ func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
 
 func (s *folderItemSpec) validate(fs fs.FS, folderSpecPath string, itemPath string) ve.ValidationErrors {
 	if s.ContentMediaType != nil {
-		err := validateContentTypeSize(itemPath, *s.ContentMediaType)
+		err := validateContentType(itemPath, *s.ContentMediaType)
+		if err != nil {
+			return ve.ValidationErrors{err}
+		}
+		err = validateContentTypeSize(itemPath, *s.ContentMediaType)
 		if err != nil {
 			return ve.ValidationErrors{err}
 		}
@@ -82,27 +85,27 @@ func (s *folderItemSpec) validate(fs fs.FS, folderSpecPath string, itemPath stri
 		return ve.ValidationErrors{err}
 	}
 
-	// loading item content
-	itemData, err := ioutil.ReadFile(itemPath)
-	if err != nil {
-		return ve.ValidationErrors{errors.Wrap(err, "reading item file failed")}
-	}
-	if s.ContentMediaType != nil {
-		itemData, err = processContentTypeData(itemData, *s.ContentMediaType)
-		if err != nil {
-			return ve.ValidationErrors{err}
-		}
+	errs := s.validateSchema(fs, folderSpecPath, itemPath)
+	if len(errs) > 0 {
+		return errs
 	}
 
-	var schemaLoader gojsonschema.JSONLoader
-	if s.Ref != "" {
-		schemaPath := filepath.Join(filepath.Dir(folderSpecPath), s.Ref)
-		schemaLoader = yamlschema.NewReferenceLoaderFileSystem("file:///"+schemaPath, fs)
-	} else {
+	return nil
+}
+
+func (s *folderItemSpec) validateSchema(fs fs.FS, folderSpecPath, itemPath string) ve.ValidationErrors {
+	if s.Ref == "" {
 		return nil // item's schema is not defined
 	}
 
+	schemaPath := filepath.Join(filepath.Dir(folderSpecPath), s.Ref)
+	schemaLoader := yamlschema.NewReferenceLoaderFileSystem("file:///"+schemaPath, fs)
+
 	// validation with schema
+	itemData, err := loadItemSchema(itemPath, s.ContentMediaType)
+	if err != nil {
+		return ve.ValidationErrors{err}
+	}
 	documentLoader := gojsonschema.NewBytesLoader(itemData)
 
 	formatCheckersMutex.Lock()
@@ -119,13 +122,13 @@ func (s *folderItemSpec) validate(fs fs.FS, folderSpecPath string, itemPath stri
 		return ve.ValidationErrors{err}
 	}
 
-	if result.Valid() {
-		return nil // item content is valid according to the loaded schema
+	if !result.Valid() {
+		var errs ve.ValidationErrors
+		for _, re := range result.Errors() {
+			errs = append(errs, fmt.Errorf("field %s: %s", re.Field(), adjustErrorDescription(re.Description())))
+		}
+		return errs
 	}
 
-	var errs ve.ValidationErrors
-	for _, re := range result.Errors() {
-		errs = append(errs, fmt.Errorf("field %s: %s", re.Field(), adjustErrorDescription(re.Description())))
-	}
-	return errs
+	return nil // item content is valid according to the loaded schema
 }

@@ -8,17 +8,70 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 
+	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/spectypes"
 )
 
 const (
 	maxConfigurationFileSize = 5 * spectypes.MegaByte
 )
+
+func loadItemSchema(path string, contentType *spectypes.ContentType) ([]byte, error) {
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, ve.ValidationErrors{errors.Wrap(err, "reading item file failed")}
+	}
+	if contentType != nil && contentType.MediaType == "application/x-yaml" {
+		return convertYAMLToJSON(data)
+	}
+	return data, nil
+}
+
+func validateContentType(path string, contentType spectypes.ContentType) error {
+	switch contentType.MediaType {
+	case "application/x-yaml":
+		v, _ := contentType.Params["require-document-dashes"]
+		requireDashes := (v == "true")
+		if requireDashes {
+			err := validateYAMLDashes(path)
+			if err != nil {
+				return err
+			}
+		}
+	case "application/json":
+	case "text/markdown":
+	case "text/plain":
+	default:
+		return fmt.Errorf("unsupported media type (%s)", contentType)
+	}
+	return nil
+}
+
+func validateYAMLDashes(path string) error {
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	dashes := []byte("---\n")
+	b := make([]byte, len(dashes))
+	_, err = f.Read(b)
+	if err != nil {
+		return err
+	}
+
+	if !bytes.Equal(dashes, b) {
+		return errors.New("document dashes are required (start the document with '---')")
+	}
+	return nil
+}
 
 func validateContentTypeSize(path string, contentType spectypes.ContentType) error {
 	info, err := os.Stat(path)
@@ -57,31 +110,17 @@ func validateMaxSize(path string, maxSize spectypes.FileSize) error {
 	return nil
 }
 
-func processContentTypeData(data []byte, contentType spectypes.ContentType) ([]byte, error) {
-	switch contentType.MediaType {
-	case "application/x-yaml":
-		// TODO Determine if special handling of `---` is required (issue: https://github.com/elastic/package-spec/pull/54)
-		v, _ := contentType.Params["require-document-dashes"]
-		if v == "true" && !bytes.HasPrefix(data, []byte("---\n")) {
-			return nil, errors.New("document dashes are required (start the document with '---')")
-		}
+func convertYAMLToJSON(data []byte) ([]byte, error) {
+	var c interface{}
+	err := yaml.Unmarshal(data, &c)
+	if err != nil {
+		return nil, errors.Wrapf(err, "unmarshalling YAML file failed")
+	}
+	c = expandItemKey(c)
 
-		var c interface{}
-		err := yaml.Unmarshal(data, &c)
-		if err != nil {
-			return nil, errors.Wrapf(err, "unmarshalling YAML file failed")
-		}
-		c = expandItemKey(c)
-
-		data, err = json.Marshal(&c)
-		if err != nil {
-			return nil, errors.Wrapf(err, "converting YAML to JSON failed")
-		}
-	case "application/json": // no need to convert the item content
-	case "text/markdown": // text/markdown can't be transformed into JSON format
-	case "text/plain": // text/plain should be left as-is
-	default:
-		return nil, fmt.Errorf("unsupported media type (%s)", contentType)
+	data, err = json.Marshal(&c)
+	if err != nil {
+		return nil, errors.Wrapf(err, "converting YAML to JSON failed")
 	}
 	return data, nil
 }
