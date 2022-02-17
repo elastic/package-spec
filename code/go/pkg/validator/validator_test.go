@@ -47,8 +47,8 @@ func TestValidateFile(t *testing.T) {
 		"missing_image_files": {
 			"manifest.yml",
 			[]string{
-				"field screenshots.0.src: relative path is invalid or target doesn't exist",
-				"field icons.0.src: relative path is invalid or target doesn't exist",
+				"field screenshots.0.src: relative path is invalid, target doesn't exist or is bigger than 3MB",
+				"field icons.0.src: relative path is invalid, target doesn't exist or is bigger than 3MB",
 			},
 		},
 		"input_template": {},
