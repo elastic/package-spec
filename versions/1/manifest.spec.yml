@@ -5,7 +5,6 @@ spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
   additionalProperties: false
-  maxSize: 5MB
   definitions:
     categories:
       description: Categories to which this package belongs.

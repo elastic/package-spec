@@ -77,6 +77,10 @@ func (s *folderItemSpec) validate(fs fs.FS, folderSpecPath string, itemPath stri
 			return ve.ValidationErrors{err}
 		}
 	}
+	err := validateMaxSize(itemPath, s.MaxSize)
+	if err != nil {
+		return ve.ValidationErrors{err}
+	}
 
 	// loading item content
 	itemData, err := ioutil.ReadFile(itemPath)

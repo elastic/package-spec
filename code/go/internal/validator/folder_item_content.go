@@ -41,6 +41,22 @@ func validateContentTypeSize(path string, contentType spectypes.ContentType) err
 	return nil
 }
 
+func validateMaxSize(path string, maxSize spectypes.FileSize) error {
+	if maxSize <= 0 {
+		return nil
+	}
+
+	info, err := os.Stat(path)
+	if err != nil {
+		return err
+	}
+	size := spectypes.FileSize(info.Size())
+	if size > maxSize {
+		return errors.Errorf("file size (%s) is bigger than expected (%s)", size, maxSize)
+	}
+	return nil
+}
+
 func processContentTypeData(data []byte, contentType spectypes.ContentType) ([]byte, error) {
 	switch contentType.MediaType {
 	case "application/x-yaml":

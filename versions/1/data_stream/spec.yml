@@ -11,6 +11,7 @@ spec:
     - description: A data stream's manifest file
       type: file
       contentMediaType: "application/x-yaml"
+      maxSize: 5MB
       name: "manifest.yml"
       required: true
       $ref: "./manifest.spec.yml"
