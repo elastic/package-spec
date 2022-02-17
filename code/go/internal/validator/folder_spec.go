@@ -25,6 +25,8 @@ const (
 
 	visibilityTypePublic  = "public"
 	visibilityTypePrivate = "private"
+
+	maxFolderContents = 65535
 )
 
 type folderSpec struct {
@@ -71,6 +73,11 @@ func (s *folderSpec) validate(packageName string, folderPath string) ve.Validati
 	files, err := ioutil.ReadDir(folderPath)
 	if err != nil {
 		errs = append(errs, errors.Wrapf(err, "could not read folder [%s]", folderPath))
+		return errs
+	}
+
+	if limit := maxContents(s.MaxContents); len(files) > limit {
+		errs = append(errs, errors.Errorf("folder [%s] exceeds the limit of %d files", folderPath, limit))
 		return errs
 	}
 
@@ -219,4 +226,11 @@ func (s *folderSpec) findItemSpec(packageName string, folderItemName string) (*f
 
 	// No item spec found
 	return nil, nil
+}
+
+func maxContents(folderLimit int) int {
+	if folderLimit > 0 {
+		return folderLimit
+	}
+	return maxFolderContents
 }
