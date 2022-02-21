@@ -7,3 +7,8 @@
 - name: example.agent.current_count
   type: long
   metric_type: gauge
+- name: example.agent.received.bytes
+  type: long
+  metric_type: gauge
+  unit: byte
+  format: bytes

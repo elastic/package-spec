@@ -129,6 +129,13 @@ spec:
         - ms
         - micros
         - nanos
+      format:
+        description: Formatting used by Kibana to display this field
+        type: string
+        enum:
+          - percent
+          - bytes
+          - duration
       dimension:
         description: Declare a field as dimension of time series
         type: boolean
