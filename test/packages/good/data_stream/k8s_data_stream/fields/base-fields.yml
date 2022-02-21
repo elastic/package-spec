@@ -22,3 +22,17 @@
       type: keyword
       description: Region name.
       ignore_above: 1024
+- name: host
+  title: Host
+  group: 2
+  type: group
+  fields:
+    - name: os.name
+      level: extended
+      type: keyword
+      ignore_above: 1024
+      multi_fields:
+        - name: text
+          type: text
+          norms: false
+          default_field: false

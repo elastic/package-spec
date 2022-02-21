@@ -105,6 +105,13 @@ spec:
         type: string
         enum:
           - ecs
+      norms:
+        description: Set to false to disable normalization factors used for scoring calculation.
+        type: boolean
+        default: true
+      multi_fields:
+        description: Additional mappings for this field.
+        $ref: "#"
       fields:
         description: Sub-fields, when type is group
         $ref: "#"     # JSON-schema syntax for pointing to the root of the schema
