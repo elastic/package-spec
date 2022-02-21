@@ -36,3 +36,9 @@
           type: text
           norms: false
           default_field: false
+    - name: labels
+      level: extended
+      type: object
+      object_type: keyword
+      object_type_mapping_type: "*"
+      description: Image labels.

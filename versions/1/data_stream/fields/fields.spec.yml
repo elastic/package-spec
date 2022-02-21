@@ -51,6 +51,44 @@ spec:
         - wildcard
         - version
         - unsigned_long
+      object_type:
+        description: Datatype of elements in object field
+        type: string
+        enum:
+        - histogram
+        - text
+        - keyword
+        - long
+        - integer
+        - short
+        - byte
+        - double
+        - float
+        - half_float
+        - scaled_float
+        - date
+        - date_nanos
+        - boolean
+        - binary
+        - integer_range
+        - float_range
+        - long_range
+        - double_range
+        - date_range
+        - ip_range
+        - geo_point
+        - ip
+        - array
+        - flattened
+        - wildcard
+        - version
+        - unsigned_long
+      object_type_mapping_type:
+        description: Types in the source document that should be mapped to the type defined in object_type, it can be "*" to indicate all types.
+        type: string
+        examples:
+          - "double"
+          - "*"
       group:
         description: Group the field belongs to.
         type: integer
@@ -60,7 +98,10 @@ spec:
         examples:
           - core
       description:
-        description: Short description of field
+        description: Short description of field.
+        type: string
+      footnote:
+        description: Additional detains on the field.
         type: string
       value:
         description: The value to associate with a constant_keyword field.
@@ -92,6 +133,9 @@ spec:
         description: Declare a field as dimension of time series
         type: boolean
         default: false
+      example:
+        description: Examples for this field.
+        type: string
       pattern:
         description: Regular expression pattern of the field value
         type: string

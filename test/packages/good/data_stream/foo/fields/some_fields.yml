@@ -1,5 +1,6 @@
 - name: source
   title: Source
+  footnote: "Some detailed information about these fields"
   group: 2
   type: group
   fields:
@@ -26,9 +27,13 @@
   type: text
   description: A field with a pattern defined
   pattern: '^[a-zA-Z]$'
+  example: foobartext
 - name: aaa
   type: integer
   metric_type: gauge
 - name: vehicle_type
   type: constant_keyword
   value: truck
+- name: magic_number
+  type: integer
+  # TODO: Fix this: example: 42
