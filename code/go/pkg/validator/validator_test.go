@@ -77,6 +77,14 @@ func TestValidateFile(t *testing.T) {
 				"field \"example.agent.call_duration\" of type histogram can't be a dimension, allowed types for dimensions: constant_keyword, keyword, long, integer, short, byte, double, float, half_float, scaled_float, unsigned_long, ip",
 			},
 		},
+		"bad_field_typos": {
+			"data_stream/example/fields/fields.yml",
+			[]string{
+				"field 0: Additional property descriiption is not allowed",
+				"field 0: Additional property dimensions is not allowed",
+				"field 1: Additional property default_fields is not allowed",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
