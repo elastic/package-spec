@@ -10,6 +10,9 @@
   - description: Add kibana/csp-rule-template asset
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/276
+  - description: Disallow unknown properties on fields definitions
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/281
 - version: 1.4.1
   changes:
   - description: ML model file name now matches the id of the model.

@@ -6,7 +6,7 @@ spec:
   type: array
   items:
     type: object
-    additionalProperties: true
+    additionalProperties: false
     properties:
       name:
         description: Name of field
@@ -51,12 +51,24 @@ spec:
         - wildcard
         - version
         - unsigned_long
+      group:
+        description: Group the field belongs to.
+        type: integer
+      level:
+        description: ECS level the field belongs to.
+        type: string
+        examples:
+          - core
       description:
         description: Short description of field
         type: string
       value:
         description: The value to associate with a constant_keyword field.
         type: string
+      default_field:
+        description: Set to false if the field should not be installed as a default field in Kibana index patterns.
+        type: boolean
+        default: true
       metric_type:
         description: Metric type
         type: string
@@ -85,6 +97,9 @@ spec:
         type: string
         examples:
           - '^[a-zA-Z]$'
+      ignore_above:
+        description: Index only the first number of characters indicated by this option.
+        type: integer
       external:
         description: External source reference
         type: string
