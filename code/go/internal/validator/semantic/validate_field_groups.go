@@ -24,12 +24,5 @@ func validateFieldUnit(fieldsFile string, f field) errors.ValidationErrors {
 		return errors.ValidationErrors{fmt.Errorf(`file "%s" is invalid: field "%s" can't have metric type property'`, fieldsFile, f.Name)}
 	}
 
-	var vErrs errors.ValidationErrors
-	for _, aField := range f.Fields {
-		errs := validateFieldUnit(fieldsFile, aField)
-		if len(errs) > 0 {
-			vErrs = append(vErrs, errs...)
-		}
-	}
-	return vErrs
+	return nil
 }

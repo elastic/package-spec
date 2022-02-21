@@ -31,8 +31,8 @@ func TestValidateFieldGroups_Bad(t *testing.T) {
 
 	errs := ValidateFieldGroups(pkgRoot)
 	if assert.Len(t, errs, 3) {
-		assert.Equal(t, fileError("data_stream/bar/fields/hello-world.yml", `field "bbb" can't have unit property'`), errs[0].Error())
-		assert.Equal(t, fileError("data_stream/bar/fields/hello-world.yml", `field "eee" can't have unit property'`), errs[1].Error())
+		assert.Equal(t, fileError("data_stream/bar/fields/hello-world.yml", `field "aaa.bbb" can't have unit property'`), errs[0].Error())
+		assert.Equal(t, fileError("data_stream/bar/fields/hello-world.yml", `field "ddd.eee" can't have unit property'`), errs[1].Error())
 		assert.Equal(t, fileError("data_stream/foo/fields/bad-file.yml", `field "fff" can't have metric type property'`), errs[2].Error())
 	}
 }
