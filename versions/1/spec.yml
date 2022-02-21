@@ -6,11 +6,16 @@
 version: 1.1.1-next
 spec:
   additionalContents: true
+  totalContentsLimit: 65535
+  totalSizeLimit: 250MB
+  sizeLimit: 150MB
+  configurationSizeLimit: 5MB
+  relativePathSizeLimit: 3MB
   contents:
   - description: The main package manifest file
     type: file
     contentMediaType: "application/x-yaml"
-    maxSize: 5MB
+    sizeLimit: 5MB
     name: "manifest.yml"
     required: true
     $ref: "./manifest.spec.yml"

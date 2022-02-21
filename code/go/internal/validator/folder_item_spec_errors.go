@@ -12,7 +12,7 @@ import (
 
 func adjustErrorDescription(description string) string {
 	if description == "Does not match format '"+semantic.RelativePathFormat+"'" {
-		return fmt.Sprintf("relative path is invalid, target doesn't exist or is bigger than %s", semantic.RelativePathFileMaxSize)
+		return fmt.Sprintf("relative path is invalid, target doesn't exist or it exceeds the file size limit")
 	} else if description == "Does not match format '"+semantic.DataStreamNameFormat+"'" {
 		return "data stream doesn't exist"
 	}

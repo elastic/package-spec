@@ -25,8 +25,6 @@ const (
 
 	visibilityTypePublic  = "public"
 	visibilityTypePrivate = "private"
-
-	maxFolderContents = 65535
 )
 
 type folderSpec struct {
@@ -35,37 +33,34 @@ type folderSpec struct {
 	commonSpec
 }
 
-func newFolderSpec(fs fs.FS, specPath string) (*folderSpec, error) {
+func (s *folderSpec) load(fs fs.FS, specPath string) error {
 	specFile, err := fs.Open(specPath)
 	if err != nil {
-		return nil, errors.Wrap(err, "could not open folder specification file")
+		return errors.Wrap(err, "could not open folder specification file")
 	}
 	defer specFile.Close()
 
 	data, err := ioutil.ReadAll(specFile)
 	if err != nil {
-		return nil, errors.Wrap(err, "could not read folder specification file")
+		return errors.Wrap(err, "could not read folder specification file")
 	}
 
 	var wrapper struct {
-		Spec commonSpec `yaml:"spec"`
+		Spec *commonSpec `yaml:"spec"`
 	}
-
+	wrapper.Spec = &s.commonSpec
 	if err := yaml.Unmarshal(data, &wrapper); err != nil {
-		return nil, errors.Wrap(err, "could not parse folder specification file")
+		return errors.Wrap(err, "could not parse folder specification file")
 	}
 
-	spec := folderSpec{
-		fs:         fs,
-		specPath:   specPath,
-		commonSpec: wrapper.Spec,
-	}
-
-	err = setDefaultValues(&spec.commonSpec)
+	err = setDefaultValues(&s.commonSpec)
 	if err != nil {
-		return nil, errors.Wrap(err, "could not set default values")
+		return errors.Wrap(err, "could not set default values")
 	}
-	return &spec, nil
+
+	s.fs = fs
+	s.specPath = specPath
+	return nil
 }
 
 func (s *folderSpec) validate(packageName string, folderPath string) ve.ValidationErrors {
@@ -76,8 +71,8 @@ func (s *folderSpec) validate(packageName string, folderPath string) ve.Validati
 		return errs
 	}
 
-	if limit := maxContents(s.MaxContents); len(files) > limit {
-		errs = append(errs, errors.Errorf("folder [%s] exceeds the limit of %d files", folderPath, limit))
+	if contentsLimit := s.Limits.TotalContentsLimit; contentsLimit > 0 && len(files) > contentsLimit {
+		errs = append(errs, errors.Errorf("folder [%s] exceeds the limit of %d files", folderPath, contentsLimit))
 		return errs
 	}
 
@@ -123,23 +118,21 @@ func (s *folderSpec) validate(packageName string, folderPath string) ve.Validati
 				continue
 			}
 
-			var subFolderSpec *folderSpec
+			var subFolderSpec folderSpec
+			// Inherit limits from parent directory.
+			subFolderSpec.Limits = s.Limits
 			if itemSpec.Ref != "" {
 				subFolderSpecPath := path.Join(filepath.Dir(s.specPath), itemSpec.Ref)
-				subFolderSpec, err = newFolderSpec(s.fs, subFolderSpecPath)
+				err := subFolderSpec.load(s.fs, subFolderSpecPath)
 				if err != nil {
 					errs = append(errs, err)
 					continue
 				}
 			} else if itemSpec.Contents != nil {
-				subFolderSpec = &folderSpec{
-					fs:       s.fs,
-					specPath: s.specPath,
-					commonSpec: commonSpec{
-						AdditionalContents: itemSpec.AdditionalContents,
-						Contents:           itemSpec.Contents,
-					},
-				}
+				subFolderSpec.fs = s.fs
+				subFolderSpec.specPath = s.specPath
+				subFolderSpec.commonSpec.AdditionalContents = itemSpec.AdditionalContents
+				subFolderSpec.commonSpec.Contents = itemSpec.Contents
 			}
 
 			// Subfolders of development folders are also considered development folders.
@@ -226,11 +219,4 @@ func (s *folderSpec) findItemSpec(packageName string, folderItemName string) (*f
 
 	// No item spec found
 	return nil, nil
-}
-
-func maxContents(folderLimit int) int {
-	if folderLimit > 0 {
-		return folderLimit
-	}
-	return maxFolderContents
 }

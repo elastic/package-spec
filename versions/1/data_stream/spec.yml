@@ -1,6 +1,6 @@
 spec:
   additionalContents: false
-  maxContents: 500
+  totalContentsLimit: 500
   contents:
   - description: Folder containing a single data stream definition
     type: folder
@@ -11,7 +11,7 @@ spec:
     - description: A data stream's manifest file
       type: file
       contentMediaType: "application/x-yaml"
-      maxSize: 5MB
+      sizeLimit: 5MB
       name: "manifest.yml"
       required: true
       $ref: "./manifest.spec.yml"

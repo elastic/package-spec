@@ -70,7 +70,7 @@ func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
 }
 
 func (s *folderItemSpec) validate(fs fs.FS, folderSpecPath string, itemPath string) ve.ValidationErrors {
-	err := validateMaxSize(itemPath, s.MaxSize)
+	err := validateMaxSize(itemPath, s.Limits)
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}
@@ -79,7 +79,7 @@ func (s *folderItemSpec) validate(fs fs.FS, folderSpecPath string, itemPath stri
 		if err != nil {
 			return ve.ValidationErrors{err}
 		}
-		err = validateContentTypeSize(itemPath, *s.ContentMediaType)
+		err = validateContentTypeSize(itemPath, *s.ContentMediaType, s.Limits)
 		if err != nil {
 			return ve.ValidationErrors{err}
 		}
@@ -115,7 +115,7 @@ func (s *folderItemSpec) validateSchema(fs fs.FS, folderSpecPath, itemPath strin
 		formatCheckersMutex.Unlock()
 	}()
 
-	semantic.LoadRelativePathFormatChecker(filepath.Dir(itemPath))
+	semantic.LoadRelativePathFormatChecker(filepath.Dir(itemPath), s.Limits.RelativePathSizeLimit)
 	semantic.LoadDataStreamNameFormatChecker(filepath.Dir(itemPath))
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 	if err != nil {

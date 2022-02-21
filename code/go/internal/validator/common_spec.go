@@ -12,11 +12,28 @@ import (
 )
 
 type commonSpec struct {
-	AdditionalContents bool               `yaml:"additionalContents"`
-	Contents           []folderItemSpec   `yaml:"contents"`
-	DevelopmentFolder  bool               `yaml:"developmentFolder"`
-	MaxSize            spectypes.FileSize `yaml:"maxSize"`
-	MaxContents        int                `yaml:"maxContents"`
+	AdditionalContents bool             `yaml:"additionalContents"`
+	Contents           []folderItemSpec `yaml:"contents"`
+	DevelopmentFolder  bool             `yaml:"developmentFolder"`
+
+	Limits CommonSpecLimits `yaml:",inline"`
+}
+
+type CommonSpecLimits struct {
+	// Limit to the total number of elements in a directory.
+	TotalContentsLimit int `yaml:"totalContentsLimit"`
+
+	// Limit to the total size of files in a directory.
+	TotalSizeLimit spectypes.FileSize `yaml:"totalSizeLimit"`
+
+	// Limit to individual files.
+	SizeLimit spectypes.FileSize `yaml:"sizeLimit"`
+
+	// Limit to individual configuration files (yaml files).
+	ConfigurationSizeLimit spectypes.FileSize `yaml:"configurationSizeLimit"`
+
+	// Limit to files referenced as relative paths (images).
+	RelativePathSizeLimit spectypes.FileSize `yaml:"relativePathSizeLimit"`
 }
 
 func setDefaultValues(spec *commonSpec) error {

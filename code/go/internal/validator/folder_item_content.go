@@ -18,11 +18,6 @@ import (
 	"github.com/elastic/package-spec/code/go/internal/spectypes"
 )
 
-const (
-	maxFileSize              = 150 * spectypes.MegaByte
-	maxConfigurationFileSize = 5 * spectypes.MegaByte
-)
-
 func loadItemSchema(path string, contentType *spectypes.ContentType) ([]byte, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -74,7 +69,7 @@ func validateYAMLDashes(path string) error {
 	return nil
 }
 
-func validateContentTypeSize(path string, contentType spectypes.ContentType) error {
+func validateContentTypeSize(path string, contentType spectypes.ContentType, limits CommonSpecLimits) error {
 	info, err := os.Stat(path)
 	if err != nil {
 		return err
@@ -84,21 +79,20 @@ func validateContentTypeSize(path string, contentType spectypes.ContentType) err
 		return errors.New("file is empty, but media type is defined")
 	}
 
-	var maxSize spectypes.FileSize
+	var sizeLimit spectypes.FileSize
 	switch contentType.MediaType {
 	case "application/x-yaml":
-		maxSize = maxConfigurationFileSize
+		sizeLimit = limits.ConfigurationSizeLimit
 	}
-	if maxSize > 0 && size > maxSize {
-		return errors.Errorf("file size (%s) is bigger than expected (%s)", size, maxSize)
+	if sizeLimit > 0 && size > sizeLimit {
+		return errors.Errorf("file size (%s) is bigger than expected (%s)", size, sizeLimit)
 	}
 	return nil
 }
 
-func validateMaxSize(path string, maxSize spectypes.FileSize) error {
-	limit := maxFileSize
-	if maxSize > 0 {
-		limit = maxSize
+func validateMaxSize(path string, limits CommonSpecLimits) error {
+	if limits.SizeLimit == 0 {
+		return nil
 	}
 
 	info, err := os.Stat(path)
@@ -106,8 +100,8 @@ func validateMaxSize(path string, maxSize spectypes.FileSize) error {
 		return err
 	}
 	size := spectypes.FileSize(info.Size())
-	if size > limit {
-		return errors.Errorf("file size (%s) is bigger than expected (%s)", size, limit)
+	if size > limits.SizeLimit {
+		return errors.Errorf("file size (%s) is bigger than expected (%s)", size, limits.SizeLimit)
 	}
 	return nil
 }
