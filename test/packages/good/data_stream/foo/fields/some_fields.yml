@@ -37,3 +37,6 @@
 - name: magic_number
   type: integer
   # TODO: Fix this: example: 42
+- name: location
+  type: alias
+  path: source.geo.location

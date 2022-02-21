@@ -136,6 +136,9 @@ spec:
           - percent
           - bytes
           - duration
+      path:
+        description: Target of alias field.
+        type: string # TODO: Add sematic validation to check that the referenced field exists.
       dimension:
         description: Declare a field as dimension of time series
         type: boolean
