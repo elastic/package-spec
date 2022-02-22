@@ -180,7 +180,7 @@ func (s *folderSpec) validate(packageName string, folderPath string) ve.Validati
 			if err != nil {
 				errs = append(errs, errors.Wrapf(err, "failed to obtain file size for \"%s\"", itemPath))
 			}
-			s.totalContents += 1
+			s.totalContents++
 			s.totalSize += spectypes.FileSize(info.Size())
 		}
 	}
