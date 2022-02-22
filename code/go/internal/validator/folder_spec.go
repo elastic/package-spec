@@ -8,15 +8,17 @@ import (
 	"fmt"
 	"io/fs"
 	"io/ioutil"
+	"os"
 	"path"
 	"path/filepath"
 	"regexp"
 	"strings"
 
-	ve "github.com/elastic/package-spec/code/go/internal/errors"
-
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
+
+	ve "github.com/elastic/package-spec/code/go/internal/errors"
+	"github.com/elastic/package-spec/code/go/internal/spectypes"
 )
 
 const (
@@ -31,6 +33,11 @@ type folderSpec struct {
 	fs       fs.FS
 	specPath string
 	commonSpec
+
+	// These "validation-time" fields don't actually belong to the spec, storing
+	// them here for convenience by now.
+	totalSize     spectypes.FileSize
+	totalContents int
 }
 
 func (s *folderSpec) load(fs fs.FS, specPath string) error {
@@ -73,6 +80,8 @@ func (s *folderSpec) validate(packageName string, folderPath string) ve.Validati
 		return errs
 	}
 
+	// This is not taking into account if the folder is for development. Enforce
+	// this limit in all cases to avoid having to read too many files.
 	if contentsLimit := s.Limits.TotalContentsLimit; contentsLimit > 0 && len(files) > contentsLimit {
 		errs = append(errs, errors.Errorf("folder [%s] exceeds the limit of %d files", folderPath, contentsLimit))
 		return errs
@@ -148,6 +157,11 @@ func (s *folderSpec) validate(packageName string, folderPath string) ve.Validati
 				errs = append(errs, subErrs...)
 			}
 
+			// Don't count files in development folders.
+			if !subFolderSpec.DevelopmentFolder {
+				s.totalContents += subFolderSpec.totalContents
+				s.totalSize += subFolderSpec.totalSize
+			}
 		} else {
 			if !itemSpec.isSameType(file) {
 				errs = append(errs, fmt.Errorf("[%s] is a file but is expected to be a folder", fileName))
@@ -161,7 +175,18 @@ func (s *folderSpec) validate(packageName string, folderPath string) ve.Validati
 					errs = append(errs, errors.Wrapf(ive, "file \"%s\" is invalid", itemPath))
 				}
 			}
+
+			info, err := os.Stat(itemPath)
+			if err != nil {
+				errs = append(errs, errors.Wrapf(err, "failed to obtain file size for \"%s\"", itemPath))
+			}
+			s.totalContents += 1
+			s.totalSize += spectypes.FileSize(info.Size())
 		}
+	}
+
+	if sizeLimit := s.Limits.TotalSizeLimit; sizeLimit > 0 && s.totalSize > sizeLimit {
+		errs = append(errs, errors.Errorf("folder [%s] exceeds the total size limit of %s", folderPath, sizeLimit))
 	}
 
 	// validate that required items in spec are all accounted for
