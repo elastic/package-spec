@@ -9,11 +9,12 @@ import (
 	"strings"
 
 	"github.com/elastic/package-spec/code/go/internal/errors"
+	"github.com/elastic/package-spec/code/go/internal/fspath"
 )
 
 // ValidateDimensionFields verifies if dimension fields are of one of the expected types.
-func ValidateDimensionFields(pkgRoot string) errors.ValidationErrors {
-	return validateFields(pkgRoot, validateDimensionField)
+func ValidateDimensionFields(fsys fspath.FS) errors.ValidationErrors {
+	return validateFields(fsys, validateDimensionField)
 }
 
 func validateDimensionField(fieldsFile string, f field) errors.ValidationErrors {

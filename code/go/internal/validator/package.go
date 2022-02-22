@@ -6,9 +6,9 @@ package validator
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io/fs"
 	"os"
-	"path"
+	"path/filepath"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
@@ -19,7 +19,20 @@ import (
 type Package struct {
 	Name        string
 	SpecVersion *semver.Version
-	RootPath    string
+	FS          fs.FS
+
+	// Used only for error reporting.
+	rootPath string
+}
+
+// Open opens a file in the package filesystem.
+func (p *Package) Open(name string) (fs.File, error) {
+	return p.FS.Open(name)
+}
+
+// Path returns a path meaningful for the user.
+func (p *Package) Path(names ...string) string {
+	return filepath.Join(append([]string{p.rootPath}, names...)...)
 }
 
 // NewPackage creates a new Package from a path to the package's root folder
@@ -33,13 +46,19 @@ func NewPackage(pkgRootPath string) (*Package, error) {
 		return nil, fmt.Errorf("no package folder found at path [%v]", pkgRootPath)
 	}
 
-	pkgManifestPath := path.Join(pkgRootPath, "manifest.yml")
-	info, err = os.Stat(pkgManifestPath)
+	return NewPackageFromFS(pkgRootPath, os.DirFS(pkgRootPath))
+}
+
+// NewPackageFromFS creates a new package from a given filesystem. A root path can be indicated
+// to help building paths meaningful for the users.
+func NewPackageFromFS(rootPath string, fsys fs.FS) (*Package, error) {
+	pkgManifestPath := "manifest.yml"
+	_, err := fs.Stat(fsys, pkgManifestPath)
 	if os.IsNotExist(err) {
 		return nil, errors.Wrapf(err, "no package manifest file found at path [%v]", pkgManifestPath)
 	}
 
-	data, err := ioutil.ReadFile(pkgManifestPath)
+	data, err := fs.ReadFile(fsys, pkgManifestPath)
 	if err != nil {
 		return nil, fmt.Errorf("could not read package manifest file [%v]", pkgManifestPath)
 	}
@@ -60,8 +79,10 @@ func NewPackage(pkgRootPath string) (*Package, error) {
 	// Instantiate Package object and return it
 	p := Package{
 		Name:        manifest.Name,
-		RootPath:    pkgRootPath,
 		SpecVersion: specVersion,
+		FS:          fsys,
+
+		rootPath: rootPath,
 	}
 
 	return &p, nil

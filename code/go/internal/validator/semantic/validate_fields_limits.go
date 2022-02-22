@@ -12,12 +12,13 @@ import (
 	"github.com/pkg/errors"
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
+	"github.com/elastic/package-spec/code/go/internal/fspath"
 )
 
 const maxFieldsPerDataStream = 1024
 
 // ValidateFieldsLimits verifies limits on fields.
-func ValidateFieldsLimits(pkgRoot string) ve.ValidationErrors {
+func ValidateFieldsLimits(fsys fspath.FS) ve.ValidationErrors {
 	counts := make(map[string]uint)
 	countField := func(fieldsFile string, f field) ve.ValidationErrors {
 		if len(f.Fields) > 0 {
@@ -25,7 +26,7 @@ func ValidateFieldsLimits(pkgRoot string) ve.ValidationErrors {
 			return nil
 		}
 
-		dataStream, err := dataStreamFromFieldsPath(pkgRoot, fieldsFile)
+		dataStream, err := dataStreamFromFieldsPath(fsys.Path(), fieldsFile)
 		if err != nil {
 			return ve.ValidationErrors{err}
 		}
@@ -34,7 +35,7 @@ func ValidateFieldsLimits(pkgRoot string) ve.ValidationErrors {
 		return nil
 	}
 
-	err := validateFields(pkgRoot, countField)
+	err := validateFields(fsys, countField)
 	if err != nil {
 		return err
 	}

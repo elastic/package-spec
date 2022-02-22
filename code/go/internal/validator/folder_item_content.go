@@ -8,8 +8,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"os"
+	"io/fs"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
@@ -18,8 +17,8 @@ import (
 	"github.com/elastic/package-spec/code/go/internal/spectypes"
 )
 
-func loadItemSchema(path string, contentType *spectypes.ContentType) ([]byte, error) {
-	data, err := ioutil.ReadFile(path)
+func loadItemSchema(fsys fs.FS, path string, contentType *spectypes.ContentType) ([]byte, error) {
+	data, err := fs.ReadFile(fsys, path)
 	if err != nil {
 		return nil, ve.ValidationErrors{errors.Wrap(err, "reading item file failed")}
 	}
@@ -29,13 +28,13 @@ func loadItemSchema(path string, contentType *spectypes.ContentType) ([]byte, er
 	return data, nil
 }
 
-func validateContentType(path string, contentType spectypes.ContentType) error {
+func validateContentType(fsys fs.FS, path string, contentType spectypes.ContentType) error {
 	switch contentType.MediaType {
 	case "application/x-yaml":
 		v, _ := contentType.Params["require-document-dashes"]
 		requireDashes := (v == "true")
 		if requireDashes {
-			err := validateYAMLDashes(path)
+			err := validateYAMLDashes(fsys, path)
 			if err != nil {
 				return err
 			}
@@ -49,8 +48,8 @@ func validateContentType(path string, contentType spectypes.ContentType) error {
 	return nil
 }
 
-func validateYAMLDashes(path string) error {
-	f, err := os.Open(path)
+func validateYAMLDashes(fsys fs.FS, path string) error {
+	f, err := fsys.Open(path)
 	if err != nil {
 		return err
 	}
@@ -69,8 +68,8 @@ func validateYAMLDashes(path string) error {
 	return nil
 }
 
-func validateContentTypeSize(path string, contentType spectypes.ContentType, limits commonSpecLimits) error {
-	info, err := os.Stat(path)
+func validateContentTypeSize(fsys fs.FS, path string, contentType spectypes.ContentType, limits commonSpecLimits) error {
+	info, err := fs.Stat(fsys, path)
 	if err != nil {
 		return err
 	}
@@ -90,12 +89,12 @@ func validateContentTypeSize(path string, contentType spectypes.ContentType, lim
 	return nil
 }
 
-func validateMaxSize(path string, limits commonSpecLimits) error {
+func validateMaxSize(fsys fs.FS, path string, limits commonSpecLimits) error {
 	if limits.SizeLimit == 0 {
 		return nil
 	}
 
-	info, err := os.Stat(path)
+	info, err := fs.Stat(fsys, path)
 	if err != nil {
 		return err
 	}
