@@ -35,12 +35,16 @@ func parseFileSizeInt(s string) (uint64, error) {
 	return strconv.ParseUint(s, 10, maxBitSize)
 }
 
-// MarshalJSON implements the json.Marshaler interface for FileSize.
+// MarshalJSON implements the json.Marshaler interface for FileSize, it returns
+// the string representation in a format that can be unmarshaled back to an
+// equivalent value.
 func (s FileSize) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + s.String() + `"`), nil
 }
 
-// MarshalYAML implements the yaml.Marshaler interface for FileSize.
+// MarshalYAML implements the json.Marshaler interface for FileSize, it returns
+// the string representation in a format that can be unmarshaled back to an
+// equivalent value.
 func (s FileSize) MarshalYAML() (interface{}, error) {
 	return s.String(), nil
 }
