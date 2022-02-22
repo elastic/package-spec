@@ -7,7 +7,7 @@ package pkgpath
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -16,17 +16,20 @@ import (
 	"github.com/joeshaw/multierror"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
+
+	"github.com/elastic/package-spec/code/go/internal/fspath"
 )
 
 // File represents a file in the package.
 type File struct {
+	fsys fspath.FS
 	path string
 	os.FileInfo
 }
 
 // Files finds files for the given glob
-func Files(glob string) ([]File, error) {
-	paths, err := filepath.Glob(glob)
+func Files(fsys fspath.FS, glob string) ([]File, error) {
+	paths, err := fs.Glob(fsys, glob)
 	if err != nil {
 		return nil, err
 	}
@@ -34,13 +37,13 @@ func Files(glob string) ([]File, error) {
 	var errs multierror.Errors
 	var files = make([]File, 0)
 	for _, path := range paths {
-		info, err := os.Stat(path)
+		info, err := fs.Stat(fsys, path)
 		if err != nil {
 			errs = append(errs, err)
 			continue
 		}
 
-		file := File{path, info}
+		file := File{fsys, path, info}
 		files = append(files, file)
 	}
 
@@ -58,7 +61,7 @@ func (f File) Values(path string) (interface{}, error) {
 		return nil, fmt.Errorf("cannot extract values from file type = %s", fileExt)
 	}
 
-	contents, err := ioutil.ReadFile(f.path)
+	contents, err := fs.ReadFile(f.fsys, f.path)
 	if err != nil {
 		return nil, errors.Wrap(err, "reading file content failed")
 	}
@@ -66,11 +69,11 @@ func (f File) Values(path string) (interface{}, error) {
 	var v interface{}
 	if fileExt == "yaml" || fileExt == "yml" {
 		if err := yaml.Unmarshal(contents, &v); err != nil {
-			return nil, errors.Wrapf(err, "unmarshalling YAML file failed (path: %s)", fileName)
+			return nil, errors.Wrapf(err, "unmarshalling YAML file failed (path: %s)", f.fsys.Path(fileName))
 		}
 	} else if fileExt == "json" {
 		if err := json.Unmarshal(contents, &v); err != nil {
-			return nil, errors.Wrapf(err, "unmarshalling JSON file failed (path: %s)", fileName)
+			return nil, errors.Wrapf(err, "unmarshalling JSON file failed (path: %s)", f.fsys.Path(fileName))
 		}
 	}
 

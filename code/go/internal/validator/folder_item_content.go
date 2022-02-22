@@ -8,15 +8,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io/fs"
 	"mime"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 )
 
-func loadItemContent(itemPath, mediaType string) ([]byte, error) {
-	itemData, err := ioutil.ReadFile(itemPath)
+func loadItemContent(fsys fs.FS, itemPath, mediaType string) ([]byte, error) {
+	itemData, err := fs.ReadFile(fsys, itemPath)
 	if err != nil {
 		return nil, errors.Wrap(err, "reading item file failed")
 	}

@@ -6,6 +6,8 @@ package validator
 
 import (
 	"errors"
+	"io/fs"
+	"os"
 
 	"github.com/elastic/package-spec/code/go/internal/validator"
 )
@@ -13,7 +15,13 @@ import (
 // ValidateFromPath validates a package located at the given path against the
 // appropriate specification and returns any errors.
 func ValidateFromPath(packageRootPath string) error {
-	pkg, err := validator.NewPackage(packageRootPath)
+	return ValidateFromFS(packageRootPath, os.DirFS(packageRootPath))
+}
+
+// ValidateFromFS validates a package against the appropiate specification and returns any errors.
+// Package files are obtained throug the given filesystem.
+func ValidateFromFS(rootPath string, fsys fs.FS) error {
+	pkg, err := validator.NewPackageFromFS(rootPath, fsys)
 	if err != nil {
 		return err
 	}

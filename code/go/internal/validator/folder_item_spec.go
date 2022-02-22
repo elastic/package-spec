@@ -7,7 +7,6 @@ package validator
 import (
 	"fmt"
 	"io/fs"
-	"os"
 	"path/filepath"
 	"regexp"
 	"sync"
@@ -35,7 +34,7 @@ type folderItemSpec struct {
 
 var formatCheckersMutex sync.Mutex
 
-func (s *folderItemSpec) matchingFileExists(files []os.FileInfo) (bool, error) {
+func (s *folderItemSpec) matchingFileExists(files []fs.DirEntry) (bool, error) {
 	if s.Name != "" {
 		for _, file := range files {
 			if file.Name() == s.Name {
@@ -57,7 +56,13 @@ func (s *folderItemSpec) matchingFileExists(files []os.FileInfo) (bool, error) {
 	return false, nil
 }
 
-func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
+// sameFileChecker is the interface that parameters of isSameType should implement,
+// this is intended to accept both fs.DirEntry and fs.FileInfo.
+type sameFileChecker interface {
+	IsDir() bool
+}
+
+func (s *folderItemSpec) isSameType(file sameFileChecker) bool {
 	switch s.ItemType {
 	case itemTypeFile:
 		return !file.IsDir()
@@ -68,9 +73,9 @@ func (s *folderItemSpec) isSameType(file os.FileInfo) bool {
 	return false
 }
 
-func (s *folderItemSpec) validate(fs fs.FS, folderSpecPath string, itemPath string) ve.ValidationErrors {
+func (s *folderItemSpec) validate(schemaFS fs.FS, fsys fs.FS, folderSpecPath string, itemPath string) ve.ValidationErrors {
 	// loading item content
-	itemData, err := loadItemContent(itemPath, s.ContentMediaType)
+	itemData, err := loadItemContent(fsys, itemPath, s.ContentMediaType)
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}
@@ -78,7 +83,7 @@ func (s *folderItemSpec) validate(fs fs.FS, folderSpecPath string, itemPath stri
 	var schemaLoader gojsonschema.JSONLoader
 	if s.Ref != "" {
 		schemaPath := filepath.Join(filepath.Dir(folderSpecPath), s.Ref)
-		schemaLoader = yamlschema.NewReferenceLoaderFileSystem("file:///"+schemaPath, fs)
+		schemaLoader = yamlschema.NewReferenceLoaderFileSystem("file:///"+schemaPath, schemaFS)
 	} else {
 		return nil // item's schema is not defined
 	}
@@ -93,8 +98,8 @@ func (s *folderItemSpec) validate(fs fs.FS, folderSpecPath string, itemPath stri
 		formatCheckersMutex.Unlock()
 	}()
 
-	semantic.LoadRelativePathFormatChecker(filepath.Dir(itemPath))
-	semantic.LoadDataStreamNameFormatChecker(filepath.Dir(itemPath))
+	semantic.LoadRelativePathFormatChecker(fsys, filepath.Dir(itemPath))
+	semantic.LoadDataStreamNameFormatChecker(fsys, filepath.Dir(itemPath))
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 	if err != nil {
 		return ve.ValidationErrors{err}

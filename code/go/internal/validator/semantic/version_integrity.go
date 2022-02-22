@@ -6,24 +6,24 @@ package semantic
 
 import (
 	"fmt"
-	"path/filepath"
 	"strings"
 
 	"github.com/pkg/errors"
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
+	"github.com/elastic/package-spec/code/go/internal/fspath"
 	"github.com/elastic/package-spec/code/go/internal/pkgpath"
 )
 
 // ValidateVersionIntegrity returns validation errors if the version defined in manifest isn't referenced in the latest
 // entry of the changelog file.
-func ValidateVersionIntegrity(pkgRoot string) ve.ValidationErrors {
-	manifestVersion, err := readManifestVersion(pkgRoot)
+func ValidateVersionIntegrity(fsys fspath.FS) ve.ValidationErrors {
+	manifestVersion, err := readManifestVersion(fsys)
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}
 
-	changelogVersions, err := readChangelogVersions(pkgRoot)
+	changelogVersions, err := readChangelogVersions(fsys)
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}
@@ -40,9 +40,9 @@ func ValidateVersionIntegrity(pkgRoot string) ve.ValidationErrors {
 	return nil
 }
 
-func readManifestVersion(pkgRoot string) (string, error) {
-	manifestPath := filepath.Join(pkgRoot, "manifest.yml")
-	f, err := pkgpath.Files(manifestPath)
+func readManifestVersion(fsys fspath.FS) (string, error) {
+	manifestPath := "manifest.yml"
+	f, err := pkgpath.Files(fsys, manifestPath)
 	if err != nil {
 		return "", errors.Wrap(err, "can't locate manifest file")
 	}
@@ -63,9 +63,9 @@ func readManifestVersion(pkgRoot string) (string, error) {
 	return sVal, nil
 }
 
-func readChangelogVersions(pkgRoot string) ([]string, error) {
-	manifestPath := filepath.Join(pkgRoot, "changelog.yml")
-	f, err := pkgpath.Files(manifestPath)
+func readChangelogVersions(fsys fspath.FS) ([]string, error) {
+	changelogPath := "changelog.yml"
+	f, err := pkgpath.Files(fsys, changelogPath)
 	if err != nil {
 		return nil, errors.Wrap(err, "can't locate changelog file")
 	}

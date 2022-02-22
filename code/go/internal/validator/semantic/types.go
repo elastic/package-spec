@@ -5,14 +5,15 @@
 package semantic
 
 import (
-	"gopkg.in/yaml.v3"
-	"io/ioutil"
+	"io/fs"
 	"os"
 	"path/filepath"
 
-	"github.com/pkg/errors"
+	"gopkg.in/yaml.v3"
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
+	"github.com/elastic/package-spec/code/go/internal/fspath"
+	"github.com/pkg/errors"
 )
 
 type fields []field
@@ -30,20 +31,20 @@ type field struct {
 
 type validateFunc func(fieldsFile string, f field) ve.ValidationErrors
 
-func validateFields(pkgRoot string, validate validateFunc) ve.ValidationErrors {
-	fieldsFiles, err := listFieldsFiles(pkgRoot)
+func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
+	fieldsFiles, err := listFieldsFiles(fsys)
 	if err != nil {
 		return ve.ValidationErrors{errors.Wrap(err, "can't list fields files")}
 	}
 
 	var vErrs ve.ValidationErrors
 	for _, fieldsFile := range fieldsFiles {
-		unmarshaled, err := unmarshalFields(fieldsFile)
+		unmarshaled, err := unmarshalFields(fsys, fieldsFile)
 		if err != nil {
-			vErrs = append(vErrs, errors.Wrapf(err, `file "%s" is invalid: can't unmarshal fields`, fieldsFile))
+			vErrs = append(vErrs, errors.Wrapf(err, `file "%s" is invalid: can't unmarshal fields`, fsys.Path(fieldsFile)))
 		}
 
-		errs := validateNestedFields("", fieldsFile, unmarshaled, validate)
+		errs := validateNestedFields("", fsys.Path(fieldsFile), unmarshaled, validate)
 		if len(errs) > 0 {
 			vErrs = append(vErrs, errs...)
 		}
@@ -71,11 +72,11 @@ func validateNestedFields(parent string, fieldsFile string, fields fields, valid
 	return result
 }
 
-func listFieldsFiles(pkgRoot string) ([]string, error) {
+func listFieldsFiles(fsys fspath.FS) ([]string, error) {
 	var fieldsFiles []string
 
-	dataStreamDir := filepath.Join(pkgRoot, "data_stream")
-	dataStreams, err := ioutil.ReadDir(dataStreamDir)
+	dataStreamDir := "data_stream"
+	dataStreams, err := fs.ReadDir(fsys, dataStreamDir)
 	if errors.Is(err, os.ErrNotExist) {
 		return fieldsFiles, nil
 	}
@@ -85,12 +86,12 @@ func listFieldsFiles(pkgRoot string) ([]string, error) {
 
 	for _, dataStream := range dataStreams {
 		fieldsDir := filepath.Join(dataStreamDir, dataStream.Name(), "fields")
-		fs, err := ioutil.ReadDir(fieldsDir)
+		fs, err := fs.ReadDir(fsys, fieldsDir)
 		if errors.Is(err, os.ErrNotExist) {
 			continue
 		}
 		if err != nil {
-			return nil, errors.Wrapf(err, "can't list fields directory (path: %s)", fieldsDir)
+			return nil, errors.Wrapf(err, "can't list fields directory (path: %s)", fsys.Path(fieldsDir))
 		}
 
 		for _, f := range fs {
@@ -101,8 +102,8 @@ func listFieldsFiles(pkgRoot string) ([]string, error) {
 	return fieldsFiles, nil
 }
 
-func unmarshalFields(fieldsPath string) (fields, error) {
-	content, err := ioutil.ReadFile(fieldsPath)
+func unmarshalFields(fsys fspath.FS, fieldsPath string) (fields, error) {
+	content, err := fs.ReadFile(fsys, fieldsPath)
 	if err != nil {
 		return nil, errors.Wrapf(err, "can't read file (path: %s)", fieldsPath)
 	}
