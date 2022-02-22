@@ -5,6 +5,8 @@
 package validator
 
 import (
+	"reflect"
+
 	"github.com/creasty/defaults"
 	"github.com/pkg/errors"
 
@@ -36,6 +38,17 @@ type CommonSpecLimits struct {
 	RelativePathSizeLimit spectypes.FileSize `yaml:"relativePathSizeLimit"`
 }
 
+func (l *CommonSpecLimits) update(o CommonSpecLimits) {
+	target := reflect.ValueOf(l).Elem()
+	source := reflect.ValueOf(&o).Elem()
+	for i := 0; i < target.NumField(); i++ {
+		field := target.Field(i)
+		if field.IsZero() {
+			field.Set(source.Field(i))
+		}
+	}
+}
+
 func setDefaultValues(spec *commonSpec) error {
 	err := defaults.Set(spec)
 	if err != nil {
@@ -52,5 +65,14 @@ func setDefaultValues(spec *commonSpec) error {
 			return err
 		}
 	}
+
 	return nil
+}
+
+func propagateContentLimits(spec *commonSpec) {
+	for i := range spec.Contents {
+		content := &spec.Contents[i].commonSpec
+		content.Limits.update(spec.Limits)
+		propagateContentLimits(content)
+	}
 }

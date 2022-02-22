@@ -60,6 +60,7 @@ func (r relativePathChecker) IsFormat(input interface{}) bool {
 func LoadRelativePathFormatChecker(currentPath string, sizeLimit spectypes.FileSize) {
 	gojsonschema.FormatCheckers.Add(RelativePathFormat, relativePathChecker{
 		currentPath: currentPath,
+		sizeLimit:   sizeLimit,
 	})
 }
 

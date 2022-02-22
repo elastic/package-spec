@@ -58,6 +58,8 @@ func (s *folderSpec) load(fs fs.FS, specPath string) error {
 		return errors.Wrap(err, "could not set default values")
 	}
 
+	propagateContentLimits(&s.commonSpec)
+
 	s.fs = fs
 	s.specPath = specPath
 	return nil
