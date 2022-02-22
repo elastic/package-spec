@@ -18,10 +18,10 @@ type commonSpec struct {
 	Contents           []folderItemSpec `yaml:"contents"`
 	DevelopmentFolder  bool             `yaml:"developmentFolder"`
 
-	Limits CommonSpecLimits `yaml:",inline"`
+	Limits commonSpecLimits `yaml:",inline"`
 }
 
-type CommonSpecLimits struct {
+type commonSpecLimits struct {
 	// Limit to the total number of elements in a directory.
 	TotalContentsLimit int `yaml:"totalContentsLimit"`
 
@@ -38,7 +38,7 @@ type CommonSpecLimits struct {
 	RelativePathSizeLimit spectypes.FileSize `yaml:"relativePathSizeLimit"`
 }
 
-func (l *CommonSpecLimits) update(o CommonSpecLimits) {
+func (l *commonSpecLimits) update(o commonSpecLimits) {
 	target := reflect.ValueOf(l).Elem()
 	source := reflect.ValueOf(&o).Elem()
 	for i := 0; i < target.NumField(); i++ {

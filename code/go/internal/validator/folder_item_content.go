@@ -69,7 +69,7 @@ func validateYAMLDashes(path string) error {
 	return nil
 }
 
-func validateContentTypeSize(path string, contentType spectypes.ContentType, limits CommonSpecLimits) error {
+func validateContentTypeSize(path string, contentType spectypes.ContentType, limits commonSpecLimits) error {
 	info, err := os.Stat(path)
 	if err != nil {
 		return err
@@ -90,7 +90,7 @@ func validateContentTypeSize(path string, contentType spectypes.ContentType, lim
 	return nil
 }
 
-func validateMaxSize(path string, limits CommonSpecLimits) error {
+func validateMaxSize(path string, limits commonSpecLimits) error {
 	if limits.SizeLimit == 0 {
 		return nil
 	}
