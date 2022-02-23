@@ -5,7 +5,7 @@
 package semantic
 
 import (
-	"os"
+	"io/fs"
 	"path/filepath"
 
 	"github.com/xeipuuv/gojsonschema"
@@ -26,6 +26,7 @@ const (
 
 // relativePathChecker is responsible for checking presence of the file path
 type relativePathChecker struct {
+	fsys        fs.FS
 	currentPath string
 }
 
@@ -37,7 +38,7 @@ func (r relativePathChecker) IsFormat(input interface{}) bool {
 	}
 
 	path := filepath.Join(r.currentPath, asString)
-	_, err := os.Stat(path)
+	_, err := fs.Stat(r.fsys, path)
 	if err != nil {
 		return false
 	}
@@ -46,8 +47,9 @@ func (r relativePathChecker) IsFormat(input interface{}) bool {
 
 // LoadRelativePathFormatChecker loads the relative-path format checker into the
 // json-schema validation library.
-func LoadRelativePathFormatChecker(currentPath string) {
+func LoadRelativePathFormatChecker(fsys fs.FS, currentPath string) {
 	gojsonschema.FormatCheckers.Add(RelativePathFormat, relativePathChecker{
+		fsys:        fsys,
 		currentPath: currentPath,
 	})
 }
@@ -60,8 +62,9 @@ func UnloadRelativePathFormatChecker() {
 
 // LoadDataStreamNameFormatChecker loads the data-stream-name format checker into the
 // json-schema validation library.
-func LoadDataStreamNameFormatChecker(currentPath string) {
+func LoadDataStreamNameFormatChecker(fsys fs.FS, currentPath string) {
 	gojsonschema.FormatCheckers.Add(DataStreamNameFormat, relativePathChecker{
+		fsys:        fsys,
 		currentPath: filepath.Join(currentPath, "data_stream"),
 	})
 }

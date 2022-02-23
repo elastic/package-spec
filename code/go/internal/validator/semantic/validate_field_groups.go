@@ -8,11 +8,12 @@ import (
 	"fmt"
 
 	"github.com/elastic/package-spec/code/go/internal/errors"
+	"github.com/elastic/package-spec/code/go/internal/fspath"
 )
 
 // ValidateFieldGroups verifies if field groups don't have units and metric types defined.
-func ValidateFieldGroups(pkgRoot string) errors.ValidationErrors {
-	return validateFields(pkgRoot, validateFieldUnit)
+func ValidateFieldGroups(fsys fspath.FS) errors.ValidationErrors {
+	return validateFields(fsys, validateFieldUnit)
 }
 
 func validateFieldUnit(fieldsFile string, f field) errors.ValidationErrors {

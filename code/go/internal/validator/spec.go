@@ -9,13 +9,13 @@ import (
 	"path"
 	"strconv"
 
-	ve "github.com/elastic/package-spec/code/go/internal/errors"
-
-	spec "github.com/elastic/package-spec"
-	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
-
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
+
+	spec "github.com/elastic/package-spec"
+	ve "github.com/elastic/package-spec/code/go/internal/errors"
+	"github.com/elastic/package-spec/code/go/internal/fspath"
+	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
 )
 
 // Spec represents a package specification
@@ -25,7 +25,7 @@ type Spec struct {
 	specPath string
 }
 
-type validationRules []func(pkgRoot string) ve.ValidationErrors
+type validationRules []func(pkg fspath.FS) ve.ValidationErrors
 
 // NewSpec creates a new Spec for the given version
 func NewSpec(version semver.Version) (*Spec, error) {
@@ -58,7 +58,7 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	}
 
 	// Syntactic validations
-	errs = rootSpec.validate(pkg.Name, pkg.RootPath)
+	errs = rootSpec.validate(pkg.Name, &pkg, ".")
 	if len(errs) != 0 {
 		return errs
 	}
@@ -71,13 +71,14 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 		semantic.ValidateFieldGroups,
 		semantic.ValidateDimensionFields,
 	}
-	return rules.validate(pkg.RootPath)
+
+	return rules.validate(&pkg)
 }
 
-func (vr validationRules) validate(pkgRoot string) ve.ValidationErrors {
+func (vr validationRules) validate(fsys fspath.FS) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 	for _, validationRule := range vr {
-		err := validationRule(pkgRoot)
+		err := validationRule(fsys)
 		errs.Append(err)
 	}
 

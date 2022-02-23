@@ -38,7 +38,7 @@ func TestNewPackage(t *testing.T) {
 			if test.expectedErrContains == "" {
 				require.NoError(t, err)
 				require.Equal(t, test.expectedSpecVersion, pkg.SpecVersion)
-				require.Equal(t, pkgRootPath, pkg.RootPath)
+				require.Equal(t, pkgRootPath, pkg.Path())
 			} else {
 				require.Error(t, err)
 				require.Contains(t, err.Error(), test.expectedErrContains)
