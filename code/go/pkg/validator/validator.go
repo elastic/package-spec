@@ -20,8 +20,8 @@ func ValidateFromPath(packageRootPath string) error {
 
 // ValidateFromFS validates a package against the appropiate specification and returns any errors.
 // Package files are obtained throug the given filesystem.
-func ValidateFromFS(rootPath string, fsys fs.FS) error {
-	pkg, err := validator.NewPackageFromFS(rootPath, fsys)
+func ValidateFromFS(location string, fsys fs.FS) error {
+	pkg, err := validator.NewPackageFromFS(location, fsys)
 	if err != nil {
 		return err
 	}
