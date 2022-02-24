@@ -22,6 +22,7 @@ spec:
         - histogram
         - constant_keyword
         - text
+        - match_only_text
         - keyword
         - long
         - integer

@@ -13,6 +13,9 @@
   - description: Fix validation of dimension fields inside objects
     type: bugfix
     link: https://github.com/elastic/package-spec/pull/279
+  - description: Add support for match_only_text field type
+    type: enhancement
+    link: https://github.com/elastic/package-spec/issues/284
 - version: 1.4.1
   changes:
   - description: ML model file name now matches the id of the model.

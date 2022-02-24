@@ -32,3 +32,6 @@
 - name: vehicle_type
   type: constant_keyword
   value: truck
+- name: error.message
+  description: Error message.
+  type: match_only_text
