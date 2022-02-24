@@ -57,11 +57,13 @@ func (s *folderItemSpec) matchingFileExists(files []fs.DirEntry) (bool, error) {
 	return false, nil
 }
 
-type isDirChecker interface {
+// sameTypeChecker is the interface that parameters of isSameType should implement,
+// this is intended to accept both fs.DirEntry and fs.FileInfo.
+type sameTypeChecker interface {
 	IsDir() bool
 }
 
-func (s *folderItemSpec) isSameType(file isDirChecker) bool {
+func (s *folderItemSpec) isSameType(file sameTypeChecker) bool {
 	switch s.ItemType {
 	case itemTypeFile:
 		return !file.IsDir()

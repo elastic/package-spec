@@ -11,6 +11,7 @@ import (
 )
 
 // FS implements the fs interface and can also show a path where the fs is located.
+// This is useful to report error messages relative to the location of the file system.
 type FS interface {
 	fs.FS
 
@@ -23,6 +24,7 @@ type fsDir struct {
 	path string
 }
 
+// Path returns a path for the given names, based on the location of the file system.
 func (fs *fsDir) Path(names ...string) string {
 	return filepath.Join(append([]string{fs.path}, names...)...)
 }

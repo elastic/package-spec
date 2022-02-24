@@ -19,20 +19,19 @@ import (
 type Package struct {
 	Name        string
 	SpecVersion *semver.Version
-	FS          fs.FS
 
-	// Used only for error reporting.
-	rootPath string
+	fs       fs.FS
+	location string
 }
 
 // Open opens a file in the package filesystem.
 func (p *Package) Open(name string) (fs.File, error) {
-	return p.FS.Open(name)
+	return p.fs.Open(name)
 }
 
 // Path returns a path meaningful for the user.
 func (p *Package) Path(names ...string) string {
-	return filepath.Join(append([]string{p.rootPath}, names...)...)
+	return filepath.Join(append([]string{p.location}, names...)...)
 }
 
 // NewPackage creates a new Package from a path to the package's root folder
@@ -51,7 +50,7 @@ func NewPackage(pkgRootPath string) (*Package, error) {
 
 // NewPackageFromFS creates a new package from a given filesystem. A root path can be indicated
 // to help building paths meaningful for the users.
-func NewPackageFromFS(rootPath string, fsys fs.FS) (*Package, error) {
+func NewPackageFromFS(location string, fsys fs.FS) (*Package, error) {
 	pkgManifestPath := "manifest.yml"
 	_, err := fs.Stat(fsys, pkgManifestPath)
 	if os.IsNotExist(err) {
@@ -80,9 +79,9 @@ func NewPackageFromFS(rootPath string, fsys fs.FS) (*Package, error) {
 	p := Package{
 		Name:        manifest.Name,
 		SpecVersion: specVersion,
-		FS:          fsys,
+		fs:          fsys,
 
-		rootPath: rootPath,
+		location: location,
 	}
 
 	return &p, nil
