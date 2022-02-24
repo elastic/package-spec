@@ -36,6 +36,9 @@ type commonSpecLimits struct {
 
 	// Limit to files referenced as relative paths (images).
 	RelativePathSizeLimit spectypes.FileSize `yaml:"relativePathSizeLimit"`
+
+	// Maximum number of fields per data stream, can only be set at the root level spec.
+	FieldsPerDataStreamLimit int `yaml:"fieldsPerDataStreamLimit"`
 }
 
 func (l *commonSpecLimits) update(o commonSpecLimits) {

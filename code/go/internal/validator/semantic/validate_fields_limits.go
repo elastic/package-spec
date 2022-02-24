@@ -15,11 +15,15 @@ import (
 	"github.com/elastic/package-spec/code/go/internal/fspath"
 )
 
-const maxFieldsPerDataStream = 1024
-
 // ValidateFieldsLimits verifies limits on fields.
-func ValidateFieldsLimits(fsys fspath.FS) ve.ValidationErrors {
-	counts := make(map[string]uint)
+func ValidateFieldsLimits(limit int) func(fspath.FS) ve.ValidationErrors {
+	return func(fsys fspath.FS) ve.ValidationErrors {
+		return validateFieldsLimits(fsys, limit)
+	}
+}
+
+func validateFieldsLimits(fsys fspath.FS, limit int) ve.ValidationErrors {
+	counts := make(map[string]int)
 	countField := func(fieldsFile string, f field) ve.ValidationErrors {
 		if len(f.Fields) > 0 {
 			// Don't count groups
@@ -42,8 +46,8 @@ func ValidateFieldsLimits(fsys fspath.FS) ve.ValidationErrors {
 
 	var errs ve.ValidationErrors
 	for dataStream, count := range counts {
-		if count > maxFieldsPerDataStream {
-			errs = append(errs, errors.Errorf("data stream %s has more than %d fields (%d)", dataStream, maxFieldsPerDataStream, count))
+		if count > limit {
+			errs = append(errs, errors.Errorf("data stream %s has more than %d fields (%d)", dataStream, limit, count))
 		}
 	}
 	return errs
