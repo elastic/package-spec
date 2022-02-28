@@ -48,8 +48,8 @@ func TestLimitsValidation(t *testing.T) {
 		{
 			title: "totalSizeLimit exceeded",
 			fsys: newMockFS().Good().WithFiles(
-				newMockFile("docs/other.md").WithSize(150*spectypes.MegaByte),
-				newMockFile("docs/someother.md").WithSize(150*spectypes.MegaByte),
+				newMockFile("docs/other.md").WithSize(140*spectypes.MegaByte),
+				newMockFile("docs/someother.md").WithSize(140*spectypes.MegaByte),
 			),
 			valid: false,
 		},
