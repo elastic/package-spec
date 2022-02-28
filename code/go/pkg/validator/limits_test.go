@@ -20,12 +20,6 @@ import (
 	"github.com/elastic/package-spec/code/go/internal/spectypes"
 )
 
-//go:embed testdata/limits/manifest.yml
-var manifestYml string
-
-//go:embed testdata/limits/changelog.yml
-var changelogYml string
-
 func TestLimitsValidation(t *testing.T) {
 	cases := []struct {
 		title string
@@ -52,6 +46,14 @@ func TestLimitsValidation(t *testing.T) {
 			valid: false,
 		},
 		{
+			title: "totalSizeLimit exceeded",
+			fsys: newMockFS().Good().WithFiles(
+				newMockFile("docs/other.md").WithSize(150*spectypes.MegaByte),
+				newMockFile("docs/someother.md").WithSize(150*spectypes.MegaByte),
+			),
+			valid: false,
+		},
+		{
 			title: "totalContentsLimit exceeded",
 			fsys: newMockFS().Good().Override(func(o *overrideFS) {
 				o.File("docs").WithGeneratedFiles(70000, ".md", 512*spectypes.Byte)
@@ -66,11 +68,38 @@ func TestLimitsValidation(t *testing.T) {
 			valid: false,
 		},
 		{
-			title: "ignore developer files",
+			title: "data streams limit exceeded",
 			fsys: newMockFS().Good().Override(func(o *overrideFS) {
-				bigFile := newMockFile("entrypoint.sh").WithSize(2048 * spectypes.MegaByte)
-				o.File("_dev/deploy/docker").WithFiles(bigFile)
+				o.MultiplyFile("data_stream", "foo", 1000)
 			}),
+			valid: false,
+		},
+		{
+			title: "fieldsPerDataStreamLimit exceeded",
+			fsys: newMockFS().Good().WithFiles(
+				newMockFile("data_stream/foo/fields/many-fields.yml").WithContent(generateFields(1500)),
+			),
+			valid: false,
+		},
+		{
+			title: "config template sizeLimit exceeded",
+			fsys: newMockFS().Good().WithFiles(
+				newMockFile("agent/input/stream.yml.hbs").WithSize(6 * spectypes.MegaByte),
+			),
+			valid: false,
+		},
+		{
+			title: "ingest pipeline sizeLimit exceeded",
+			fsys: newMockFS().Good().WithFiles(
+				newMockFile("elasticsearch/ingest_pipeline/pipeline.yml").WithContent("---\n").WithSize(4 * spectypes.MegaByte),
+			),
+			valid: false,
+		},
+		{
+			title: "ignore developer files",
+			fsys: newMockFS().Good().WithFiles(
+				newMockFile("_dev/deploy/docker/entrypoint.sh").WithSize(2048 * spectypes.MegaByte),
+			),
 			valid: true,
 		},
 	}
@@ -102,6 +131,28 @@ func (fs *mockFS) WithFiles(files ...*mockFile) *mockFS {
 	return fs
 }
 
+//go:embed testdata/limits/manifest.yml
+var manifestYml string
+
+//go:embed testdata/limits/changelog.yml
+var changelogYml string
+
+//go:embed testdata/limits/data_stream/foo/manifest.yml
+var datastreamManifestYml string
+
+//go:embed testdata/limits/data_stream/foo/fields/base-fields.yml
+var fieldsYml string
+
+func generateFields(n int) string {
+	var buf strings.Builder
+
+	for i := 0; i < n; i++ {
+		buf.WriteString(fmt.Sprintf("- name: generated.foo%d\n", i))
+		buf.WriteString("  type: keyword\n")
+	}
+	return buf.String()
+}
+
 func (fs *mockFS) Good() *mockFS {
 	return fs.WithFiles(
 		newMockFile("manifest.yml").WithContent(manifestYml),
@@ -110,6 +161,8 @@ func (fs *mockFS) Good() *mockFS {
 		newMockFile("img/kibana-system.png"),
 		newMockFile("img/system.svg"),
 		newMockFile("_dev/deploy/docker/docker-compose.yml").WithContent("version: 2.3"),
+		newMockFile("data_stream/foo/manifest.yml").WithContent(datastreamManifestYml),
+		newMockFile("data_stream/foo/fields/base-fields.yml").WithContent(fieldsYml),
 	)
 }
 
@@ -128,6 +181,24 @@ func (o *overrideFS) File(name string) *mockFile {
 		panic(err)
 	}
 	return f
+}
+
+func (o *overrideFS) MultiplyFile(dir string, name string, times int) {
+	d, err := o.fs.root.findFile(dir)
+	if err != nil {
+		panic(err)
+	}
+
+	f, err := d.findFile(name)
+	if err != nil {
+		panic(err)
+	}
+
+	for i := 0; i < times; i++ {
+		cp := f.Copy()
+		cp.stat.name = fmt.Sprintf("%s%d", f.stat.name, i)
+		d.files = append(d.files, cp)
+	}
 }
 
 func (fs *mockFS) Open(name string) (fs.File, error) {
@@ -163,6 +234,16 @@ func newMockDir(name string) *mockFile {
 	f.stat.mode = 0755
 	f.stat.isDir = true
 	return f
+}
+
+func (f *mockFile) Copy() *mockFile {
+	cp := mockFile{}
+	cp.stat = f.stat
+	cp.content = f.content
+	for _, src := range f.files {
+		cp.files = append(cp.files, src.Copy())
+	}
+	return &cp
 }
 
 func (f *mockFile) WithContent(content string) *mockFile {
