@@ -4,9 +4,6 @@
 ##
 - version: 1.4.2-next
   changes:
-  - description: Prepare for next version
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/275
   - description: Add kibana/csp-rule-template asset
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/276
@@ -16,6 +13,9 @@
   - description: Add support for match_only_text field type
     type: enhancement
     link: https://github.com/elastic/package-spec/issues/284
+  - description: Add limits to file sizes and number of files
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/278
 - version: 1.4.1
   changes:
   - description: ML model file name now matches the id of the model.
