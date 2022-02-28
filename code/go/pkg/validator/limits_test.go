@@ -39,33 +39,38 @@ func TestLimitsValidation(t *testing.T) {
 		},
 		{
 			title: "configurationSizeLimit exceeded",
-			fsys: newMockFS().Good().
-				Override("manifest.yml", OverrideSize(10*spectypes.MegaByte)),
+			fsys: newMockFS().Good().Override(func(o *overrideFS) {
+				o.File("manifest.yml").WithSize(10 * spectypes.MegaByte)
+			}),
 			valid: false,
 		},
 		{
 			title: "sizeLimit exceeded",
-			fsys: newMockFS().Good().
-				Override("docs/README.md", OverrideSize(200*spectypes.MegaByte)),
+			fsys: newMockFS().Good().Override(func(o *overrideFS) {
+				o.File("docs/README.md").WithSize(200 * spectypes.MegaByte)
+			}),
 			valid: false,
 		},
 		{
 			title: "totalContentsLimit exceeded",
-			fsys: newMockFS().Good().
-				Override("docs", OverrideGenerateFiles(70000, ".md", 512*spectypes.Byte)),
+			fsys: newMockFS().Good().Override(func(o *overrideFS) {
+				o.File("docs").WithGeneratedFiles(70000, ".md", 512*spectypes.Byte)
+			}),
 			valid: false,
 		},
 		{
 			title: "relativePathSizeLimit exceeded",
-			fsys: newMockFS().Good().
-				Override("img/kibana-system.png", OverrideSize(10*spectypes.MegaByte)),
+			fsys: newMockFS().Good().Override(func(o *overrideFS) {
+				o.File("img/kibana-system.png").WithSize(10 * spectypes.MegaByte)
+			}),
 			valid: false,
 		},
 		{
 			title: "ignore developer files",
-			fsys: newMockFS().Good().
-				Override("_dev/deploy/docker", OverrideAddFiles(
-					newMockFile("entrypoint.sh").WithSize(2048*spectypes.MegaByte))),
+			fsys: newMockFS().Good().Override(func(o *overrideFS) {
+				bigFile := newMockFile("entrypoint.sh").WithSize(2048 * spectypes.MegaByte)
+				o.File("_dev/deploy/docker").WithFiles(bigFile)
+			}),
 			valid: true,
 		},
 	}
@@ -101,53 +106,28 @@ func (fs *mockFS) Good() *mockFS {
 	return fs.WithFiles(
 		newMockFile("manifest.yml").WithContent(manifestYml),
 		newMockFile("changelog.yml").WithContent(changelogYml),
-		newMockDir("docs").WithFiles(
-			newMockFile("README.md").WithContent("## README"),
-		),
-		newMockDir("img").WithFiles(
-			newMockFile("kibana-system.png"),
-			newMockFile("system.svg"),
-		),
-		newMockDir("_dev").WithFiles(
-			newMockDir("deploy").WithFiles(
-				newMockDir("docker").WithFiles(
-					newMockFile("docker-compose.yml").WithContent("version: 2.3"),
-				),
-			),
-		),
+		newMockFile("docs/README.md").WithContent("## README"),
+		newMockFile("img/kibana-system.png"),
+		newMockFile("img/system.svg"),
+		newMockFile("_dev/deploy/docker/docker-compose.yml").WithContent("version: 2.3"),
 	)
 }
 
-func (fs *mockFS) Override(name string, override func(*mockFile)) *mockFS {
-	f, err := fs.root.findFile(name)
-	if err != nil {
-		panic("overriding " + name + ": " + err.Error())
-	}
-	override(f)
+func (fs *mockFS) Override(overrider func(*overrideFS)) *mockFS {
+	overrider(&overrideFS{fs})
 	return fs
 }
 
-func OverrideSize(size spectypes.FileSize) func(*mockFile) {
-	return func(f *mockFile) {
-		f.WithSize(size)
-	}
+type overrideFS struct {
+	fs *mockFS
 }
 
-func OverrideAddFiles(files ...*mockFile) func(*mockFile) {
-	return func(f *mockFile) {
-		f.WithFiles(files...)
+func (o *overrideFS) File(name string) *mockFile {
+	f, err := o.fs.root.findFile(name)
+	if err != nil {
+		panic(err)
 	}
-}
-
-func OverrideGenerateFiles(n int, suffix string, size spectypes.FileSize) func(*mockFile) {
-	return func(f *mockFile) {
-		var files []*mockFile
-		for i := 0; i < n; i++ {
-			files = append(files,
-				newMockFile(fmt.Sprintf("tmp%d%s", i, suffix)).WithSize(size))
-		}
-		f.WithFiles(files...)
-	}
+	return f
 }
 
 func (fs *mockFS) Open(name string) (fs.File, error) {
@@ -169,9 +149,6 @@ type mockFile struct {
 }
 
 func newMockFile(name string) *mockFile {
-	if strings.Contains(name, string(os.PathSeparator)) {
-		panic(name + " contains a path separator " + string(os.PathSeparator))
-	}
 	return &mockFile{
 		stat: mockFileInfo{
 			name:  name,
@@ -206,8 +183,40 @@ func (f *mockFile) WithFiles(files ...*mockFile) *mockFile {
 	if !f.stat.isDir {
 		panic("regular file cannot contain files")
 	}
-	f.files = append(f.files, files...)
+	for _, file := range files {
+		f.addFileWithDirs(file)
+	}
 	return f
+}
+
+func (f *mockFile) WithGeneratedFiles(n int, suffix string, size spectypes.FileSize) *mockFile {
+	var files []*mockFile
+	for i := 0; i < n; i++ {
+		files = append(files,
+			newMockFile(fmt.Sprintf("tmp%d%s", i, suffix)).WithSize(size))
+	}
+	f.WithFiles(files...)
+	return f
+}
+
+func (f *mockFile) addFileWithDirs(file *mockFile) {
+	parts := strings.Split(file.stat.name, string(os.PathSeparator))
+	dir := f
+	for i, part := range parts[:len(parts)-1] {
+		d, err := dir.findFile(part)
+		if err == nil {
+			if !d.stat.isDir {
+				panic(strings.Join(parts[:i], string(os.PathSeparator)) + " is not a directory")
+			}
+			dir = d
+		} else {
+			d = newMockDir(part)
+			dir.files = append(dir.files, d)
+			dir = d
+		}
+	}
+	file.stat.name = parts[len(parts)-1]
+	dir.files = append(dir.files, file)
 }
 
 func (f *mockFile) findFile(name string) (*mockFile, error) {
