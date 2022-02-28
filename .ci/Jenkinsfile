@@ -52,6 +52,7 @@ pipeline {
     stage('Test') {
       steps {
         cleanup()
+        installTools([ [tool: 'nodejs', version: '10.0' ] ])
         withMageEnv(){
           dir("${BASE_DIR}"){
             sh(label: 'Test', script: 'make test')
