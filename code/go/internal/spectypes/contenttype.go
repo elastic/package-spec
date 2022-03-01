@@ -18,6 +18,14 @@ type ContentType struct {
 	Params    map[string]string
 }
 
+// Ensure ContentType implements these interfaces.
+var (
+	_ json.Marshaler   = new(ContentType)
+	_ json.Unmarshaler = new(ContentType)
+	_ yaml.Marshaler   = new(ContentType)
+	_ yaml.Unmarshaler = new(ContentType)
+)
+
 // MarshalJSON implements the json.Marshaler interface for ContentType. Returned
 // value is a string representation of the content media type and its parameters.
 func (t ContentType) MarshalJSON() ([]byte, error) {

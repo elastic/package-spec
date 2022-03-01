@@ -29,6 +29,14 @@ const (
 // FileSize represents the size of a file.
 type FileSize uint64
 
+// Ensure FileSize implements these interfaces.
+var (
+	_ json.Marshaler   = new(FileSize)
+	_ json.Unmarshaler = new(FileSize)
+	_ yaml.Marshaler   = new(FileSize)
+	_ yaml.Unmarshaler = new(FileSize)
+)
+
 func parseFileSizeInt(s string) (uint64, error) {
 	// os.FileInfo reports size as int64, don't support bigger numbers.
 	maxBitSize := 63
@@ -42,7 +50,7 @@ func (s FileSize) MarshalJSON() ([]byte, error) {
 	return []byte(`"` + s.String() + `"`), nil
 }
 
-// MarshalYAML implements the json.Marshaler interface for FileSize, it returns
+// MarshalYAML implements the yaml.Marshaler interface for FileSize, it returns
 // the string representation in a format that can be unmarshaled back to an
 // equivalent value.
 func (s FileSize) MarshalYAML() (interface{}, error) {
