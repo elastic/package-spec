@@ -17,6 +17,7 @@ import (
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/fspath"
+	"github.com/elastic/package-spec/code/go/internal/spectypes"
 )
 
 const (
@@ -31,39 +32,43 @@ type folderSpec struct {
 	fs       fs.FS
 	specPath string
 	commonSpec
+
+	// These "validation-time" fields don't actually belong to the spec, storing
+	// them here for convenience by now.
+	totalSize     spectypes.FileSize
+	totalContents int
 }
 
-func newFolderSpec(fs fs.FS, specPath string) (*folderSpec, error) {
+func (s *folderSpec) load(fs fs.FS, specPath string) error {
 	specFile, err := fs.Open(specPath)
 	if err != nil {
-		return nil, errors.Wrap(err, "could not open folder specification file")
+		return errors.Wrap(err, "could not open folder specification file")
 	}
 	defer specFile.Close()
 
 	data, err := ioutil.ReadAll(specFile)
 	if err != nil {
-		return nil, errors.Wrap(err, "could not read folder specification file")
+		return errors.Wrap(err, "could not read folder specification file")
 	}
 
 	var wrapper struct {
-		Spec commonSpec `yaml:"spec"`
+		Spec *commonSpec `yaml:"spec"`
 	}
-
+	wrapper.Spec = &s.commonSpec
 	if err := yaml.Unmarshal(data, &wrapper); err != nil {
-		return nil, errors.Wrap(err, "could not parse folder specification file")
+		return errors.Wrap(err, "could not parse folder specification file")
 	}
 
-	spec := folderSpec{
-		fs:         fs,
-		specPath:   specPath,
-		commonSpec: wrapper.Spec,
-	}
-
-	err = setDefaultValues(&spec.commonSpec)
+	err = setDefaultValues(&s.commonSpec)
 	if err != nil {
-		return nil, errors.Wrap(err, "could not set default values")
+		return errors.Wrap(err, "could not set default values")
 	}
-	return &spec, nil
+
+	propagateContentLimits(&s.commonSpec)
+
+	s.fs = fs
+	s.specPath = specPath
+	return nil
 }
 
 func (s *folderSpec) validate(packageName string, fsys fspath.FS, path string) ve.ValidationErrors {
@@ -71,6 +76,13 @@ func (s *folderSpec) validate(packageName string, fsys fspath.FS, path string) v
 	files, err := fs.ReadDir(fsys, path)
 	if err != nil {
 		errs = append(errs, errors.Wrapf(err, "could not read folder [%s]", fsys.Path(path)))
+		return errs
+	}
+
+	// This is not taking into account if the folder is for development. Enforce
+	// this limit in all cases to avoid having to read too many files.
+	if contentsLimit := s.Limits.TotalContentsLimit; contentsLimit > 0 && len(files) > contentsLimit {
+		errs = append(errs, errors.Errorf("folder [%s] exceeds the limit of %d files", fsys.Path(path), contentsLimit))
 		return errs
 	}
 
@@ -116,23 +128,21 @@ func (s *folderSpec) validate(packageName string, fsys fspath.FS, path string) v
 				continue
 			}
 
-			var subFolderSpec *folderSpec
+			var subFolderSpec folderSpec
+			// Inherit limits from parent directory.
+			subFolderSpec.Limits = s.Limits
 			if itemSpec.Ref != "" {
 				subFolderSpecPath := filepath.Join(filepath.Dir(s.specPath), itemSpec.Ref)
-				subFolderSpec, err = newFolderSpec(s.fs, subFolderSpecPath)
+				err := subFolderSpec.load(s.fs, subFolderSpecPath)
 				if err != nil {
 					errs = append(errs, err)
 					continue
 				}
 			} else if itemSpec.Contents != nil {
-				subFolderSpec = &folderSpec{
-					fs:       s.fs,
-					specPath: s.specPath,
-					commonSpec: commonSpec{
-						AdditionalContents: itemSpec.AdditionalContents,
-						Contents:           itemSpec.Contents,
-					},
-				}
+				subFolderSpec.fs = s.fs
+				subFolderSpec.specPath = s.specPath
+				subFolderSpec.commonSpec.AdditionalContents = itemSpec.AdditionalContents
+				subFolderSpec.commonSpec.Contents = itemSpec.Contents
 			}
 
 			// Subfolders of development folders are also considered development folders.
@@ -146,6 +156,11 @@ func (s *folderSpec) validate(packageName string, fsys fspath.FS, path string) v
 				errs = append(errs, subErrs...)
 			}
 
+			// Don't count files in development folders.
+			if !subFolderSpec.DevelopmentFolder {
+				s.totalContents += subFolderSpec.totalContents
+				s.totalSize += subFolderSpec.totalSize
+			}
 		} else {
 			if !itemSpec.isSameType(file) {
 				errs = append(errs, fmt.Errorf("[%s] is a file but is expected to be a folder", fsys.Path(fileName)))
@@ -159,7 +174,19 @@ func (s *folderSpec) validate(packageName string, fsys fspath.FS, path string) v
 					errs = append(errs, errors.Wrapf(ive, "file \"%s\" is invalid", fsys.Path(itemPath)))
 				}
 			}
+
+			info, err := fs.Stat(fsys, itemPath)
+			if err != nil {
+				errs = append(errs, errors.Wrapf(err, "failed to obtain file size for \"%s\"", fsys.Path(itemPath)))
+			} else {
+				s.totalContents++
+				s.totalSize += spectypes.FileSize(info.Size())
+			}
 		}
+	}
+
+	if sizeLimit := s.Limits.TotalSizeLimit; sizeLimit > 0 && s.totalSize > sizeLimit {
+		errs = append(errs, errors.Errorf("folder [%s] exceeds the total size limit of %s", fsys.Path(path), sizeLimit))
 	}
 
 	// validate that required items in spec are all accounted for

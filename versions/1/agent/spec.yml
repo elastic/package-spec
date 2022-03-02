@@ -9,5 +9,6 @@ spec:
     contents:
     - description: Config template file for inputs defined in the policy_templates section of the top level manifest
       type: file
+      sizeLimit: 2MB
       pattern: '^.+.yml.hbs$'
       required: true

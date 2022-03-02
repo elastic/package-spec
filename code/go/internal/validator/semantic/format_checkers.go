@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 
 	"github.com/xeipuuv/gojsonschema"
+
+	"github.com/elastic/package-spec/code/go/internal/spectypes"
 )
 
 const (
@@ -28,6 +30,7 @@ const (
 type relativePathChecker struct {
 	fsys        fs.FS
 	currentPath string
+	sizeLimit   spectypes.FileSize
 }
 
 // IsFormat method checks if the path exists.
@@ -38,19 +41,28 @@ func (r relativePathChecker) IsFormat(input interface{}) bool {
 	}
 
 	path := filepath.Join(r.currentPath, asString)
-	_, err := fs.Stat(r.fsys, path)
+	info, err := fs.Stat(r.fsys, path)
 	if err != nil {
 		return false
 	}
+
+	// TODO: It happens that we want the same max size for all the files we reference with
+	// relative paths, but it'd be better if we could find a way to parameterize format
+	// checkers so we can configure specific max sizes, and we can provide better feedback.
+	if r.sizeLimit > 0 && spectypes.FileSize(info.Size()) > r.sizeLimit {
+		return false
+	}
+
 	return true
 }
 
 // LoadRelativePathFormatChecker loads the relative-path format checker into the
 // json-schema validation library.
-func LoadRelativePathFormatChecker(fsys fs.FS, currentPath string) {
+func LoadRelativePathFormatChecker(fsys fs.FS, currentPath string, sizeLimit spectypes.FileSize) {
 	gojsonschema.FormatCheckers.Add(RelativePathFormat, relativePathChecker{
 		fsys:        fsys,
 		currentPath: currentPath,
+		sizeLimit:   sizeLimit,
 	})
 }
 

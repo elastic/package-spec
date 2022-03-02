@@ -17,12 +17,14 @@ spec:
       contents:
         - description: Supporting ingest pipeline definitions in YAML
           type: file
+          sizeLimit: 3MB
           pattern: '^.+\.yml$'
           # TODO Determine if special handling of `---` is required (issue: https://github.com/elastic/package-spec/pull/54)
           contentMediaType: "application/x-yaml; require-document-dashes=true"
           required: false
         - description: Supporting ingest pipeline definitions in JSON
           type: file
+          sizeLimit: 3MB
           pattern: '^.+\.json$'
           contentMediaType: "application/json"
           required: false
