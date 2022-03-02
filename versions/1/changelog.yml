@@ -2,7 +2,7 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
-- version: 1.4.2-next
+- version: 1.5.0
   changes:
   - description: Add kibana/csp-rule-template asset
     type: enhancement
