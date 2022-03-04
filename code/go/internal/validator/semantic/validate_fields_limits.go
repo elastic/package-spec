@@ -5,10 +5,6 @@
 package semantic
 
 import (
-	"fmt"
-	"path/filepath"
-	"strings"
-
 	"github.com/pkg/errors"
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
@@ -51,19 +47,4 @@ func validateFieldsLimits(fsys fspath.FS, limit int) ve.ValidationErrors {
 		}
 	}
 	return errs
-}
-
-func dataStreamFromFieldsPath(pkgRoot, fieldsFile string) (string, error) {
-	dataStreamPath := filepath.Clean(filepath.Join(pkgRoot, "data_stream"))
-	relPath, err := filepath.Rel(dataStreamPath, filepath.Clean(fieldsFile))
-	if err != nil {
-		return "", fmt.Errorf("looking for fields file (%s) in data streams path (%s): %w", fieldsFile, dataStreamPath, err)
-	}
-
-	parts := strings.SplitN(relPath, string(filepath.Separator), 2)
-	if len(parts) != 2 {
-		return "", errors.Errorf("could not find data stream for fields file %s", fieldsFile)
-	}
-	dataStream := parts[0]
-	return dataStream, nil
 }

@@ -12,6 +12,7 @@ import (
 
 	"github.com/elastic/package-spec/code/go/internal/errors"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -197,6 +198,46 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 				}
 			}
 			require.Equal(t, c, len(errMessages))
+		})
+	}
+}
+
+func TestValidateMissingReqiredFields(t *testing.T) {
+	tests := map[string][]string{
+		"good": {},
+		"missing_required_fields": {
+			`expected type "constant_keyword" for required field "data_stream.dataset", found "keyword" in "../../../../test/packages/missing_required_fields/data_stream/foo/fields/base-fields.yml"`,
+			`expected field "data_stream.type" with type "constant_keyword" not found in datastream "foo"`,
+		},
+	}
+
+	for pkgName, expectedErrors := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
+
+			err := ValidateFromPath(pkgRootPath)
+			if len(expectedErrors) == 0 {
+				assert.NoError(t, err)
+				return
+			}
+			assert.Error(t, err)
+
+			errs, ok := err.(errors.ValidationErrors)
+			require.True(t, ok)
+			assert.Len(t, errs, len(expectedErrors))
+
+			for _, expectedError := range expectedErrors {
+				found := false
+				for _, foundError := range errs {
+					if foundError.Error() == expectedError {
+						found = true
+						break
+					}
+				}
+				if !found {
+					t.Errorf("expected error: %q", expectedError)
+				}
+			}
 		})
 	}
 }
