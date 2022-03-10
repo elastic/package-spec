@@ -4,9 +4,9 @@
 ##
 - version: 1.5.1-next
   changes:
-  - description: Prepare for next version
+  - description: Validate required fields
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/289
+    link: https://github.com/elastic/package-spec/pull/291
 - version: 1.5.0
   changes:
   - description: Add kibana/csp-rule-template asset

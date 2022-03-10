@@ -72,6 +72,7 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 		semantic.ValidateFieldGroups,
 		semantic.ValidateFieldsLimits(rootSpec.Limits.FieldsPerDataStreamLimit),
 		semantic.ValidateDimensionFields,
+		semantic.ValidateRequiredFields,
 	}
 
 	return rules.validate(&pkg)
