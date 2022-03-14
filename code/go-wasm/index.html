@@ -17,7 +17,7 @@
         var buffer = new Uint8Array(reader.result);
         validateZipBuffer(input.files[0], buffer,
 	  () => { result.innerHTML = "Package is valid" },
-	  (errors) => { result.innerHTML = errors })
+	  (errors) => { result.innerHTML = errors.replaceAll("\n", "<br />") })
       };
       reader.readAsArrayBuffer(input.files[0]);
     })
