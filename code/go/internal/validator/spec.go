@@ -50,8 +50,9 @@ func NewSpec(version semver.Version) (*Spec, error) {
 func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 
+	var rootSpec folderSpec
 	rootSpecPath := path.Join(s.specPath, "spec.yml")
-	rootSpec, err := newFolderSpec(s.fs, rootSpecPath)
+	err := rootSpec.load(s.fs, rootSpecPath)
 	if err != nil {
 		errs = append(errs, errors.Wrap(err, "could not read root folder spec file"))
 		return errs
@@ -69,7 +70,9 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 		semantic.ValidateVersionIntegrity,
 		semantic.ValidatePrerelease,
 		semantic.ValidateFieldGroups,
+		semantic.ValidateFieldsLimits(rootSpec.Limits.FieldsPerDataStreamLimit),
 		semantic.ValidateDimensionFields,
+		semantic.ValidateRequiredFields,
 	}
 
 	return rules.validate(&pkg)

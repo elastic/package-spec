@@ -2,11 +2,13 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
-- version: 1.4.2-next
+- version: 1.5.1-next
   changes:
-  - description: Prepare for next version
+  - description: Validate required fields
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/275
+    link: https://github.com/elastic/package-spec/pull/291
+- version: 1.5.0
+  changes:
   - description: Add kibana/csp-rule-template asset
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/276
@@ -16,6 +18,9 @@
   - description: Add support for match_only_text field type
     type: enhancement
     link: https://github.com/elastic/package-spec/issues/284
+  - description: Add limits to file sizes and number of files
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/278
 - version: 1.4.1
   changes:
   - description: ML model file name now matches the id of the model.

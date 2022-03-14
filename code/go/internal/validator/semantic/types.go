@@ -5,9 +5,11 @@
 package semantic
 
 import (
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
@@ -15,6 +17,8 @@ import (
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/fspath"
 )
+
+const dataStreamDir = "data_stream"
 
 type fields []field
 
@@ -74,18 +78,13 @@ func validateNestedFields(parent string, fieldsFile string, fields fields, valid
 
 func listFieldsFiles(fsys fspath.FS) ([]string, error) {
 	var fieldsFiles []string
-
-	dataStreamDir := "data_stream"
-	dataStreams, err := fs.ReadDir(fsys, dataStreamDir)
-	if errors.Is(err, os.ErrNotExist) {
-		return fieldsFiles, nil
-	}
+	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
-		return nil, errors.Wrap(err, "can't list data streams directory")
+		return nil, err
 	}
 
 	for _, dataStream := range dataStreams {
-		fieldsDir := filepath.Join(dataStreamDir, dataStream.Name(), "fields")
+		fieldsDir := filepath.Join(dataStreamDir, dataStream, "fields")
 		fs, err := fs.ReadDir(fsys, fieldsDir)
 		if errors.Is(err, os.ErrNotExist) {
 			continue
@@ -114,4 +113,35 @@ func unmarshalFields(fsys fspath.FS, fieldsPath string) (fields, error) {
 		return nil, errors.Wrapf(err, "yaml.Unmarshal failed (path: %s)", fieldsPath)
 	}
 	return f, nil
+}
+
+func dataStreamFromFieldsPath(pkgRoot, fieldsFile string) (string, error) {
+	dataStreamPath := filepath.Clean(filepath.Join(pkgRoot, "data_stream"))
+	relPath, err := filepath.Rel(dataStreamPath, filepath.Clean(fieldsFile))
+	if err != nil {
+		return "", fmt.Errorf("looking for fields file (%s) in data streams path (%s): %w", fieldsFile, dataStreamPath, err)
+	}
+
+	parts := strings.SplitN(relPath, string(filepath.Separator), 2)
+	if len(parts) != 2 {
+		return "", errors.Errorf("could not find data stream for fields file %s", fieldsFile)
+	}
+	dataStream := parts[0]
+	return dataStream, nil
+}
+
+func listDataStreams(fsys fspath.FS) ([]string, error) {
+	dataStreams, err := fs.ReadDir(fsys, dataStreamDir)
+	if errors.Is(err, os.ErrNotExist) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, errors.Wrap(err, "can't list data streams directory")
+	}
+
+	list := make([]string, len(dataStreams))
+	for i, dataStream := range dataStreams {
+		list[i] = dataStream.Name()
+	}
+	return list, nil
 }

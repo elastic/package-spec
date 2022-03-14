@@ -5,14 +5,51 @@
 package validator
 
 import (
+	"reflect"
+
 	"github.com/creasty/defaults"
 	"github.com/pkg/errors"
+
+	"github.com/elastic/package-spec/code/go/internal/spectypes"
 )
 
 type commonSpec struct {
 	AdditionalContents bool             `yaml:"additionalContents"`
 	Contents           []folderItemSpec `yaml:"contents"`
 	DevelopmentFolder  bool             `yaml:"developmentFolder"`
+
+	Limits commonSpecLimits `yaml:",inline"`
+}
+
+type commonSpecLimits struct {
+	// Limit to the total number of elements in a directory.
+	TotalContentsLimit int `yaml:"totalContentsLimit"`
+
+	// Limit to the total size of files in a directory.
+	TotalSizeLimit spectypes.FileSize `yaml:"totalSizeLimit"`
+
+	// Limit to individual files.
+	SizeLimit spectypes.FileSize `yaml:"sizeLimit"`
+
+	// Limit to individual configuration files (yaml files).
+	ConfigurationSizeLimit spectypes.FileSize `yaml:"configurationSizeLimit"`
+
+	// Limit to files referenced as relative paths (images).
+	RelativePathSizeLimit spectypes.FileSize `yaml:"relativePathSizeLimit"`
+
+	// Maximum number of fields per data stream, can only be set at the root level spec.
+	FieldsPerDataStreamLimit int `yaml:"fieldsPerDataStreamLimit"`
+}
+
+func (l *commonSpecLimits) update(o commonSpecLimits) {
+	target := reflect.ValueOf(l).Elem()
+	source := reflect.ValueOf(&o).Elem()
+	for i := 0; i < target.NumField(); i++ {
+		field := target.Field(i)
+		if field.IsZero() {
+			field.Set(source.Field(i))
+		}
+	}
 }
 
 func setDefaultValues(spec *commonSpec) error {
@@ -31,5 +68,14 @@ func setDefaultValues(spec *commonSpec) error {
 			return err
 		}
 	}
+
 	return nil
+}
+
+func propagateContentLimits(spec *commonSpec) {
+	for i := range spec.Contents {
+		content := &spec.Contents[i].commonSpec
+		content.Limits.update(spec.Limits)
+		propagateContentLimits(content)
+	}
 }
