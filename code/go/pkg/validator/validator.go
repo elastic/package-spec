@@ -8,6 +8,7 @@ import (
 	"archive/zip"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 
@@ -20,6 +21,16 @@ func ValidateFromPath(packageRootPath string) error {
 	return ValidateFromFS(packageRootPath, os.DirFS(packageRootPath))
 }
 
+// ValidateFromZipReader validates a zip package obtained through a reader.
+func ValidateFromZipReader(location string, reader io.ReaderAt, size int64) error {
+	r, err := zip.NewReader(reader, size)
+	if err != nil {
+		return err
+	}
+
+	return validateZipReader(location, r)
+}
+
 // ValidateFromZip validates a package on its zip format.
 func ValidateFromZip(packagePath string) error {
 	r, err := zip.OpenReader(packagePath)
@@ -28,9 +39,13 @@ func ValidateFromZip(packagePath string) error {
 	}
 	defer r.Close()
 
+	return validateZipReader(packagePath, &r.Reader)
+}
+
+func validateZipReader(location string, r *zip.Reader) error {
 	dirs, err := fs.ReadDir(r, ".")
 	if err != nil {
-		return fmt.Errorf("failed to read root directory in zip file (%s): %w", packagePath, err)
+		return fmt.Errorf("failed to read root directory in zip file (%s): %w", location, err)
 	}
 	if len(dirs) != 1 {
 		return fmt.Errorf("a single directory is expected in zip file, %d found", len(dirs))
@@ -41,7 +56,7 @@ func ValidateFromZip(packagePath string) error {
 		return err
 	}
 
-	return ValidateFromFS(packagePath, subDir)
+	return ValidateFromFS(location, subDir)
 }
 
 // ValidateFromFS validates a package against the appropiate specification and returns any errors.

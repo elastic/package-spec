@@ -2,9 +2,12 @@
 // or more contributor license agreements. Licensed under the Elastic License;
 // you may not use this file except in compliance with the Elastic License.
 
+//go:build wasm
+
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"syscall/js"
 
@@ -53,8 +56,28 @@ func main() {
 				return fmt.Errorf("package path expected")
 			}
 
-			pkgPath := args[0].String()
-			return validator.ValidateFromZip(pkgPath)
+			return validator.ValidateFromZip("/")
+		},
+	))
+
+	module.Set("validateFromZipReader", asyncFunc(
+		func(this js.Value, args []js.Value) interface{} {
+			if len(args) < 1 || args[0].IsNull() || args[0].IsUndefined() {
+				return fmt.Errorf("file object expected")
+			}
+			if len(args) < 2 || args[1].IsNull() || args[1].IsUndefined() {
+				return fmt.Errorf("array buffer with content of package expected")
+			}
+
+			file := args[0]
+			name := file.Get("name").String()
+			size := int64(file.Get("size").Int())
+
+			buf := make([]byte, size)
+			js.CopyBytesToGo(buf, args[1])
+
+			reader := bytes.NewReader(buf)
+			return validator.ValidateFromZipReader(name, reader, size)
 		},
 	))
 
