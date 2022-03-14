@@ -56,7 +56,8 @@ func main() {
 				return fmt.Errorf("package path expected")
 			}
 
-			return validator.ValidateFromZip("/")
+			pkgPath := args[0].String()
+			return validator.ValidateFromZip(pkgPath)
 		},
 	))
 
