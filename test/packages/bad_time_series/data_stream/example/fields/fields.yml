@@ -4,6 +4,9 @@
   - name: agent.id
     type: keyword
     dimension: true
+  - name: agent.ip
+    type: ip
+    dimensiont: true
   - name: agent.call_count
     type: long
     metric_type: counter

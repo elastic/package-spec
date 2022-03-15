@@ -15,3 +15,6 @@ elasticsearch:
     settings:
       # Defaults to 16
       index.mapping.dimension_fields.limit: 32
+      index.routing_path: "example.agent.id"
+    data_stream:
+      index_mode: "time_series"

@@ -9,3 +9,11 @@ streams:
         type: text
         title: Period
         default: 10s
+
+elasticsearch:
+  index_template:
+    settings:
+      # This should produce an error because this field is not a keyword.
+      index.routing_path: "example.agent.ip"
+    data_stream:
+      index_mode: "time_series"
