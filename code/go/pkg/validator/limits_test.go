@@ -77,7 +77,7 @@ func TestLimitsValidation(t *testing.T) {
 		{
 			title: "fieldsPerDataStreamLimit exceeded",
 			fsys: newMockFS().Good().WithFiles(
-				newMockFile("data_stream/foo/fields/many-fields.yml").WithContent(generateFields(1500)),
+				newMockFile("data_stream/foo/fields/many-fields.yml").WithContent(generateFields(2500)),
 			),
 			valid: false,
 		},
