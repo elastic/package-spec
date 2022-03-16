@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "source-map-support": "^0.5.21",
+    "syscall": "/home/jaime/gocode/src/github.com/gopherjs/gopherjs/node-syscall"
+  }
+}
