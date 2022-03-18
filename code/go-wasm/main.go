@@ -63,19 +63,21 @@ func main() {
 
 	module.Set("validateFromZipReader", asyncFunc(
 		func(this js.Value, args []js.Value) interface{} {
-			if len(args) < 1 || !args[0].InstanceOf(js.Global().Get("File")) {
-				return fmt.Errorf("file object expected")
+			if len(args) < 1 || args[0].Type() != js.TypeString {
+				return fmt.Errorf("string expected")
 			}
-			if len(args) < 2 || !args[1].InstanceOf(js.Global().Get("Uint8Array")) {
+			if len(args) < 2 || args[1].Type() != js.TypeNumber {
+				return fmt.Errorf("number expected")
+			}
+			if len(args) < 3 || !args[2].InstanceOf(js.Global().Get("Uint8Array")) {
 				return fmt.Errorf("array buffer with content of package expected")
 			}
 
-			file := args[0]
-			name := file.Get("name").String()
-			size := int64(file.Get("size").Int())
+			name := args[0].String()
+			size := int64(args[1].Int())
 
 			buf := make([]byte, size)
-			js.CopyBytesToGo(buf, args[1])
+			js.CopyBytesToGo(buf, args[2])
 
 			reader := bytes.NewReader(buf)
 			return validator.ValidateFromZipReader(name, reader, size)

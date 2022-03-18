@@ -6,11 +6,11 @@ fetch('validator.wasm').then((response) => {
 })
 const go = new Go();
 
-function validateZipBuffer(file, buffer, success, error) {
+function validateZipBuffer(name, size, buffer, success, error) {
 	WebAssembly.instantiate(wasmBuffer, go.importObject).then((validator) => {
 		go.run(validator.instance);
 
-		elasticPackageSpec.validateFromZipReader(file, buffer).then(() => 
+		elasticPackageSpec.validateFromZipReader(name, size, buffer).then(() => 
 			success()
 		).catch((err) => 
 			error(err)
