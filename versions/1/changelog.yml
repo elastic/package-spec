@@ -7,6 +7,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/295
+  - description: Add kibana/osquery-pack-asset
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/299
 - version: 1.6.0
   changes:
   - description: Validate required fields

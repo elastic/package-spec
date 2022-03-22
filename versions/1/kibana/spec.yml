@@ -101,3 +101,12 @@
         type: file
         contentMediaType: "application/json"
         pattern: '^{PACKAGE_NAME}-.+\.json$'
+    - description: Folder containing Osquery pack assets
+      type: folder
+      name: osquery_pack_asset
+      required: false
+      contents:
+      - description: An osquery pack asset file
+        type: file
+        contentMediaType: "application/json"
+        pattern: '^{PACKAGE_NAME}-.+\.json$'
