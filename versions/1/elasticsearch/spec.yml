@@ -28,3 +28,13 @@ spec:
           pattern: '^.+\.json$'
           contentMediaType: "application/json"
           required: false
+    - description: Folder containing Elasticsearch Transforms
+      type: folder
+      name: transform
+      required: false
+      contents:
+        - description: An Elasticsearch transform file
+          # https://www.elastic.co/guide/en/elasticsearch/reference/current/transforms.html
+          type: file
+          contentMediaType: "application/json"
+          pattern: '^.+\.json$'
