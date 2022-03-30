@@ -71,6 +71,7 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 		semantic.ValidatePrerelease,
 		semantic.ValidateFieldGroups,
 		semantic.ValidateFieldsLimits(rootSpec.Limits.FieldsPerDataStreamLimit),
+		semantic.ValidateUniqueFields,
 		semantic.ValidateDimensionFields,
 		semantic.ValidateRequiredFields,
 	}
