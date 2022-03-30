@@ -249,3 +249,6 @@
   - description: Introduce "value" property for constant_keyword fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/194
+  - description: Add Elasticsearch transform support
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/307
