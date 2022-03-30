@@ -7,6 +7,9 @@
   - description: Prepare next release
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/301
+  - description: Add Elasticsearch transform support
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/307
 - version: 1.7.0
   changes:
   - description: Add kibana/osquery-pack-asset
@@ -249,6 +252,3 @@
   - description: Introduce "value" property for constant_keyword fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/194
-  - description: Add Elasticsearch transform support
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/307
