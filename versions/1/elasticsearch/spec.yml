@@ -36,7 +36,7 @@ spec:
       contents:
         - description: An Elasticsearch transform folder
           type: folder
-          pattern: '^[a-z|_]+$'
+          pattern: '^[a-z0-9_]+$'
           contents:
             - description: An Elasticsearch transform file
               type: file
