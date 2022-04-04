@@ -6,66 +6,82 @@ spec:
   type: array
   items:
     type: object
+    # TODO: We should disable additionalProperties. There are properties used in
+    # elastic/integrations that have no purpose or are typos.
     additionalProperties: true
     properties:
       name:
-        description: Name of field
+        description: >
+          Name of field. Names containing dots are automatically split into
+          sub-fields.
         type: string
-      title:
-        description: Title of field
-        type: string
+        # TODO: Should we allow wildcards if they are not implemented in Fleet?
+        pattern: '^[_@A-Za-z0-9]+(\.[_@A-Za-z0-9]+)*$'
       type:
         description: Datatype of field
         type: string
         enum:
         - alias
-        - histogram
-        - constant_keyword
-        - text
-        - match_only_text
-        - keyword
-        - long
-        - integer
-        - short
+        - array
+        - binary
+        - boolean
         - byte
-        - double
-        - float
-        - half_float
-        - scaled_float
+        - constant_keyword
         - date
         - date_nanos
-        - boolean
-        - binary
-        - integer_range
-        - float_range
-        - long_range
-        - double_range
         - date_range
-        - ip_range
-        - group
-        - geo_point
-        - object
-        - ip
-        - nested
-        - array
+        - double
+        - double_range
         - flattened
-        - wildcard
-        - version
+        - float
+        - float_range
+        - geo_point
+        - group
+        - half_float
+        - histogram
+        - integer # Fleet always maps this as 'long'.
+        - integer_range
+        - ip
+        - ip_range
+        - keyword
+        - long
+        - long_range
+        - match_only_text
+        - nested
+        - object
+        - scaled_float
+        - short
+        - text
         - unsigned_long
+        - version
+        - wildcard
+
       description:
         description: Short description of field
         type: string
+
       value:
         description: The value to associate with a constant_keyword field.
         type: string
+
       metric_type:
-        description: Metric type
+        description: >
+          The metric type of a numeric field. This is attached to the
+          field as metadata (via `meta`). A gauge is a single-value measurement
+          that can go up or down over time, such as a temperature. A counter is
+          a single-value cumulative counter that only goes up, such as the
+          number of requests processed by a web server. By default, no metric
+          type is associated with a field.
         type: string
         enum:
         - counter
         - gauge
+
       unit:
-        description: Unit
+        description: >
+          Unit type to associate with a numeric field. This is attached to the
+          field as metadata (via `meta`). By default, a field does not have a
+          unit. The convention for percents is to use value 1 to mean 100%.
         type: string
         enum:
         - byte
@@ -77,22 +93,178 @@ spec:
         - ms
         - micros
         - nanos
+
       dimension:
         description: Declare a field as dimension of time series
         type: boolean
         default: false
+
       pattern:
-        description: Regular expression pattern of the field value
+        description: >
+          Regular expression pattern matching the allowed values for the field.
+          This is used for development-time data validation.
         type: string
         examples:
           - '^[a-zA-Z]$'
+
       external:
         description: External source reference
         type: string
         enum:
           - ecs
+
       fields:
         description: Sub-fields, when type is group
         $ref: "#"     # JSON-schema syntax for pointing to the root of the schema
+
+      doc_values:
+        description: >
+          Controls whether doc values are enabled for a field. All fields which
+          support doc values have them enabled by default. If you are sure that
+          you don’t need to sort or aggregate on a field, or access the field
+          value from a script, you can disable doc values in order to save disk
+          space. You cannot disable doc values for wildcard fields.
+        type: boolean
+
+      index:
+        description: >
+          The index option controls whether field values are indexed. Fields
+          that are not indexed are typically not queryable.
+        type: boolean
+        default: true
+
+      copy_to:
+        description: >
+          The copy_to parameter allows you to copy the values of multiple fields
+          into a group field, which can then be queried as a single field.
+        type: string
+
+      enabled:
+        description: >
+          The enabled setting, which can be applied only to the top-level
+          mapping definition and to object fields, causes Elasticsearch to skip
+          parsing of the contents of the field entirely. The JSON can still be
+          retrieved from the _source field, but it is not searchable or stored
+          in any other way.
+        type: boolean
+
+      dynamic:
+        description: >
+          The dynamic parameter controls whether new fields are added
+          dynamically. It accepts the following values:
+
+          true -  New fields are added to the mapping (default).
+
+          runtime - New fields are added to the mapping as runtime fields. These
+          fields are not indexed, and are loaded from _source at query time.
+
+          false - New fields are ignored. These fields will not be indexed or
+          searchable, but will still appear in the _source field of returned
+          hits. These fields will not be added to the mapping, and new fields
+          must be added explicitly.
+
+          strict -  If new fields are detected, an exception is thrown and the
+          document is rejected. New fields must be explicitly added to the
+          mapping.
+        default: true
+        enum:
+          - true
+          - false
+          - strict
+          - runtime  # Not supported at this time by Fleet.
+
+      scaling_factor:
+        description: >
+          The scaling factor to use when encoding values. Values will be
+          multiplied by this factor at index time and rounded to the closest
+          long value. For instance, a scaled_float with a scaling_factor of 10
+          would internally store 2.34 as 23 and all search-time operations
+          (queries, aggregations, sorting) will behave as if the document had a
+          value of 2.3. High values of scaling_factor improve accuracy but also
+          increase space requirements. Only valid for 'type: scaled_float'.
+        type: integer
+        default: 1000
+
+      analyzer:
+        description: >
+          Name of the analyzer to use for indexing. Unless search_analyzer is
+          specified this analyzer is used for both indexing and searching.
+          Only valid for 'type: text'.
+        type: string
+
+      search_analyzer:
+        description: >
+          Name of the analyzer to use for searching. Only valid for 'type: text'.
+        type: string
+
+      multi_fields:
+        description: >
+          It is often useful to index the same field in different ways for
+          different purposes. This is the purpose of multi-fields. For instance,
+          a string field could be mapped as a text field for full-text search,
+          and as a keyword field for sorting or aggregations.
+
+          Only honored for 'type: text/keyword/wildcard'.
+        $ref: "#" # JSON-schema syntax for pointing to the root of the schema
+
+      # TODO: Fleet only honors this for 'type: wildcard'. That seems wrong.
+      null_value:
+        description: >
+          The null_value parameter allows you to replace explicit null values
+          with the specified value so that it can be indexed and searched.
+
+          A null value cannot be indexed or searched. When a field is set to
+          null, (or an empty array or an array of null values) it is treated as
+          though that field has no values.
+
+          The null_value needs to be the same data type as the field. For
+          instance, a long field cannot have a string null_value.
+
+          The null_value only influences how data is indexed, it doesn’t modify
+          the _source document.
+        examples:
+          - "NULL"
+
+      ignore_above:
+        description: >
+          Strings longer than the ignore_above setting will not be indexed or
+          stored. For arrays of strings, ignore_above will be applied for each
+          array element separately and string elements longer than ignore_above
+          will not be indexed or stored. Only honored for
+          'type: keyword/wildcard'. Defaults to 1024.
+        type: integer
+        default: 1024
+
+      object_type:
+        description: >
+          Required for `type: array` to specify the data type in the array.
+        type: string
+
+      path:
+        description: >
+          For alias type fields this is the path to the target field. Note that
+          this must be the full path, including any parent objects
+          (e.g. object1.object2.field).
+        type: string
+
+      normalizer:
+        description: >
+          Specifies the name of a normalizer to apply to keyword fields. A
+          simple normalizer called lowercase ships with elasticsearch and can be
+          used. Custom normalizers can be defined as part of analysis index
+          settings.
+        type: string
+
+      # TODO: This two are read by Kibana, but AFAICT they have no use in
+      # Elasticsearch. And nothing in elastic/integrations uses it.
+      include_in_parent:
+        description: >
+          Only valid for 'type: group-nested/nested'.
+        type: boolean
+      include_in_root:
+        description: >
+          Only valid for 'type: group-nested/nested'.
+        type: boolean
+
     required:
     - name
