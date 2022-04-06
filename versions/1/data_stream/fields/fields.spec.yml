@@ -227,8 +227,8 @@ spec:
           Strings longer than the ignore_above setting will not be indexed or
           stored. For arrays of strings, ignore_above will be applied for each
           array element separately and string elements longer than ignore_above
-          will not be indexed or stored. Only honored for
-          'type: keyword/wildcard'. Defaults to 1024.
+          will not be indexed or stored. Fleet honors this for `keyword` and
+          `wildcard` types. Defaults to 1024.
         type: integer
         default: 1024
 
