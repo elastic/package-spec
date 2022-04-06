@@ -251,17 +251,6 @@ spec:
           used. Custom normalizers can be defined as part of analysis index
           settings.
         type: string
-
-      # TODO: This two are read by Kibana, but AFAICT they have no use in
-      # Elasticsearch. And nothing in elastic/integrations uses it.
-      include_in_parent:
-        description: >
-          Only valid for 'type: group-nested/nested'.
-        type: boolean
-      include_in_root:
-        description: >
-          Only valid for 'type: group-nested/nested'.
-        type: boolean
-
+        
     required:
     - name
