@@ -201,10 +201,10 @@ spec:
           a string field could be mapped as a text field for full-text search,
           and as a keyword field for sorting or aggregations.
 
-          Only honored for 'type: text/keyword/wildcard'.
+          Fleet honors this for `keyword`, `match_only_text`, `text`, and
+          `wildcard` types.
         $ref: "#" # JSON-schema syntax for pointing to the root of the schema
 
-      # TODO: Fleet only honors this for 'type: wildcard'. That seems wrong.
       null_value:
         description: >
           The null_value parameter allows you to replace explicit null values
@@ -251,6 +251,6 @@ spec:
           used. Custom normalizers can be defined as part of analysis index
           settings.
         type: string
-        
+
     required:
     - name
