@@ -6,8 +6,6 @@ spec:
   type: array
   items:
     type: object
-    # TODO: We should disable additionalProperties. There are properties used in
-    # elastic/integrations that have no purpose or are typos.
     additionalProperties: true
     properties:
       name:
@@ -15,8 +13,7 @@ spec:
           Name of field. Names containing dots are automatically split into
           sub-fields.
         type: string
-        # TODO: Should we allow wildcards if they are not implemented in Fleet?
-        pattern: '^[_@A-Za-z0-9]+(\.[_@A-Za-z0-9]+)*$'
+        pattern: '^[*_@A-Za-z0-9]+(\.[*_@A-Za-z0-9]+)*$'
       type:
         description: Datatype of field
         type: string
