@@ -22,39 +22,39 @@ spec:
         type: string
         enum:
         - alias
-        - array
-        - binary
-        - boolean
-        - byte
-        - constant_keyword
-        - date
-        - date_nanos
-        - date_range
-        - double
-        - double_range
-        - flattened
-        - float
-        - float_range
-        - geo_point
-        - group
-        - half_float
         - histogram
-        - integer # Fleet always maps this as 'long'.
-        - integer_range
-        - ip
-        - ip_range
+        - constant_keyword
+        - text
+        - match_only_text
         - keyword
         - long
-        - long_range
-        - match_only_text
-        - nested
-        - object
-        - scaled_float
+        - integer # Fleet always maps this as 'long'.
         - short
-        - text
-        - unsigned_long
-        - version
+        - byte
+        - double
+        - float
+        - half_float
+        - scaled_float
+        - date
+        - date_nanos
+        - boolean
+        - binary
+        - integer_range
+        - float_range
+        - long_range
+        - double_range
+        - date_range
+        - ip_range
+        - group
+        - geo_point
+        - object
+        - ip
+        - nested
+        - array
+        - flattened
         - wildcard
+        - version
+        - unsigned_long
 
       description:
         description: Short description of field
