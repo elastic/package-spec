@@ -2,16 +2,14 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
-- version: 1.8.0
-  changes:
-  - description: Add Kibana/osquery-saved-query
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/321
 - version: 1.7.1-next
   changes:
   - description: Validate that fields are only defined once per data stream.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/309
+  - description: Add Kibana/osquery-saved-query
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/321
 - version: 1.7.0
   changes:
   - description: Add kibana/osquery-pack-asset
