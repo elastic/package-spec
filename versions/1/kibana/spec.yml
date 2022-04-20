@@ -110,3 +110,12 @@
         type: file
         contentMediaType: "application/json"
         pattern: '^{PACKAGE_NAME}-.+\.json$'
+    - description: Folder containing Osquery saved queries
+      type: folder
+      name: osquery_saved_query
+      required: false
+      contents:
+      - description: An osquery saved query file
+        type: file
+        contentMediaType: "application/json"
+        pattern: '^{PACKAGE_NAME}-.+\.json$'
