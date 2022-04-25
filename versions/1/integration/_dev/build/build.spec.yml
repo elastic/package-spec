@@ -1,0 +1,26 @@
+##
+## Describes the specification for the package's main manifest.yml file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  properties:
+    dependencies:
+      type: object
+      description: Package dependencies
+      additionalProperties: false
+      properties:
+        ecs:
+          description: ECS dependency
+          type: object
+          additionalProperties: false
+          properties:
+            reference:
+              type: string
+              description: Source reference
+              pattern: '^git@.+'
+          required:
+            - reference
+  required:
+  - dependencies
