@@ -3,6 +3,7 @@ name: integration
 title: integration
 description: integration, really
 version: 0.1.2
+type: integration
 release: beta
 conditions:
   kibana.version: '^7.9.0'
