@@ -190,7 +190,7 @@ func validateGithub(ghLink *url.URL) error {
 		return err
 	}
 	if prNum == 0 {
-		return errors.New("zero is an invalid pull request number")
+		return errors.New("zero is not a valid pull request number")
 	}
 	return nil
 }

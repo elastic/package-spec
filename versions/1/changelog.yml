@@ -2,6 +2,11 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
+- version: 1.7.2-next
+  changes:
+  - description: Validate top changelog links to have a valid number if it is a github URL.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/324
 - version: 1.7.1-next
   changes:
   - description: Validate that fields are only defined once per data stream.
