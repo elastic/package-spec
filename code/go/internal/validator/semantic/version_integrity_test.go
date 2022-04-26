@@ -45,6 +45,14 @@ func TestChangelogLinks(t *testing.T) {
 			},
 			true,
 		},
+		{
+			"IgnoreCasesOtherThanGithubDotCom",
+			[]string{
+				"https://gitlab.com/elastic/integrations/pull/abcd",
+				"https://zzz.com/elastic/integrations/pull/1234",
+			},
+			false,
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
