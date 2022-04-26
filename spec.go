@@ -9,7 +9,7 @@ import (
 	"io/fs"
 )
 
-//go:embed versions/1 versions/1/_dev versions/1/data_stream/_dev
+//go:embed versions/1 versions/1/integration/_dev versions/1/integration/data_stream/_dev
 var content embed.FS
 
 // FS returns an io/fs.FS for accessing the "package-spec/version" contents.

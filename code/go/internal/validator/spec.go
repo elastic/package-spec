@@ -51,7 +51,7 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 
 	var rootSpec folderSpec
-	rootSpecPath := path.Join(s.specPath, "spec.yml")
+	rootSpecPath := path.Join(s.specPath, pkg.Type, "spec.yml")
 	err := rootSpec.load(s.fs, rootSpecPath)
 	if err != nil {
 		errs = append(errs, errors.Wrap(err, "could not read root folder spec file"))
