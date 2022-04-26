@@ -6,6 +6,9 @@ package semantic
 
 import (
 	"fmt"
+	"net/url"
+	"path"
+	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -40,6 +43,20 @@ func ValidateVersionIntegrity(fsys fspath.FS) ve.ValidationErrors {
 	return nil
 }
 
+// ValidateTopChangelogLink returns validation errors if the link is not a valid PR github.com link.
+// If the link is not a github.com link this validation is skipped and does not return an error.
+func ValidateTopChangelogLink(fsys fspath.FS) ve.ValidationErrors {
+	firstChangelogLinks, err := readChangelogLinksForEntry(fsys, 0)
+	if err != nil {
+		return ve.ValidationErrors{err}
+	}
+	err = ensureLinksAreValid(firstChangelogLinks)
+	if err != nil {
+		return ve.ValidationErrors{err}
+	}
+	return nil
+}
+
 func readManifestVersion(fsys fspath.FS) (string, error) {
 	manifestPath := "manifest.yml"
 	f, err := pkgpath.Files(fsys, manifestPath)
@@ -63,7 +80,17 @@ func readManifestVersion(fsys fspath.FS) (string, error) {
 	return sVal, nil
 }
 
+func readChangelogLinksForEntry(fsys fspath.FS, entry int) ([]string, error) {
+	jsonpath := fmt.Sprintf(`$[%d].changes[*].link`, entry)
+	return readChangelog(fsys, jsonpath)
+}
+
 func readChangelogVersions(fsys fspath.FS) ([]string, error) {
+	return readChangelog(fsys, "$[*].version")
+}
+
+func readChangelog(fsys fspath.FS, jsonpath string) ([]string, error) {
+
 	changelogPath := "changelog.yml"
 	f, err := pkgpath.Files(fsys, changelogPath)
 	if err != nil {
@@ -74,7 +101,7 @@ func readChangelogVersions(fsys fspath.FS) ([]string, error) {
 		return nil, errors.New("single changelog file expected")
 	}
 
-	vals, err := f[0].Values("$[*].version")
+	vals, err := f[0].Values(jsonpath)
 	if err != nil {
 		return nil, errors.Wrap(err, "can't changelog entries")
 	}
@@ -126,4 +153,44 @@ func ensureManifestVersionHasChangelogEntry(manifestVersion string, versions []s
 		}
 	}
 	return errors.New("current manifest version doesn't have changelog entry")
+}
+
+func ensureLinksAreValid(links []string) error {
+
+	type validateFn func(link *url.URL) error
+
+	validateLinks := []struct {
+		domain       string
+		validateLink validateFn
+	}{
+		{
+			"github.com",
+			validateGithub,
+		},
+	}
+	for _, link := range links {
+		linkURL, err := url.Parse(link)
+		if err != nil {
+			return err
+		}
+		for _, vl := range validateLinks {
+			if strings.Contains(linkURL.Host, vl.domain) {
+				if err = vl.validateLink(linkURL); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func validateGithub(ghLink *url.URL) error {
+	prNum, err := strconv.Atoi(path.Base(ghLink.Path))
+	if err != nil {
+		return err
+	}
+	if prNum == 0 {
+		return errors.New("zero is an invalid pull request number")
+	}
+	return nil
 }
