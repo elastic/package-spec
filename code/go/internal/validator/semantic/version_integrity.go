@@ -165,11 +165,11 @@ func ensureLinksAreValid(links []string) ve.ValidationErrors {
 			validateGithub,
 		},
 	}
-	for i, link := range links {
+	for _, link := range links {
 		linkURL, err := url.Parse(link)
 		if err != nil {
 			errs.Append(ve.ValidationErrors{
-				fmt.Errorf("invalid URL %s at position %d", link, i),
+				fmt.Errorf("invalid URL %s", link),
 			})
 			continue
 		}
