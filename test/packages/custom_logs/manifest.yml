@@ -1,0 +1,46 @@
+format_version: 1.0.0
+name: custom_logs
+title: Custom Logs
+description: >-
+  Collect custom logs with Elastic Agent.
+type: input
+version: 1.2.3
+release: ga
+license: basic
+categories:
+  - custom
+policy_templates:
+  - name: first_policy_template
+    type: logs
+    title: Custom log file
+    description: Collect your custom log files.
+    template_path: input.yml.hbs
+    vars:
+      - name: paths
+        type: text
+        title: Paths
+        multi: true
+        required: true
+        show_user: true
+        default:
+          - /var/log/apache2/access.log*
+          - /var/log/apache2/other_vhosts_access.log*
+          - /var/log/httpd/access_log*
+      - name: tags
+        type: text
+        title: Tags
+        multi: true
+        required: true
+        show_user: false
+        default:
+          - apache-access
+icons:
+  - src: "/img/sample-logo.svg"
+    type: "image/svg+xml"
+screenshots:
+  - src: "/img/sample-screenshot.png"
+    title: "Sample screenshot"
+    size: "600x600"
+    type: "image/png"
+owner:
+  github: elastic/integrations
