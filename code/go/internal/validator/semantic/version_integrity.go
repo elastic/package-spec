@@ -43,18 +43,14 @@ func ValidateVersionIntegrity(fsys fspath.FS) ve.ValidationErrors {
 	return nil
 }
 
-// ValidateTopChangelogLink returns validation errors if the link is not a valid PR github.com link.
+// ValidateChangelogLinks returns validation errors if the link(s) do not have a valid PR github.com link.
 // If the link is not a github.com link this validation is skipped and does not return an error.
-func ValidateTopChangelogLink(fsys fspath.FS) ve.ValidationErrors {
-	firstChangelogLinks, err := readChangelogLinksForEntry(fsys, 0)
+func ValidateChangelogLinks(fsys fspath.FS) ve.ValidationErrors {
+	changelogLinks, err := readChangelogLinks(fsys)
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}
-	err = ensureLinksAreValid(firstChangelogLinks)
-	if err != nil {
-		return ve.ValidationErrors{err}
-	}
-	return nil
+	return ensureLinksAreValid(changelogLinks)
 }
 
 func readManifestVersion(fsys fspath.FS) (string, error) {
@@ -80,9 +76,8 @@ func readManifestVersion(fsys fspath.FS) (string, error) {
 	return sVal, nil
 }
 
-func readChangelogLinksForEntry(fsys fspath.FS, entry int) ([]string, error) {
-	jsonpath := fmt.Sprintf(`$[%d].changes[*].link`, entry)
-	return readChangelog(fsys, jsonpath)
+func readChangelogLinks(fsys fspath.FS) ([]string, error) {
+	return readChangelog(fsys, `$[*].changes[*].link`)
 }
 
 func readChangelogVersions(fsys fspath.FS) ([]string, error) {
@@ -155,9 +150,11 @@ func ensureManifestVersionHasChangelogEntry(manifestVersion string, versions []s
 	return errors.New("current manifest version doesn't have changelog entry")
 }
 
-func ensureLinksAreValid(links []string) error {
+func ensureLinksAreValid(links []string) ve.ValidationErrors {
 
 	type validateFn func(link *url.URL) error
+
+	var errs ve.ValidationErrors
 
 	validateLinks := []struct {
 		domain       string
@@ -171,17 +168,18 @@ func ensureLinksAreValid(links []string) error {
 	for _, link := range links {
 		linkURL, err := url.Parse(link)
 		if err != nil {
-			return err
+			errs.Append(ve.ValidationErrors{err})
+			continue
 		}
 		for _, vl := range validateLinks {
 			if strings.Contains(linkURL.Host, vl.domain) {
 				if err = vl.validateLink(linkURL); err != nil {
-					return err
+					errs.Append(ve.ValidationErrors{err})
 				}
 			}
 		}
 	}
-	return nil
+	return errs
 }
 
 func validateGithub(ghLink *url.URL) error {

@@ -4,31 +4,35 @@
 
 package semantic
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestChangelogLinks(t *testing.T) {
 
 	var tests = []struct {
-		name        string
-		links       []string
-		expectError bool
+		name      string
+		links     []string
+		numErrors int
 	}{
 		{
-			"ValidLinks",
+			"AllValidLinks",
 			[]string{
 				"https://github.com/elastic/integrations/pull/2897",
 				"https://github.com/elastic/integrations/pull/1001",
 				"https://github.com/elastic/integrations/pull/1",
 			},
-			false,
+			0,
 		},
 		{
-			"InvalidLinks",
+			"AllInvalidLinks",
 			[]string{
 				"https://github.com/elastic/integrations/pull/abcd",
 				"https://github.com/elastic/integrations/pull",
 			},
-			true,
+			2,
 		},
 		{
 			"SomeInvalidLinks",
@@ -36,14 +40,14 @@ func TestChangelogLinks(t *testing.T) {
 				"https://github.com/elastic/integrations/pull/1234",
 				"https://github.com/elastic/integrations/pull",
 			},
-			true,
+			1,
 		},
 		{
 			"BadLink",
 			[]string{
 				"https://github.com/elastic/integrations/pull/0",
 			},
-			true,
+			1,
 		},
 		{
 			"IgnoreCasesOtherThanGithubDotCom",
@@ -51,16 +55,17 @@ func TestChangelogLinks(t *testing.T) {
 				"https://gitlab.com/elastic/integrations/pull/abcd",
 				"https://zzz.com/elastic/integrations/pull/1234",
 			},
-			false,
+			0,
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			err := ensureLinksAreValid(test.links)
-			if test.expectError && err == nil {
+			errs := ensureLinksAreValid(test.links)
+			assert.Equal(t, test.numErrors, len(errs))
+			if test.numErrors > 0 && errs == nil {
 				t.Error("expecting error")
-			} else if !test.expectError && err != nil {
-				t.Errorf("expecting no error while got %v", err)
+			} else if test.numErrors == 0 && errs != nil {
+				t.Errorf("expecting no error while got %v", errs)
 			}
 		})
 	}

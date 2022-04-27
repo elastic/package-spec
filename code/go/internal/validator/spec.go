@@ -68,7 +68,7 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	rules := validationRules{
 		semantic.ValidateKibanaObjectIDs,
 		semantic.ValidateVersionIntegrity,
-		semantic.ValidateTopChangelogLink,
+		semantic.ValidateChangelogLinks,
 		semantic.ValidatePrerelease,
 		semantic.ValidateFieldGroups,
 		semantic.ValidateFieldsLimits(rootSpec.Limits.FieldsPerDataStreamLimit),
