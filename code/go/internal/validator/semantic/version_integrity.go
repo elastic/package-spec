@@ -186,10 +186,7 @@ func ensureLinksAreValid(links []string) ve.ValidationErrors {
 
 func validateGithub(ghLink *url.URL) error {
 	prNum, err := strconv.Atoi(path.Base(ghLink.Path))
-	if err != nil {
-		return err
-	}
-	if prNum <= 0 {
+	if err != nil || prNum <= 0 {
 		return fmt.Errorf("issue number in changelog link %v should be a positive number", ghLink)
 	}
 	return nil
