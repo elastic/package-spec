@@ -169,7 +169,7 @@ func ensureLinksAreValid(links []string) ve.ValidationErrors {
 		linkURL, err := url.Parse(link)
 		if err != nil {
 			errs.Append(ve.ValidationErrors{
-				fmt.Errorf("invalid URL %s %v", link, err),
+				fmt.Errorf("invalid URL %v", err),
 			})
 			continue
 		}
