@@ -5,17 +5,55 @@
 package semantic
 
 import (
+	"net/url"
 	"testing"
+
+	ve "github.com/elastic/package-spec/code/go/internal/errors"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestChangelogLinks(t *testing.T) {
+func TestValidateGithubLink(t *testing.T) {
+	var tests = []struct {
+		link        string
+		expectedErr error
+	}{
+		{
+			"https://github.com/elastic/integrations/pull/2897",
+			nil,
+		},
+		{
+			"https://github.com/elastic/integrations/pull/abcd",
+			errGHIssue,
+		},
+		{
+			"https://github.com/elastic/integrations/pull/0",
+			errGHIssue,
+		},
+		{
+			"https://github.com/elastic/integrations/pull",
+			errGHIssue,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.link, func(t *testing.T) {
+			linkURL, _ := url.Parse(test.link)
+			err := validateGithubLink(linkURL)
+			if err != nil {
+				assert.ErrorIs(t, err, test.expectedErr)
+			} else {
+				assert.Equal(t, err, test.expectedErr)
+			}
+		})
+	}
+}
+
+func TestEnsureLinksAreValid(t *testing.T) {
 
 	var tests = []struct {
-		name      string
-		links     []string
-		numErrors int
+		name   string
+		links  []string
+		errors ve.ValidationErrors
 	}{
 		{
 			"AllValidLinks",
@@ -24,7 +62,7 @@ func TestChangelogLinks(t *testing.T) {
 				"https://github.com/elastic/integrations/pull/1001",
 				"https://github.com/elastic/integrations/pull/1",
 			},
-			0,
+			nil,
 		},
 		{
 			"AllInvalidLinks",
@@ -32,7 +70,10 @@ func TestChangelogLinks(t *testing.T) {
 				"https://github.com/elastic/integrations/pull/abcd",
 				"https://github.com/elastic/integrations/pull",
 			},
-			2,
+			ve.ValidationErrors{
+				errGHIssue,
+				errGHIssue,
+			},
 		},
 		{
 			"SomeInvalidLinks",
@@ -40,14 +81,9 @@ func TestChangelogLinks(t *testing.T) {
 				"https://github.com/elastic/integrations/pull/1234",
 				"https://github.com/elastic/integrations/pull",
 			},
-			1,
-		},
-		{
-			"BadLink",
-			[]string{
-				"https://github.com/elastic/integrations/pull/0",
+			ve.ValidationErrors{
+				errGHIssue,
 			},
-			1,
 		},
 		{
 			"IgnoreCasesOtherThanGithubDotCom",
@@ -55,17 +91,16 @@ func TestChangelogLinks(t *testing.T) {
 				"https://gitlab.com/elastic/integrations/pull/abcd",
 				"https://zzz.com/elastic/integrations/pull/1234",
 			},
-			0,
+			nil,
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			errs := ensureLinksAreValid(test.links)
-			assert.Equal(t, test.numErrors, len(errs))
-			if test.numErrors > 0 && errs == nil {
-				t.Error("expecting error")
-			} else if test.numErrors == 0 && errs != nil {
-				t.Errorf("expecting no error while got %v", errs)
+			if test.errors == nil {
+				assert.Equal(t, test.errors, errs)
+			} else {
+				assert.Equal(t, len(errs), len(test.errors))
 			}
 		})
 	}

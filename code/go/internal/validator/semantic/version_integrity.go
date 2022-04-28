@@ -18,6 +18,24 @@ import (
 	"github.com/elastic/package-spec/code/go/internal/pkgpath"
 )
 
+var errGHIssue = errors.New("issue number in changelog link should be a positive number")
+
+// ChangelogLinkError records the link and the error
+type ChangelogLinkError struct {
+	link string
+	err  error
+}
+
+// Is checks if the target matches one of the allowed links errors.
+// Currently checks for github issue/pr links.
+func (e ChangelogLinkError) Is(target error) bool {
+	return target == errGHIssue
+}
+
+func (e ChangelogLinkError) Error() string {
+	return fmt.Sprintf("%s: %s", e.link, e.err.Error())
+}
+
 // ValidateVersionIntegrity returns validation errors if the version defined in manifest isn't referenced in the latest
 // entry of the changelog file.
 func ValidateVersionIntegrity(fsys fspath.FS) ve.ValidationErrors {
@@ -85,7 +103,6 @@ func readChangelogVersions(fsys fspath.FS) ([]string, error) {
 }
 
 func readChangelog(fsys fspath.FS, jsonpath string) ([]string, error) {
-
 	changelogPath := "changelog.yml"
 	f, err := pkgpath.Files(fsys, changelogPath)
 	if err != nil {
@@ -151,9 +168,7 @@ func ensureManifestVersionHasChangelogEntry(manifestVersion string, versions []s
 }
 
 func ensureLinksAreValid(links []string) ve.ValidationErrors {
-
 	type validateFn func(link *url.URL) error
-
 	var errs ve.ValidationErrors
 
 	validateLinks := []struct {
@@ -162,7 +177,7 @@ func ensureLinksAreValid(links []string) ve.ValidationErrors {
 	}{
 		{
 			"github.com",
-			validateGithub,
+			validateGithubLink,
 		},
 	}
 	for _, link := range links {
@@ -184,10 +199,13 @@ func ensureLinksAreValid(links []string) ve.ValidationErrors {
 	return errs
 }
 
-func validateGithub(ghLink *url.URL) error {
+func validateGithubLink(ghLink *url.URL) error {
 	prNum, err := strconv.Atoi(path.Base(ghLink.Path))
 	if err != nil || prNum <= 0 {
-		return fmt.Errorf("issue number in changelog link %v should be a positive number", ghLink)
+		return &ChangelogLinkError{
+			ghLink.String(),
+			errGHIssue,
+		}
 	}
 	return nil
 }
