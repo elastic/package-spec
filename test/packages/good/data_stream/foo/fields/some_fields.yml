@@ -31,3 +31,13 @@
   type: match_only_text
 - name: metric.*_bytes
   type: long
+- name: a
+  type: nested
+  include_in_parent: true
+- name: a.b
+  type: keyword
+- name: c
+  type: nested
+  include_in_root: true
+- name: c.d
+  type: keyword

@@ -253,5 +253,21 @@ spec:
           settings.
         type: string
 
+      include_in_parent:
+        description: >
+          For nested field types, this specifies if all fields in the nested
+          object are also added to the parent document as standard (flat)
+          fields.
+        type: boolean
+        default: false
+
+      include_in_root:
+        description: >
+          For nested field types, this specifies if all fields in the nested
+          object are also added to the root document as standard (flat)
+          fields.
+        type: boolean
+        default: false
+        
     required:
     - name
