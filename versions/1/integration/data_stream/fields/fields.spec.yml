@@ -203,8 +203,7 @@ spec:
           a string field could be mapped as a text field for full-text search,
           and as a keyword field for sorting or aggregations.
 
-          Fleet honors this for `keyword`, `match_only_text`, `text`, and
-          `wildcard` types.
+          Fleet honors this for `keyword`, `text`, and `wildcard` types.
         $ref: "#" # JSON-schema syntax for pointing to the root of the schema
 
       null_value:
