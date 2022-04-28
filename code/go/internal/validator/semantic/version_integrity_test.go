@@ -8,9 +8,9 @@ import (
 	"net/url"
 	"testing"
 
-	ve "github.com/elastic/package-spec/code/go/internal/errors"
-
 	"github.com/stretchr/testify/assert"
+
+	ve "github.com/elastic/package-spec/code/go/internal/errors"
 )
 
 func TestValidateGithubLink(t *testing.T) {
@@ -24,15 +24,15 @@ func TestValidateGithubLink(t *testing.T) {
 		},
 		{
 			"https://github.com/elastic/integrations/pull/abcd",
-			errGHIssue,
+			errGithubIssue,
 		},
 		{
 			"https://github.com/elastic/integrations/pull/0",
-			errGHIssue,
+			errGithubIssue,
 		},
 		{
 			"https://github.com/elastic/integrations/pull",
-			errGHIssue,
+			errGithubIssue,
 		},
 	}
 	for _, test := range tests {
@@ -71,8 +71,8 @@ func TestEnsureLinksAreValid(t *testing.T) {
 				"https://github.com/elastic/integrations/pull",
 			},
 			ve.ValidationErrors{
-				errGHIssue,
-				errGHIssue,
+				errGithubIssue,
+				errGithubIssue,
 			},
 		},
 		{
@@ -82,7 +82,7 @@ func TestEnsureLinksAreValid(t *testing.T) {
 				"https://github.com/elastic/integrations/pull",
 			},
 			ve.ValidationErrors{
-				errGHIssue,
+				errGithubIssue,
 			},
 		},
 		{

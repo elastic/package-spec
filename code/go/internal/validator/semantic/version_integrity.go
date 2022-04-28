@@ -18,7 +18,7 @@ import (
 	"github.com/elastic/package-spec/code/go/internal/pkgpath"
 )
 
-var errGHIssue = errors.New("issue number in changelog link should be a positive number")
+var errGithubIssue = errors.New("issue number in changelog link should be a positive number")
 
 // ChangelogLinkError records the link and the error
 type ChangelogLinkError struct {
@@ -29,7 +29,7 @@ type ChangelogLinkError struct {
 // Is checks if the target matches one of the allowed links errors.
 // Currently checks for github issue/pr links.
 func (e ChangelogLinkError) Is(target error) bool {
-	return target == errGHIssue
+	return target == errGithubIssue
 }
 
 func (e ChangelogLinkError) Error() string {
@@ -204,7 +204,7 @@ func validateGithubLink(ghLink *url.URL) error {
 	if err != nil || prNum <= 0 {
 		return &ChangelogLinkError{
 			ghLink.String(),
-			errGHIssue,
+			errGithubIssue,
 		}
 	}
 	return nil
