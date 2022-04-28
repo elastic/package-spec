@@ -18,6 +18,7 @@ import (
 // Package represents an Elastic Package Registry package
 type Package struct {
 	Name        string
+	Type        string
 	SpecVersion *semver.Version
 
 	fs       fs.FS
@@ -64,10 +65,15 @@ func NewPackageFromFS(location string, fsys fs.FS) (*Package, error) {
 
 	var manifest struct {
 		Name        string `yaml:"name"`
+		Type        string `yaml:"type"`
 		SpecVersion string `yaml:"format_version"`
 	}
 	if err := yaml.Unmarshal(data, &manifest); err != nil {
 		return nil, errors.Wrapf(err, "could not parse package manifest file [%v]", pkgManifestPath)
+	}
+
+	if manifest.Type == "" {
+		return nil, errors.New("package type undefined in the package manifest file")
 	}
 
 	specVersion, err := semver.NewVersion(manifest.SpecVersion)
@@ -78,6 +84,7 @@ func NewPackageFromFS(location string, fsys fs.FS) (*Package, error) {
 	// Instantiate Package object and return it
 	p := Package{
 		Name:        manifest.Name,
+		Type:        manifest.Type,
 		SpecVersion: specVersion,
 		fs:          fsys,
 

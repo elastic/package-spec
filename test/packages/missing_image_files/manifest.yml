@@ -3,6 +3,7 @@ name: missing_image_files
 title: Missing Image Files
 description: This package is bad.
 version: 0.1.2
+type: integration
 release: beta
 conditions:
   kibana.version: '^7.9.0'

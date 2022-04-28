@@ -12,8 +12,8 @@ import (
 	spec "github.com/elastic/package-spec"
 )
 
-func TestBundledSpecs(t *testing.T) {
+func TestBundledSpecsForIntegration(t *testing.T) {
 	fs := spec.FS()
-	_, err := fs.Open("1/spec.yml")
+	_, err := fs.Open("1/integration/spec.yml")
 	require.NoError(t, err)
 }

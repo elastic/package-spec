@@ -299,4 +299,5 @@ spec:
   - title
   - description
   - version
+  - type
   - owner
