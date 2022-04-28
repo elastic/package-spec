@@ -64,11 +64,11 @@ spec:
       metric_type:
         description: >
           The metric type of a numeric field. This is attached to the
-          field as metadata (via `meta`). A gauge is a single-value measurement
-          that can go up or down over time, such as a temperature. A counter is
-          a single-value cumulative counter that only goes up, such as the
-          number of requests processed by a web server. By default, no metric
-          type is associated with a field.
+          field as a `time_series_metric` mapping parameter. A gauge is a
+          single-value measurement that can go up or down over time, such as a
+          temperature. A counter is a single-value cumulative counter that only
+          goes up, such as the number of requests processed by a web server. By
+          default, no metric type is associated with a field.
         type: string
         enum:
         - counter
@@ -92,7 +92,9 @@ spec:
         - nanos
 
       dimension:
-        description: Declare a field as dimension of time series
+        description: >
+          Declare a field as dimension of time series. This is
+          attached to the field as a `time_series_dimension` mapping parameter.
         type: boolean
         default: false
 
