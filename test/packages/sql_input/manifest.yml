@@ -50,6 +50,7 @@ policy_templates:
       - name: sql_response_format
         type: text
         title: Response format
+        description: "Supported response formats: variables, table"
         multi: false
         required: true
         show_user: false
