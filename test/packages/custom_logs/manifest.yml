@@ -23,18 +23,17 @@ policy_templates:
         multi: true
         required: true
         show_user: true
-        default:
-          - /var/log/apache2/access.log*
-          - /var/log/apache2/other_vhosts_access.log*
-          - /var/log/httpd/access_log*
       - name: tags
         type: text
         title: Tags
         multi: true
         required: true
         show_user: false
-        default:
-          - apache-access
+      - name: ignore_older
+        type: text
+        title: Ignore events older than
+        required: false
+        default: 72h
 icons:
   - src: "/img/sample-logo.svg"
     type: "image/svg+xml"
