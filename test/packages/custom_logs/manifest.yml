@@ -2,7 +2,7 @@ format_version: 1.0.0
 name: custom_logs
 title: Custom Logs
 description: >-
-  Collect custom logs with Elastic Agent.
+  Read lines from active log files with Elastic Agent.
 type: input
 version: 1.2.3
 release: ga
