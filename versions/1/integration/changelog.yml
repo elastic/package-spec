@@ -12,7 +12,7 @@
     link: https://github.com/elastic/package-spec/pull/321
   - description: Add "elasticsearch.privileges.allow_routing" to data stream manifest
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/326
+    link: https://github.com/elastic/package-spec/pull/327
 - version: 1.7.0
   changes:
   - description: Add kibana/osquery-pack-asset
