@@ -8,6 +8,7 @@ version: 1.0.1
 release: ga
 license: basic
 categories:
+  - custom
   - datastore
 policy_templates:
   - name: sql_query
