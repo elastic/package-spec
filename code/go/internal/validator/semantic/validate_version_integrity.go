@@ -6,9 +6,6 @@ package semantic
 
 import (
 	"fmt"
-	"net/url"
-	"path"
-	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -17,24 +14,6 @@ import (
 	"github.com/elastic/package-spec/code/go/internal/fspath"
 	"github.com/elastic/package-spec/code/go/internal/pkgpath"
 )
-
-var errGithubIssue = errors.New("issue number in changelog link should be a positive number")
-
-// ChangelogLinkError records the link and the error
-type ChangelogLinkError struct {
-	link string
-	err  error
-}
-
-// Is checks if the target matches one of the allowed links errors.
-// Currently checks for github issue/pr links.
-func (e ChangelogLinkError) Is(target error) bool {
-	return target == errGithubIssue
-}
-
-func (e ChangelogLinkError) Error() string {
-	return fmt.Sprintf("%s: %s", e.link, e.err.Error())
-}
 
 // ValidateVersionIntegrity returns validation errors if the version defined in manifest isn't referenced in the latest
 // entry of the changelog file.
@@ -61,16 +40,6 @@ func ValidateVersionIntegrity(fsys fspath.FS) ve.ValidationErrors {
 	return nil
 }
 
-// ValidateChangelogLinks returns validation errors if the link(s) do not have a valid PR github.com link.
-// If the link is not a github.com link this validation is skipped and does not return an error.
-func ValidateChangelogLinks(fsys fspath.FS) ve.ValidationErrors {
-	changelogLinks, err := readChangelogLinks(fsys)
-	if err != nil {
-		return ve.ValidationErrors{err}
-	}
-	return ensureLinksAreValid(changelogLinks)
-}
-
 func readManifestVersion(fsys fspath.FS) (string, error) {
 	manifestPath := "manifest.yml"
 	f, err := pkgpath.Files(fsys, manifestPath)
@@ -92,10 +61,6 @@ func readManifestVersion(fsys fspath.FS) (string, error) {
 		return "", errors.New("version is undefined")
 	}
 	return sVal, nil
-}
-
-func readChangelogLinks(fsys fspath.FS) ([]string, error) {
-	return readChangelog(fsys, `$[*].changes[*].link`)
 }
 
 func readChangelogVersions(fsys fspath.FS) ([]string, error) {
@@ -165,47 +130,4 @@ func ensureManifestVersionHasChangelogEntry(manifestVersion string, versions []s
 		}
 	}
 	return errors.New("current manifest version doesn't have changelog entry")
-}
-
-func ensureLinksAreValid(links []string) ve.ValidationErrors {
-	type validateFn func(link *url.URL) error
-	var errs ve.ValidationErrors
-
-	validateLinks := []struct {
-		domain       string
-		validateLink validateFn
-	}{
-		{
-			"github.com",
-			validateGithubLink,
-		},
-	}
-	for _, link := range links {
-		linkURL, err := url.Parse(link)
-		if err != nil {
-			errs.Append(ve.ValidationErrors{
-				fmt.Errorf("invalid URL %v", err),
-			})
-			continue
-		}
-		for _, vl := range validateLinks {
-			if strings.Contains(linkURL.Host, vl.domain) {
-				if err = vl.validateLink(linkURL); err != nil {
-					errs.Append(ve.ValidationErrors{err})
-				}
-			}
-		}
-	}
-	return errs
-}
-
-func validateGithubLink(ghLink *url.URL) error {
-	prNum, err := strconv.Atoi(path.Base(ghLink.Path))
-	if err != nil || prNum <= 0 {
-		return &ChangelogLinkError{
-			ghLink.String(),
-			errGithubIssue,
-		}
-	}
-	return nil
 }
