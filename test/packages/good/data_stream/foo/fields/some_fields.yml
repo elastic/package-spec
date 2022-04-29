@@ -47,3 +47,5 @@
   include_in_root: true
 - name: c.d
   type: keyword
+- name: name-with-dash
+  type: keyword
