@@ -143,6 +143,11 @@ spec:
     hidden:
       description: Specifies if a data stream is hidden
       type: boolean
+    allow_routing:
+      description: When set to true, the integration is granted data stream privileges for all datasets and namespaces of its type
+      type: boolean
+      items:
+        type: string
     streams:
       description: Streams offered by data stream.
       type: array
@@ -210,11 +215,6 @@ spec:
             indices:
               description: Elasticsearch index privilege requirements
               type: array
-              items:
-                type: string
-            allow_routing:
-              description: When set to true, the integration is granted data stream privileges for all datasets and namespaces of its type
-              type: boolean
               items:
                 type: string
   required:

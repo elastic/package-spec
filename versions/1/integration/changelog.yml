@@ -10,7 +10,7 @@
   - description: Add Kibana/osquery-saved-query
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/321
-  - description: Add "elasticsearch.privileges.allow_routing" to data stream manifest
+  - description: Add "allow_routing" to data stream manifest
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/327
 - version: 1.7.0
