@@ -144,7 +144,7 @@ spec:
       description: Specifies if a data stream is hidden
       type: boolean
     allow_routing:
-      description: When set to true, the package is granted data stream privileges for all datasets and namespaces of its type
+      description: When set to true, agents running this integration are granted data stream privileges for all datasets and namespaces of its type
       type: boolean
     streams:
       description: Streams offered by data stream.
