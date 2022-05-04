@@ -28,14 +28,14 @@ spec:
     type: folder
     name: agent
     required: true
-    $ref: "./agent/spec.yml"
+    $ref: "../integration/agent/spec.yml"
   - description: Folder containing documentation for the package
     type: folder
     name: docs
     required: true
-    $ref: "./docs/spec.yml"
+    $ref: "../integration/docs/spec.yml"
   - description: Folder containing field definitions
     type: folder
     name: fields
     required: true
-    $ref: "./fields/spec.yml"
+    $ref: "../integration/data_stream/fields/spec.yml"
