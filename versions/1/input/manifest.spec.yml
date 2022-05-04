@@ -72,82 +72,47 @@ spec:
             type: string
             examples:
               - apache
+          type:
+            description: Type of data stream
+            type: string
+            enum:
+              - metrics
+              - logs
+              - synthetics
+              - traces
+            examples:
+              - metrics
           title:
             description: Title of policy template.
             type: string
             examples:
               - Apache logs and metrics
-          categories:
-            $ref: "../integration/manifest.spec.yml#/definitions/categories"
           description:
             description: Longer description of policy template.
             type: string
             examples:
               - Collect logs and metrics from Apache instances
-          data_streams:
-            description: List of data streams compatible with the policy template.
-            type: array
-            items:
-              type: string
-              description: Data stream name
-              format: data-stream-name
-              examples:
-                - ec2_logs
-                - spamfirewall
-                - access
-          inputs:
-            description: List of inputs supported by policy template.
-            type: array
-            items:
-              type: object
-              additionalProperties: false
-              properties:
-                type:
-                  description: Type of input.
-                  type: string
-                title:
-                  description: Title of input.
-                  type: string
-                  examples:
-                    - Collect logs from Apache instances
-                description:
-                  description: Longer description of input.
-                  type: string
-                  examples:
-                    - Collecting Apache access and error logs
-                template_path:
-                  description: Path of the config template for the input.
-                  type: string
-                  examples:
-                    - ./agent/input/template.yml.hbs
-                input_group:
-                  description: Name of the input group
-                  type: string
-                  enum:
-                    - logs
-                    - metrics
-                multi:
-                  description: Can input be defined multiple times
-                  type: boolean
-                  default: false
-                vars:
-                  $ref: "../integration/data_stream/manifest.spec.yml#/definitions/vars"
-              required:
-                - type
-                - title
-                - description
-          multiple:
-            type: boolean
           icons:
             $ref: "../integration/manifest.spec.yml#/definitions/icons"
           screenshots:
             $ref: "../integration/manifest.spec.yml#/definitions/screenshots"
           vars:
             $ref: "../integration/data_stream/manifest.spec.yml#/definitions/vars"
+          input:
+            type: string
+            examples:
+              - aws/metrics
+              - s3
+              - file
+          template_path:
+            description: "Path to Elasticsearch index template for stream."
+            type: string
         required:
           - name
           - title
           - description
+          - type
+          - input
     icons:
       $ref: "../integration/manifest.spec.yml#/definitions/icons"
     screenshots:
