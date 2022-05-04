@@ -27,6 +27,8 @@ func TestValidateFile(t *testing.T) {
 		"time_series":         {},
 		"missing_data_stream": {},
 		"custom_logs":         {},
+		"httpjson_input":      {},
+		"sql_input":           {},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{

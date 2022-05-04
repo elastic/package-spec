@@ -5,7 +5,6 @@ description: >-
   Ingest data from custom RESTful API's that do not currently have an existing integration.
 type: input
 version: 1.2.0
-release: ga
 categories:
   - custom
 conditions:
