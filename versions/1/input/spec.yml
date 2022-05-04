@@ -24,13 +24,18 @@ spec:
     name: "changelog.yml"
     required: true
     $ref: "./changelog.spec.yml"
+  - description: Folder containing agent-related definitions
+    type: folder
+    name: agent
+    required: true
+    $ref: "./agent/spec.yml"
   - description: Folder containing documentation for the package
     type: folder
     name: docs
     required: true
     $ref: "./docs/spec.yml"
-  - description: Folder containing agent-related definitions
+  - description: Folder containing field definitions
     type: folder
-    name: agent
-    required: false
-    $ref: "./agent/spec.yml"
+    name: fields
+    required: true
+    $ref: "./fields/spec.yml"
