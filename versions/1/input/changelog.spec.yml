@@ -10,7 +10,7 @@ spec:
     properties:
       version:
         description: Package version.
-        $ref: "./manifest.spec.yml#/definitions/version"
+        $ref: "../integration/manifest.spec.yml#/definitions/version"
       changes:
         description: List of changes in package version.
         type: array

@@ -26,6 +26,7 @@ func TestValidateFile(t *testing.T) {
 		"deploy_terraform":    {},
 		"time_series":         {},
 		"missing_data_stream": {},
+		"custom_logs":         {},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
