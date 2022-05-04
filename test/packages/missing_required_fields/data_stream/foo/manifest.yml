@@ -1,6 +1,5 @@
 title: Nginx access logs
 type: logs
-allow_routing: true
 streams:
   - input: logfile
     vars:

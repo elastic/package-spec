@@ -144,10 +144,8 @@ spec:
       description: Specifies if a data stream is hidden
       type: boolean
     allow_routing:
-      description: When set to true, the integration is granted data stream privileges for all datasets and namespaces of its type
+      description: When set to true, the package is granted data stream privileges for all datasets and namespaces of its type
       type: boolean
-      items:
-        type: string
     streams:
       description: Streams offered by data stream.
       type: array
