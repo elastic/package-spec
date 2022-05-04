@@ -16,6 +16,9 @@
   - description: Prepare for support of multiple, independent package types. Require "type" to be present in manifest.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/323
+  - description: Write "input" package spec
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/328
 - version: 1.7.0
   changes:
   - description: Add kibana/osquery-pack-asset
