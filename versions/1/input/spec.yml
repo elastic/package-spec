@@ -1,5 +1,6 @@
 ##
-## Entrypoint of "input" specification.
+## Entrypoint of "input packages" specification.
+## The specification is considered "beta" at the moment, so it may change until we release it as GA.
 ##
 ## Describes the folders and files that make up a package.
 ##
