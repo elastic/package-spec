@@ -7,8 +7,8 @@
 spec:
   additionalContents: true
   totalContentsLimit: 65535
-  totalSizeLimit: 250MB
-  sizeLimit: 150MB
+  totalSizeLimit: 50MB
+  sizeLimit: 30MB
   configurationSizeLimit: 5MB
   relativePathSizeLimit: 3MB
   contents:
