@@ -24,7 +24,7 @@ spec:
     contentMediaType: "application/x-yaml"
     name: "changelog.yml"
     required: true
-    $ref: "./changelog.spec.yml"
+    $ref: "../integration/changelog.spec.yml"
   - description: Folder containing agent-related definitions
     type: folder
     name: agent
