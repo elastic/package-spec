@@ -1,0 +1,4 @@
+version: "2.3"
+services:
+  docker-custom-agent:
+    hostname: a-hostname

@@ -1,0 +1,9 @@
+format_version: 1.0.4
+name: custom_agent
+title: Custom Agent
+description: This package contains a _dev/deploy/agent folder.
+version: 0.1.2
+type: integration
+release: beta
+owner:
+  github: elastic/foobar

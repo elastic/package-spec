@@ -7,6 +7,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/330
+  - description: Add custom agent tests spec
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/335
 - version: 1.8.1
   changes:
   - description: Disable validation of duplicated fields.

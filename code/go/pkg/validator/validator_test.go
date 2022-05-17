@@ -22,6 +22,7 @@ func TestValidateFile(t *testing.T) {
 		expectedErrContains []string
 	}{
 		"good":                {},
+		"deploy_custom_agent": {},
 		"deploy_docker":       {},
 		"deploy_terraform":    {},
 		"time_series":         {},
@@ -76,6 +77,12 @@ func TestValidateFile(t *testing.T) {
 			"data_stream/example/fields/fields.yml",
 			[]string{
 				"field \"example.agent.call_duration\" of type histogram can't be a dimension, allowed types for dimensions: constant_keyword, keyword, long, integer, short, byte, double, float, half_float, scaled_float, unsigned_long, ip",
+			},
+		},
+		"deploy_custom_agent_invalid_property": {
+			"_dev/deploy/agent/custom-agent.yml",
+			[]string{
+				"field services.docker-custom-agent: Must not validate the schema (not)",
 			},
 		},
 	}
