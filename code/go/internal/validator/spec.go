@@ -72,8 +72,7 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 		semantic.ValidatePrerelease,
 		semantic.ValidateFieldGroups,
 		semantic.ValidateFieldsLimits(rootSpec.Limits.FieldsPerDataStreamLimit),
-		// Temporarily disabled: https://github.com/elastic/package-spec/issues/331
-		//semantic.ValidateUniqueFields,
+		semantic.ValidateUniqueFields,
 		semantic.ValidateDimensionFields,
 		semantic.ValidateRequiredFields,
 	}

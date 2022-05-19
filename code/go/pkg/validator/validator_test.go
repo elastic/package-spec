@@ -272,7 +272,6 @@ func TestValidateVersionIntegrity(t *testing.T) {
 }
 
 func TestValidateDuplicatedFields(t *testing.T) {
-	t.Skip("Validation temporarily disabled: https://github.com/elastic/package-spec/issues/331")
 	tests := map[string]string{
 		"bad_duplicated_fields": "field \"event.dataset\" is defined multiple times for data stream \"wrong\", found in: ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/ecs.yml",
 	}

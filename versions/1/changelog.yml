@@ -4,9 +4,9 @@
 ##
 - version: 1.9.1-next
   changes:
-    - description: Prepare for next version
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/?
+  - description: Enable validation of duplicated fields.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/338
 - version: 1.9.0
   changes:
   - description: Prepare for next version
