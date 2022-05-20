@@ -83,6 +83,12 @@ spec:
             default: false
             examples:
               - true
+          secret:
+            description: Is this variable a sensitive value that should be securely stored? Secret vars are only referenceable via the secret provider, eg. ${secret.<name>}
+            type: boolean
+            default: false
+            examples:
+              - true
           show_user:
             description: Should this variable be shown to the user by default?
             type: boolean

@@ -62,6 +62,7 @@ policy_templates:
         description: Client secret used for Oauth2 authentication
         show_user: true
         required: false
+        secret: true
       - name: oauth_token_url
         type: text
         title: Oauth2 Token URL

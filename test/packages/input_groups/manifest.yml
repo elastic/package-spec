@@ -30,6 +30,7 @@ vars:
   - name: secret_access_key
     type: text
     title: Secret Access Key
+    secret: true
 policy_templates:
   - name: ec2
     title: AWS EC2
