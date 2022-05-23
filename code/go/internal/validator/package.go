@@ -89,7 +89,7 @@ func NewPackageFromFS(location string, fsys fs.FS) (*Package, error) {
 
 	specVersion, err := semver.NewVersion(manifest.SpecVersion)
 	if err != nil {
-		return nil, errors.Wrapf(err, "could not read specification version from package manifest file [%v]", pkgManifestPath)
+		return nil, errors.Wrapf(err, "could not read specification version from package manifest file [%v]", manifest.SpecVersion)
 	}
 
 	// Instantiate Package object and return it

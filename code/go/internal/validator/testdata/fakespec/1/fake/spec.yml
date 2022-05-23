@@ -1,0 +1,12 @@
+spec:
+  additionalContents: true
+  contents:
+  - description: Folder containing beta features
+    type: folder
+    name: beta
+    $ref: "./beta/spec.yml"
+  - description: Folder containing GA features
+    type: folder
+    name: ga
+    required: true
+    $ref: "./ga/spec.yml"
