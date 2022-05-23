@@ -85,8 +85,9 @@ func (s *folderSpec) validate(pkg *Package, path string) ve.ValidationErrors {
 		return errs
 	}
 
+	// Don't enable beta features for packages marked as GA.
 	if s.Release == "beta" && pkg.Version.Prerelease() == "" {
-		errs = append(errs, errors.Wrapf(err, "spec [%s] has beta features, that can't be used by packages marked as GA", pkg.Path(path)))
+		errs = append(errs, errors.Errorf("spec for [%s] defines beta features which can't be enabled for packages marked as GA", pkg.Path(path)))
 	}
 
 	for _, file := range files {
