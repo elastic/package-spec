@@ -85,6 +85,10 @@ func (s *folderSpec) validate(pkg *Package, path string) ve.ValidationErrors {
 		return errs
 	}
 
+	if s.Release == "beta" && pkg.Version.Prerelease() == "" {
+		errs = append(errs, errors.Wrapf(err, "spec [%s] has beta features, that can't be used by packages marked as GA", pkg.Path(path)))
+	}
+
 	for _, file := range files {
 		fileName := file.Name()
 		itemSpec, err := s.findItemSpec(pkg.Name, fileName)
@@ -94,7 +98,7 @@ func (s *folderSpec) validate(pkg *Package, path string) ve.ValidationErrors {
 		}
 
 		if itemSpec == nil && s.AdditionalContents {
-			// No spec found for current folder item but we do allow additional contents in folder.
+			// No spec found for current folder item, but we do allow additional contents in folder.
 			if file.IsDir() {
 				if !s.DevelopmentFolder && strings.Contains(fileName, "-") {
 					errs = append(errs,

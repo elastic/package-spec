@@ -19,7 +19,7 @@ import (
 type Package struct {
 	Name        string
 	Type        string
-	Version     string
+	Version     *semver.Version
 	SpecVersion *semver.Version
 
 	fs       fs.FS
@@ -78,6 +78,15 @@ func NewPackageFromFS(location string, fsys fs.FS) (*Package, error) {
 		return nil, errors.New("package type undefined in the package manifest file")
 	}
 
+	if manifest.Version == "" {
+		return nil, errors.New("package version undefined in the package manifest file")
+	}
+
+	packageVersion, err := semver.NewVersion(manifest.Version)
+	if err != nil {
+		return nil, errors.Wrapf(err, "could not read package version from package manifest file [%v]", pkgManifestPath)
+	}
+
 	specVersion, err := semver.NewVersion(manifest.SpecVersion)
 	if err != nil {
 		return nil, errors.Wrapf(err, "could not read specification version from package manifest file [%v]", pkgManifestPath)
@@ -87,7 +96,7 @@ func NewPackageFromFS(location string, fsys fs.FS) (*Package, error) {
 	p := Package{
 		Name:        manifest.Name,
 		Type:        manifest.Type,
-		Version:     manifest.Version,
+		Version:     packageVersion,
 		SpecVersion: specVersion,
 		fs:          fsys,
 
