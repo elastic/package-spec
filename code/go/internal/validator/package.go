@@ -19,6 +19,7 @@ import (
 type Package struct {
 	Name        string
 	Type        string
+	Version     string
 	SpecVersion *semver.Version
 
 	fs       fs.FS
@@ -66,6 +67,7 @@ func NewPackageFromFS(location string, fsys fs.FS) (*Package, error) {
 	var manifest struct {
 		Name        string `yaml:"name"`
 		Type        string `yaml:"type"`
+		Version     string `yaml:"version"`
 		SpecVersion string `yaml:"format_version"`
 	}
 	if err := yaml.Unmarshal(data, &manifest); err != nil {
@@ -85,6 +87,7 @@ func NewPackageFromFS(location string, fsys fs.FS) (*Package, error) {
 	p := Package{
 		Name:        manifest.Name,
 		Type:        manifest.Type,
+		Version:     manifest.Version,
 		SpecVersion: specVersion,
 		fs:          fsys,
 

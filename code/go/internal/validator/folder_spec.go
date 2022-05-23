@@ -16,7 +16,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
-	"github.com/elastic/package-spec/code/go/internal/fspath"
 	"github.com/elastic/package-spec/code/go/internal/spectypes"
 )
 
@@ -71,24 +70,24 @@ func (s *folderSpec) load(fs fs.FS, specPath string) error {
 	return nil
 }
 
-func (s *folderSpec) validate(packageName string, fsys fspath.FS, path string) ve.ValidationErrors {
+func (s *folderSpec) validate(pkg *Package, path string) ve.ValidationErrors {
 	var errs ve.ValidationErrors
-	files, err := fs.ReadDir(fsys, path)
+	files, err := fs.ReadDir(pkg, path)
 	if err != nil {
-		errs = append(errs, errors.Wrapf(err, "could not read folder [%s]", fsys.Path(path)))
+		errs = append(errs, errors.Wrapf(err, "could not read folder [%s]", pkg.Path(path)))
 		return errs
 	}
 
 	// This is not taking into account if the folder is for development. Enforce
 	// this limit in all cases to avoid having to read too many files.
 	if contentsLimit := s.Limits.TotalContentsLimit; contentsLimit > 0 && len(files) > contentsLimit {
-		errs = append(errs, errors.Errorf("folder [%s] exceeds the limit of %d files", fsys.Path(path), contentsLimit))
+		errs = append(errs, errors.Errorf("folder [%s] exceeds the limit of %d files", pkg.Path(path), contentsLimit))
 		return errs
 	}
 
 	for _, file := range files {
 		fileName := file.Name()
-		itemSpec, err := s.findItemSpec(packageName, fileName)
+		itemSpec, err := s.findItemSpec(pkg.Name, fileName)
 		if err != nil {
 			errs = append(errs, err)
 			continue
@@ -100,7 +99,7 @@ func (s *folderSpec) validate(packageName string, fsys fspath.FS, path string) v
 				if !s.DevelopmentFolder && strings.Contains(fileName, "-") {
 					errs = append(errs,
 						fmt.Errorf(`file "%s" is invalid: directory name inside package %s contains -: %s`,
-							fsys.Path(path, fileName), packageName, fileName))
+							pkg.Path(path, fileName), pkg.Name, fileName))
 				}
 			}
 			continue
@@ -108,7 +107,7 @@ func (s *folderSpec) validate(packageName string, fsys fspath.FS, path string) v
 
 		if itemSpec == nil && !s.AdditionalContents {
 			// No spec found for current folder item and we do not allow additional contents in folder.
-			errs = append(errs, fmt.Errorf("item [%s] is not allowed in folder [%s]", fileName, fsys.Path(path)))
+			errs = append(errs, fmt.Errorf("item [%s] is not allowed in folder [%s]", fileName, pkg.Path(path)))
 			continue
 		}
 
@@ -151,7 +150,7 @@ func (s *folderSpec) validate(packageName string, fsys fspath.FS, path string) v
 			}
 
 			subFolderPath := filepath.Join(path, fileName)
-			subErrs := subFolderSpec.validate(packageName, fsys, subFolderPath)
+			subErrs := subFolderSpec.validate(pkg, subFolderPath)
 			if len(subErrs) > 0 {
 				errs = append(errs, subErrs...)
 			}
@@ -163,21 +162,21 @@ func (s *folderSpec) validate(packageName string, fsys fspath.FS, path string) v
 			}
 		} else {
 			if !itemSpec.isSameType(file) {
-				errs = append(errs, fmt.Errorf("[%s] is a file but is expected to be a folder", fsys.Path(fileName)))
+				errs = append(errs, fmt.Errorf("[%s] is a file but is expected to be a folder", pkg.Path(fileName)))
 				continue
 			}
 
 			itemPath := filepath.Join(path, file.Name())
-			itemValidationErrs := itemSpec.validate(s.fs, fsys, s.specPath, itemPath)
+			itemValidationErrs := itemSpec.validate(s.fs, pkg, s.specPath, itemPath)
 			if itemValidationErrs != nil {
 				for _, ive := range itemValidationErrs {
-					errs = append(errs, errors.Wrapf(ive, "file \"%s\" is invalid", fsys.Path(itemPath)))
+					errs = append(errs, errors.Wrapf(ive, "file \"%s\" is invalid", pkg.Path(itemPath)))
 				}
 			}
 
-			info, err := fs.Stat(fsys, itemPath)
+			info, err := fs.Stat(pkg, itemPath)
 			if err != nil {
-				errs = append(errs, errors.Wrapf(err, "failed to obtain file size for \"%s\"", fsys.Path(itemPath)))
+				errs = append(errs, errors.Wrapf(err, "failed to obtain file size for \"%s\"", pkg.Path(itemPath)))
 			} else {
 				s.totalContents++
 				s.totalSize += spectypes.FileSize(info.Size())
@@ -186,7 +185,7 @@ func (s *folderSpec) validate(packageName string, fsys fspath.FS, path string) v
 	}
 
 	if sizeLimit := s.Limits.TotalSizeLimit; sizeLimit > 0 && s.totalSize > sizeLimit {
-		errs = append(errs, errors.Errorf("folder [%s] exceeds the total size limit of %s", fsys.Path(path), sizeLimit))
+		errs = append(errs, errors.Errorf("folder [%s] exceeds the total size limit of %s", pkg.Path(path), sizeLimit))
 	}
 
 	// validate that required items in spec are all accounted for
@@ -204,9 +203,9 @@ func (s *folderSpec) validate(packageName string, fsys fspath.FS, path string) v
 		if !fileFound {
 			var err error
 			if itemSpec.Name != "" {
-				err = fmt.Errorf("expecting to find [%s] %s in folder [%s]", itemSpec.Name, itemSpec.ItemType, fsys.Path(path))
+				err = fmt.Errorf("expecting to find [%s] %s in folder [%s]", itemSpec.Name, itemSpec.ItemType, pkg.Path(path))
 			} else if itemSpec.Pattern != "" {
-				err = fmt.Errorf("expecting to find %s matching pattern [%s] in folder [%s]", itemSpec.ItemType, itemSpec.Pattern, fsys.Path(path))
+				err = fmt.Errorf("expecting to find %s matching pattern [%s] in folder [%s]", itemSpec.ItemType, itemSpec.Pattern, pkg.Path(path))
 			}
 			errs = append(errs, err)
 		}
