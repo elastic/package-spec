@@ -6,7 +6,10 @@
   changes:
     - description: Prepare for next version
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/?
+      link: https://github.com/elastic/package-spec/pull/337
+    - description: Define beta features in spec
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/341
 - version: 1.9.0
   changes:
   - description: Prepare for next version
