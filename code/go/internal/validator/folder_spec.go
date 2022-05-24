@@ -90,7 +90,7 @@ func (s *folderSpec) validate(pkg *Package, path string) ve.ValidationErrors {
 	switch s.Release {
 		case "", "ga": // do nothing
 		case "beta":
-=			if pkg.Version.Major() > 0 && pkg.Version.Prerelease() == "" {
+			if pkg.Version.Major() > 0 && pkg.Version.Prerelease() == "" {
 				errs = append(errs, errors.Errorf("spec for [%s] defines beta features which can't be enabled for packages with a stable semantic version", pkg.Path(path)))
 			} else {
 				log.Printf("Warning: package with non-stable semantic version and active beta features (enabled in [%s]) can't be released as stable version.", pkg.Path(path))
