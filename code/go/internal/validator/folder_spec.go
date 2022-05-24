@@ -87,7 +87,9 @@ func (s *folderSpec) validate(pkg *Package, path string) ve.ValidationErrors {
 	}
 
 	// Don't enable beta features for packages marked as GA.
-	if s.Release == "beta" && pkg.Version.Prerelease() == "" {
+	if s.Release != "" && s.Release != "beta" {
+		errs = append(errs, errors.Errorf("unsupport release level, supported values: beta, ga"))
+	} else if s.Release == "beta" && pkg.Version.Prerelease() == "" {
 		errs = append(errs, errors.Errorf("spec for [%s] defines beta features which can't be enabled for packages with a stable semantic version", pkg.Path(path)))
 	} else if s.Release == "beta" && pkg.Version.Prerelease() != "" {
 		log.Printf("Warning: package with non-stable semantic version and active beta features (enabled in [%s]) can't be released as stable version.q", pkg.Path(path))
