@@ -2,14 +2,30 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
-- version: 1.8.1-next
+- version: 1.9.1-next
+  changes:
+    - description: Prepare for next version
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/337
+    - description: Define beta features in spec
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/341
+    - description: Write "input" package spec (beta)
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/328
+- version: 1.9.0
   changes:
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/330
-  - description: Write "input" package spec (beta)
+  - description: Add custom agent tests spec
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/328
+    link: https://github.com/elastic/package-spec/pull/335
+- version: 1.8.1
+  changes:
+  - description: Disable validation of duplicated fields.
+    type: bugfix
+    link: https://github.com/elastic/package-spec/pull/332
 - version: 1.8.0
   changes:
   - description: Validate top changelog links to have a valid number if it is a github URL.

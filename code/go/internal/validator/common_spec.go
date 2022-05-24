@@ -19,6 +19,11 @@ type commonSpec struct {
 	DevelopmentFolder  bool             `yaml:"developmentFolder"`
 
 	Limits commonSpecLimits `yaml:",inline"`
+
+	// Release type of the spec: beta, ga.
+	// Packages using beta features won't be able to go GA.
+	// Default release: ga
+	Release string `yaml:"release"`
 }
 
 type commonSpecLimits struct {

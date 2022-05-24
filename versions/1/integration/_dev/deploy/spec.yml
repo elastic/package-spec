@@ -9,6 +9,10 @@ spec:
       type: folder
       name: tf
       $ref: "./tf/spec.yml"
+    - description: Folder containing deployment files for a Cusom Agent service deployment
+      type: folder
+      name: agent
+      $ref: "./agent/spec.yml"
     - description: Folder containing deployment files for a Kubernetes service deployment
       type: folder
       name: k8s

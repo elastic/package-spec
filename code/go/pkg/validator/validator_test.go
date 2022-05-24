@@ -22,6 +22,7 @@ func TestValidateFile(t *testing.T) {
 		expectedErrContains []string
 	}{
 		"good":                {},
+		"deploy_custom_agent": {},
 		"deploy_docker":       {},
 		"deploy_terraform":    {},
 		"time_series":         {},
@@ -72,13 +73,19 @@ func TestValidateFile(t *testing.T) {
 		"missing_version": {
 			"manifest.yml",
 			[]string{
-				"field version: Invalid type. Expected: string, given: null",
+				"package version undefined in the package manifest file",
 			},
 		},
 		"bad_time_series": {
 			"data_stream/example/fields/fields.yml",
 			[]string{
 				"field \"example.agent.call_duration\" of type histogram can't be a dimension, allowed types for dimensions: constant_keyword, keyword, long, integer, short, byte, double, float, half_float, scaled_float, unsigned_long, ip",
+			},
+		},
+		"deploy_custom_agent_invalid_property": {
+			"_dev/deploy/agent/custom-agent.yml",
+			[]string{
+				"field services.docker-custom-agent: Must not validate the schema (not)",
 			},
 		},
 	}
@@ -93,19 +100,21 @@ func TestValidateFile(t *testing.T) {
 				require.NoError(t, errs)
 			} else {
 				require.Error(t, errs)
-				require.Len(t, errs, len(test.expectedErrContains))
 				vErrs, ok := errs.(errors.ValidationErrors)
-				require.True(t, ok)
+				if ok {
+					require.Len(t, errs, len(test.expectedErrContains))
+					var errMessages []string
+					for _, vErr := range vErrs {
+						errMessages = append(errMessages, vErr.Error())
+					}
 
-				var errMessages []string
-				for _, vErr := range vErrs {
-					errMessages = append(errMessages, vErr.Error())
+					for _, expectedErrMessage := range test.expectedErrContains {
+						expectedErr := errPrefix + expectedErrMessage
+						require.Contains(t, errMessages, expectedErr)
+					}
+					return
 				}
-
-				for _, expectedErrMessage := range test.expectedErrContains {
-					expectedErr := errPrefix + expectedErrMessage
-					require.Contains(t, errMessages, expectedErr)
-				}
+				require.Equal(t, errs.Error(), test.expectedErrContains[0])
 			}
 		})
 	}
@@ -268,6 +277,7 @@ func TestValidateVersionIntegrity(t *testing.T) {
 }
 
 func TestValidateDuplicatedFields(t *testing.T) {
+	t.Skip("Validation temporarily disabled: https://github.com/elastic/package-spec/issues/331")
 	tests := map[string]string{
 		"bad_duplicated_fields": "field \"event.dataset\" is defined multiple times for data stream \"wrong\", found in: ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/ecs.yml",
 	}
