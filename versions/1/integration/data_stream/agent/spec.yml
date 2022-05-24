@@ -1,0 +1,14 @@
+spec:
+  additionalContents: false
+  contents:
+  - description: Folder containing input definitions
+    type: folder
+    name: stream
+    required: true
+    additionalContents: false
+    contents:
+    - description: Folder containing agent stream definitions
+      type: file
+      sizeLimit: 2MB
+      pattern: '^.+.yml.hbs$'
+      required: true

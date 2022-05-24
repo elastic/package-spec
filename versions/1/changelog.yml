@@ -10,6 +10,9 @@
     - description: Define beta features in spec
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/341
+    - description: Write "input" package spec (beta)
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/328
 - version: 1.9.0
   changes:
   - description: Prepare for next version

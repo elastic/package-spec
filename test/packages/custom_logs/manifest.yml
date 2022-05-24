@@ -4,8 +4,7 @@ title: Custom Logs
 description: >-
   Read lines from active log files with Elastic Agent.
 type: input
-version: 1.2.3
-release: ga
+version: 1.2.0-beta
 license: basic
 categories:
   - custom
