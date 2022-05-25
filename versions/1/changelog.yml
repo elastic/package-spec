@@ -6,7 +6,7 @@
   changes:
     - description: Prepare for the next release
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/328
+      link: https://github.com/elastic/package-spec/pull/344
 - version: 1.10
   changes:
     - description: Define beta features in spec
