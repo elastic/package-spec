@@ -46,8 +46,12 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve
 		if _, ok := foundFields[datastream]; !ok {
 			foundFields[datastream] = make(map[string]struct{})
 		}
-
 		foundFields[datastream][f.Name] = struct{}{}
+
+		// Don't check type for external fields.
+		if f.External != "" {
+			return nil
+		}
 		if f.Type != expectedType {
 			return ve.ValidationErrors{errors.Errorf("expected type %q for required field %q, found %q in %q", expectedType, f.Name, f.Type, fieldsFile)}
 		}
