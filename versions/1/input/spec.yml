@@ -41,3 +41,9 @@ spec:
     name: fields
     required: true
     $ref: "../integration/data_stream/fields/spec.yml"
+  - description: Folder containing development resources
+    type: folder
+    name: _dev
+    required: false
+    visibility: private
+    $ref: "../integration/_dev/spec.yml"
