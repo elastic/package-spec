@@ -46,9 +46,13 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve
 		if _, ok := foundFields[datastream]; !ok {
 			foundFields[datastream] = make(map[string]struct{})
 		}
-
 		foundFields[datastream][f.Name] = struct{}{}
-		if f.Type != expectedType {
+
+		// Check if type is the expected one, but only for fields what are
+		// not declared as external. External fields won't have a type in
+		// the definition.
+		// More info in https://github.com/elastic/elastic-package/issues/749
+		if f.External == "" && f.Type != expectedType {
 			return ve.ValidationErrors{errors.Errorf("expected type %q for required field %q, found %q in %q", expectedType, f.Name, f.Type, fieldsFile)}
 		}
 

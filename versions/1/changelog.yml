@@ -4,9 +4,9 @@
 ##
 - version: 1.10.1-next
   changes:
-    - description: Prepare for the next release
+    - description: Don't check type for imported required fields.
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/344
+      link: https://github.com/elastic/package-spec/pull/347
 - version: 1.10
   changes:
     - description: Define beta features in spec
