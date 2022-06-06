@@ -2,12 +2,15 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
-- version: 1.10.1-next
+- version: 1.11.0
   changes:
+    - description: Enable development resources for input packages
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/350
     - description: Don't check type for imported required fields.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/347
-- version: 1.10
+- version: 1.10.0
   changes:
     - description: Define beta features in spec
       type: enhancement
