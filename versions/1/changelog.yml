@@ -6,7 +6,7 @@
   changes:
     - description: Prepare for next patch release
       type: enhancement
-      link: ?
+      link: https://github.com/elastic/package-spec/pull/353
 - version: 1.11.0
   changes:
     - description: Enable development resources for input packages
