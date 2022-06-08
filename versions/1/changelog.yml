@@ -2,16 +2,29 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
-- version: 1.9.1-next
+- version: 1.11.1-next
   changes:
   - description: Enable validation of duplicated fields.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/338
+- version: 1.11.0
+  changes:
+    - description: Enable development resources for input packages
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/350
+    - description: Don't check type for imported required fields.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/347
+- version: 1.10.0
+  changes:
+    - description: Define beta features in spec
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/341
+    - description: Write "input" package spec (beta)
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/328
 - version: 1.9.0
   changes:
-  - description: Prepare for next version
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/330
   - description: Add custom agent tests spec
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/335

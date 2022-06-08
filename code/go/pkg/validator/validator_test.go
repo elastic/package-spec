@@ -27,6 +27,9 @@ func TestValidateFile(t *testing.T) {
 		"deploy_terraform":    {},
 		"time_series":         {},
 		"missing_data_stream": {},
+		"custom_logs":         {},
+		"httpjson_input":      {},
+		"sql_input":           {},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
@@ -70,7 +73,7 @@ func TestValidateFile(t *testing.T) {
 		"missing_version": {
 			"manifest.yml",
 			[]string{
-				"field version: Invalid type. Expected: string, given: null",
+				"package version undefined in the package manifest file",
 			},
 		},
 		"bad_time_series": {
@@ -97,19 +100,21 @@ func TestValidateFile(t *testing.T) {
 				require.NoError(t, errs)
 			} else {
 				require.Error(t, errs)
-				require.Len(t, errs, len(test.expectedErrContains))
 				vErrs, ok := errs.(errors.ValidationErrors)
-				require.True(t, ok)
+				if ok {
+					require.Len(t, errs, len(test.expectedErrContains))
+					var errMessages []string
+					for _, vErr := range vErrs {
+						errMessages = append(errMessages, vErr.Error())
+					}
 
-				var errMessages []string
-				for _, vErr := range vErrs {
-					errMessages = append(errMessages, vErr.Error())
+					for _, expectedErrMessage := range test.expectedErrContains {
+						expectedErr := errPrefix + expectedErrMessage
+						require.Contains(t, errMessages, expectedErr)
+					}
+					return
 				}
-
-				for _, expectedErrMessage := range test.expectedErrContains {
-					expectedErr := errPrefix + expectedErrMessage
-					require.Contains(t, errMessages, expectedErr)
-				}
+				require.Equal(t, errs.Error(), test.expectedErrContains[0])
 			}
 		})
 	}
