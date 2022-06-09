@@ -40,5 +40,12 @@ spec:
           contents:
             - description: An Elasticsearch transform file
               type: file
+              required: true
               contentMediaType: "application/json"
-              pattern: '^default\.json$'
+              pattern: '^transform\.json$'
+            - description: An optional Elasticsearch index template for the tranform's destination index
+              #  https://www.elastic.co/guide/en/elasticsearch/reference/current/index-templates.html
+              type: file
+              required: false
+              contentMediaType: "application/json"
+              pattern: '^dest_index_template\.json$'
