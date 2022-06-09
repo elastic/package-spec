@@ -47,3 +47,4 @@ func TestNewPackage(t *testing.T) {
 		})
 	}
 }
+

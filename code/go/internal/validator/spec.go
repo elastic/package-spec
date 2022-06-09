@@ -51,7 +51,7 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 
 	var rootSpec folderSpec
-	rootSpecPath := path.Join(s.specPath, "spec.yml")
+	rootSpecPath := path.Join(s.specPath, pkg.Type, "spec.yml")
 	err := rootSpec.load(s.fs, rootSpecPath)
 	if err != nil {
 		errs = append(errs, errors.Wrap(err, "could not read root folder spec file"))
@@ -59,7 +59,7 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	}
 
 	// Syntactic validations
-	errs = rootSpec.validate(pkg.Name, &pkg, ".")
+	errs = rootSpec.validate(&pkg, ".")
 	if len(errs) != 0 {
 		return errs
 	}
@@ -68,10 +68,12 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	rules := validationRules{
 		semantic.ValidateKibanaObjectIDs,
 		semantic.ValidateVersionIntegrity,
+		semantic.ValidateChangelogLinks,
 		semantic.ValidatePrerelease,
 		semantic.ValidateFieldGroups,
 		semantic.ValidateFieldsLimits(rootSpec.Limits.FieldsPerDataStreamLimit),
-		semantic.ValidateUniqueFields,
+		// Temporarily disabled: https://github.com/elastic/package-spec/issues/331
+		//semantic.ValidateUniqueFields,
 		semantic.ValidateDimensionFields,
 		semantic.ValidateRequiredFields,
 	}

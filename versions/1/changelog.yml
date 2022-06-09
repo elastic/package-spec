@@ -2,14 +2,57 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
-- version: 1.7.1-next
+- version: 1.11.1-next
   changes:
+    - description: Prepare for next patch release
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/353
+    - description: Add Elasticsearch transform support
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/307
+- version: 1.11.0
+  changes:
+    - description: Enable development resources for input packages
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/350
+    - description: Don't check type for imported required fields.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/347
+- version: 1.10.0
+  changes:
+    - description: Define beta features in spec
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/341
+    - description: Write "input" package spec (beta)
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/328
+- version: 1.9.0
+  changes:
+  - description: Add custom agent tests spec
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/335
+- version: 1.8.1
+  changes:
+  - description: Disable validation of duplicated fields.
+    type: bugfix
+    link: https://github.com/elastic/package-spec/pull/332
+- version: 1.8.0
+  changes:
+  - description: Validate top changelog links to have a valid number if it is a github URL.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/324
   - description: Validate that fields are only defined once per data stream.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/309
-  - description: Add Elasticsearch transform support
+  - description: Add Kibana/osquery-saved-query
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/307
+    link: https://github.com/elastic/package-spec/pull/321
+  - description: Prepare for support of multiple, independent package types. Require "type" to be present in manifest.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/323
+  - description: Define all fields properties currently supported.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/314
 - version: 1.7.0
   changes:
   - description: Add kibana/osquery-pack-asset

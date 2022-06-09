@@ -3,6 +3,7 @@ name: missing_required_fields
 title: Package without required fields
 description: This package doesn't have expected fields
 version: 1.0.0
+type: integration
 conditions:
   kibana.version: '^8.0.0'
 policy_templates:
