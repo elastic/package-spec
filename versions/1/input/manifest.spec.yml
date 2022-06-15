@@ -28,8 +28,11 @@ spec:
     version:
       description: The version of the package.
       $ref: "../integration/manifest.spec.yml#/definitions/version"
+    source:
+      $ref: "../integration/manifest.spec.yml#/definitions/source"
     license:
-      description: The license under which the package is being released.
+      description: The license under which the package is being released (deprecated, use subscription instead).
+      deprecated: true
       type: string
       enum:
       - basic
@@ -46,20 +49,7 @@ spec:
     categories:
       $ref: "../integration/manifest.spec.yml#/definitions/categories"
     conditions:
-      description: Conditions under which this package can be installed.
-      type: object
-      additionalProperties: false
-      properties:
-        kibana:
-          description: Kibana conditions
-          type: object
-          additionalProperties: false
-          properties:
-            version:
-              type: string
-              description: Kibana versions compatible with this package.
-              examples:
-                - ">=7.9.0"
+      $ref: "../integration/manifest.spec.yml#/definitions/conditions"
     policy_templates:
       description: List of policy templates offered by this package.
       type: array
