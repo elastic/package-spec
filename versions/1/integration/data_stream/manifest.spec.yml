@@ -53,6 +53,7 @@ spec:
               - integer
               - password
               - text
+              - textarea
               - time_zone
               - url
               - yaml

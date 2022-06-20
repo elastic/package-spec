@@ -7,6 +7,9 @@
     - description: Prepare for next patch release
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/353
+    - description: Add 'textarea' var type
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/
 - version: 1.11.0
   changes:
     - description: Enable development resources for input packages
