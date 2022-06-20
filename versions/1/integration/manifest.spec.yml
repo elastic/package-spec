@@ -52,6 +52,9 @@ spec:
               type: string
               enum:
               - basic
+              - gold
+              - platinum
+              - enterprise
               default: basic
               examples:
               - basic
