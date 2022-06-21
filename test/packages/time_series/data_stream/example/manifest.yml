@@ -11,6 +11,7 @@ streams:
         default: 10s
 
 elasticsearch:
+  index_mode: "time_series"
   index_template:
     settings:
       # Defaults to 16

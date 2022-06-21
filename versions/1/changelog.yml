@@ -4,9 +4,9 @@
 ##
 - version: 1.11.1-next
   changes:
-    - description: Prepare for next patch release
+    - description: Add setting to configure index mode for data streams
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/353
+      link: https://github.com/elastic/package-spec/pull/357
 - version: 1.11.0
   changes:
     - description: Enable development resources for input packages
