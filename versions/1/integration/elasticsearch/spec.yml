@@ -34,18 +34,42 @@ spec:
       name: transform
       required: false
       contents:
-        - description: An Elasticsearch transform folder
+        - description: |-
+            An Elasticsearch transform folder.
+            Upon installation of a package that contains a transform asset, the create behavior is as follows:
+            1. If a destination index template is included:
+              1. Create the destination index template.
+              2. Add the appropriate _meta fields to mark the matching indices as managed by Fleet.
+              3. If a fields directory is included:
+                1. Use the defined fields as the destination index template mappings.
+              4. if the destination index doesn't already exist:
+                1. Initialize the index.
+            3. Create the transform in the default namespace using kibana_system privileges.
+            5. Start the transform
+
+            Upon upgrading a package that contains a transform asset, the upgrade behavior is as follows:
+            1. If a destination index template is included:
+              1. Delete the destination index template.
+              2. Matching indices are not deleted.
+            2. Stop the transform.
+            3. Delete the transform.
+            4. From here, follow the creation behavior.
           type: folder
           pattern: '^[a-z0-9_]+$'
           contents:
-            - description: An Elasticsearch transform file
+            - description: Elasticsearch transform file
               type: file
               required: true
               contentMediaType: "application/json"
               pattern: '^transform\.json$'
-            - description: An optional Elasticsearch index template for the tranform's destination index
+            - description: Elasticsearch index template for the transform's destination index
               #  https://www.elastic.co/guide/en/elasticsearch/reference/current/index-templates.html
               type: file
               required: false
               contentMediaType: "application/json"
               pattern: '^dest_index_template\.json$'
+            - description: Folder containing field definitions to be used as the mappings for the index template
+              type: folder
+              name: fields
+              required: false
+              $ref: "../data_stream/fields/spec.yml"
