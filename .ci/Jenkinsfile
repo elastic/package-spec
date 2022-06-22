@@ -50,11 +50,26 @@ pipeline {
      Test the source code.
      */
     stage('Test') {
-      steps {
-        cleanup()
-        withMageEnv(){
-          dir("${BASE_DIR}"){
-            sh(label: 'Test', script: 'make test')
+      parallel {
+        stage('Test on Linux') {
+          steps {
+            cleanup()
+            withMageEnv(){
+              dir("${BASE_DIR}"){
+                sh(label: 'Test', script: 'make test')
+              }
+            }
+          }
+        }
+        stage('Test on Windows') {
+          agent { label 'windows-10' }
+          steps {
+            cleanup()
+            dir("${BASE_DIR}"){
+              withMageEnv(){
+                bat(label: 'Test', script: 'go test -v ./code/go/...')
+              }
+            }
           }
         }
       }
