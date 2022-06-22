@@ -10,7 +10,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
-	"path/filepath"
+	"path"
 	"strings"
 	"testing"
 	"time"
@@ -220,9 +220,6 @@ type mockFile struct {
 }
 
 func newMockFile(name string) *mockFile {
-	if os.PathSeparator != '/' {
-		name = strings.ReplaceAll(name, "/", string(os.PathSeparator))
-	}
 	return &mockFile{
 		stat: mockFileInfo{
 			name:  name,
@@ -290,7 +287,7 @@ func (f *mockFile) addFileWithDirs(file *mockFile) {
 		d, err := dir.findFile(part)
 		if err == nil {
 			if !d.stat.isDir {
-				panic(strings.Join(parts[:i], string(os.PathSeparator)) + " is not a directory")
+				panic(path.Join(parts[:i]...) + " is not a directory")
 			}
 			dir = d
 		} else {
@@ -307,7 +304,7 @@ func (f *mockFile) findFile(name string) (*mockFile, error) {
 	if name == "." {
 		return f, nil
 	}
-	name = filepath.Clean(name)
+	name = path.Clean(name)
 	parts := strings.SplitN(name, string(os.PathSeparator), 2)
 
 	if len(parts) == 0 {

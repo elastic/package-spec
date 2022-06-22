@@ -6,7 +6,7 @@ package semantic
 
 import (
 	"io/fs"
-	"path/filepath"
+	"path"
 
 	"github.com/xeipuuv/gojsonschema"
 
@@ -40,7 +40,7 @@ func (r relativePathChecker) IsFormat(input interface{}) bool {
 		return false
 	}
 
-	path := filepath.Join(r.currentPath, asString)
+	path := path.Join(r.currentPath, asString)
 	info, err := fs.Stat(r.fsys, path)
 	if err != nil {
 		return false
@@ -77,7 +77,7 @@ func UnloadRelativePathFormatChecker() {
 func LoadDataStreamNameFormatChecker(fsys fs.FS, currentPath string) {
 	gojsonschema.FormatCheckers.Add(DataStreamNameFormat, relativePathChecker{
 		fsys:        fsys,
-		currentPath: filepath.Join(currentPath, "data_stream"),
+		currentPath: path.Join(currentPath, "data_stream"),
 	})
 }
 
