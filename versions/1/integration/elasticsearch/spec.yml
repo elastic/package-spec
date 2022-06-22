@@ -62,12 +62,13 @@ spec:
               required: true
               contentMediaType: "application/json"
               pattern: '^transform\.json$'
-            - description: Elasticsearch index template for the transform's destination index
-              #  https://www.elastic.co/guide/en/elasticsearch/reference/current/index-templates.html
+            - description: A transform's manifest file
               type: file
+              contentMediaType: "application/x-yaml"
+              sizeLimit: 5MB
+              name: "manifest.yml"
               required: false
-              contentMediaType: "application/json"
-              pattern: '^dest_index_template\.json$'
+              $ref: "./transform/manifest.spec.yml"
             - description: Folder containing field definitions to be used as the mappings for the index template
               type: folder
               name: fields
