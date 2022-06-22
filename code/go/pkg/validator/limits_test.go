@@ -220,6 +220,9 @@ type mockFile struct {
 }
 
 func newMockFile(name string) *mockFile {
+	if os.PathSeparator != '/' {
+		name = strings.ReplaceAll(name, "/", string(os.PathSeparator))
+	}
 	return &mockFile{
 		stat: mockFileInfo{
 			name:  name,
