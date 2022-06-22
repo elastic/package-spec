@@ -7,6 +7,9 @@
     - description: Add setting to configure index mode for data streams
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/357
+    - description: Refactored kibana/csp-rule-template asset
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/359
 - version: 1.11.0
   changes:
     - description: Enable development resources for input packages
