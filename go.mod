@@ -23,3 +23,5 @@ require (
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
 	golang.org/x/tools v0.0.0-20200130002326-2f3ba24bd6e7 // indirect
 )
+
+replace github.com/xeipuuv/gojsonschema => github.com/jsoriano/gojsonschema v1.2.1-0.20220622174425-9a973da8ffff
