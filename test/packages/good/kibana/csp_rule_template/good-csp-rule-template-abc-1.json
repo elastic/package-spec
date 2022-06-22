@@ -1,21 +1,32 @@
 {
   "attributes": {
-    "benchmark_rule_id": "1.1.1",
-    "rego_rule_id": "cis_k8s.cis_1_1_1",
-    "name": "Ensure that the API server pod specification file permissions are set to 644 or more restrictive (Automated)",
-    "description": "'Disable anonymous requests to the API server",
-    "rationale": "When enabled, requests that are not rejected by other configured authentication methods\nare treated as anonymous requests. These requests are then served by the API server. You\nshould rely on authentication to authorize access and disallow anonymous requests.\nIf you are using RBAC authorization, it is generally considered reasonable to allow\nanonymous access to the API Server for health checks and discovery purposes, and hence\nthis recommendation is not scored. However, you should consider whether anonymous\ndiscovery is an acceptable risk for your purposes.",
-    "impact": "Anonymous requests will be rejected.",
-    "default_value": "By default, anonymous access is enabled.",
-    "remediation": "Edit the API server pod specification file /etc/kubernetes/manifests/kubeapiserver.yaml on the master node and set the below parameter.\n--anonymous-auth=false",
     "enabled": true,
     "muted": false,
-    "tags": [
-      "Kubernetes",
-      "Containers"
-    ],
-    "benchmark": { "name": "CIS Kubernetes", "version": "1.4.1" },
-    "severity": "low"
+    "metadata": {
+      "id": "6664c1b8-05f2-5872-a516-4b2c3c36d2d7",
+      "name": "Ensure that the API server pod specification file permissions are set to 644 or more restrictive (Automated)",
+      "profile_applicability": "* Level 1 - Master Node\n",
+      "description": "Ensure that the API server pod specification file has permissions of `644` or more restrictive.\n",
+      "rationale": "The API server pod specification file controls various parameters that set the behavior of the API server. You should restrict its file permissions to maintain the integrity of the file. The file should be writable by only the administrators on the system.\n",
+      "audit": "Run the below command (based on the file location on your system) on the\ncontrol plane node.\nFor example,\n```\nstat -c %a /etc/kubernetes/manifests/kube-apiserver.yaml\n```\nVerify that the permissions are `644` or more restrictive.\n",
+      "remediation": "Run the below command (based on the file location on your system) on the\ncontrol plane node.\nFor example,\n```\nchmod 644 /etc/kubernetes/manifests/kube-apiserver.yaml\n```\n",
+      "impact": "None\n",
+      "default_value": "By default, the `kube-apiserver.yaml` file has permissions of `640`.\n",
+      "references": "1. [https://kubernetes.io/docs/admin/kube-apiserver/](https://kubernetes.io/docs/admin/kube-apiserver/)\n",
+      "section": "Control Plane Node Configuration Files",
+      "version": "1.0",
+      "tags": [
+        "CIS",
+        "Kubernetes",
+        "CIS 1.1.1",
+        "Control Plane Node Configuration Files"
+      ],
+      "benchmark": {
+        "name": "CIS Kubernetes V1.23",
+        "version": "v1.0.0"
+      },
+      "rego_rule_id": "cis_1_1_1"
+    }
   },
   "id": "good-csp-rule-template-abc-1",
   "type": "csp-rule-template"
