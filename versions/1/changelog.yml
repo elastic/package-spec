@@ -7,6 +7,9 @@
     - description: Add setting to configure index mode for data streams
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/357
+    - description: Fix package validation on Windows
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/358
 - version: 1.11.0
   changes:
     - description: Enable development resources for input packages
