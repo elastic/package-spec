@@ -162,29 +162,29 @@
           ignore_above: 1024
         - name: full
           type: keyword
-          fields:
-            caseless:
+          ignore_above: 1024
+          multi_fields:
+            - name: caseless
+              type: keyword
               ignore_above: 1024
               normalizer: lowercase
-              type: keyword
-            text:
-              norms: false
+            - name: text
               type: text
-          ignore_above: 1024
+              norms: false
         - name: kernel
           type: keyword
           ignore_above: 1024
         - name: name
           type: keyword
-          fields:
-            caseless:
+          ignore_above: 1024
+          multi_fields:
+            - name: caseless
+              type: keyword
               ignore_above: 1024
               normalizer: lowercase
-              type: keyword
-            text:
-              norms: false
+            - name: text
               type: text
-          ignore_above: 1024
+              norms: false
         - name: platform
           type: keyword
           ignore_above: 1024

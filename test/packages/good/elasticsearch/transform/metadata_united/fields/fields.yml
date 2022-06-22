@@ -171,29 +171,29 @@
                   ignore_above: 1024
                 - name: full
                   type: keyword
-                  fields:
-                    caseless:
+                  ignore_above: 1024
+                  multi_fields:
+                    - name: caseless
+                      type: keyword
                       ignore_above: 1024
                       normalizer: lowercase
-                      type: keyword
-                    text:
-                      norms: false
+                    - name: text
                       type: text
-                  ignore_above: 1024
+                      norms: false
                 - name: kernel
                   type: keyword
                   ignore_above: 1024
                 - name: name
                   type: keyword
-                  fields:
-                    caseless:
+                  ignore_above: 1024
+                  multi_fields:
+                    - name: caseless
+                      type: keyword
                       ignore_above: 1024
                       normalizer: lowercase
-                      type: keyword
-                    text:
-                      norms: false
+                    - name: text
                       type: text
-                  ignore_above: 1024
+                      norms: false
                 - name: platform
                   type: keyword
                   ignore_above: 1024
@@ -248,8 +248,8 @@
                       fields:
                         - name: original
                           type: text
-                          fields:
-                            keyword:
+                          multi_fields:
+                            - name: keyword
                               type: keyword
                               ignore_above: 256
                     - name: id
@@ -262,8 +262,8 @@
                       type: boolean
                     - name: version
                       type: text
-                      fields:
-                        keyword:
+                      multi_fields:
+                        - name: keyword
                           type: keyword
                           ignore_above: 16
             - name: host
@@ -273,28 +273,28 @@
                   type: keyword
                 - name: hostname
                   type: text
-                  fields:
-                    keyword:
+                  multi_fields:
+                    - name: keyword
                       type: keyword
                       ignore_above: 256
                 - name: id
                   type: keyword
                 - name: ip
                   type: text
-                  fields:
-                    keyword:
+                  multi_fields:
+                    - name: keyword
                       type: keyword
                       ignore_above: 64
                 - name: mac
                   type: text
-                  fields:
-                    keyword:
+                  multi_fields:
+                    - name: keyword
                       type: keyword
                       ignore_above: 17
                 - name: name
                   type: text
-                  fields:
-                    keyword:
+                  multi_fields:
+                    - name: keyword
                       type: keyword
                       ignore_above: 256
             - name: os
@@ -304,28 +304,28 @@
                   type: keyword
                 - name: full
                   type: text
-                  fields:
-                    keyword:
+                  multi_fields:
+                    - name: keyword
                       type: keyword
                       ignore_above: 128
                 - name: kernel
                   type: text
-                  fields:
-                    keyword:
+                  multi_fields:
+                    - name: keyword
                       type: keyword
                       ignore_above: 128
                 - name: name
                   type: text
-                  fields:
-                    keyword:
+                  multi_fields:
+                    - name: keyword
                       type: keyword
                       ignore_above: 256
                 - name: platform
                   type: keyword
                 - name: version
                   type: text
-                  fields:
-                    keyword:
+                  multi_fields:
+                    - name: keyword
                       type: keyword
                       ignore_above: 32
         - name: packages
