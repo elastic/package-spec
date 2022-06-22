@@ -52,6 +52,7 @@ pipeline {
     stage('Test') {
       parallel {
         stage('Test on Linux') {
+          options { skipDefaultCheckout() }
           steps {
             cleanup()
             withMageEnv(){
@@ -63,10 +64,11 @@ pipeline {
         }
         stage('Test on Windows') {
           agent { label 'windows-10' }
+          options { skipDefaultCheckout() }
           steps {
             cleanup()
-            dir("${BASE_DIR}"){
-              withMageEnv(){
+            withMageEnv(){
+              dir("${BASE_DIR}"){
                 bat(label: 'Test', script: 'go test -v ./code/go/...')
               }
             }
