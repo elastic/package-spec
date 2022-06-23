@@ -29,5 +29,9 @@
     }
   },
   "id": "good-csp-rule-template-abc-1",
-  "type": "csp-rule-template"
+  "type": "csp-rule-template",
+  "migrationVersion": {
+    "csp-rule-template": "8.4.0"
+  },
+  "coreMigrationVersion": "8.4.0"
 }
