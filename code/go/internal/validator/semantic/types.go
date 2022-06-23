@@ -5,10 +5,9 @@
 package semantic
 
 import (
-	"fmt"
 	"io/fs"
 	"os"
-	"path/filepath"
+	"path"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -84,7 +83,7 @@ func listFieldsFiles(fsys fspath.FS) ([]string, error) {
 	}
 
 	for _, dataStream := range dataStreams {
-		fieldsDir := filepath.Join(dataStreamDir, dataStream, "fields")
+		fieldsDir := path.Join(dataStreamDir, dataStream, "fields")
 		fs, err := fs.ReadDir(fsys, fieldsDir)
 		if errors.Is(err, os.ErrNotExist) {
 			continue
@@ -94,7 +93,7 @@ func listFieldsFiles(fsys fspath.FS) ([]string, error) {
 		}
 
 		for _, f := range fs {
-			fieldsFiles = append(fieldsFiles, filepath.Join(fieldsDir, f.Name()))
+			fieldsFiles = append(fieldsFiles, path.Join(fieldsDir, f.Name()))
 		}
 	}
 
@@ -116,13 +115,13 @@ func unmarshalFields(fsys fspath.FS, fieldsPath string) (fields, error) {
 }
 
 func dataStreamFromFieldsPath(pkgRoot, fieldsFile string) (string, error) {
-	dataStreamPath := filepath.Clean(filepath.Join(pkgRoot, "data_stream"))
-	relPath, err := filepath.Rel(dataStreamPath, filepath.Clean(fieldsFile))
-	if err != nil {
-		return "", fmt.Errorf("looking for fields file (%s) in data streams path (%s): %w", fieldsFile, dataStreamPath, err)
+	dataStreamPath := path.Clean(path.Join(pkgRoot, "data_stream")) + "/"
+	if !strings.HasPrefix(path.Clean(fieldsFile), dataStreamPath) {
+		return "", errors.Errorf("%q is not a fields file in a data stream of %q", fieldsFile, dataStreamPath)
 	}
+	relPath := strings.TrimPrefix(path.Clean(fieldsFile), dataStreamPath)
 
-	parts := strings.SplitN(relPath, string(filepath.Separator), 2)
+	parts := strings.SplitN(relPath, "/", 2)
 	if len(parts) != 2 {
 		return "", errors.Errorf("could not find data stream for fields file %s", fieldsFile)
 	}
