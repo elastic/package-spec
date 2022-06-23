@@ -8,7 +8,7 @@ spec:
     index_template:
       $ref: "../../data_stream/manifest.spec.yml#/properties/elasticsearch/properties/index_template"
   properties:
-    dest_index_template:
+    destination_index_template:
       description: Elasticsearch index template for the transform's destination index
       $ref: "#/definitions/index_template"
       required: false

@@ -60,8 +60,8 @@ spec:
             - description: Elasticsearch transform file
               type: file
               required: true
-              contentMediaType: "application/json"
-              pattern: '^transform\.json$'
+              contentMediaType: "application/x-yaml"
+              pattern: '^transform\.yml$'
             - description: A transform's manifest file
               type: file
               contentMediaType: "application/x-yaml"

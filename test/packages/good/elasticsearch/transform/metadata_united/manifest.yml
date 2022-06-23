@@ -1,4 +1,4 @@
-dest_index_template:
+destination_index_template:
   settings:
     index:
       codec: best_compression
