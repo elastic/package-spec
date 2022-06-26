@@ -44,14 +44,16 @@ spec:
                 1. Use the defined fields as the destination index template mappings.
               4. if the destination index doesn't already exist:
                 1. Initialize the index.
-            3. Create the transform in the default namespace using kibana_system privileges.
-            5. Start the transform
+            2. Create the transform in the default namespace using kibana_system privileges.
+            3. If the transform is configured to be started upon installation (no configuration defaults to true):
+              1. Start the transform.
 
             Upon upgrading a package that contains a transform asset, the upgrade behavior is as follows:
             1. If a destination index template is included:
               1. Delete the destination index template.
               2. Matching indices are not deleted.
-            2. Stop the transform.
+            2. If the transform is started:
+              1. Stop the transform.
             3. Delete the transform.
             4. From here, follow the creation behavior.
           type: folder
