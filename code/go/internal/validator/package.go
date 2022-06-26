@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
-	"path/filepath"
+	"path"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
@@ -33,7 +33,7 @@ func (p *Package) Open(name string) (fs.File, error) {
 
 // Path returns a path meaningful for the user.
 func (p *Package) Path(names ...string) string {
-	return filepath.Join(append([]string{p.location}, names...)...)
+	return path.Join(append([]string{p.location}, names...)...)
 }
 
 // NewPackage creates a new Package from a path to the package's root folder

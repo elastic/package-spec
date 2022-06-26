@@ -5,7 +5,7 @@
 package validator
 
 import (
-	"bytes"
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"io/fs"
@@ -55,16 +55,18 @@ func validateYAMLDashes(fsys fs.FS, path string) error {
 	}
 	defer f.Close()
 
-	dashes := []byte("---\n")
-	b := make([]byte, len(dashes))
-	_, err = f.Read(b)
-	if err != nil {
+	scanner := bufio.NewScanner(f)
+	// A small buffer should be enough to check if the document starts with three dashes.
+	buf := make([]byte, 8)
+	scanner.Buffer(buf, len(buf))
+	scanner.Scan()
+	if err := scanner.Err(); err != bufio.ErrTooLong && err != nil {
 		return err
 	}
-
-	if !bytes.Equal(dashes, b) {
+	if scanner.Text() != "---" {
 		return errors.New("document dashes are required (start the document with '---')")
 	}
+
 	return nil
 }
 
