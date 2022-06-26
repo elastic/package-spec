@@ -1,0 +1,50 @@
+spec:
+  contents:
+    - description: |-
+        An Elasticsearch transform folder.
+        Upon installation of a package that contains a transform asset, the create behavior is as follows:
+        1. If a destination index template is included:
+          1. Create the destination index template.
+             The name of the created index template will be derived from the name of the package and the name of the containing folder,
+             For example: `example_package.example_name`.
+          2. Add the appropriate _meta fields to mark the matching indices as managed by Fleet.
+          3. If a fields directory is included:
+            1. Use the defined fields as the destination index template mappings.
+          4. if the destination index doesn't already exist:
+            1. Initialize the index.
+        2. Create the transform in the default namespace using kibana_system privileges.
+           The name of the created transform will be derived from the name of the package and the name of the containing folder,
+           For example: `example_package.example_name-default-0.0.1`.
+           Namespace and version are added by fleet.
+        3. If the transform is configured to be started upon installation (no configuration defaults to true):
+          1. Start the transform.
+
+        Upon upgrading a package that contains a transform asset, the upgrade behavior is as follows:
+        1. If a destination index template is included:
+          1. Delete the destination index template.
+          2. Matching indices are not deleted.
+        2. If the transform is started:
+          1. Stop the transform.
+        3. Delete the transform.
+        4. From here, follow the creation behavior.
+      type: folder
+      pattern: '^[a-z0-9_]+$'
+      contents:
+        - description: Elasticsearch transform file
+          type: file
+          required: true
+          contentMediaType: "application/x-yaml"
+          pattern: '^transform\.yml$'
+          $ref: "./transform.spec.yml"
+        - description: A transform's manifest file
+          type: file
+          contentMediaType: "application/x-yaml"
+          sizeLimit: 5MB
+          name: "manifest.yml"
+          required: false
+          $ref: "./manifest.spec.yml"
+        - description: Folder containing field definitions to be used as the mappings for the index template
+          type: folder
+          name: fields
+          required: false
+          $ref: "../../data_stream/fields/spec.yml"
