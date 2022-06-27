@@ -27,6 +27,11 @@ spec:
           1. Stop the transform.
         3. Delete the transform.
         4. From here, follow the creation behavior.
+
+        The recommended naming convention for the source and destination indices is the data stream naming scheme, or patterns matching the data stream naming scheme.
+        Data streams are named in the following way: `{type}-{dataset}-{namespace}`,
+        For example: `logs-example_package.example_name-default`.
+        For more information see https://www.elastic.co/blog/an-introduction-to-the-elastic-data-stream-naming-scheme
       type: folder
       pattern: '^[a-z0-9_]+$'
       contents:

@@ -37,7 +37,7 @@ spec:
           - type: string
           examples:
           - kibana_sample_data_ecommerce
-          pattern: "^.*$" # TODO: Enforce the data stream naming scheme.
+          pattern: "^.*$"
         query:
           "$id": "#root/source/query"
           title: query
@@ -105,7 +105,7 @@ spec:
           "$id": "#root/dest/index"
           title: Index
           type: string
-          pattern: "^.*$" # TODO: Enforce the data stream naming scheme.
+          pattern: "^.*$"
         pipeline:
           "$id": "#root/dest/pipeline"
           title: Pipeline
