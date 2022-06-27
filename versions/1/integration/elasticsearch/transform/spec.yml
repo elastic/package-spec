@@ -5,8 +5,8 @@ spec:
         Upon installation of a package that contains a transform asset, the create behavior is as follows:
         1. If a destination index template is included:
           1. Create the destination index template.
-             The name of the created index template will be derived from the name of the package and the name of the containing folder,
-             For example: `example_package.example_name`.
+             The name of the created index template will be derived from the data type, the name of the package and the name of the containing folder,
+             For example: `logs-example_package.example_name`.
           2. Add the appropriate _meta fields to mark the matching indices as managed by Fleet.
           3. If a fields directory is included:
             1. Use the defined fields as the destination index template mappings.
