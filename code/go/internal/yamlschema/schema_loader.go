@@ -13,7 +13,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonreference"
-	"github.com/xeipuuv/gojsonschema"
+	"github.com/elastic/gojsonschema"
 	"gopkg.in/yaml.v3"
 )
 
