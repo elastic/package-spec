@@ -2,11 +2,16 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
-- version: 1.12.1-next
+- version: 1.12.2-next
   changes:
   - description: Prepare for next version
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/362
+    link: https://github.com/elastic/package-spec/pull/364
+- version: 1.12.1
+  changes:
+  - description: Use fork of gojsonschema instead of replace
+    type: bugfix
+    link: https://github.com/elastic/package-spec/pull/364
 - version: 1.12.0
   changes:
     - description: Add setting to configure index mode for data streams

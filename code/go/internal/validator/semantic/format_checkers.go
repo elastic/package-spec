@@ -8,7 +8,7 @@ import (
 	"io/fs"
 	"path"
 
-	"github.com/xeipuuv/gojsonschema"
+	"github.com/elastic/gojsonschema"
 
 	"github.com/elastic/package-spec/code/go/internal/spectypes"
 )
