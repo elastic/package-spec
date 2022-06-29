@@ -7,6 +7,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/364
+  - description: Refactored benchmark field in kibana/csp-rule-template asset 
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/365
 - version: 1.12.1
   changes:
   - description: Use fork of gojsonschema instead of replace
