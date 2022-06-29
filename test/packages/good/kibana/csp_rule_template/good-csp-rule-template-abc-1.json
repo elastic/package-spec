@@ -14,7 +14,7 @@
       "Kubernetes",
       "Containers"
     ],
-    "benchmark": { "name": "CIS Kubernetes", "version": "1.4.1" },
+    "benchmark": [{ "name": "CIS Kubernetes V1.23", "id": "cis_k8s", "version": "v1.0.0" }],
     "severity": "low"
   },
   "id": "good-csp-rule-template-abc-1",
