@@ -32,6 +32,7 @@ spec:
           - productivity
           - security
           - support
+          - thread_intel
           - ticketing
           - version_control
           - web
