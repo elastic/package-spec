@@ -4,7 +4,7 @@
 ##
 - version: 1.12.2-next
   changes:
-  - description: Add thread_intel category
+  - description: Add threat_intel category
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/366
 - version: 1.12.1
