@@ -4,9 +4,9 @@
 ##
 - version: 1.12.2-next
   changes:
-  - description: Prepare for next version
+  - description: Add threat_intel category
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/364
+    link: https://github.com/elastic/package-spec/pull/366
 - version: 1.12.1
   changes:
   - description: Use fork of gojsonschema instead of replace
