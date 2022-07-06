@@ -14,6 +14,9 @@
     link: https://github.com/elastic/package-spec/pull/364
 - version: 1.12.0
   changes:
+    - description: Add Elasticsearch transform support
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/307
     - description: Add setting to configure index mode for data streams
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/357
