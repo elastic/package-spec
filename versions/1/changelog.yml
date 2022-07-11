@@ -4,6 +4,9 @@
 ##
 - version: 1.13.1-next
   changes:
+  - description: Prepare for next patch release
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/369
 - version: 1.13.0
   changes:
   - description: Add threat_intel category
