@@ -2,6 +2,8 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
+- version: 1.13.1-next
+  changes:
 - version: 1.13.0
   changes:
   - description: Add threat_intel category
