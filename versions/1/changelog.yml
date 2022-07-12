@@ -2,6 +2,11 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
+- version: 1.13.1-next
+  changes:
+  - description: Prepare for next patch release
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/369
 - version: 1.13.0
   changes:
   - description: Add threat_intel category
