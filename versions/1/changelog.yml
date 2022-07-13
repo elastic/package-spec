@@ -7,6 +7,9 @@
   - description: Prepare for next patch release
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/369
+  - description: Fix package build error when using transform
+    type: bugfix
+    link: https://github.com/elastic/package-spec/pull/373
 - version: 1.13.0
   changes:
   - description: Add threat_intel category
