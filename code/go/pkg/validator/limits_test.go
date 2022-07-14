@@ -10,7 +10,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
-	"path/filepath"
+	"path"
 	"strings"
 	"testing"
 	"time"
@@ -281,13 +281,13 @@ func (f *mockFile) WithGeneratedFiles(n int, suffix string, size spectypes.FileS
 }
 
 func (f *mockFile) addFileWithDirs(file *mockFile) {
-	parts := strings.Split(file.stat.name, string(os.PathSeparator))
+	parts := strings.Split(file.stat.name, "/")
 	dir := f
 	for i, part := range parts[:len(parts)-1] {
 		d, err := dir.findFile(part)
 		if err == nil {
 			if !d.stat.isDir {
-				panic(strings.Join(parts[:i], string(os.PathSeparator)) + " is not a directory")
+				panic(path.Join(parts[:i]...) + " is not a directory")
 			}
 			dir = d
 		} else {
@@ -304,8 +304,8 @@ func (f *mockFile) findFile(name string) (*mockFile, error) {
 	if name == "." {
 		return f, nil
 	}
-	name = filepath.Clean(name)
-	parts := strings.SplitN(name, string(os.PathSeparator), 2)
+	name = path.Clean(name)
+	parts := strings.SplitN(name, "/", 2)
 
 	if len(parts) == 0 {
 		panic("path should not be empty here")

@@ -2,14 +2,35 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
-- version: 1.11.1-next
+- version: 1.13.1-next
   changes:
-    - description: Prepare for next patch release
+  - description: Prepare for next patch release
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/369
+  - description: Add 'textarea' var type
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/356
+- version: 1.13.0
+  changes:
+  - description: Add threat_intel category
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/366
+  - description: Add Elasticsearch transform support
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/307
+- version: 1.12.1
+  changes:
+  - description: Use fork of gojsonschema instead of replace
+    type: bugfix
+    link: https://github.com/elastic/package-spec/pull/364
+- version: 1.12.0
+  changes:
+    - description: Add setting to configure index mode for data streams
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/353
-    - description: Add 'textarea' var type
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/
+      link: https://github.com/elastic/package-spec/pull/357
+    - description: Fix package validation on Windows
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/358
 - version: 1.11.0
   changes:
     - description: Enable development resources for input packages

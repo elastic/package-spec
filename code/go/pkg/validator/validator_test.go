@@ -6,6 +6,7 @@ package validator
 
 import (
 	"fmt"
+	"path"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -196,7 +197,7 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 			var c int
 			for itemFolder, invalidItems := range invalidItemsPerFolder {
 				for _, invalidItem := range invalidItems {
-					objectFilePath := filepath.Join(pkgRootPath, itemFolder, invalidItem)
+					objectFilePath := path.Join(pkgRootPath, itemFolder, invalidItem)
 					expected := fmt.Sprintf("kibana object file [%s] defines non-matching ID", objectFilePath)
 
 					var found bool
@@ -225,8 +226,7 @@ func TestValidateMissingReqiredFields(t *testing.T) {
 
 	for pkgName, expectedErrors := range tests {
 		t.Run(pkgName, func(t *testing.T) {
-			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
-
+			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
 			err := ValidateFromPath(pkgRootPath)
 			if len(expectedErrors) == 0 {
 				assert.NoError(t, err)

@@ -6,7 +6,7 @@ package semantic
 
 import (
 	"fmt"
-	"path/filepath"
+	"path"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -27,7 +27,7 @@ func TestValidateFieldGroups_Bad(t *testing.T) {
 
 	fileError := func(name string, expected string) string {
 		return fmt.Sprintf(`file "%s" is invalid: %s`,
-			filepath.Join(pkgRoot, name),
+			path.Join(pkgRoot, name),
 			expected)
 	}
 

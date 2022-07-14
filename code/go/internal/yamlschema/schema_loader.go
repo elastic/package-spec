@@ -8,11 +8,12 @@ import (
 	"io/fs"
 	"io/ioutil"
 	"net/url"
+	"path"
 	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonreference"
-	"github.com/xeipuuv/gojsonschema"
+	"github.com/elastic/gojsonschema"
 	"gopkg.in/yaml.v3"
 )
 
@@ -75,7 +76,18 @@ func (l *yamlReferenceLoader) LoadJSON() (interface{}, error) {
 }
 
 func (l *yamlReferenceLoader) JsonReference() (gojsonreference.JsonReference, error) {
-	return gojsonreference.NewJsonReference(l.JsonSource().(string))
+	r, err := gojsonreference.NewJsonReference(l.JsonSource().(string))
+	if err != nil {
+		return r, err
+	}
+
+	// gojsonreference uses filepath to decide if the reference has a full file path,
+	// and in Windows it has additional special handling.
+	// Here we are operating on a fs.FS, where '/' is always used as separator, also on
+	// Windows. Override the value with the result of `path.IsAbs`.
+	r.HasFullFilePath = path.IsAbs(r.GetUrl().Path)
+
+	return r, nil
 }
 
 func (l *yamlReferenceLoader) LoaderFactory() gojsonschema.JSONLoaderFactory {

@@ -7,12 +7,12 @@ package validator
 import (
 	"fmt"
 	"io/fs"
-	"path/filepath"
+	"path"
 	"regexp"
 	"sync"
 
 	"github.com/pkg/errors"
-	"github.com/xeipuuv/gojsonschema"
+	"github.com/elastic/gojsonschema"
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/spectypes"
@@ -103,7 +103,7 @@ func (s *folderItemSpec) validateSchema(schemaFsys fs.FS, fsys fs.FS, folderSpec
 		return nil // item's schema is not defined
 	}
 
-	schemaPath := filepath.Join(filepath.Dir(folderSpecPath), s.Ref)
+	schemaPath := path.Join(path.Dir(folderSpecPath), s.Ref)
 	schemaLoader := yamlschema.NewReferenceLoaderFileSystem("file:///"+schemaPath, schemaFsys)
 
 	// validation with schema
@@ -120,8 +120,8 @@ func (s *folderItemSpec) validateSchema(schemaFsys fs.FS, fsys fs.FS, folderSpec
 		formatCheckersMutex.Unlock()
 	}()
 
-	semantic.LoadRelativePathFormatChecker(fsys, filepath.Dir(itemPath), s.Limits.RelativePathSizeLimit)
-	semantic.LoadDataStreamNameFormatChecker(fsys, filepath.Dir(itemPath))
+	semantic.LoadRelativePathFormatChecker(fsys, path.Dir(itemPath), s.Limits.RelativePathSizeLimit)
+	semantic.LoadDataStreamNameFormatChecker(fsys, path.Dir(itemPath))
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 	if err != nil {
 		return ve.ValidationErrors{err}
