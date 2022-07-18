@@ -2,11 +2,25 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
-- version: 1.12.2-next
+- version: 1.13.1-next
   changes:
   - description: Add definition for the license file in a package
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/367
+  - description: Prepare for next patch release
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/369
+  - description: Add 'textarea' var type
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/356
+- version: 1.13.0
+  changes:
+  - description: Add threat_intel category
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/366
+  - description: Add Elasticsearch transform support
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/307
 - version: 1.12.1
   changes:
   - description: Use fork of gojsonschema instead of replace
