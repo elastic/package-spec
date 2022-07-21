@@ -2,6 +2,7 @@ SPEC_DIR=internal
 
 CODE_COVERAGE_REPORT_FOLDER = $(PWD)/build/test-coverage
 CODE_COVERAGE_REPORT_NAME_UNIT = $(CODE_COVERAGE_REPORT_FOLDER)/coverage-unit-report
+TEST_RESULTS_FOLDER = $(PWD)/build/test-results
 
 golicenser_cmd = go run github.com/elastic/go-licenser
 golint_cmd = go run golang.org/x/lint/golint
@@ -26,6 +27,12 @@ check-license:
 check-spec:
 	@$(golicenser_cmd) -license Elastic
 
+$(CODE_COVERAGE_REPORT_NAME_UNIT):
+	mkdir -p $@
+
+$(TEST_RESULTS_FOLDER):
+	mkdir -p $@
+
 # Runs tests
 test:
 	# -count=1 is included to invalidate the test cache. This way, if you run "make test" multiple times
@@ -33,8 +40,6 @@ test:
 	# does not invalidate the cache so having the -count=1 to invalidate the test cache is useful.
 	@go test -v ./... -count=1
 
-test-ci: $(CODE_COVERAGE_REPORT_FOLDER)
-	mkdir -p $(PWD)/build/test-results
-	mkdir -p $(PWD)/build/test-coverage
-	@$(golicenser_cmd) --junitfile "$(PWD)/build/test-results/TEST-unit.xml" -- -count=1 -coverprofile=$(CODE_COVERAGE_REPORT_NAME_UNIT).out ./...
+test-ci: $(CODE_COVERAGE_REPORT_NAME_UNIT) $(TEST_RESULTS_FOLDER)
+	@$(gotestsum_cmd) --junitfile "$(TEST_RESULTS_FOLDER)/TEST-unit.xml" -- -count=1 -coverprofile=$(CODE_COVERAGE_REPORT_NAME_UNIT).out ./...
 	@$(gocobertura_cmd) < $(CODE_COVERAGE_REPORT_NAME_UNIT).out > $(CODE_COVERAGE_REPORT_NAME_UNIT).xml
