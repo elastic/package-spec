@@ -64,6 +64,7 @@ pipeline {
           post {
             always {
               junit(allowEmptyResults: true, keepLongStdio: true, testResults: "**/build/test-results/TEST-*.xml")
+              coverageReport(baseDir: "${BASE_DIR}/build/test-coverage", reportFiles: "coverage-unit-report.html", coverageFiles: "coverage-unit-report.xml")
             }
           }
         }
