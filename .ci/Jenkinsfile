@@ -63,7 +63,7 @@ pipeline {
           }
         }
         stage('Test on Windows') {
-          agent { label 'windows-10' }
+          agent { label 'windows-2022' }
           options { skipDefaultCheckout() }
           steps {
             cleanup()
