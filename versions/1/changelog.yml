@@ -2,7 +2,7 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
-- version: 1.13.1-next
+- version: 1.14.0
   changes:
   - description: Prepare for next patch release
     type: enhancement
