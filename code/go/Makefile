@@ -1,8 +1,12 @@
 SPEC_DIR=internal
 
+CODE_COVERAGE_REPORT_FOLDER = $(PWD)/build/test-coverage
+CODE_COVERAGE_REPORT_NAME_UNIT = $(CODE_COVERAGE_REPORT_FOLDER)/coverage-unit-report
+
 golicenser_cmd = go run github.com/elastic/go-licenser
 golint_cmd = go run golang.org/x/lint/golint
-
+gotestsum_cmd = go run gotest.tools/gotestsum
+gocobertura_cmd = go run github.com/boumenot/gocover-cobertura
 
 update:
 	# Add license headers
@@ -28,3 +32,9 @@ test:
 	# you will get fresh test results each time. For instance, changing the source of mocked packages
 	# does not invalidate the cache so having the -count=1 to invalidate the test cache is useful.
 	@go test -v ./... -count=1
+
+test-ci: $(CODE_COVERAGE_REPORT_FOLDER)
+	mkdir -p $(PWD)/build/test-results
+	mkdir -p $(PWD)/build/test-coverage
+	@$(golicenser_cmd) --junitfile "$(PWD)/build/test-results/TEST-unit.xml" -- -count=1 -coverprofile=$(CODE_COVERAGE_REPORT_NAME_UNIT).out ./...
+	@$(gocobertura_cmd) < $(CODE_COVERAGE_REPORT_NAME_UNIT).out > $(CODE_COVERAGE_REPORT_NAME_UNIT).xml

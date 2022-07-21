@@ -61,6 +61,11 @@ pipeline {
               }
             }
           }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "**/build/test-results/TEST-*.xml")
+            }
+          }
         }
         stage('Test on Windows') {
           agent { label 'windows-10' }
@@ -71,6 +76,11 @@ pipeline {
               dir("${BASE_DIR}"){
                 bat(label: 'Test', script: 'go test -v ./code/go/...')
               }
+            }
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "**/build/test-results/TEST-*.xml")
             }
           }
         }
