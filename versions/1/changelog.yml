@@ -4,9 +4,9 @@
 ##
 - version: 1.14.1-next
   changes:
-  - description: Prepare for next patch release
+  - description: Add support for icons in dark mode
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/375
+    link: https://github.com/elastic/package-spec/pull/xxx
 - version: 1.14.0
   changes:
   - description: Add 'textarea' var type
