@@ -26,6 +26,11 @@ spec:
     name: "changelog.yml"
     required: true
     $ref: "../integration/changelog.spec.yml"
+  - description: The package's license file
+    type: file
+    contentMediaType: "text/plain"
+    name: "LICENSE.txt"
+    required: false
   - description: Folder containing agent-related definitions
     type: folder
     name: agent

@@ -4,6 +4,9 @@
 ##
 - version: 1.14.1-next
   changes:
+  - description: Add definition for the license file in a package
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/367
   - description: Prepare for next patch release
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/375
