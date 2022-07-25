@@ -89,11 +89,9 @@ func validatePrereleaseTag(tag string) error {
 		}
 	}
 
-	return ve.ValidationErrors{
-		fmt.Errorf("prerelease tag (%s) should be one of [%s], or one of [%s] followed by numbers",
-			tag,
-			strings.Join(literalPrereleases, ", "),
-			strings.Join(numberedPrereleases, ", "),
-		),
-	}
+	return fmt.Errorf("prerelease tag (%s) should be one of [%s], or one of [%s] followed by numbers",
+		tag,
+		strings.Join(literalPrereleases, ", "),
+		strings.Join(numberedPrereleases, ", "),
+	)
 }
