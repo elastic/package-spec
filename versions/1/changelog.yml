@@ -6,7 +6,13 @@
   changes:
   - description: Add support for icons in dark mode
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/xxx
+    link: https://github.com/elastic/package-spec/pull/378
+  - description: Add definition for the license file in a package
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/367
+  - description: Prepare for next patch release
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/375
 - version: 1.14.0
   changes:
   - description: Add 'textarea' var type
