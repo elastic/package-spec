@@ -1,0 +1,54 @@
+##
+## Entrypoint of "input packages" specification.
+## The specification is considered "beta" at the moment, so it may change until we release it as GA.
+##
+## Describes the folders and files that make up a package.
+##
+spec:
+  additionalContents: true
+  totalContentsLimit: 65535
+  totalSizeLimit: 50MB
+  sizeLimit: 30MB
+  configurationSizeLimit: 5MB
+  relativePathSizeLimit: 3MB
+  release: beta
+  contents:
+  - description: The main package manifest file
+    type: file
+    contentMediaType: "application/x-yaml"
+    sizeLimit: 5MB
+    name: "manifest.yml"
+    required: true
+    $ref: "./manifest.spec.yml"
+  - description: The package's CHANGELOG file
+    type: file
+    contentMediaType: "application/x-yaml"
+    name: "changelog.yml"
+    required: true
+    $ref: "../integration/changelog.spec.yml"
+  - description: The package's license file
+    type: file
+    contentMediaType: "text/plain"
+    name: "LICENSE.txt"
+    required: false
+  - description: Folder containing agent-related definitions
+    type: folder
+    name: agent
+    required: true
+    $ref: "../integration/agent/spec.yml"
+  - description: Folder containing documentation for the package
+    type: folder
+    name: docs
+    required: true
+    $ref: "../integration/docs/spec.yml"
+  - description: Folder containing field definitions
+    type: folder
+    name: fields
+    required: true
+    $ref: "../integration/data_stream/fields/spec.yml"
+  - description: Folder containing development resources
+    type: folder
+    name: _dev
+    required: false
+    visibility: private
+    $ref: "../integration/_dev/spec.yml"

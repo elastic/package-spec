@@ -14,18 +14,15 @@ import (
 
 	spec "github.com/elastic/package-spec"
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
-	"github.com/elastic/package-spec/code/go/internal/fspath"
-	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
 )
 
 // Spec represents a package specification
 type Spec struct {
 	version  semver.Version
 	fs       fs.FS
+	rules    validationRulesBuilder
 	specPath string
 }
-
-type validationRules []func(pkg fspath.FS) ve.ValidationErrors
 
 // NewSpec creates a new Spec for the given version
 func NewSpec(version semver.Version) (*Spec, error) {
@@ -37,10 +34,16 @@ func NewSpec(version semver.Version) (*Spec, error) {
 		return nil, errors.Wrapf(err, "could not load specification for version [%s]", version.String())
 	}
 
+	specRules, err := newRulesBuilder(version)
+	if err != nil {
+		return nil, err
+	}
+
 	s := Spec{
-		version,
-		specFS,
-		specPath,
+		version:  version,
+		fs:       specFS,
+		rules:    specRules,
+		specPath: specPath,
 	}
 
 	return &s, nil
@@ -64,29 +67,10 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 		return errs
 	}
 
-	// Semantic validations
-	rules := validationRules{
-		semantic.ValidateKibanaObjectIDs,
-		semantic.ValidateVersionIntegrity,
-		semantic.ValidateChangelogLinks,
-		semantic.ValidatePrerelease,
-		semantic.ValidateFieldGroups,
-		semantic.ValidateFieldsLimits(rootSpec.Limits.FieldsPerDataStreamLimit),
-		// Temporarily disabled: https://github.com/elastic/package-spec/issues/331
-		//semantic.ValidateUniqueFields,
-		semantic.ValidateDimensionFields,
-		semantic.ValidateRequiredFields,
+	// Semantic validation
+	if s.rules != nil {
+		return s.rules(rootSpec).validate(&pkg)
 	}
 
-	return rules.validate(&pkg)
-}
-
-func (vr validationRules) validate(fsys fspath.FS) ve.ValidationErrors {
-	var errs ve.ValidationErrors
-	for _, validationRule := range vr {
-		err := validationRule(fsys)
-		errs.Append(err)
-	}
-
-	return errs
+	return nil
 }

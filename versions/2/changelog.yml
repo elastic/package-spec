@@ -2,11 +2,14 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
-- version: 1.14.1-next
+- version: 2.0.0-next
   changes:
   - description: Add definition for the license file in a package
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/367
+  - description: New format version 2
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/380
 - version: 1.14.0
   changes:
   - description: Add 'textarea' var type

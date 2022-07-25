@@ -18,7 +18,7 @@ func TestNewPackage(t *testing.T) {
 		expectedSpecVersion *semver.Version
 	}{
 		"good": {
-			expectedSpecVersion: semver.MustParse("1.0.4"),
+			expectedSpecVersion: semver.MustParse("2.0.0"),
 		},
 		"non_existent": {
 			expectedErrContains: "no package found at",
