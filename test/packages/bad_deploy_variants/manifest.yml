@@ -1,4 +1,4 @@
-format_version: 1.0.4
+format_version: 1.0.0
 name: bad_deploy_variants
 title: Bad Deploy Variants
 description: This package contains a bad _dev/deploy folder.

@@ -5,8 +5,8 @@
 package validator
 
 import (
-	"fmt"
 	"io/fs"
+	"log"
 	"path"
 
 	"github.com/Masterminds/semver/v3"
@@ -28,13 +28,14 @@ type validationRule func(pkg fspath.FS) ve.ValidationErrors
 
 type validationRules []validationRule
 
-const maxVersion = "2.0.0"
-
 // NewSpec creates a new Spec for the given version
 func NewSpec(version semver.Version) (*Spec, error) {
-	// TODO: Check version with the changelog.
-	if version.GreaterThan(semver.MustParse(maxVersion)) {
-		return nil, fmt.Errorf("could not load specification for version [%s]", version.String())
+	specVersion, err := spec.CheckVersion(&version)
+	if err != nil {
+		return nil, errors.Wrapf(err, "could not load specification for version [%s]", version.String())
+	}
+	if specVersion.Prerelease() != "" {
+		log.Printf("Warning: package using an unreleased version of the spec (%s)", specVersion)
 	}
 
 	s := Spec{
