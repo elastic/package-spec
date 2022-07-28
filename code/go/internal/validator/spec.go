@@ -20,26 +20,26 @@ import (
 
 // Spec represents a package specification
 type Spec struct {
-	version  semver.Version
-	fs       fs.FS
-	specPath string
+	version semver.Version
+	fs      fs.FS
 }
 
 type validationRule func(pkg fspath.FS) ve.ValidationErrors
 
 type validationRules []validationRule
 
+const maxVersion = "2.0.0"
+
 // NewSpec creates a new Spec for the given version
 func NewSpec(version semver.Version) (*Spec, error) {
 	// TODO: Check version with the changelog.
-	if version.GreaterThan(semver.MustParse("2.0.0")) {
+	if version.GreaterThan(semver.MustParse(maxVersion)) {
 		return nil, fmt.Errorf("could not load specification for version [%s]", version.String())
 	}
 
 	s := Spec{
 		version,
 		spec.FS(),
-		"",
 	}
 
 	return &s, nil
@@ -50,7 +50,7 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 
 	var rootSpec folderSpec
-	rootSpecPath := path.Join(s.specPath, pkg.Type, "spec.yml")
+	rootSpecPath := path.Join(pkg.Type, "spec.yml")
 	err := rootSpec.load(s.fs, rootSpecPath)
 	if err != nil {
 		errs = append(errs, errors.Wrap(err, "could not read root folder spec file"))
