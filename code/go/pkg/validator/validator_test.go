@@ -284,7 +284,7 @@ func TestValidateDuplicatedFields(t *testing.T) {
 
 	for pkgName, expectedErrorMessage := range tests {
 		t.Run(pkgName, func(t *testing.T) {
-			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			require.Error(t, errs)
 			vErrs, ok := errs.(errors.ValidationErrors)
 			require.True(t, ok)
