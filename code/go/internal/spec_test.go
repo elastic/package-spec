@@ -14,6 +14,12 @@ import (
 
 func TestBundledSpecsForIntegration(t *testing.T) {
 	fs := spec.FS()
-	_, err := fs.Open("1/integration/spec.yml")
+	_, err := fs.Open("integration/spec.yml")
+	require.NoError(t, err)
+}
+
+func TestBundledSpecsForInput(t *testing.T) {
+	fs := spec.FS()
+	_, err := fs.Open("input/spec.yml")
 	require.NoError(t, err)
 }

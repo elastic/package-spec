@@ -5,9 +5,9 @@
 package validator
 
 import (
+	"fmt"
 	"io/fs"
 	"path"
-	"strconv"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
@@ -29,18 +29,15 @@ type validationRules []func(pkg fspath.FS) ve.ValidationErrors
 
 // NewSpec creates a new Spec for the given version
 func NewSpec(version semver.Version) (*Spec, error) {
-	majorVersion := strconv.FormatUint(version.Major(), 10)
-
-	specFS := spec.FS()
-	specPath := majorVersion
-	if _, err := specFS.Open(specPath); err != nil {
-		return nil, errors.Wrapf(err, "could not load specification for version [%s]", version.String())
+	// TODO: Check version with the changelog.
+	if !version.LessThan(semver.MustParse("2.0.0")) {
+		return nil, fmt.Errorf("could not load specification for version [%s]", version.String())
 	}
 
 	s := Spec{
 		version,
-		specFS,
-		specPath,
+		spec.FS(),
+		"",
 	}
 
 	return &s, nil
