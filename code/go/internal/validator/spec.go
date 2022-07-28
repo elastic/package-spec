@@ -25,12 +25,14 @@ type Spec struct {
 	specPath string
 }
 
-type validationRules []func(pkg fspath.FS) ve.ValidationErrors
+type validationRule func(pkg fspath.FS) ve.ValidationErrors
+
+type validationRules []validationRule
 
 // NewSpec creates a new Spec for the given version
 func NewSpec(version semver.Version) (*Spec, error) {
 	// TODO: Check version with the changelog.
-	if !version.LessThan(semver.MustParse("2.0.0")) {
+	if version.GreaterThan(semver.MustParse("2.0.0")) {
 		return nil, fmt.Errorf("could not load specification for version [%s]", version.String())
 	}
 
@@ -62,20 +64,38 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	}
 
 	// Semantic validations
-	rules := validationRules{
-		semantic.ValidateKibanaObjectIDs,
-		semantic.ValidateVersionIntegrity,
-		semantic.ValidateChangelogLinks,
-		semantic.ValidatePrerelease,
-		semantic.ValidateFieldGroups,
-		semantic.ValidateFieldsLimits(rootSpec.Limits.FieldsPerDataStreamLimit),
-		// Temporarily disabled: https://github.com/elastic/package-spec/issues/331
-		//semantic.ValidateUniqueFields,
-		semantic.ValidateDimensionFields,
-		semantic.ValidateRequiredFields,
+	return s.rules(rootSpec).validate(&pkg)
+}
+
+func (s Spec) rules(rootSpec folderSpec) validationRules {
+	rulesDef := []struct {
+		fn    validationRule
+		since *semver.Version
+		until *semver.Version
+	}{
+		{fn: semantic.ValidateKibanaObjectIDs},
+		{fn: semantic.ValidateVersionIntegrity},
+		{fn: semantic.ValidateChangelogLinks},
+		{fn: semantic.ValidatePrerelease},
+		{fn: semantic.ValidateFieldGroups},
+		{fn: semantic.ValidateFieldsLimits(rootSpec.Limits.FieldsPerDataStreamLimit)},
+		{fn: semantic.ValidateUniqueFields, since: semver.MustParse("2.0.0")},
+		{fn: semantic.ValidateDimensionFields},
+		{fn: semantic.ValidateRequiredFields},
 	}
 
-	return rules.validate(&pkg)
+	var validationRules validationRules
+	for _, rule := range rulesDef {
+		if rule.since != nil && s.version.LessThan(rule.since) {
+			continue
+		}
+		if rule.until != nil && !s.version.LessThan(rule.until) {
+			continue
+		}
+		validationRules = append(validationRules, rule.fn)
+	}
+
+	return validationRules
 }
 
 func (vr validationRules) validate(fsys fspath.FS) ve.ValidationErrors {
