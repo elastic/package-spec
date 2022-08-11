@@ -2,7 +2,7 @@
 // or more contributor license agreements. Licensed under the Elastic License;
 // you may not use this file except in compliance with the Elastic License.
 
-package validator
+package jsonschema
 
 // WARNING: This code is copied from https://github.com/elastic/beats/blob/master/libbeat/common/mapstr.go
 // This was done to not have to import the full common package and all its dependencies

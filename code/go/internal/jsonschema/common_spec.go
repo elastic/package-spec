@@ -2,7 +2,7 @@
 // or more contributor license agreements. Licensed under the Elastic License;
 // you may not use this file except in compliance with the Elastic License.
 
-package validator
+package jsonschema
 
 import (
 	"reflect"
@@ -14,9 +14,9 @@ import (
 )
 
 type commonSpec struct {
-	AdditionalContents bool             `yaml:"additionalContents"`
-	Contents           []folderItemSpec `yaml:"contents"`
-	DevelopmentFolder  bool             `yaml:"developmentFolder"`
+	AdditionalContents bool              `yaml:"additionalContents"`
+	Contents           []*folderItemSpec `yaml:"contents"`
+	DevelopmentFolder  bool              `yaml:"developmentFolder"`
 
 	Limits commonSpecLimits `yaml:",inline"`
 

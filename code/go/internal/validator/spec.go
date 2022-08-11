@@ -15,6 +15,7 @@ import (
 	spec "github.com/elastic/package-spec"
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/fspath"
+	"github.com/elastic/package-spec/code/go/internal/jsonschema"
 	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
 )
 
@@ -50,16 +51,16 @@ func NewSpec(version semver.Version) (*Spec, error) {
 func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 
-	var rootSpec folderSpec
-	rootSpecPath := path.Join(s.specPath, pkg.Type, "spec.yml")
-	err := rootSpec.load(s.fs, rootSpecPath)
+	rootSpecPath := path.Join(s.specPath, pkg.Type)
+	rootSpec, err := jsonschema.LoadFolderSpec(s.fs, rootSpecPath)
 	if err != nil {
 		errs = append(errs, errors.Wrap(err, "could not read root folder spec file"))
 		return errs
 	}
 
 	// Syntactic validations
-	errs = rootSpec.validate(&pkg, ".")
+	validator := NewValidator(rootSpec, &pkg)
+	errs = validator.Validate()
 	if len(errs) != 0 {
 		return errs
 	}
@@ -71,7 +72,7 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 		semantic.ValidateChangelogLinks,
 		semantic.ValidatePrerelease,
 		semantic.ValidateFieldGroups,
-		semantic.ValidateFieldsLimits(rootSpec.Limits.FieldsPerDataStreamLimit),
+		semantic.ValidateFieldsLimits(rootSpec.MaxFieldsPerDataStream()),
 		// Temporarily disabled: https://github.com/elastic/package-spec/issues/331
 		//semantic.ValidateUniqueFields,
 		semantic.ValidateDimensionFields,
