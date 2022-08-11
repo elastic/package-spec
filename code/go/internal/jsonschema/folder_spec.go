@@ -14,6 +14,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// LoadFolderSpec loads a spec from a directory in the given filesystem.
 func LoadFolderSpec(fs fs.FS, specPath string) (*ItemSpec, error) {
 	var spec folderItemSpec
 	return &ItemSpec{&spec}, spec.loadFolderSpec(fs, path.Join(specPath, "spec.yml"))

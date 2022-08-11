@@ -14,7 +14,7 @@ const (
 	// ItemTypeFile is the type of an item that represents a file.
 	ItemTypeFile = "file"
 
-	// ItemTypeFile is the type of an item that represents a folder.
+	// ItemTypeFolder is the type of an item that represents a folder.
 	ItemTypeFolder = "folder"
 )
 
@@ -78,6 +78,6 @@ type ItemSpec interface {
 	// Type returns the type of file ('file' or 'folder').
 	Type() string
 
-	// Schema validation
+	// ValidateSchema validates if the indicated file complies with the schema of the item.
 	ValidateSchema(fsys fs.FS, itemPath string) ve.ValidationErrors
 }

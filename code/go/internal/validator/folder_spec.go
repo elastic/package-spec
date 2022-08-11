@@ -18,7 +18,7 @@ import (
 	"github.com/elastic/package-spec/code/go/internal/spectypes"
 )
 
-type Validator struct {
+type validator struct {
 	spec       spectypes.ItemSpec
 	pkg        *Package
 	folderPath string
@@ -27,23 +27,23 @@ type Validator struct {
 	totalContents int
 }
 
-func NewValidator(spec spectypes.ItemSpec, pkg *Package) *Validator {
+func newValidator(spec spectypes.ItemSpec, pkg *Package) *validator {
 	return newValidatorForPath(spec, pkg, ".")
 }
 
-func newValidatorForPath(spec spectypes.ItemSpec, pkg *Package, folderPath string) *Validator {
-	return &Validator{
+func newValidatorForPath(spec spectypes.ItemSpec, pkg *Package, folderPath string) *validator {
+	return &validator{
 		spec:       spec,
 		pkg:        pkg,
 		folderPath: folderPath,
 	}
 }
 
-func (v *Validator) Validate() ve.ValidationErrors {
+func (v *validator) Validate() ve.ValidationErrors {
 	return v.validateSpec(v.spec, v.pkg, v.folderPath)
 }
 
-func (v *Validator) validateSpec(spec spectypes.ItemSpec, pkg *Package, folderPath string) ve.ValidationErrors {
+func (v *validator) validateSpec(spec spectypes.ItemSpec, pkg *Package, folderPath string) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 	files, err := fs.ReadDir(pkg, folderPath)
 	if err != nil {
