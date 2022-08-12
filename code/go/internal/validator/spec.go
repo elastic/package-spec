@@ -15,7 +15,7 @@ import (
 	spec "github.com/elastic/package-spec"
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/fspath"
-	"github.com/elastic/package-spec/code/go/internal/jsonschema"
+	"github.com/elastic/package-spec/code/go/internal/specschema"
 	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
 )
 
@@ -52,7 +52,7 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 
 	rootSpecPath := path.Join(s.specPath, pkg.Type)
-	rootSpec, err := jsonschema.LoadFolderSpec(s.fs, rootSpecPath)
+	rootSpec, err := specschema.LoadFolderSpec(s.fs, rootSpecPath)
 	if err != nil {
 		errs = append(errs, errors.Wrap(err, "could not read root folder spec file"))
 		return errs
