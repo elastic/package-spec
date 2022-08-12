@@ -90,6 +90,7 @@ func TestValidateFile(t *testing.T) {
 				"field services.docker-custom-agent: Must not validate the schema (not)",
 			},
 		},
+		"visualizations_by_reference": {},
 	}
 
 	for pkgName, test := range tests {
