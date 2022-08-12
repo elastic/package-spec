@@ -22,11 +22,12 @@ type reference struct {
 	Type string
 }
 
-// ValidateDashboardsByValue returns validation errors if there are any Kibana
+// ValidateVisualizationsUsedByValue warns if there are any Kibana
 // Dashboard that defines visualizations by reference instead of value.
-// That is, it returns validation errors if a Kibana dashbaord file, foo.json,
-// defines some visualization using reference (key panelRef).
-func ValidateDashboardsByValue(fsys fspath.FS) ve.ValidationErrors {
+// That is, it warns if a Kibana dashbaord file, foo.json,
+// defines some visualization using reference (containing an element of
+// "visualization" type inside references key).
+func ValidateVisualizationsUsedByValue(fsys fspath.FS) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 
 	filePaths := path.Join("kibana", "dashboard", "*.json")

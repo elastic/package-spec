@@ -76,7 +76,7 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 		//semantic.ValidateUniqueFields,
 		semantic.ValidateDimensionFields,
 		semantic.ValidateRequiredFields,
-		semantic.ValidateDashboardsByValue,
+		semantic.ValidateVisualizationsUsedByValue,
 	}
 
 	return rules.validate(&pkg)
