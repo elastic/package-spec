@@ -33,9 +33,9 @@ func (s *folderItemSpec) loadFolderSpec(fs fs.FS, specPath string) error {
 	}
 
 	var wrapper struct {
-		Spec *commonSpec `yaml:"spec"`
+		Spec *folderItemSpec `yaml:"spec"`
 	}
-	wrapper.Spec = &s.commonSpec
+	wrapper.Spec = s
 	if err := yaml.Unmarshal(data, &wrapper); err != nil {
 		return errors.Wrap(err, "could not parse folder specification file")
 	}
@@ -45,12 +45,12 @@ func (s *folderItemSpec) loadFolderSpec(fs fs.FS, specPath string) error {
 		return err
 	}
 
-	err = setDefaultValues(&s.commonSpec)
+	err = s.setDefaultValues()
 	if err != nil {
 		return errors.Wrap(err, "could not set default values")
 	}
 
-	propagateContentLimits(&s.commonSpec)
+	s.propagateContentLimits()
 
 	return nil
 }

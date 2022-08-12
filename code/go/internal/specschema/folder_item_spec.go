@@ -8,9 +8,12 @@ import (
 	"fmt"
 	"io/fs"
 	"path"
+	"reflect"
 	"sync"
 
+	"github.com/creasty/defaults"
 	"github.com/elastic/gojsonschema"
+	"github.com/pkg/errors"
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/spectypes"
@@ -134,8 +137,18 @@ type folderItemSpec struct {
 	Ref               string                 `yaml:"$ref"`
 	Visibility        string                 `yaml:"visibility" default:"public"`
 
-	schema     *gojsonschema.Schema
-	commonSpec `yaml:",inline"`
+	AdditionalContents bool              `yaml:"additionalContents"`
+	Contents           []*folderItemSpec `yaml:"contents"`
+	DevelopmentFolder  bool              `yaml:"developmentFolder"`
+
+	Limits specLimits `yaml:",inline"`
+
+	// Release type of the spec: beta, ga.
+	// Packages using beta features won't be able to go GA.
+	// Default release: ga
+	Release string `yaml:"release"`
+
+	schema *gojsonschema.Schema
 }
 
 func (s *folderItemSpec) loadSchema(schemaFsys fs.FS, folderSpecPath string) error {
@@ -151,6 +164,60 @@ func (s *folderItemSpec) loadSchema(schemaFsys fs.FS, folderSpecPath string) err
 	}
 	s.schema = schema
 	return nil
+}
+
+func (s *folderItemSpec) setDefaultValues() error {
+	err := defaults.Set(s)
+	if err != nil {
+		return errors.Wrap(err, "could not set default values")
+	}
+
+	for _, content := range s.Contents {
+		err = content.setDefaultValues()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *folderItemSpec) propagateContentLimits() {
+	for _, content := range s.Contents {
+		content.Limits.update(s.Limits)
+		content.propagateContentLimits()
+	}
+}
+
+type specLimits struct {
+	// Limit to the total number of elements in a directory.
+	TotalContentsLimit int `yaml:"totalContentsLimit"`
+
+	// Limit to the total size of files in a directory.
+	TotalSizeLimit spectypes.FileSize `yaml:"totalSizeLimit"`
+
+	// Limit to individual files.
+	SizeLimit spectypes.FileSize `yaml:"sizeLimit"`
+
+	// Limit to individual configuration files (yaml files).
+	ConfigurationSizeLimit spectypes.FileSize `yaml:"configurationSizeLimit"`
+
+	// Limit to files referenced as relative paths (images).
+	RelativePathSizeLimit spectypes.FileSize `yaml:"relativePathSizeLimit"`
+
+	// Maximum number of fields per data stream, can only be set at the root level spec.
+	FieldsPerDataStreamLimit int `yaml:"fieldsPerDataStreamLimit"`
+}
+
+func (l *specLimits) update(o specLimits) {
+	target := reflect.ValueOf(l).Elem()
+	source := reflect.ValueOf(&o).Elem()
+	for i := 0; i < target.NumField(); i++ {
+		field := target.Field(i)
+		if field.IsZero() {
+			field.Set(source.Field(i))
+		}
+	}
 }
 
 var formatCheckersMutex sync.Mutex
