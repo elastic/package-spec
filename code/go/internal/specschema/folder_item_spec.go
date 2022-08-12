@@ -5,19 +5,15 @@
 package specschema
 
 import (
-	"fmt"
 	"io/fs"
-	"path"
 	"reflect"
 	"sync"
 
 	"github.com/creasty/defaults"
-	"github.com/elastic/gojsonschema"
 	"github.com/pkg/errors"
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/spectypes"
-	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
 const (
@@ -148,22 +144,7 @@ type folderItemSpec struct {
 	// Default release: ga
 	Release string `yaml:"release"`
 
-	schema *gojsonschema.Schema
-}
-
-func (s *folderItemSpec) loadSchema(schemaFsys fs.FS, folderSpecPath string) error {
-	if s.Ref == "" {
-		return nil // item's schema is not defined
-	}
-
-	schemaPath := path.Join(folderSpecPath, s.Ref)
-	schemaLoader := yamlschema.NewReferenceLoaderFileSystem("file:///"+schemaPath, schemaFsys)
-	schema, err := gojsonschema.NewSchema(schemaLoader)
-	if err != nil {
-		return fmt.Errorf("failed to load schema for %q: %v", schemaPath, err)
-	}
-	s.schema = schema
-	return nil
+	schema spectypes.FileSchema
 }
 
 func (s *folderItemSpec) setDefaultValues() error {
@@ -226,33 +207,5 @@ func (s *folderItemSpec) ValidateSchema(fsys fs.FS, itemPath string) ve.Validati
 	if s.schema == nil {
 		return nil
 	}
-
-	data, err := loadItemSchema(fsys, itemPath, s.ContentMediaType)
-	if err != nil {
-		return ve.ValidationErrors{err}
-	}
-
-	formatCheckersMutex.Lock()
-	defer func() {
-		unloadRelativePathFormatChecker()
-		unloadDataStreamNameFormatChecker()
-		formatCheckersMutex.Unlock()
-	}()
-
-	loadRelativePathFormatChecker(fsys, path.Dir(itemPath), s.Limits.RelativePathSizeLimit)
-	loadDataStreamNameFormatChecker(fsys, path.Dir(itemPath))
-	result, err := s.schema.Validate(gojsonschema.NewBytesLoader(data))
-	if err != nil {
-		return ve.ValidationErrors{err}
-	}
-
-	if !result.Valid() {
-		var errs ve.ValidationErrors
-		for _, re := range result.Errors() {
-			errs = append(errs, fmt.Errorf("field %s: %s", re.Field(), adjustErrorDescription(re.Description())))
-		}
-		return errs
-	}
-
-	return nil // item content is valid according to the loaded schema
+	return s.schema.Validate(fsys, itemPath)
 }

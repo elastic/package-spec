@@ -8,13 +8,17 @@ import (
 	"os"
 	"testing"
 
-	"github.com/elastic/package-spec/code/go/internal/spectypes"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/elastic/package-spec/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
 func TestLoadFolderSpec(t *testing.T) {
-	spec, err := LoadFolderSpec(os.DirFS("./testdata"), "simple-spec")
+	fileSpecLoader := yamlschema.NewFileSchemaLoader()
+	loader := NewFolderSpecLoader(os.DirFS("./testdata"), fileSpecLoader)
+	spec, err := loader.Load("simple-spec")
 	require.NoError(t, err)
 
 	assert.True(t, spec.AdditionalContents(), "additionalContents")

@@ -17,6 +17,7 @@ import (
 	"github.com/elastic/package-spec/code/go/internal/fspath"
 	"github.com/elastic/package-spec/code/go/internal/specschema"
 	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
+	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
 // Spec represents a package specification
@@ -51,8 +52,11 @@ func NewSpec(version semver.Version) (*Spec, error) {
 func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 
+	fileSpecLoader := yamlschema.NewFileSchemaLoader()
+	loader := specschema.NewFolderSpecLoader(s.fs, fileSpecLoader)
+
 	rootSpecPath := path.Join(s.specPath, pkg.Type)
-	rootSpec, err := specschema.LoadFolderSpec(s.fs, rootSpecPath)
+	rootSpec, err := loader.Load(rootSpecPath)
 	if err != nil {
 		errs = append(errs, errors.Wrap(err, "could not read root folder spec file"))
 		return errs

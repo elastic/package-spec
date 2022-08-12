@@ -11,9 +11,9 @@ import (
 	"path"
 	"strings"
 
+	"github.com/elastic/gojsonschema"
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonreference"
-	"github.com/elastic/gojsonschema"
 	"gopkg.in/yaml.v3"
 )
 

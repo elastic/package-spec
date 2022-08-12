@@ -9,19 +9,39 @@ import (
 	"io/ioutil"
 	"path"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/elastic/package-spec/code/go/internal/spectypes"
 	"github.com/pkg/errors"
-	"gopkg.in/yaml.v3"
 )
 
-// LoadFolderSpec loads a spec from a directory in the given filesystem.
-func LoadFolderSpec(fs fs.FS, specPath string) (*ItemSpec, error) {
-	var spec folderItemSpec
-	return &ItemSpec{&spec}, spec.loadFolderSpec(fs, path.Join(specPath, "spec.yml"))
+// FolderSpecLoader loads specs from directories.
+type FolderSpecLoader struct {
+	fs             fs.FS
+	fileSpecLoader spectypes.FileSchemaLoader
 }
 
-func (s *folderItemSpec) loadFolderSpec(fs fs.FS, specPath string) error {
-	specFile, err := fs.Open(specPath)
+// NewFolderSpecLoader creates a new `FolderSpecLoader` that loads schemas from the given directories.
+// File schemas referenced with `$ref` are loaded using the given `FileSchemaLoader`.
+func NewFolderSpecLoader(fs fs.FS, fileLoader spectypes.FileSchemaLoader) *FolderSpecLoader {
+	return &FolderSpecLoader{
+		fs:             fs,
+		fileSpecLoader: fileLoader,
+	}
+}
+
+// Load loads a spec from the given path.
+func (l *FolderSpecLoader) Load(specPath string) (*ItemSpec, error) {
+	var spec folderItemSpec
+	err := l.loadFolderSpec(&spec, path.Join(specPath, "spec.yml"))
+	if err != nil {
+		return nil, err
+	}
+	return &ItemSpec{&spec}, nil
+}
+
+func (l *FolderSpecLoader) loadFolderSpec(s *folderItemSpec, specPath string) error {
+	specFile, err := l.fs.Open(specPath)
 	if err != nil {
 		return errors.Wrap(err, "could not open folder specification file")
 	}
@@ -40,7 +60,7 @@ func (s *folderItemSpec) loadFolderSpec(fs fs.FS, specPath string) error {
 		return errors.Wrap(err, "could not parse folder specification file")
 	}
 
-	err = s.loadContents(fs, specPath)
+	err = l.loadContents(s, l.fs, specPath)
 	if err != nil {
 		return err
 	}
@@ -55,7 +75,7 @@ func (s *folderItemSpec) loadFolderSpec(fs fs.FS, specPath string) error {
 	return nil
 }
 
-func (s *folderItemSpec) loadContents(fs fs.FS, specPath string) error {
+func (l *FolderSpecLoader) loadContents(s *folderItemSpec, fs fs.FS, specPath string) error {
 	var content *folderItemSpec
 	contents := append([]*folderItemSpec{}, s.Contents...)
 
@@ -76,12 +96,22 @@ func (s *folderItemSpec) loadContents(fs fs.FS, specPath string) error {
 			// Resolve references.
 			switch content.ItemType {
 			case spectypes.ItemTypeFile:
-				if err := content.loadSchema(fs, path.Dir(specPath)); err != nil {
+				if l.fileSpecLoader == nil {
+					break
+				}
+				specPath := path.Join(path.Dir(specPath), content.Ref)
+				options := spectypes.FileSchemaLoadOptions{
+					Limits:      &ItemSpec{content},
+					ContentType: content.ContentMediaType,
+				}
+				schema, err := l.fileSpecLoader.Load(fs, specPath, options)
+				if err != nil {
 					return errors.Wrapf(err, "could not load schema for %q", path.Dir(specPath))
 				}
+				content.schema = schema
 			case spectypes.ItemTypeFolder:
 				p := path.Join(path.Dir(specPath), content.Ref)
-				err := content.loadFolderSpec(fs, p)
+				err := l.loadFolderSpec(content, p)
 				if err != nil {
 					return errors.Wrapf(err, "could not load spec for %q", p)
 				}
