@@ -17,7 +17,7 @@ import (
 )
 
 type reference struct {
-	Id   string
+	ID   string
 	Name string
 	Type string
 }
@@ -54,8 +54,8 @@ func ValidateDashboardsByValue(fsys fspath.FS) ve.ValidationErrors {
 
 		for _, reference := range references {
 			if reference.Type == "visualization" {
-				// errs = append(errs, fmt.Errorf("Kibana Dashboard %s contains a visualization by reference \"%s\"", fsys.Path(filePath), reference.Id))
-				log.Printf("Warning: Kibana Dashboard %s contains a visualization by reference \"%s\"", fsys.Path(filePath), reference.Id)
+				// errs = append(errs, fmt.Errorf("Kibana Dashboard %s contains a visualization by reference \"%s\"", fsys.Path(filePath), reference.ID))
+				log.Printf("Warning: Kibana Dashboard %s contains a visualization by reference \"%s\"", fsys.Path(filePath), reference.ID)
 			}
 		}
 	}
