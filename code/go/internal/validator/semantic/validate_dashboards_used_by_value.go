@@ -40,38 +40,45 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) ve.ValidationErrors {
 	for _, objectFile := range objectFiles {
 		filePath := objectFile.Path()
 
+		// objectReferences, err := objectFile.Values("$.references[?(@.type=='visualization')]")
 		objectReferences, err := objectFile.Values("$.references")
 		if err != nil {
 			// log.Printf("Warning: unable to get kibana dashboard references in file [%s]", fsys.Path(filePath))
 			//  errs = append(errs, errors.Wrapf(err, "unable to get Kibana Dashboard references in file [%s]", fsys.Path(filePath)))
 			continue
 		}
-
 		references, err := toReferenceSlice(objectReferences)
 		if err != nil {
 			errs = append(errs, errors.Wrapf(err, "unable to convert references in file [%s]", fsys.Path(filePath)))
 			continue
 		}
-
-		for _, reference := range references {
-			if reference.Type == "visualization" {
-				// errs = append(errs, fmt.Errorf("Kibana Dashboard %s contains a visualization by reference \"%s\"", fsys.Path(filePath), reference.ID))
-				log.Printf("Warning: Kibana Dashboard %s contains a visualization by reference \"%s\"", fsys.Path(filePath), reference.ID)
-			}
+		if checkAnyVisualizationByReference(references) {
+			// errs = append(errs, fmt.Errorf("Kibana Dashboard %s contains a visualization by reference \"%s\"", fsys.Path(filePath), reference.ID))
+			log.Printf("Warning: Kibana Dashboard %s contains a visualization by reference", fsys.Path(filePath))
 		}
 	}
 
 	return errs
 }
 
-func toReferenceSlice(val interface{}) ([]reference, error) {
-	vals, ok := val.([]interface{})
-	if !ok {
-		return nil, errors.New("conversion error")
+func checkAnyVisualizationByReference(references []reference) bool {
+	byReference := false
+	if len(references) > 0 {
+		log.Printf("WARNING Dashboard with visualization by reference")
 	}
 
+	for _, reference := range references {
+		if reference.Type == "visualization" {
+			log.Printf("Warning: Visualization by reference: %s", reference.ID)
+			byReference = true
+		}
+	}
+	return byReference
+}
+
+func toReferenceSlice(val interface{}) ([]reference, error) {
 	var refs []reference
-	jsonbody, err := json.Marshal(vals)
+	jsonbody, err := json.Marshal(val)
 	if err != nil {
 		log.Printf("error encoding reference list: %s", err)
 		return refs, nil
