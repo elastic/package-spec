@@ -7,7 +7,6 @@ package specschema
 import (
 	"io/fs"
 	"reflect"
-	"sync"
 
 	"github.com/creasty/defaults"
 	"github.com/pkg/errors"
@@ -200,8 +199,6 @@ func (l *specLimits) update(o specLimits) {
 		}
 	}
 }
-
-var formatCheckersMutex sync.Mutex
 
 func (s *folderItemSpec) ValidateSchema(fsys fs.FS, itemPath string) ve.ValidationErrors {
 	if s.schema == nil {
