@@ -11,6 +11,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/elastic/package-spec/code/go/internal/spectypes"
 	"github.com/pkg/errors"
 )
@@ -18,14 +19,16 @@ import (
 // FolderSpecLoader loads specs from directories.
 type FolderSpecLoader struct {
 	fs             fs.FS
+	version        *semver.Version
 	fileSpecLoader spectypes.FileSchemaLoader
 }
 
 // NewFolderSpecLoader creates a new `FolderSpecLoader` that loads schemas from the given directories.
 // File schemas referenced with `$ref` are loaded using the given `FileSchemaLoader`.
-func NewFolderSpecLoader(fs fs.FS, fileLoader spectypes.FileSchemaLoader) *FolderSpecLoader {
+func NewFolderSpecLoader(fs fs.FS, version *semver.Version, fileLoader spectypes.FileSchemaLoader) *FolderSpecLoader {
 	return &FolderSpecLoader{
 		fs:             fs,
+		version:        version,
 		fileSpecLoader: fileLoader,
 	}
 }
@@ -101,6 +104,7 @@ func (l *FolderSpecLoader) loadContents(s *folderItemSpec, fs fs.FS, specPath st
 				}
 				specPath := path.Join(path.Dir(specPath), content.Ref)
 				options := spectypes.FileSchemaLoadOptions{
+					SpecVersion: l.version,
 					Limits:      &ItemSpec{content},
 					ContentType: content.ContentMediaType,
 				}

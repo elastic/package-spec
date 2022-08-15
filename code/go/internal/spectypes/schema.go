@@ -7,6 +7,8 @@ package spectypes
 import (
 	"io/fs"
 
+	"github.com/Masterminds/semver/v3"
+
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 )
 
@@ -24,6 +26,7 @@ type FileSchemaLoader interface {
 
 // FileSchemaLoadOptions provides additional information for package loading.
 type FileSchemaLoadOptions struct {
+	SpecVersion *semver.Version
 	ContentType *ContentType
 	Limits      LimitsSpec
 }

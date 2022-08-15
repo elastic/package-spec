@@ -5,6 +5,7 @@
 package cueschema
 
 import (
+	"bytes"
 	"fmt"
 	"io/fs"
 	"io/ioutil"
@@ -43,17 +44,10 @@ func (f *FileSchemaLoader) Load(fsys fs.FS, schemaPath string, options spectypes
 		return nil, err
 	}
 
-	spec, err := loadSpec(d)
+	spec, err := loadSpec(d, options)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load instance with spec: %w", err)
 	}
-
-	/**
-	spec := cueCtx.CompileBytes(d)
-	if err := spec.Err(); err != nil {
-		return nil, fmt.Errorf("failed to compile CUE file %q: %w", filePath, err)
-	}
-	*/
 
 	if definition != "" {
 		spec = spec.LookupDef(definition)
@@ -98,7 +92,7 @@ func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
 	return nil
 }
 
-func loadSpec(specBytes []byte) (cue.Value, error) {
+func loadSpec(specBytes []byte, options spectypes.FileSchemaLoadOptions) (cue.Value, error) {
 	// This is a hack till https://github.com/cue-lang/cue/issues/607 is solved.
 	tmpDir, err := os.MkdirTemp("", "package-spec-")
 	if err != nil {
@@ -125,8 +119,20 @@ func loadSpec(specBytes []byte) (cue.Value, error) {
 		}
 	}
 
+	var specBuffer bytes.Buffer
+	specBuffer.Write(specBytes)
+	if sv := options.SpecVersion; sv != nil {
+		// This way of injection is a bit hacky, but tags require that all defined tags are used.
+		specBuffer.WriteString("\n")
+		fmt.Fprintf(&specBuffer, "spec_version_major: %d\n", sv.Major())
+		fmt.Fprintf(&specBuffer, "spec_version_minor: %d\n", sv.Major())
+		fmt.Fprintf(&specBuffer, "spec_version_patch: %d\n", sv.Major())
+		fmt.Fprintf(&specBuffer, "spec_version_prerelease: \"%s\"\n", sv.Prerelease())
+		fmt.Fprintf(&specBuffer, "spec_version: \"%s\"\n", sv.String())
+	}
+
 	specFilePath := filepath.Join(tmpDir, "spec.cue")
-	err = ioutil.WriteFile(specFilePath, specBytes, 0644)
+	err = ioutil.WriteFile(specFilePath, specBuffer.Bytes(), 0644)
 	if err != nil {
 		return cue.Value{}, fmt.Errorf("failed to write %q for copy of spec", specFilePath)
 	}

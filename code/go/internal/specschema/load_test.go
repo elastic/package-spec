@@ -17,7 +17,7 @@ import (
 
 func TestLoadFolderSpec(t *testing.T) {
 	fileSpecLoader := yamlschema.NewFileSchemaLoader()
-	loader := NewFolderSpecLoader(os.DirFS("./testdata"), fileSpecLoader)
+	loader := NewFolderSpecLoader(os.DirFS("./testdata"), nil, fileSpecLoader)
 	spec, err := loader.Load("simple-spec")
 	require.NoError(t, err)
 

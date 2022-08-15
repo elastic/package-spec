@@ -53,7 +53,7 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 
 	fileSpecLoader := mixedloader.NewFileSchemaLoader()
-	loader := specschema.NewFolderSpecLoader(s.fs, fileSpecLoader)
+	loader := specschema.NewFolderSpecLoader(s.fs, &s.version, fileSpecLoader)
 
 	rootSpec, err := loader.Load(pkg.Type)
 	if err != nil {

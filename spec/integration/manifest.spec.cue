@@ -1,5 +1,7 @@
 import "github.com/elastic/package-spec/spec:spec"
 
+spec_version_major: int
+
 #Manifest: {
   format_version: spec.Version
   name: spec.PackageName
@@ -8,7 +10,6 @@ import "github.com/elastic/package-spec/spec:spec"
   description: string
   version: spec.Version
   source?: spec.Source
-  license?: spec.Subscription
   release?: spec.Release
   categories?: [...spec.Category]
   conditions?: spec.Conditions
@@ -18,6 +19,11 @@ import "github.com/elastic/package-spec/spec:spec"
   screenshots?: [...spec.Screenshot]
   owner: spec.Owner
   elasticsearch?: privileges?: cluster?: [...string]
+
+  if spec_version_major < 2 {
+    // Deprecated
+    license?: spec.Subscription
+  }
 }
 
 PolicyTemplate: {
