@@ -1,0 +1,26 @@
+##
+## Entrypoint of "integration packages" specification.
+##
+## Describes the folders and files that make up a package.
+##
+spec:
+  additionalContents: true
+  totalContentsLimit: 65535
+  totalSizeLimit: 250MB
+  sizeLimit: 150MB
+  configurationSizeLimit: 5MB
+  relativePathSizeLimit: 3MB
+  fieldsPerDataStreamLimit: 2048
+  contents:
+  - description: The main package manifest file
+    type: file
+    contentMediaType: "application/x-yaml"
+    sizeLimit: 5MB
+    name: "manifest.yml"
+    required: true
+    $ref: "./manifest.spec.yml"
+  - description: Folder containing documentation for the package
+    type: folder
+    name: docs
+    required: true
+    $ref: "./docs/spec.yml"

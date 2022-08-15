@@ -7,7 +7,6 @@ package validator
 import (
 	"io/fs"
 	"log"
-	"path"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
@@ -15,7 +14,10 @@ import (
 	spec "github.com/elastic/package-spec"
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/fspath"
+	"github.com/elastic/package-spec/code/go/internal/specschema"
+	"github.com/elastic/package-spec/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
+	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
 // Spec represents a package specification
@@ -50,16 +52,18 @@ func NewSpec(version semver.Version) (*Spec, error) {
 func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 
-	var rootSpec folderSpec
-	rootSpecPath := path.Join(pkg.Type, "spec.yml")
-	err := rootSpec.load(s.fs, rootSpecPath)
+	fileSpecLoader := yamlschema.NewFileSchemaLoader()
+	loader := specschema.NewFolderSpecLoader(s.fs, fileSpecLoader)
+
+	rootSpec, err := loader.Load(pkg.Type)
 	if err != nil {
 		errs = append(errs, errors.Wrap(err, "could not read root folder spec file"))
 		return errs
 	}
 
 	// Syntactic validations
-	errs = rootSpec.validate(&pkg, ".")
+	validator := newValidator(rootSpec, &pkg)
+	errs = validator.Validate()
 	if len(errs) != 0 {
 		return errs
 	}
@@ -68,7 +72,7 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	return s.rules(rootSpec).validate(&pkg)
 }
 
-func (s Spec) rules(rootSpec folderSpec) validationRules {
+func (s Spec) rules(rootSpec spectypes.ItemSpec) validationRules {
 	rulesDef := []struct {
 		fn    validationRule
 		since *semver.Version
@@ -79,7 +83,7 @@ func (s Spec) rules(rootSpec folderSpec) validationRules {
 		{fn: semantic.ValidateChangelogLinks},
 		{fn: semantic.ValidatePrerelease},
 		{fn: semantic.ValidateFieldGroups},
-		{fn: semantic.ValidateFieldsLimits(rootSpec.Limits.FieldsPerDataStreamLimit)},
+		{fn: semantic.ValidateFieldsLimits(rootSpec.MaxFieldsPerDataStream())},
 		{fn: semantic.ValidateUniqueFields, since: semver.MustParse("2.0.0")},
 		{fn: semantic.ValidateDimensionFields},
 		{fn: semantic.ValidateRequiredFields},
