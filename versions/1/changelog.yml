@@ -4,6 +4,9 @@
 ##
 - version: 1.14.1-next
   changes:
+  - description: Add support for icons in dark mode
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/378
   - description: Add definition for the license file in a package
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/367

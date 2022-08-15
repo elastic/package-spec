@@ -11,10 +11,11 @@ import (
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/fspath"
+	"github.com/elastic/package-spec/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
 )
 
-type validationRulesBuilder func(rootSpec folderSpec) validationRules
+type validationRulesBuilder func(rootSpec spectypes.ItemSpec) validationRules
 
 type validationRules []func(pkg fspath.FS) ve.ValidationErrors
 
@@ -31,27 +32,27 @@ func (vr validationRules) validate(fsys fspath.FS) ve.ValidationErrors {
 func newRulesBuilder(version semver.Version) (validationRulesBuilder, error) {
 	switch version.Major() {
 	case 0, 1:
-		return func(rootSpec folderSpec) validationRules {
+		return func(rootSpec spectypes.ItemSpec) validationRules {
 			return validationRules{
 				semantic.ValidateKibanaObjectIDs,
 				semantic.ValidateVersionIntegrity,
 				semantic.ValidateChangelogLinks,
 				semantic.ValidatePrerelease,
 				semantic.ValidateFieldGroups,
-				semantic.ValidateFieldsLimits(rootSpec.Limits.FieldsPerDataStreamLimit),
+				semantic.ValidateFieldsLimits(rootSpec.MaxFieldsPerDataStream()),
 				semantic.ValidateDimensionFields,
 				semantic.ValidateRequiredFields,
 			}
 		}, nil
 	case 2:
-		return func(rootSpec folderSpec) validationRules {
+		return func(rootSpec spectypes.ItemSpec) validationRules {
 			return validationRules{
 				semantic.ValidateKibanaObjectIDs,
 				semantic.ValidateVersionIntegrity,
 				semantic.ValidateChangelogLinks,
 				semantic.ValidatePrerelease,
 				semantic.ValidateFieldGroups,
-				semantic.ValidateFieldsLimits(rootSpec.Limits.FieldsPerDataStreamLimit),
+				semantic.ValidateFieldsLimits(rootSpec.MaxFieldsPerDataStream()),
 				// Temporarily disabled: https://github.com/elastic/package-spec/issues/331
 				//semantic.ValidateUniqueFields,
 				semantic.ValidateUniqueFields,

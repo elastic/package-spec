@@ -31,6 +31,7 @@ func TestValidateFile(t *testing.T) {
 		"custom_logs":         {},
 		"httpjson_input":      {},
 		"sql_input":           {},
+		"icons_dark_mode":     {},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
