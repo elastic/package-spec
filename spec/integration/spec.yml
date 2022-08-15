@@ -18,7 +18,7 @@ spec:
     sizeLimit: 5MB
     name: "manifest.yml"
     required: true
-    $ref: "./manifest.spec.yml"
+    $ref: "./manifest.spec.cue#Manifest"
   - description: The package's CHANGELOG file
     type: file
     contentMediaType: "application/x-yaml"
