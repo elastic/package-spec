@@ -9,4 +9,5 @@ package tools
 import (
 	_ "github.com/elastic/go-licenser"
 	_ "golang.org/x/lint/golint"
+	_ "gotest.tools/gotestsum"
 )
