@@ -24,12 +24,15 @@ import (
 	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
+// FileSchemaLoader implements schema loading from CUE definitions.
 type FileSchemaLoader struct{}
 
+// NewFileSchemaLoader creates a new FileSchemaLoader for CUE definitions.
 func NewFileSchemaLoader() *FileSchemaLoader {
 	return &FileSchemaLoader{}
 }
 
+// Load loads a schema from a CUE file in the given filesystem.
 func (f *FileSchemaLoader) Load(fsys fs.FS, schemaPath string, options spectypes.FileSchemaLoadOptions) (spectypes.FileSchema, error) {
 	parts := strings.SplitN(schemaPath, "#", 2)
 
@@ -59,11 +62,13 @@ func (f *FileSchemaLoader) Load(fsys fs.FS, schemaPath string, options spectypes
 	return &FileSchema{spec, options}, nil
 }
 
+// FileSchema is a schema for a file.
 type FileSchema struct {
 	spec    cue.Value
 	options spectypes.FileSchemaLoadOptions
 }
 
+// Validate validates that the given file complies with the schema.
 func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
 	d, err := fs.ReadFile(fsys, filePath)
 	if err != nil {

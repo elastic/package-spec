@@ -15,11 +15,13 @@ import (
 	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
+// FileSchemaLoader can load schemas from different formats based on the extension of the file.
 type FileSchemaLoader struct {
 	cueschema  *cueschema.FileSchemaLoader
 	yamlschema *yamlschema.FileSchemaLoader
 }
 
+// NewFileSchemaLoader builds a new FileSchemaLoader.
 func NewFileSchemaLoader() *FileSchemaLoader {
 	return &FileSchemaLoader{
 		cueschema:  cueschema.NewFileSchemaLoader(),
@@ -27,6 +29,8 @@ func NewFileSchemaLoader() *FileSchemaLoader {
 	}
 }
 
+// Load loads a schema from a file in the given filesystem. It uses a different decoder depending on the
+// extension of the file.
 func (f *FileSchemaLoader) Load(fs fs.FS, schemaPath string, options spectypes.FileSchemaLoadOptions) (spectypes.FileSchema, error) {
 	parts := strings.SplitN(schemaPath, "#", 2)
 	switch path.Ext(parts[0]) {
