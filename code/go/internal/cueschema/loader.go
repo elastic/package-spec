@@ -20,6 +20,7 @@ import (
 	spec "github.com/elastic/package-spec"
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
 type FileSchemaLoader struct{}
@@ -71,6 +72,11 @@ type FileSchema struct {
 
 func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
 	d, err := fs.ReadFile(fsys, filePath)
+	if err != nil {
+		return ve.ValidationErrors{err}
+	}
+
+	d, err = yamlschema.ConvertYAMLToJSON(d)
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}

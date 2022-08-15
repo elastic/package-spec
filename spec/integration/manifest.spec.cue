@@ -14,6 +14,7 @@ import "github.com/elastic/package-spec/spec:spec"
   conditions?: spec.Conditions
   policy_templates?: [...PolicyTemplate]
   icons?: [...spec.Icon]
+  vars?: [...spec.Variable]
   screenshots?: [...spec.Screenshot]
   owner: spec.Owner
   elasticsearch?: privileges?: cluster?: [...string]
@@ -29,7 +30,7 @@ PolicyTemplate: {
   multiple?: bool
   icons?: [...spec.Icon]
   screenshots?: [...spec.Screenshot]
-  vars: [...spec.Variable]
+  vars?: [...spec.Variable]
 }
 
 Input: {
@@ -39,4 +40,5 @@ Input: {
   template_path?: string
   input_group?: string
   multi?: *false | bool
+  vars?: [...spec.Variable]
 }

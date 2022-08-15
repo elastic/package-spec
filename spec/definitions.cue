@@ -7,7 +7,7 @@ Conditions: {
     subscription?: Subscription
   }
   kibana?: {
-    version?: Version
+    version?: string
   }
 }
 
@@ -21,7 +21,7 @@ Icon: {
   dark_mode?: bool
 }
 
-InputVariableValue: null | string | int | bool | [...InputVariableValue]
+InputVariableValue: null | string | int | bool | [...string] | [...int] | [...bool]
 
 License: "Apache-2.0" | "Elastic-2.0"
 
@@ -31,7 +31,7 @@ RelativePath: string // TODO: How to implement this?
 
 Release: "ga" | "beta" | "experimental"
 
-Owner: github: =~"^(([a-zA-Z0-9-]+)|([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+))$"
+Owner: github: =~ "^(([a-zA-Z0-9-]+)|([a-zA-Z0-9-]+/[a-zA-Z0-9-]+))$"
 
 Screenshot: {
   src: RelativePath
@@ -46,7 +46,7 @@ Source: {
 
 Subscription: "basic" | "gold" | "platinum" | "enterprise"
 
-Variable:
+Variable: {
   name: string
   type: DataType
   title?: string
@@ -55,6 +55,8 @@ Variable:
   required?: *false | bool
   show_user?: *false | bool
   url_allowed_schemes?: [...string]
-  default: InputVariableValue
+  default?: InputVariableValue
+}
 
-Version: =~"^([0-9]+).([0-9]+).([0-9]+)(?:-([0-9A-Za-z-]+(?:.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$"
+// Version: =~"^([0-9]+).([0-9]+).([0-9]+)(?:-([0-9A-Za-z-]+(?:.[0-9A-Za-z-]+)*))?(?:+[0-9A-Za-z-]+)?$"
+Version: string

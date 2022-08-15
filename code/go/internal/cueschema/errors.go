@@ -15,8 +15,9 @@ import (
 )
 
 var (
-	reEmptyDisjunctionErr  = regexp.MustCompile(`^(.*): (\d+) errors in empty disjunction`)
-	reConflictingValuesErr = regexp.MustCompile(`^(.*): conflicting values (.*) and (.*)`)
+	reEmptyDisjunctionErr   = regexp.MustCompile(`^(.*): (\d+) errors in empty disjunction`)
+	reConflictingValuesErr  = regexp.MustCompile(`^(.*): conflicting values (.*) and (.*)`)
+	reRegexpDoesNotMatchErr = regexp.MustCompile(`^(.*): invalid value (.*) \(out of bound =~"(.*)"\)`)
 )
 
 // validationErrors transforms cue errors into more human-friendly errors.
@@ -34,6 +35,14 @@ func validationErrors(filename string, err error) []error {
 			err := builder.Build()
 			result = append(result, err)
 			i += n
+			continue
+		}
+
+		if m := reRegexpDoesNotMatchErr.FindStringSubmatch(e.Error()); len(m) > 0 {
+			fieldName := m[1]
+			pattern := m[3]
+			err := fmt.Errorf("field %s: Does not match pattern '%s'", fieldName, pattern)
+			result = append(result, err)
 			continue
 		}
 

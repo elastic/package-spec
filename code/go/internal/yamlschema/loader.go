@@ -78,12 +78,12 @@ func loadItemSchema(fsys fs.FS, path string, contentType *spectypes.ContentType)
 		return nil, ve.ValidationErrors{errors.Wrap(err, "reading item file failed")}
 	}
 	if contentType != nil && contentType.MediaType == "application/x-yaml" {
-		return convertYAMLToJSON(data)
+		return ConvertYAMLToJSON(data)
 	}
 	return data, nil
 }
 
-func convertYAMLToJSON(data []byte) ([]byte, error) {
+func ConvertYAMLToJSON(data []byte) ([]byte, error) {
 	var c interface{}
 	err := yaml.Unmarshal(data, &c)
 	if err != nil {

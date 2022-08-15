@@ -24,7 +24,7 @@ spec:
     contentMediaType: "application/x-yaml"
     name: "changelog.yml"
     required: true
-    $ref: "./changelog.spec.yml"
+    $ref: "./changelog.spec.cue#Changelog"
   - description: The package's NOTICE file
     type: file
     contentMediaType: "text/plain"
