@@ -57,4 +57,4 @@ Variable:
   url_allowed_schemes?: [...string]
   default: InputVariableValue
 
-Version: =~"^([0-9]+).([0-9]+).([0-9]+)(?:-([0-9A-Za-z-]+(?:.[0-9A-Za-z-]+)*))?(?:+[0-9A-Za-z-]+)?$"
+Version: =~"^([0-9]+).([0-9]+).([0-9]+)(?:-([0-9A-Za-z-]+(?:.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$"
