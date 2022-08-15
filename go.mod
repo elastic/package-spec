@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/Masterminds/semver/v3 v3.1.1
 	github.com/PaesslerAG/jsonpath v0.1.1
+	github.com/boumenot/gocover-cobertura v1.2.0
 	github.com/creasty/defaults v1.5.2
 	github.com/elastic/go-licenser v0.3.1
 	github.com/elastic/gojsonschema v1.2.1
