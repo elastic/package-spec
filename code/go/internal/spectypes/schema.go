@@ -7,6 +7,7 @@ package spectypes
 import (
 	"io/fs"
 
+	"github.com/Masterminds/semver/v3"
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 )
 
@@ -26,4 +27,5 @@ type FileSchemaLoader interface {
 type FileSchemaLoadOptions struct {
 	ContentType *ContentType
 	Limits      LimitsSpec
+	SpecVersion semver.Version
 }

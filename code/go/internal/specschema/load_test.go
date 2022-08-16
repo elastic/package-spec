@@ -8,6 +8,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -17,7 +18,7 @@ import (
 
 func TestLoadFolderSpec(t *testing.T) {
 	fileSpecLoader := yamlschema.NewFileSchemaLoader()
-	loader := NewFolderSpecLoader(os.DirFS("./testdata"), fileSpecLoader)
+	loader := NewFolderSpecLoader(os.DirFS("./testdata"), fileSpecLoader, semver.Version{})
 	spec, err := loader.Load("simple-spec")
 	require.NoError(t, err)
 
