@@ -55,43 +55,42 @@ func TestToReferencesToSlice(t *testing.T) {
 	}
 }
 
-func TestAnyVisualizationByReference(t *testing.T) {
+func TestAnyReference(t *testing.T) {
 
 	var tests = []struct {
 		name       string
-		references []reference
+		path       string
+		references []map[string]string
 		expected   bool
 	}{
 		{
 			"AllReferences",
-			[]reference{
-				{"12345", "panel_0", "visualization"},
-				{"9000", "panel_1", "visualization"},
+			"path",
+			[]map[string]string{
+				{
+					"id":   "12345",
+					"name": "panel_0",
+					"type": "visualization",
+				},
+				{
+					"id":   "9000",
+					"name": "panel_1",
+					"type": "visualization",
+				},
 			},
 			true,
-		},
-		{
-			"NoneReferences",
-			[]reference{{"42", "panel_42", "other"}},
-			false,
 		},
 		{
 			"Empty",
-			[]reference{},
+			"path",
+			[]map[string]string{},
 			false,
-		},
-		{
-			"SomeReferences",
-			[]reference{
-				{"12345", "panel_0", "visualization"},
-				{"42", "panel_42", "other"},
-			},
-			true,
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			anyReference := checkAnyVisualizationByReference(test.references)
+			anyReference, err := anyReference(test.references, test.path)
+			require.NoError(t, err)
 			assert.Equal(t, test.expected, anyReference)
 		})
 	}

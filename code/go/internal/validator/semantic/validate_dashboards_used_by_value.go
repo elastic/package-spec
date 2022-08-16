@@ -6,6 +6,7 @@ package semantic
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"path"
 
@@ -40,40 +41,34 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) ve.ValidationErrors {
 	for _, objectFile := range objectFiles {
 		filePath := objectFile.Path()
 
-		// objectReferences, err := objectFile.Values("$.references[?(@.type=='visualization')]")
-		objectReferences, err := objectFile.Values("$.references")
+		objectReferences, err := objectFile.Values(`$.references[?(@.type=="visualization")]`)
 		if err != nil {
-			// log.Printf("Warning: unable to get kibana dashboard references in file [%s]", fsys.Path(filePath))
-			//  errs = append(errs, errors.Wrapf(err, "unable to get Kibana Dashboard references in file [%s]", fsys.Path(filePath)))
+			errs = append(errs, errors.Wrapf(err, "unable to get Kibana Dashboard references in file [%s]", fsys.Path(filePath)))
 			continue
 		}
-		references, err := toReferenceSlice(objectReferences)
-		if err != nil {
-			errs = append(errs, errors.Wrapf(err, "unable to convert references in file [%s]", fsys.Path(filePath)))
-			continue
-		}
-		if checkAnyVisualizationByReference(references) {
-			// errs = append(errs, fmt.Errorf("Kibana Dashboard %s contains a visualization by reference \"%s\"", fsys.Path(filePath), reference.ID))
-			log.Printf("Warning: Kibana Dashboard %s contains a visualization by reference", fsys.Path(filePath))
-		}
+
+		anyReference(objectReferences, fsys.Path(filePath))
 	}
 
 	return errs
 }
 
-func checkAnyVisualizationByReference(references []reference) bool {
-	byReference := false
-	if len(references) > 0 {
-		log.Printf("WARNING Dashboard with visualization by reference")
+func anyReference(val interface{}, path string) (bool, error) {
+	references, err := toReferenceSlice(val)
+	if err != nil {
+		return false, fmt.Errorf("unable to convert references in file [%s]", path)
 	}
 
-	for _, reference := range references {
-		if reference.Type == "visualization" {
-			log.Printf("Warning: Visualization by reference: %s", reference.ID)
-			byReference = true
-		}
+	if len(references) == 0 {
+		return false, nil
 	}
-	return byReference
+
+	log.Printf("Warning: Kibana Dashboard %s contains visualizations by reference:", path)
+	for _, reference := range references {
+		log.Printf("Warning: visualization by reference found: %s", reference.ID)
+	}
+	return true, nil
+
 }
 
 func toReferenceSlice(val interface{}) ([]reference, error) {
