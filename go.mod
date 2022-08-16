@@ -21,6 +21,7 @@ require (
 	github.com/boumenot/gocover-cobertura v1.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.0 // indirect
 	github.com/dnephin/pflag v1.0.7 // indirect
+	github.com/evanphx/json-patch/v5 v5.6.0 // indirect
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect

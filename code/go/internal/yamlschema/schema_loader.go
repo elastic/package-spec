@@ -11,15 +11,12 @@ import (
 	"path"
 	"strings"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/elastic/gojsonschema"
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonreference"
 	"gopkg.in/yaml.v3"
 )
-
-type itemSchemaSpec struct {
-	Spec map[string]interface{} `json:"spec" yaml:"spec"`
-}
 
 type yamlReferenceLoader struct {
 	fs     fs.FS
@@ -72,7 +69,9 @@ func (l *yamlReferenceLoader) LoadJSON() (interface{}, error) {
 	if err != nil {
 		return nil, errors.Wrapf(err, "schema unmarshalling failed (path: %s)", l.source)
 	}
-	return schema.Spec, nil
+
+	v := semver.MustParse("1.0.0") // FIXME: Get an actual version here.
+	return schema.resolve(*v)
 }
 
 func (l *yamlReferenceLoader) JsonReference() (gojsonreference.JsonReference, error) {
