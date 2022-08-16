@@ -90,6 +90,12 @@ func TestValidateFile(t *testing.T) {
 				"field services.docker-custom-agent: Must not validate the schema (not)",
 			},
 		},
+		"invalid_field_for_version": {
+			"manifest.yml",
+			[]string{
+				"field (root): Additional property license is not allowed",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
