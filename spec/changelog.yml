@@ -7,6 +7,9 @@
   - description: Enable validation of duplicated fields.
     type: enhancement
     link: https://github.com/elastic/package-spec/issues/331
+  - description: Remove deprecated `license` field.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/issues/331
 - version: 1.14.1-next
   changes:
   - description: Add support for icons in dark mode
