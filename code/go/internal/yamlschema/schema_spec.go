@@ -13,13 +13,16 @@ import (
 )
 
 type itemSchemaSpec struct {
-	Versions []itemSchemaVersion
 	Spec     map[string]interface{} `json:"spec" yaml:"spec"`
+	Versions []itemSchemaVersion    `json:"versions" yaml:"versions"`
 }
 
 type itemSchemaVersion struct {
-	Before string        `json:"before" yaml:"before"`
-	Patch  []interface{} `json:"patch" yaml:"patch"`
+	// Before is the first version that didn't include this change.
+	Before string `json:"before" yaml:"before"`
+
+	// Patch is a list of JSON patch operations as defined by RFC6902.
+	Patch []interface{} `json:"patch" yaml:"patch"`
 }
 
 func (i *itemSchemaSpec) resolve(target semver.Version) (map[string]interface{}, error) {
