@@ -48,7 +48,7 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) ve.ValidationErrors {
 
 		references, err := anyReference(objectReferences)
 		if err != nil {
-			errs = append(errs, errors.Wrap(err, "error getting references in file: %s", fsys.Path(filePath)))
+			errs = append(errs, errors.Wrapf(err, "error getting references in file: %s", fsys.Path(filePath)))
 		}
 		if len(references) > 0 {
 			s := fmt.Sprintf("%s (%s)", references[0].ID, references[0].Type)

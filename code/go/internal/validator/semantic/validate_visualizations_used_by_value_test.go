@@ -59,13 +59,11 @@ func TestAnyReference(t *testing.T) {
 
 	var tests = []struct {
 		name       string
-		path       string
 		references interface{}
 		expected   []reference
 	}{
 		{
 			"SomeReferences",
-			"path",
 			[]interface{}{
 				map[string]interface{}{
 					"id":   "12345",
@@ -95,14 +93,13 @@ func TestAnyReference(t *testing.T) {
 		},
 		{
 			"Empty",
-			"path",
 			[]interface{}{},
 			[]reference{},
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			ids, err := anyReference(test.references, test.path)
+			ids, err := anyReference(test.references)
 			require.NoError(t, err)
 			assert.Equal(t, test.expected, ids)
 		})
