@@ -14,6 +14,7 @@ import (
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/fspath"
 	"github.com/elastic/package-spec/code/go/internal/pkgpath"
+	"github.com/elastic/package-spec/code/go/internal/validator/common"
 )
 
 type reference struct {
@@ -28,6 +29,7 @@ type reference struct {
 // defines some visualization using reference (containing an element of
 // "visualization" type inside references key).
 func ValidateVisualizationsUsedByValue(fsys fspath.FS) ve.ValidationErrors {
+	warningsAsErrors := common.IsDefinedWarningsAsErrors()
 	var errs ve.ValidationErrors
 
 	filePaths := path.Join("kibana", "dashboard", "*.json")
@@ -55,7 +57,12 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) ve.ValidationErrors {
 			for _, ref := range references[1:] {
 				s = fmt.Sprintf("%s, %s (%s)", s, ref.ID, ref.Type)
 			}
-			log.Printf("Warning: references found in dashboard %s: %s", filePath, s)
+			if warningsAsErrors {
+				errs = append(errs, errors.Errorf("Warning: references found in dashboard %s: %s", filePath, s))
+			} else {
+				log.Printf("Warning: references found in dashboard %s: %s", filePath, s)
+			}
+
 		}
 	}
 
