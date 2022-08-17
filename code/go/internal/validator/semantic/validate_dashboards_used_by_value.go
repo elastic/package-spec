@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"path"
+	"strings"
 
 	"github.com/pkg/errors"
 
@@ -41,33 +42,44 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) ve.ValidationErrors {
 	for _, objectFile := range objectFiles {
 		filePath := objectFile.Path()
 
-		objectReferences, err := objectFile.Values(`$.references[?(@.type=="visualization")]`)
+		objectReferences, err := objectFile.Values(`$.references`)
 		if err != nil {
-			errs = append(errs, errors.Wrapf(err, "unable to get Kibana Dashboard references in file [%s]", fsys.Path(filePath)))
+			// no references key in dashboard json
+			// errs = append(errs, errors.Wrapf(err, "unable to get Kibana Dashboard references in file [%s]", fsys.Path(filePath)))
 			continue
 		}
 
-		anyReference(objectReferences, fsys.Path(filePath))
+		ids, err := anyReference(objectReferences, fsys.Path(filePath))
+		if err != nil {
+			errs = append(errs, errors.Wrap(err, "error getting references"))
+		}
+		if len(ids) > 0 {
+			log.Printf("Warning: visualization by reference found in %s: %s", filePath, strings.Join(ids, ", "))
+		}
 	}
 
 	return errs
 }
 
-func anyReference(val interface{}, path string) (bool, error) {
-	references, err := toReferenceSlice(val)
+func anyReference(val interface{}, path string) ([]string, error) {
+	allReferences, err := toReferenceSlice(val)
 	if err != nil {
-		return false, fmt.Errorf("unable to convert references in file [%s]", path)
+		return []string{}, fmt.Errorf("unable to convert references in file [%s]: %w", path, err)
 	}
 
-	if len(references) == 0 {
-		return false, nil
+	if len(allReferences) == 0 {
+		return []string{}, nil
 	}
 
-	log.Printf("Warning: Kibana Dashboard %s contains visualizations by reference:", path)
-	for _, reference := range references {
-		log.Printf("Warning: visualization by reference found: %s", reference.ID)
+	var idReferences []string
+	for _, reference := range allReferences {
+		switch reference.Type {
+		case "lens", "visualization":
+			log.Printf("Warning: %s by reference found: %s (dashboard %s)", reference.Type, reference.ID, path)
+			idReferences = append(idReferences, reference.ID)
+		}
 	}
-	return true, nil
+	return idReferences, nil
 
 }
 

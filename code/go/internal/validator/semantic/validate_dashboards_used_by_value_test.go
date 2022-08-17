@@ -61,10 +61,10 @@ func TestAnyReference(t *testing.T) {
 		name       string
 		path       string
 		references []map[string]string
-		expected   bool
+		expected   []string
 	}{
 		{
-			"AllReferences",
+			"SomeReferences",
 			"path",
 			[]map[string]string{
 				{
@@ -75,23 +75,33 @@ func TestAnyReference(t *testing.T) {
 				{
 					"id":   "9000",
 					"name": "panel_1",
-					"type": "visualization",
+					"type": "lens",
+				},
+				{
+					"id":   "4",
+					"name": "panel_1",
+					"type": "map",
+				},
+				{
+					"id":   "42",
+					"name": "panel_1",
+					"type": "index-pattern",
 				},
 			},
-			true,
+			[]string{"12345", "9000"},
 		},
 		{
 			"Empty",
 			"path",
 			[]map[string]string{},
-			false,
+			[]string{},
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			anyReference, err := anyReference(test.references, test.path)
+			ids, err := anyReference(test.references, test.path)
 			require.NoError(t, err)
-			assert.Equal(t, test.expected, anyReference)
+			assert.Equal(t, test.expected, ids)
 		})
 	}
 }
