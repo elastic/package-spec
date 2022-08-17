@@ -5,11 +5,9 @@
 package semantic
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"path"
-	"strings"
 
 	"github.com/pkg/errors"
 
@@ -45,57 +43,64 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) ve.ValidationErrors {
 		objectReferences, err := objectFile.Values(`$.references`)
 		if err != nil {
 			// no references key in dashboard json
-			// errs = append(errs, errors.Wrapf(err, "unable to get Kibana Dashboard references in file [%s]", fsys.Path(filePath)))
 			continue
 		}
 
-		ids, err := anyReference(objectReferences, fsys.Path(filePath))
+		references, err := anyReference(objectReferences)
 		if err != nil {
-			errs = append(errs, errors.Wrap(err, "error getting references"))
+			errs = append(errs, errors.Wrap(err, "error getting references in file: %s", fsys.Path(filePath)))
 		}
-		if len(ids) > 0 {
-			log.Printf("Warning: visualization by reference found in %s: %s", filePath, strings.Join(ids, ", "))
+		if len(references) > 0 {
+			s := fmt.Sprintf("%s (%s)", references[0].ID, references[0].Type)
+			for _, ref := range references[1:] {
+				s = fmt.Sprintf("%s, %s (%s)", s, ref.ID, ref.Type)
+			}
+			log.Printf("Warning: references found in dashboard %s: %s", filePath, s)
 		}
 	}
 
 	return errs
 }
 
-func anyReference(val interface{}, path string) ([]string, error) {
+func anyReference(val interface{}) ([]reference, error) {
 	allReferences, err := toReferenceSlice(val)
 	if err != nil {
-		return []string{}, fmt.Errorf("unable to convert references in file [%s]: %w", path, err)
+		return []reference{}, fmt.Errorf("unable to convert references: %w", err)
 	}
 
 	if len(allReferences) == 0 {
-		return []string{}, nil
+		return []reference{}, nil
 	}
 
-	var idReferences []string
+	var references []reference
 	for _, reference := range allReferences {
 		switch reference.Type {
 		case "lens", "visualization":
-			log.Printf("Warning: %s by reference found: %s (dashboard %s)", reference.Type, reference.ID, path)
-			idReferences = append(idReferences, reference.ID)
+			references = append(references, reference)
 		}
 	}
-	return idReferences, nil
+	return references, nil
 
 }
 
 func toReferenceSlice(val interface{}) ([]reference, error) {
+	vals, ok := val.([]interface{})
+	if !ok {
+		return nil, errors.New("conversion error to array")
+	}
 	var refs []reference
-	jsonbody, err := json.Marshal(val)
-	if err != nil {
-		log.Printf("error encoding reference list: %s", err)
-		return refs, nil
-	}
+	for _, v := range vals {
+		r, ok := v.(map[string]interface{})
+		if !ok {
+			return nil, errors.New("conversion error to reference element")
+		}
+		ref := reference{
+			ID:   r["id"].(string),
+			Type: r["type"].(string),
+			Name: r["name"].(string),
+		}
 
-	err = json.Unmarshal(jsonbody, &refs)
-	if err != nil {
-		log.Printf("error unmarshaling references: %s", err)
-		return refs, nil
+		refs = append(refs, ref)
 	}
-
 	return refs, nil
 }

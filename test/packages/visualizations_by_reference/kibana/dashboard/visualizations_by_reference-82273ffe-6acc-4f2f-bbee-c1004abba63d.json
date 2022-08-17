@@ -47,7 +47,7 @@
         {
             "id": "visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b",
             "name": "panel_1",
-            "type": "visualization"
+            "type": "lens"
         }
     ],
     "type": "dashboard"

@@ -15,18 +15,18 @@ func TestToReferencesToSlice(t *testing.T) {
 
 	var tests = []struct {
 		name       string
-		references []map[string]string
+		references interface{}
 		expected   []reference
 	}{
 		{
 			"References",
-			[]map[string]string{
-				{
+			[]interface{}{
+				map[string]interface{}{
 					"id":   "12345",
 					"name": "panel_0",
 					"type": "visualization",
 				},
-				{
+				map[string]interface{}{
 					"id":   "9000",
 					"name": "panel_1",
 					"type": "other",
@@ -60,41 +60,44 @@ func TestAnyReference(t *testing.T) {
 	var tests = []struct {
 		name       string
 		path       string
-		references []map[string]string
-		expected   []string
+		references interface{}
+		expected   []reference
 	}{
 		{
 			"SomeReferences",
 			"path",
-			[]map[string]string{
-				{
+			[]interface{}{
+				map[string]interface{}{
 					"id":   "12345",
 					"name": "panel_0",
 					"type": "visualization",
 				},
-				{
+				map[string]interface{}{
 					"id":   "9000",
 					"name": "panel_1",
 					"type": "lens",
 				},
-				{
+				map[string]interface{}{
 					"id":   "4",
 					"name": "panel_1",
 					"type": "map",
 				},
-				{
+				map[string]interface{}{
 					"id":   "42",
 					"name": "panel_1",
 					"type": "index-pattern",
 				},
 			},
-			[]string{"12345", "9000"},
+			[]reference{
+				{"12345", "panel_0", "visualization"},
+				{"9000", "panel_1", "lens"},
+			},
 		},
 		{
 			"Empty",
 			"path",
-			[]map[string]string{},
-			[]string{},
+			[]interface{}{},
+			[]reference{},
 		},
 	}
 	for _, test := range tests {
