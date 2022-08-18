@@ -2,14 +2,11 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
-- version: 1.14.1-next
+- version: 1.15.0
   changes:
   - description: Add definition for the license file in a package
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/367
-  - description: Prepare for next patch release
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/375
   - description: Add support for icons in dark mode
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/378
