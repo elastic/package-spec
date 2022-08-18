@@ -6,7 +6,7 @@
   changes:
   - description: Prepare for next patch release
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/1
+    link: https://github.com/elastic/package-spec/pull/395
 - version: 1.15.0
   changes:
   - description: Add definition for the license file in a package
