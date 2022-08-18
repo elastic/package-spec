@@ -9,7 +9,8 @@ import (
 	"strconv"
 )
 
-// EnvVarWarningsAsErrors is the environment variable name used to use warnings as errors
+// EnvVarWarningsAsErrors is the environment variable name used to enable warnings as errors
+// this meachinsm will be removed once structured errors are supported https://github.com/elastic/package-spec/issues/342
 const EnvVarWarningsAsErrors = "PACKAGE_SPEC_WARNINGS_AS_ERRORS"
 
 // IsDefinedWarningsAsErrors checks whether or not warnings should be considered as errors,
