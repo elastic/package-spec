@@ -319,6 +319,8 @@ func TestValidateWarnings(t *testing.T) {
 	if err := common.EnableWarningsAsErrors(); err != nil {
 		require.NoError(t, err)
 	}
+	defer common.DisableWarningsAsErrors()
+
 	for pkgName, expectedWarnContains := range tests {
 		t.Run(pkgName, func(t *testing.T) {
 			warnPrefix := fmt.Sprintf("Warning: ")
@@ -346,9 +348,6 @@ func TestValidateWarnings(t *testing.T) {
 				require.Equal(t, errs.Error(), expectedWarnContains[0])
 			}
 		})
-	}
-	if err := common.DisableWarningsAsErrors(); err != nil {
-		require.NoError(t, err)
 	}
 }
 
