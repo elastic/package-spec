@@ -2,7 +2,7 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom.
 ##
-- version: 1.14.1-next
+- version: 1.15.0
   changes:
   - description: Add definition for the license file in a package
     type: enhancement
