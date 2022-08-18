@@ -7,9 +7,6 @@
   - description: Add definition for the license file in a package
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/367
-  - description: Prepare for next patch release
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/375
   - description: Add support for icons in dark mode
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/378
