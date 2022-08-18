@@ -5,11 +5,12 @@
 package validator
 
 import (
-	"github.com/elastic/package-spec/code/go/internal/fspath"
 	"testing"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/stretchr/testify/require"
+
+	"github.com/elastic/package-spec/code/go/internal/fspath"
 )
 
 func TestNewSpec(t *testing.T) {
@@ -60,6 +61,6 @@ func TestBetaFeatures_Package_GA(t *testing.T) {
 	require.NoError(t, err)
 
 	errs := s.ValidatePackage(*pkg)
-	require.Len(t,errs, 1)
+	require.Len(t, errs, 1)
 	require.Equal(t, errs[0].Error(), "spec for [testdata/packages/features_beta/beta] defines beta features which can't be enabled for packages with a stable semantic version")
 }

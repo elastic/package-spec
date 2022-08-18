@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/elastic/package-spec/code/go/internal/errors"
+	"github.com/elastic/package-spec/code/go/internal/validator/common"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -28,9 +29,6 @@ func TestValidateFile(t *testing.T) {
 		"deploy_terraform":    {},
 		"time_series":         {},
 		"missing_data_stream": {},
-		"custom_logs":         {},
-		"httpjson_input":      {},
-		"sql_input":           {},
 		"icons_dark_mode":     {},
 		"bad_additional_content": {
 			"bad-bad",
@@ -300,6 +298,57 @@ func TestValidateDuplicatedFields(t *testing.T) {
 		})
 	}
 
+}
+
+func TestValidateWarnings(t *testing.T) {
+	tests := map[string][]string{
+		"good": []string{},
+		"custom_logs": []string{
+			"package with non-stable semantic version and active beta features (enabled in [../../../../test/packages/custom_logs]) can't be released as stable version.",
+		},
+		"httpjson_input": []string{
+			"package with non-stable semantic version and active beta features (enabled in [../../../../test/packages/httpjson_input]) can't be released as stable version.",
+		},
+		"sql_input": []string{
+			"package with non-stable semantic version and active beta features (enabled in [../../../../test/packages/sql_input]) can't be released as stable version.",
+		},
+		"visualizations_by_reference": []string{
+			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens)",
+		},
+	}
+	if err := common.EnableWarningsAsErrors(); err != nil {
+		require.NoError(t, err)
+	}
+	defer common.DisableWarningsAsErrors()
+
+	for pkgName, expectedWarnContains := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			warnPrefix := fmt.Sprintf("Warning: ")
+
+			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
+			errs := ValidateFromPath(pkgRootPath)
+			if len(expectedWarnContains) == 0 {
+				require.NoError(t, errs)
+			} else {
+				require.Error(t, errs)
+				vErrs, ok := errs.(errors.ValidationErrors)
+				if ok {
+					require.Len(t, errs, len(expectedWarnContains))
+					var warnMessages []string
+					for _, vErr := range vErrs {
+						warnMessages = append(warnMessages, vErr.Error())
+					}
+
+					for _, expectedWarnMessage := range expectedWarnContains {
+						expectedWarn := warnPrefix + expectedWarnMessage
+						require.Contains(t, warnMessages, expectedWarn)
+					}
+					return
+				}
+				require.Equal(t, errs.Error(), expectedWarnContains[0])
+			}
+		})
+	}
 }
 
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {
