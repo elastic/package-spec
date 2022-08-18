@@ -6,27 +6,13 @@ package validator
 
 import (
 	"bufio"
-	"encoding/json"
 	"fmt"
 	"io/fs"
 
 	"github.com/pkg/errors"
-	"gopkg.in/yaml.v3"
 
-	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/spectypes"
 )
-
-func loadItemSchema(fsys fs.FS, path string, contentType *spectypes.ContentType) ([]byte, error) {
-	data, err := fs.ReadFile(fsys, path)
-	if err != nil {
-		return nil, ve.ValidationErrors{errors.Wrap(err, "reading item file failed")}
-	}
-	if contentType != nil && contentType.MediaType == "application/x-yaml" {
-		return convertYAMLToJSON(data)
-	}
-	return data, nil
-}
 
 func validateContentType(fsys fs.FS, path string, contentType spectypes.ContentType) error {
 	switch contentType.MediaType {
@@ -70,7 +56,7 @@ func validateYAMLDashes(fsys fs.FS, path string) error {
 	return nil
 }
 
-func validateContentTypeSize(fsys fs.FS, path string, contentType spectypes.ContentType, limits commonSpecLimits) error {
+func validateContentTypeSize(fsys fs.FS, path string, contentType spectypes.ContentType, limits spectypes.LimitsSpec) error {
 	info, err := fs.Stat(fsys, path)
 	if err != nil {
 		return err
@@ -83,7 +69,7 @@ func validateContentTypeSize(fsys fs.FS, path string, contentType spectypes.Cont
 	var sizeLimit spectypes.FileSize
 	switch contentType.MediaType {
 	case "application/x-yaml":
-		sizeLimit = limits.ConfigurationSizeLimit
+		sizeLimit = limits.MaxConfigurationSize()
 	}
 	if sizeLimit > 0 && size > sizeLimit {
 		return errors.Errorf("file size (%s) is bigger than expected (%s)", size, sizeLimit)
@@ -91,8 +77,8 @@ func validateContentTypeSize(fsys fs.FS, path string, contentType spectypes.Cont
 	return nil
 }
 
-func validateMaxSize(fsys fs.FS, path string, limits commonSpecLimits) error {
-	if limits.SizeLimit == 0 {
+func validateMaxSize(fsys fs.FS, path string, limits spectypes.LimitsSpec) error {
+	if limits.MaxFileSize() == 0 {
 		return nil
 	}
 
@@ -101,52 +87,8 @@ func validateMaxSize(fsys fs.FS, path string, limits commonSpecLimits) error {
 		return err
 	}
 	size := spectypes.FileSize(info.Size())
-	if size > limits.SizeLimit {
-		return errors.Errorf("file size (%s) is bigger than expected (%s)", size, limits.SizeLimit)
+	if size > limits.MaxFileSize() {
+		return errors.Errorf("file size (%s) is bigger than expected (%s)", size, limits.MaxFileSize())
 	}
 	return nil
-}
-
-func convertYAMLToJSON(data []byte) ([]byte, error) {
-	var c interface{}
-	err := yaml.Unmarshal(data, &c)
-	if err != nil {
-		return nil, errors.Wrapf(err, "unmarshalling YAML file failed")
-	}
-	c = expandItemKey(c)
-
-	data, err = json.Marshal(&c)
-	if err != nil {
-		return nil, errors.Wrapf(err, "converting YAML to JSON failed")
-	}
-	return data, nil
-}
-
-func expandItemKey(c interface{}) interface{} {
-	if c == nil {
-		return c
-	}
-
-	// c is an array
-	if cArr, isArray := c.([]interface{}); isArray {
-		var arr []interface{}
-		for _, ca := range cArr {
-			arr = append(arr, expandItemKey(ca))
-		}
-		return arr
-	}
-
-	// c is map[string]interface{}
-	if cMap, isMapString := c.(map[string]interface{}); isMapString {
-		expanded := MapStr{}
-		for k, v := range cMap {
-			ex := expandItemKey(v)
-			_, err := expanded.Put(k, ex)
-			if err != nil {
-				panic(errors.Wrapf(err, "unexpected error while setting key value (key: %s)", k))
-			}
-		}
-		return expanded
-	}
-	return c // c is something else, e.g. string, int, etc.
 }
