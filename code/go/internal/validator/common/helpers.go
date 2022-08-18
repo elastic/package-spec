@@ -1,3 +1,7 @@
+// Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
+// or more contributor license agreements. Licensed under the Elastic License;
+// you may not use this file except in compliance with the Elastic License.
+
 package common
 
 import (
@@ -5,8 +9,11 @@ import (
 	"strconv"
 )
 
+// EnvVarWarningsAsErrors is the environment variable name used to use warnings as errors
 const EnvVarWarningsAsErrors = "PACKAGE_SPEC_WARNINGS_AS_ERRORS"
 
+// IsDefinedWarningsAsErrors checks whether or not warnings should be considered as errors,
+// it checks the environment variable is defined and the value that it contains
 func IsDefinedWarningsAsErrors() bool {
 	var err error
 	warningsAsErrors := false
@@ -20,6 +27,7 @@ func IsDefinedWarningsAsErrors() bool {
 	return warningsAsErrors
 }
 
+// EnableWarningsAsErrors is a function to enable warnings as errors, setting environment variable as true
 func EnableWarningsAsErrors() error {
 	if err := os.Setenv(EnvVarWarningsAsErrors, "true"); err != nil {
 		return err
@@ -27,6 +35,7 @@ func EnableWarningsAsErrors() error {
 	return nil
 }
 
+// DisableWarningsAsErrors is a function to disable warnings as errors, unsetting environment variable
 func DisableWarningsAsErrors() error {
 	if err := os.Unsetenv(EnvVarWarningsAsErrors); err != nil {
 		return err
