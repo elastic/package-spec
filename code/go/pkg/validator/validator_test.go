@@ -325,7 +325,7 @@ func TestValidateWarnings(t *testing.T) {
 		t.Run(pkgName, func(t *testing.T) {
 			warnPrefix := fmt.Sprintf("Warning: ")
 
-			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
+			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
 			errs := ValidateFromPath(pkgRootPath)
 			if len(expectedWarnContains) == 0 {
 				require.NoError(t, errs)
