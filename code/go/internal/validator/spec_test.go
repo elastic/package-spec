@@ -7,8 +7,6 @@ package validator
 import (
 	"testing"
 
-	"github.com/elastic/package-spec/code/go/internal/fspath"
-
 	"github.com/Masterminds/semver/v3"
 	"github.com/stretchr/testify/require"
 
