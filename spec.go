@@ -30,7 +30,7 @@ func FS() fs.FS {
 func CheckVersion(version *semver.Version) (*semver.Version, error) {
 	d, err := fs.ReadFile(content, "spec/changelog.yml")
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("failed to read spec changelog: %w", err)
 	}
 
 	var entries []struct {
