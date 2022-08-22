@@ -16,6 +16,7 @@ import (
 
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/code/go/internal/validator/common"
 )
 
 type validator struct {
@@ -61,7 +62,11 @@ func (v *validator) Validate() ve.ValidationErrors {
 		if v.pkg.Version.Major() > 0 && v.pkg.Version.Prerelease() == "" {
 			errs = append(errs, errors.Errorf("spec for [%s] defines beta features which can't be enabled for packages with a stable semantic version", v.pkg.Path(v.folderPath)))
 		} else {
-			log.Printf("Warning: package with non-stable semantic version and active beta features (enabled in [%s]) can't be released as stable version.", v.pkg.Path(v.folderPath))
+			if common.IsDefinedWarningsAsErrors() {
+				errs = append(errs, errors.Errorf("Warning: package with non-stable semantic version and active beta features (enabled in [%s]) can't be released as stable version.", v.pkg.Path(v.folderPath)))
+			} else {
+				log.Printf("Warning: package with non-stable semantic version and active beta features (enabled in [%s]) can't be released as stable version.", v.pkg.Path(v.folderPath))
+			}
 		}
 	default:
 		errs = append(errs, errors.Errorf("unsupport release level, supported values: beta, ga"))

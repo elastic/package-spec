@@ -87,6 +87,7 @@ func (s Spec) rules(rootSpec spectypes.ItemSpec) validationRules {
 		{fn: semantic.ValidateUniqueFields, since: semver.MustParse("2.0.0")},
 		{fn: semantic.ValidateDimensionFields},
 		{fn: semantic.ValidateRequiredFields},
+		{fn: semantic.ValidateVisualizationsUsedByValue},
 	}
 
 	var validationRules validationRules

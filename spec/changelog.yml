@@ -10,17 +10,22 @@
   - description: Remove deprecated `license` field.
     type: enhancement
     link: https://github.com/elastic/package-spec/issues/331
-- version: 1.14.1-next
+- version: 1.15.1-next
   changes:
-  - description: Add support for icons in dark mode
+  - description: Prepare for next patch release
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/378
+    link: https://github.com/elastic/package-spec/pull/395
+- version: 1.15.0
+  changes:
   - description: Add definition for the license file in a package
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/367
-  - description: Prepare for next patch release
+  - description: Add support for icons in dark mode
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/375
+    link: https://github.com/elastic/package-spec/pull/378
+  - description: Add warning when dashboards include visualizations by reference
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/389
 - version: 1.14.0
   changes:
   - description: Add 'textarea' var type

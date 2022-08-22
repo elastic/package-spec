@@ -1,0 +1,54 @@
+{
+    "attributes": {
+        "description": "Dashboard",
+        "panelsJSON": [
+            {
+                "embeddableConfig": {
+                    "enhancements": {}
+                },
+                "gridData": {
+                    "h": 15,
+                    "i": "2df03d80-37c4-4dea-9b5e-f3f9eefb319e",
+                    "w": 24,
+                    "x": 24,
+                    "y": 0
+                },
+                "panelIndex": "2df03d80-37c4-4dea-9b5e-f3f9eefb319e",
+                "panelRefName": "panel_0",
+                "version": "7.5.2"
+            },
+            {
+                "embeddableConfig": {
+                    "enhancements": {}
+                },
+                "gridData": {
+                    "h": 15,
+                    "i": "b09a478f-8a72-44d3-bbcc-1f2a546c74f0",
+                    "w": 24,
+                    "x": 0,
+                    "y": 0
+                },
+                "panelIndex": "b09a478f-8a72-44d3-bbcc-1f2a546c74f0",
+                "panelRefName": "panel_1",
+                "version": "7.5.2"
+            }
+        ],
+        "timeRestore": false,
+        "title": "Dashboard  by References",
+        "version": 1
+    },
+    "id": "visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d",
+    "references": [
+        {
+            "id": "visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6",
+            "name": "panel_0",
+            "type": "visualization"
+        },
+        {
+            "id": "visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b",
+            "name": "panel_1",
+            "type": "lens"
+        }
+    ],
+    "type": "dashboard"
+}
