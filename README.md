@@ -87,7 +87,7 @@ Package specifications are versioned. Versions follow the [semantic versioning](
      * Add a changelog entry in the `spec/changelog.yml` file in the section of this major.
   * If the proposed change makes the specification looser than it is at `x.y.z`, the new version number will be `x.Y.0`, where `Y = y + 1`. That is, we bump up the minor version and create a new changelog section in the `spec/changelog.yml` file. Note that adding new, but optional, constraints to a specification is a change that makes a specification looser.
   * If the proposed change does not change the strictness of the specification at `x.y.z`, the new version number will be `x.y.Z`, where `Z = z + 1`. That is, we bump the patch version.
-     * Apply the proposed changes to the existing specification under the `versions/x` folder, where `x` is the major version number of the specification being changed. 
+     * Apply the proposed changes to the existing specification under the `spec` folder.
      * Set the root-level `version` property in the specification's root `spec.yml` file to `x.y.Z`.
      * Add a changelog entry in the `spec/changelog.yml` file in the section for
        this version.
