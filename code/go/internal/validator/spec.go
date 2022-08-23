@@ -14,10 +14,9 @@ import (
 	spec "github.com/elastic/package-spec"
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/fspath"
-	"github.com/elastic/package-spec/code/go/internal/specschema"
+	"github.com/elastic/package-spec/code/go/internal/loader"
 	"github.com/elastic/package-spec/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
-	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
 // Spec represents a package specification
@@ -32,7 +31,7 @@ type validationRules []validationRule
 
 // NewSpec creates a new Spec for the given version
 func NewSpec(version semver.Version) (*Spec, error) {
-	specVersion, err := spec.CheckVersion(&version)
+	specVersion, err := spec.CheckVersion(version)
 	if err != nil {
 		return nil, errors.Wrapf(err, "could not load specification for version [%s]", version.String())
 	}
@@ -52,10 +51,7 @@ func NewSpec(version semver.Version) (*Spec, error) {
 func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 
-	fileSpecLoader := yamlschema.NewFileSchemaLoader()
-	loader := specschema.NewFolderSpecLoader(s.fs, fileSpecLoader, s.version)
-
-	rootSpec, err := loader.Load(pkg.Type)
+	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkg.Type)
 	if err != nil {
 		errs = append(errs, errors.Wrap(err, "could not read root folder spec file"))
 		return errs

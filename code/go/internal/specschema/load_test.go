@@ -46,3 +46,56 @@ func TestLoadFolderSpec(t *testing.T) {
 		}
 	}
 }
+
+func TestPatchedSpec(t *testing.T) {
+	cases := []struct {
+		title   string
+		path    string
+		valid   bool
+		version *semver.Version
+	}{
+		{
+			title:   "spec without patches",
+			path:    "simple-spec",
+			version: semver.MustParse("1.0.0"),
+			valid:   true,
+		},
+		{
+			title:   "spec with multiple versions 1.0.0",
+			path:    "multiple-versions",
+			version: semver.MustParse("1.0.0"),
+			valid:   true,
+		},
+		{
+			title:   "spec with multiple versions 2.0.0",
+			path:    "multiple-versions",
+			version: semver.MustParse("2.0.0"),
+			valid:   true,
+		},
+		{
+			title:   "invalid spec patches",
+			path:    "invalid-version-patch",
+			version: semver.MustParse("3.0.0"),
+			valid:   true,
+		},
+		{
+			title:   "invalid spec patches",
+			path:    "invalid-version-patch",
+			version: semver.MustParse("2.0.0"),
+			valid:   false,
+		},
+	}
+
+	fileSpecLoader := yamlschema.NewFileSchemaLoader()
+	for _, c := range cases {
+		t.Run(c.title, func(t *testing.T) {
+			loader := NewFolderSpecLoader(os.DirFS("./testdata"), fileSpecLoader, *c.version)
+			spec, err := loader.Load(c.path)
+			if !c.valid {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}

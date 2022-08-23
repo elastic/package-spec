@@ -1,0 +1,31 @@
+##
+## Describes the specification for the integration package's main manifest.yml file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      description: The name of the package.
+      type: string
+      pattern: '^[a-z0-9_]+$'
+      examples:
+      - apache
+versions:
+  ## This is invalid, when this patch is applied, the `license` property doesn't exist in the spec.
+  - before: 3.0.0
+    patch:
+      - op: replace
+        path: /properties/license/deprecated
+        value: true
+  - before: 2.0.0
+    patch:
+      - op: add
+        path: "/properties/license"
+        value:
+          description: The license under which the package is being released.
+          type: string
+          deprecated: false
+          enum:
+          - basic

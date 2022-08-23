@@ -1,0 +1,14 @@
+##
+## Entrypoint of "integration packages" specification.
+##
+## Describes the folders and files that make up a package.
+##
+spec:
+  contents:
+  - description: The main package manifest file
+    type: file
+    contentMediaType: "application/x-yaml"
+    sizeLimit: 5MB
+    name: "manifest.yml"
+    required: true
+    $ref: "./manifest.spec.yml"
