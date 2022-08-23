@@ -90,7 +90,7 @@ func TestPatchedSpec(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
 			loader := NewFolderSpecLoader(os.DirFS("./testdata"), fileSpecLoader, *c.version)
-			spec, err := loader.Load(c.path)
+			_, err := loader.Load(c.path)
 			if !c.valid {
 				require.Error(t, err)
 				return
