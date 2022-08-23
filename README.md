@@ -53,7 +53,7 @@ An Elastic Package specification describes:
 2. the structure of the expected files' contents.
 
 In the spec folder there is be a `spec.yml` file. This file is the entry point for the
- specification for a package's contents. It describes the the folder structure of packages and expected
+ specification for a package's contents. It describes the folder structure of packages and expected
 files within these folders (this is point 1. above). The specification is expressed using a schema similar
 to [JSON Schema](https://json-schema.org/), but with a couple of differences:
 -- The `type` field can be either `folder` or `file`,
