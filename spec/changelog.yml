@@ -10,11 +10,11 @@
   - description: Remove deprecated `license` field.
     type: enhancement
     link: https://github.com/elastic/package-spec/issues/331
-- version: 1.15.1-next
+- version: 1.16.0
   changes:
-  - description: Prepare for next patch release
+  - description: New version validation. Internal changes to start preparing major version 2.
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/395
+    link: https://github.com/elastic/package-spec/pull/384
 - version: 1.15.0
   changes:
   - description: Add definition for the license file in a package
