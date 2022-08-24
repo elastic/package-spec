@@ -88,6 +88,12 @@ func TestValidateFile(t *testing.T) {
 				"field services.docker-custom-agent: Must not validate the schema (not)",
 			},
 		},
+		"invalid_field_for_version": {
+			"manifest.yml",
+			[]string{
+				"field (root): Additional property license is not allowed",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
@@ -276,14 +282,13 @@ func TestValidateVersionIntegrity(t *testing.T) {
 }
 
 func TestValidateDuplicatedFields(t *testing.T) {
-	t.Skip("Validation temporarily disabled: https://github.com/elastic/package-spec/issues/331")
 	tests := map[string]string{
 		"bad_duplicated_fields": "field \"event.dataset\" is defined multiple times for data stream \"wrong\", found in: ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/ecs.yml",
 	}
 
 	for pkgName, expectedErrorMessage := range tests {
 		t.Run(pkgName, func(t *testing.T) {
-			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			require.Error(t, errs)
 			vErrs, ok := errs.(errors.ValidationErrors)
 			require.True(t, ok)

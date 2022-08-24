@@ -8,6 +8,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -17,7 +18,7 @@ import (
 
 func TestLoadFolderSpec(t *testing.T) {
 	fileSpecLoader := yamlschema.NewFileSchemaLoader()
-	loader := NewFolderSpecLoader(os.DirFS("./testdata"), fileSpecLoader)
+	loader := NewFolderSpecLoader(os.DirFS("./testdata"), fileSpecLoader, semver.Version{})
 	spec, err := loader.Load("simple-spec")
 	require.NoError(t, err)
 
@@ -43,5 +44,58 @@ func TestLoadFolderSpec(t *testing.T) {
 		default:
 			t.Errorf("Unexpected content in the spec with name %q", content.Name())
 		}
+	}
+}
+
+func TestPatchedSpec(t *testing.T) {
+	cases := []struct {
+		title   string
+		path    string
+		valid   bool
+		version *semver.Version
+	}{
+		{
+			title:   "spec without patches",
+			path:    "simple-spec",
+			version: semver.MustParse("1.0.0"),
+			valid:   true,
+		},
+		{
+			title:   "spec with multiple versions 1.0.0",
+			path:    "multiple-versions",
+			version: semver.MustParse("1.0.0"),
+			valid:   true,
+		},
+		{
+			title:   "spec with multiple versions 2.0.0",
+			path:    "multiple-versions",
+			version: semver.MustParse("2.0.0"),
+			valid:   true,
+		},
+		{
+			title:   "invalid spec patches",
+			path:    "invalid-version-patch",
+			version: semver.MustParse("3.0.0"),
+			valid:   true,
+		},
+		{
+			title:   "invalid spec patches",
+			path:    "invalid-version-patch",
+			version: semver.MustParse("2.0.0"),
+			valid:   false,
+		},
+	}
+
+	fileSpecLoader := yamlschema.NewFileSchemaLoader()
+	for _, c := range cases {
+		t.Run(c.title, func(t *testing.T) {
+			loader := NewFolderSpecLoader(os.DirFS("./testdata"), fileSpecLoader, *c.version)
+			_, err := loader.Load(c.path)
+			if !c.valid {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+		})
 	}
 }

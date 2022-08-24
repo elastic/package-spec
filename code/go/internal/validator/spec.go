@@ -6,8 +6,7 @@ package validator
 
 import (
 	"io/fs"
-	"path"
-	"strconv"
+	"log"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
@@ -15,34 +14,34 @@ import (
 	spec "github.com/elastic/package-spec"
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/fspath"
-	"github.com/elastic/package-spec/code/go/internal/specschema"
+	"github.com/elastic/package-spec/code/go/internal/loader"
+	"github.com/elastic/package-spec/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
-	"github.com/elastic/package-spec/code/go/internal/yamlschema"
 )
 
 // Spec represents a package specification
 type Spec struct {
-	version  semver.Version
-	fs       fs.FS
-	specPath string
+	version semver.Version
+	fs      fs.FS
 }
 
-type validationRules []func(pkg fspath.FS) ve.ValidationErrors
+type validationRule func(pkg fspath.FS) ve.ValidationErrors
+
+type validationRules []validationRule
 
 // NewSpec creates a new Spec for the given version
 func NewSpec(version semver.Version) (*Spec, error) {
-	majorVersion := strconv.FormatUint(version.Major(), 10)
-
-	specFS := spec.FS()
-	specPath := majorVersion
-	if _, err := specFS.Open(specPath); err != nil {
+	specVersion, err := spec.CheckVersion(version)
+	if err != nil {
 		return nil, errors.Wrapf(err, "could not load specification for version [%s]", version.String())
+	}
+	if specVersion.Prerelease() != "" {
+		log.Printf("Warning: package using an unreleased version of the spec (%s)", specVersion)
 	}
 
 	s := Spec{
 		version,
-		specFS,
-		specPath,
+		spec.FS(),
 	}
 
 	return &s, nil
@@ -52,11 +51,7 @@ func NewSpec(version semver.Version) (*Spec, error) {
 func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 
-	fileSpecLoader := yamlschema.NewFileSchemaLoader()
-	loader := specschema.NewFolderSpecLoader(s.fs, fileSpecLoader)
-
-	rootSpecPath := path.Join(s.specPath, pkg.Type)
-	rootSpec, err := loader.Load(rootSpecPath)
+	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkg.Type)
 	if err != nil {
 		errs = append(errs, errors.Wrap(err, "could not read root folder spec file"))
 		return errs
@@ -70,21 +65,39 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	}
 
 	// Semantic validations
-	rules := validationRules{
-		semantic.ValidateKibanaObjectIDs,
-		semantic.ValidateVersionIntegrity,
-		semantic.ValidateChangelogLinks,
-		semantic.ValidatePrerelease,
-		semantic.ValidateFieldGroups,
-		semantic.ValidateFieldsLimits(rootSpec.MaxFieldsPerDataStream()),
-		// Temporarily disabled: https://github.com/elastic/package-spec/issues/331
-		//semantic.ValidateUniqueFields,
-		semantic.ValidateDimensionFields,
-		semantic.ValidateRequiredFields,
-		semantic.ValidateVisualizationsUsedByValue,
+	return s.rules(rootSpec).validate(&pkg)
+}
+
+func (s Spec) rules(rootSpec spectypes.ItemSpec) validationRules {
+	rulesDef := []struct {
+		fn    validationRule
+		since *semver.Version
+		until *semver.Version
+	}{
+		{fn: semantic.ValidateKibanaObjectIDs},
+		{fn: semantic.ValidateVersionIntegrity},
+		{fn: semantic.ValidateChangelogLinks},
+		{fn: semantic.ValidatePrerelease},
+		{fn: semantic.ValidateFieldGroups},
+		{fn: semantic.ValidateFieldsLimits(rootSpec.MaxFieldsPerDataStream())},
+		{fn: semantic.ValidateUniqueFields, since: semver.MustParse("2.0.0")},
+		{fn: semantic.ValidateDimensionFields},
+		{fn: semantic.ValidateRequiredFields},
+		{fn: semantic.ValidateVisualizationsUsedByValue},
 	}
 
-	return rules.validate(&pkg)
+	var validationRules validationRules
+	for _, rule := range rulesDef {
+		if rule.since != nil && s.version.LessThan(rule.since) {
+			continue
+		}
+		if rule.until != nil && !s.version.LessThan(rule.until) {
+			continue
+		}
+		validationRules = append(validationRules, rule.fn)
+	}
+
+	return validationRules
 }
 
 func (vr validationRules) validate(fsys fspath.FS) ve.ValidationErrors {
