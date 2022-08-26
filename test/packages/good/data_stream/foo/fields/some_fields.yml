@@ -49,3 +49,7 @@
   type: keyword
 - name: name-with-dash
   type: keyword
+- name: a/b
+  type: keyword
+- name: a/b.c/d
+  type: keyword

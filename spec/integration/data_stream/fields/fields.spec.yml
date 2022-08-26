@@ -13,7 +13,7 @@ spec:
           Name of field. Names containing dots are automatically split into
           sub-fields.
         type: string
-        pattern: '^[\-*_@A-Za-z0-9]+(\.[\-*_@A-Za-z0-9]+)*$'
+        pattern: '^[\-*_\/@A-Za-z0-9]+(\.[\-*_\/@A-Za-z0-9]+)*$'
       type:
         description: Datatype of field
         type: string
