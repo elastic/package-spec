@@ -1,0 +1,7 @@
+spec:
+  type: object
+  additionalProperties: false
+  properties:
+    num_docs:
+      description: Number of documents contained in each benchmark request. Sampled from the included events.
+      type: integer
