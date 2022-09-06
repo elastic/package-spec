@@ -7,7 +7,7 @@ spec:
   additionalProperties: false
   properties:
     events:
-      description: Given events
+      description: The list of events that will be used to benchmark the pipeline.
       type: array
       items:
         type: object
