@@ -1,6 +1,7 @@
 spec:
   type: object
   additionalProperties: false
+  required: [ "num_docs" ]
   properties:
     num_docs:
       description: Number of documents contained in each benchmark request. Sampled from the included events.
