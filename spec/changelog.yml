@@ -10,11 +10,13 @@
   - description: Remove deprecated `license` field.
     type: enhancement
     link: https://github.com/elastic/package-spec/issues/331
-- version: 1.16.1-next
+- version: 1.16.2-next
   changes:
   - description: Prepare for next patch release
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/398
+    link: https://github.com/elastic/package-spec/pull/
+- version: 1.16.1
+  changes:
   - description: Adjust field name pattern to support '/'.
     type: enhancement
     link: https://github.com/elastic/package-spec/issues/402
