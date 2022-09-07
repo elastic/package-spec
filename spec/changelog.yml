@@ -18,6 +18,9 @@
   - description: Adjust field name pattern to support '/'.
     type: enhancement
     link: https://github.com/elastic/package-spec/issues/402
+  - description: Add pipeline benchmarks support
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/405
 - version: 1.16.0
   changes:
   - description: New version validation. Internal changes to start preparing major version 2.
