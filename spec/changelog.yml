@@ -14,7 +14,7 @@
   changes:
   - description: Prepare for next patch release
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/
+    link: https://github.com/elastic/package-spec/pull/407
 - version: 1.16.1
   changes:
   - description: Adjust field name pattern to support '/'.
