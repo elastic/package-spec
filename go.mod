@@ -1,6 +1,6 @@
 module github.com/elastic/package-spec
 
-go 1.17
+go 1.19
 
 require (
 	github.com/Masterminds/semver/v3 v3.1.1
@@ -9,6 +9,7 @@ require (
 	github.com/creasty/defaults v1.5.2
 	github.com/elastic/go-licenser v0.3.1
 	github.com/elastic/gojsonschema v1.2.1
+	github.com/evanphx/json-patch/v5 v5.6.0
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.7.0
@@ -22,7 +23,6 @@ require (
 	github.com/PaesslerAG/gval v1.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dnephin/pflag v1.0.7 // indirect
-	github.com/evanphx/json-patch/v5 v5.6.0 // indirect
 	github.com/fatih/color v1.10.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
