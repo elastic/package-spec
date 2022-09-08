@@ -5,8 +5,8 @@
 package specschema
 
 import (
+	"io"
 	"io/fs"
-	"io/ioutil"
 	"path"
 
 	"github.com/Masterminds/semver/v3"
@@ -50,7 +50,7 @@ func (l *FolderSpecLoader) loadFolderSpec(s *folderItemSpec, specPath string) er
 	}
 	defer specFile.Close()
 
-	data, err := ioutil.ReadAll(specFile)
+	data, err := io.ReadAll(specFile)
 	if err != nil {
 		return errors.Wrap(err, "could not read folder specification file")
 	}

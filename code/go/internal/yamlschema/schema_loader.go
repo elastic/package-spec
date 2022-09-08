@@ -5,8 +5,8 @@
 package yamlschema
 
 import (
+	"io"
 	"io/fs"
-	"io/ioutil"
 	"net/url"
 	"path"
 	"strings"
@@ -52,7 +52,7 @@ func (l *yamlReferenceLoader) LoadJSON() (interface{}, error) {
 	}
 	defer itemSchemaFile.Close()
 
-	itemSchemaData, err := ioutil.ReadAll(itemSchemaFile)
+	itemSchemaData, err := io.ReadAll(itemSchemaFile)
 	if err != nil {
 		return nil, errors.Wrap(err, "reading schema file failed")
 	}
