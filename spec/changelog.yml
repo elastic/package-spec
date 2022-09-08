@@ -11,6 +11,7 @@
     type: enhancement
     link: https://github.com/elastic/package-spec/issues/331
 - version: 1.18.0
+  changes:
   - description: Update Go runtime to 1.19.1.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/409
