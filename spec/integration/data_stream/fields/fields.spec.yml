@@ -47,7 +47,6 @@ spec:
         - object
         - ip
         - nested
-        - array
         - flattened
         - wildcard
         - version
@@ -271,3 +270,10 @@ spec:
 
     required:
     - name
+
+versions:
+  - before: 2.0.0
+    patch:
+      - op: add
+        path: "/items/properties/type/enum/29"
+        value: "array"

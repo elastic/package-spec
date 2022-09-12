@@ -82,6 +82,12 @@ func TestValidateFile(t *testing.T) {
 				"field \"example.agent.call_duration\" of type histogram can't be a dimension, allowed types for dimensions: constant_keyword, keyword, long, integer, short, byte, double, float, half_float, scaled_float, unsigned_long, ip",
 			},
 		},
+		"bad_fields": {
+			"data_stream/foo/fields/fields.yml",
+			[]string{
+				`field 0.type: 0.type must be one of the following: "alias", "histogram", "constant_keyword", "text", "match_only_text", "keyword", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "date", "date_nanos", "boolean", "binary", "integer_range", "float_range", "long_range", "double_range", "date_range", "ip_range", "group", "geo_point", "object", "ip", "nested", "flattened", "wildcard", "version", "unsigned_long"`,
+			},
+		},
 		"deploy_custom_agent_invalid_property": {
 			"_dev/deploy/agent/custom-agent.yml",
 			[]string{
