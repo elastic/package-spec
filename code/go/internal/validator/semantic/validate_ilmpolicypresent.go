@@ -10,9 +10,10 @@ import (
 	"path"
 	"strings"
 
+	"gopkg.in/yaml.v3"
+
 	ve "github.com/elastic/package-spec/code/go/internal/errors"
 	"github.com/elastic/package-spec/code/go/internal/fspath"
-	"gopkg.in/yaml.v3"
 )
 
 // ValidateILMPolicyPresent produces an error if the indicated ILM policy
