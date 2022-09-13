@@ -309,6 +309,10 @@ spec:
       $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
     owner:
       $ref: "#/definitions/owner"
+    allow_snapshot:
+      type: boolean
+      description: Can assets be exported from a SNAPSHOT version?
+      default: false
     elasticsearch:
       description: Elasticsearch requirements
       type: object
