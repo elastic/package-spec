@@ -77,18 +77,34 @@ func TestAnyReference(t *testing.T) {
 				},
 				map[string]interface{}{
 					"id":   "4",
-					"name": "panel_1",
+					"name": "panel_2",
 					"type": "map",
 				},
 				map[string]interface{}{
 					"id":   "42",
-					"name": "panel_1",
+					"name": "panel_3",
 					"type": "index-pattern",
+				},
+				map[string]interface{}{
+					"id":   "44",
+					"name": "panel_4",
+					"type": "search",
+				},
+				map[string]interface{}{
+					"id":   "45",
+					"name": "panel_5",
+					"type": "tag",
+				},
+				map[string]interface{}{
+					"id":   "50",
+					"name": "panel_6",
+					"type": "dashboard",
 				},
 			},
 			[]reference{
 				{"12345", "panel_0", "visualization"},
 				{"9000", "panel_1", "lens"},
+				{"4", "panel_2", "map"},
 			},
 		},
 		{

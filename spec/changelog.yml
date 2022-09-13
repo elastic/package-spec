@@ -15,9 +15,9 @@
     link: https://github.com/elastic/package-spec/pull/412
 - version: 1.18.1-next
   changes:
-  - description: Prepare for next patch release
+  - description: Add map as another reference type to check to show warnings
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/411
+    link: https://github.com/elastic/package-spec/pull/414
 - version: 1.18.0
   changes:
   - description: Update Go runtime to 1.19.1.

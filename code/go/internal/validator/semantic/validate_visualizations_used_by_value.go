@@ -57,10 +57,12 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) ve.ValidationErrors {
 			for _, ref := range references[1:] {
 				s = fmt.Sprintf("%s, %s (%s)", s, ref.ID, ref.Type)
 			}
+
+			message := fmt.Sprintf("Warning: references found in dashboard %s: %s", filePath, s)
 			if warningsAsErrors {
-				errs = append(errs, errors.Errorf("Warning: references found in dashboard %s: %s", filePath, s))
+				errs = append(errs, errors.New(message))
 			} else {
-				log.Printf("Warning: references found in dashboard %s: %s", filePath, s)
+				log.Printf(message)
 			}
 
 		}
@@ -82,7 +84,7 @@ func anyReference(val interface{}) ([]reference, error) {
 	var references []reference
 	for _, reference := range allReferences {
 		switch reference.Type {
-		case "lens", "visualization":
+		case "lens", "visualization", "map":
 			references = append(references, reference)
 		}
 	}
