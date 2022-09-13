@@ -1,0 +1,6 @@
+{
+  "id": "bad_assets_elastic_versions-overview",
+  "migrationVersion": {
+    "dashboard": "8.4.1-SNAPSHOT"
+  }
+}

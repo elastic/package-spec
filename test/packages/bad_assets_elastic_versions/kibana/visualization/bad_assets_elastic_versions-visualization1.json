@@ -1,0 +1,6 @@
+{
+  "id": "bad_assets_elastic_versions-visualization1",
+  "migrationVersion": {
+    "visualization": "8.4.1-SNAPSHOT"
+  }
+}
