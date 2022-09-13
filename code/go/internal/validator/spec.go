@@ -84,6 +84,7 @@ func (s Spec) rules(rootSpec spectypes.ItemSpec) validationRules {
 		{fn: semantic.ValidateDimensionFields},
 		{fn: semantic.ValidateRequiredFields},
 		{fn: semantic.ValidateVisualizationsUsedByValue},
+		{fn: semantic.ValidateSnapshotVersionsInAssets},
 	}
 
 	var validationRules validationRules
