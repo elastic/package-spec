@@ -19,6 +19,9 @@ import (
 )
 
 func TestValidateFile(t *testing.T) {
+	// Workaround for error messages that contain OS-dependant base paths.
+	osTestBasePath := filepath.Join("..", "..", "..", "..", "test", "packages") + string(filepath.Separator)
+
 	tests := map[string]struct {
 		invalidPkgFilePath  string
 		expectedErrContains []string
@@ -104,7 +107,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_custom_ilm_policy": {
 			"data_stream/test/manifest.yml",
 			[]string{
-				"field ilm_policy: ILM policy \"logs-bad_custom_ilm_policy.test-notexists\" not found in package, expected definition in \"../../../../test/packages/bad_custom_ilm_policy/data_stream/test/elasticsearch/ilm/notexists.json\"",
+				fmt.Sprintf("field ilm_policy: ILM policy \"logs-bad_custom_ilm_policy.test-notexists\" not found in package, expected definition in \"%sbad_custom_ilm_policy/data_stream/test/elasticsearch/ilm/notexists.json\"", osTestBasePath),
 			},
 		},
 	}
