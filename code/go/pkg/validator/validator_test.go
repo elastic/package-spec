@@ -30,6 +30,7 @@ func TestValidateFile(t *testing.T) {
 		"time_series":         {},
 		"missing_data_stream": {},
 		"icons_dark_mode":     {},
+		"custom_ilm_policy":   {},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
@@ -98,6 +99,12 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				"field (root): Additional property license is not allowed",
+			},
+		},
+		"bad_custom_ilm_policy": {
+			"data_stream/test/manifest.yml",
+			[]string{
+				"field ilm_policy: ILM policy \"logs-bad_custom_ilm_policy.test-notexists\" not found in package, expected definition in \"../../../../test/packages/bad_custom_ilm_policy/data_stream/test/elasticsearch/ilm/notexists.json\"",
 			},
 		},
 	}
