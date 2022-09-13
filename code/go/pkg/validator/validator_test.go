@@ -100,6 +100,9 @@ func TestValidateFile(t *testing.T) {
 				"field (root): Additional property license is not allowed",
 			},
 		},
+		"bad_assets_elastic_versions":                {},
+		"bad_assets_elastic_versions_allow_snapshot": {},
+		"bad_assets_elastic_versions_prerelease":     {},
 	}
 
 	for pkgName, test := range tests {
