@@ -5,11 +5,14 @@
 - version: 2.0.0-next
   changes:
   - description: Enable validation of duplicated fields.
-    type: enhancement
+    type: breaking-change
     link: https://github.com/elastic/package-spec/issues/331
   - description: Remove deprecated `license` field.
-    type: enhancement
+    type: breaking-change
     link: https://github.com/elastic/package-spec/issues/331
+  - description: Remove `array` as supported field data type.
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/412
 - version: 1.18.1-next
   changes:
   - description: Prepare for next patch release
