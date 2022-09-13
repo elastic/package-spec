@@ -1,17 +1,17 @@
 <!-- Use this template language as a starting point, replacing {placeholder text} with details about the integration. -->
 <!-- Find more detailed documentation guidelines in https://github.com/elastic/integrations/blob/main/docs/documentation_guidelines.md -->
 
-# This package has a valid custom ILM policy.
+# This package has an invalid custom ILM policy.
 
 <!-- The This package has a valid custom ILM policy. integration allows you to monitor {name of service}. {name of service} is {describe service}.
 
-Use the This package has a valid custom ILM policy. integration to {purpose}. Then visualize that data in Kibana, create alerts to notify you if something goes wrong, and reference {data stream type} when troubleshooting an issue.
+Use the This package has an invalid custom ILM policy. integration to {purpose}. Then visualize that data in Kibana, create alerts to notify you if something goes wrong, and reference {data stream type} when troubleshooting an issue.
 
 For example, if you wanted to {sample use case} you could {action}. Then you can {visualize|alert|troubleshoot} by {action}. -->
 
 ## Data streams
 
-<!-- The This package has a valid custom ILM policy. integration collects {one|two} type{s} of data streams: {logs and/or metrics}. -->
+<!-- The This package has a invalid custom ILM policy. integration collects {one|two} type{s} of data streams: {logs and/or metrics}. -->
 
 <!-- If applicable -->
 <!-- **Logs** help you keep a record of events happening in {service}.
