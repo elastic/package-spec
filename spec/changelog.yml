@@ -26,7 +26,7 @@
     link: https://github.com/elastic/package-spec/pull/417
   - description: Add validation rule to show warnings if assets are built from SNAPSHOT versions of Elastic stack
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/414
+    link: https://github.com/elastic/package-spec/pull/418
 - version: 1.18.0
   changes:
   - description: Update Go runtime to 1.19.1.
