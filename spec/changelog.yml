@@ -24,6 +24,9 @@
   - description: Document and validate `object_type` and `object_type_mapping_type`.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/417
+  - description: Add validation rule to show warnings if assets are built from SNAPSHOT versions of Elastic stack
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/414
 - version: 1.18.0
   changes:
   - description: Update Go runtime to 1.19.1.
