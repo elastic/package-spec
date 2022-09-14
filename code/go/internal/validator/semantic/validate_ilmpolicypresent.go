@@ -52,14 +52,14 @@ func validateILMPolicyInDataStream(fsys fspath.FS, dataStream string) error {
 	manifestPath := path.Join("data_stream", dataStream, "manifest.yml")
 	policyPrefix := expectedILMPolicyPrefix(dsType, packageName, dataStream)
 	if !strings.HasPrefix(ilmPolicy, policyPrefix) {
-		return fmt.Errorf("file %q is invalid: field ilm_policy must start with %q, found %q", fsys.Path(manifestPath), policyPrefix, ilmPolicy)
+		return fmt.Errorf("file \"%s\" is invalid: field ilm_policy must start with %q, found \"%s\"", fsys.Path(manifestPath), policyPrefix, ilmPolicy)
 	}
 
 	ilmFileName := ilmPolicy[len(policyPrefix):] + ".json"
 	ilmFilePath := path.Join("data_stream", dataStream, "elasticsearch", "ilm", ilmFileName)
 	_, err = fs.Stat(fsys, ilmFilePath)
 	if err != nil {
-		return fmt.Errorf("file %q is invalid: field ilm_policy: ILM policy %q not found in package, expected definition in %q", fsys.Path(manifestPath), ilmPolicy, fsys.Path(ilmFilePath))
+		return fmt.Errorf("file \"%s\" is invalid: field ilm_policy: ILM policy %q not found in package, expected definition in \"%s\"", fsys.Path(manifestPath), ilmPolicy, fsys.Path(ilmFilePath))
 	}
 
 	return nil
