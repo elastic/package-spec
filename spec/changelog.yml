@@ -13,11 +13,17 @@
   - description: Remove `array` as supported field data type.
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/412
+  - description: Check that referenced ILM policies are defined for the data stream.
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/413
 - version: 1.18.1-next
   changes:
   - description: Add map as another reference type to check to show warnings
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/414
+  - description: Document and validate `object_type` and `object_type_mapping_type`.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/417
 - version: 1.18.0
   changes:
   - description: Update Go runtime to 1.19.1.

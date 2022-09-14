@@ -14,6 +14,7 @@ spec:
           sub-fields.
         type: string
         pattern: '^[\-*_\/@A-Za-z0-9]+(\.[\-*_\/@A-Za-z0-9]+)*$'
+
       type:
         description: Datatype of field
         type: string
@@ -234,8 +235,43 @@ spec:
 
       object_type:
         description: >
-          Required for `type: array` to specify the data type in the array.
+          Type of the members of the object when `type: object` is used. In
+          these cases a dynamic template is created so direct subobjects of
+          this field have the type indicated.
+          When `object_type_mapping_type` is also used, the dynamic mapping is
+          only applied to values that have the given type, as detected by the
+          JSON parser.
         type: string
+        enum:
+          - boolean
+          - byte
+          - double
+          - float
+          - histogram
+          - keyword
+          - long
+          - object
+          - short
+          - text
+
+      object_type_mapping_type:
+        description: >
+          Type that members of a field of with `type: object` must have in the
+          source document.
+          This type corresponds to the data type detected by the JSON parser,
+          and is translated to the `match_mapping_type` parameter of
+          Elasticsearch dynamic templates.
+        type: string
+        enum:
+          - '*'
+          - array
+          - double
+          - 'false'
+          - long
+          - 'null'
+          - object
+          - string
+          - 'true'
 
       path:
         description: >

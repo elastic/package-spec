@@ -1,0 +1,14 @@
+title: "Test"
+type: logs
+ilm_policy: "logs-bad_custom_ilm_policy.test-notexists"
+streams:
+  - input: logfile
+    title: Sample logs
+    description: Collect sample logs
+    vars:
+      - name: paths
+        type: text
+        title: Paths
+        multi: true
+        default:
+          - /var/log/*.log

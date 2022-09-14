@@ -19,6 +19,9 @@ import (
 )
 
 func TestValidateFile(t *testing.T) {
+	// Workaround for error messages that contain OS-dependant base paths.
+	osTestBasePath := filepath.Join("..", "..", "..", "..", "test", "packages") + string(filepath.Separator)
+
 	tests := map[string]struct {
 		invalidPkgFilePath  string
 		expectedErrContains []string
@@ -30,6 +33,7 @@ func TestValidateFile(t *testing.T) {
 		"time_series":         {},
 		"missing_data_stream": {},
 		"icons_dark_mode":     {},
+		"custom_ilm_policy":   {},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
@@ -98,6 +102,12 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				"field (root): Additional property license is not allowed",
+			},
+		},
+		"bad_custom_ilm_policy": {
+			"data_stream/test/manifest.yml",
+			[]string{
+				fmt.Sprintf("field ilm_policy: ILM policy \"logs-bad_custom_ilm_policy.test-notexists\" not found in package, expected definition in \"%sbad_custom_ilm_policy/data_stream/test/elasticsearch/ilm/notexists.json\"", osTestBasePath),
 			},
 		},
 		"bad_assets_elastic_snapshot_versions":        {},
