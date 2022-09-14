@@ -37,7 +37,7 @@ func ValidateSnapshotVersionsInAssets(fsys fspath.FS) ve.ValidationErrors {
 		return ve.ValidationErrors{err}
 	}
 
-	allow_snapshot, err := readAllowSnapshotManifest(fsys)
+	allowSnapshot, err := readAllowSnapshotManifest(fsys)
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}
@@ -51,7 +51,7 @@ func ValidateSnapshotVersionsInAssets(fsys fspath.FS) ve.ValidationErrors {
 	}
 
 	// stable versions allowed to contain -SNAPSHOT if allow_snapshot is defined
-	if allow_snapshot {
+	if allowSnapshot {
 		return nil
 	}
 
@@ -67,7 +67,13 @@ func ValidateSnapshotVersionsInAssets(fsys fspath.FS) ve.ValidationErrors {
 		for _, objectFile := range objectFiles {
 			filePath := objectFile.Path()
 
-			snapshot, version, err := usingSnapshotVersion(objectFile, asset)
+			version, err := readMigrationVersionField(objectFile)
+			if err != nil {
+				errs = append(errs, err)
+				continue
+			}
+
+			snapshot, err := usingSnapshotVersion(version)
 			if err != nil {
 				errs = append(errs, err)
 				continue
@@ -87,23 +93,46 @@ func ValidateSnapshotVersionsInAssets(fsys fspath.FS) ve.ValidationErrors {
 	return nil
 }
 
-func usingSnapshotVersion(objectFile pkgpath.File, asset string) (bool, string, error) {
-	versionReference, err := objectFile.Values(`$.migrationVersion.` + asset)
+// readMigrationVersionField return the version in migrationVersion from an asset file
+func readMigrationVersionField(objectFile pkgpath.File) (string, error) {
+	// there are some assets that the field under migrationVersion do not match with the asset type field
+	// "migrationVersion": {
+	//     "search": "7.9.3"
+	// },
+	// "references": [],
+	// "type": "ml-module"
+
+	versionReference, err := objectFile.Values(`$.migrationVersion.*`)
 	if err != nil {
-		// some assets do not have migrationVersion field
-		// return false, errors.New("no migrationVersion field found")
-		return false, "", nil
+		return "", err
 	}
-	version, ok := versionReference.(string)
-	if !ok {
-		return false, "", errors.Errorf("conversion error to string %s", versionReference)
+	versions, err := toStringSlice(versionReference)
+	if err != nil {
+		return "", errors.Errorf("conversion error to string %s %s", versionReference, objectFile.Path())
+	}
+	if len(versions) > 1 {
+		return "", errors.Errorf("unexpected number of versions in migrationVersion field: %s", versions)
+	}
+	if len(versions) == 0 {
+		// some assets do not have migrationVersion field, no error raised
+		return "", nil
+	}
+	log.Printf("Version retrieved from migrationField version casted %s %s", versions[0], objectFile.Path())
+	return versions[0], nil
+}
+
+// usingSnapshotVersionVersion returns a boolean indicating if version is from a Snapshot version
+func usingSnapshotVersion(version string) (bool, error) {
+	// some assets do not have migrationVersion field, no error raised
+	if version == "" {
+		return false, nil
 	}
 
 	semVersion, err := semver.NewVersion(version)
 	if err != nil {
-		return false, "", err
+		return false, err
 	}
-	return semVersion.Prerelease() == elasticPrereleaseTag, version, nil
+	return semVersion.Prerelease() == elasticPrereleaseTag, nil
 }
 
 func readAllowSnapshotManifest(fsys fspath.FS) (bool, error) {
