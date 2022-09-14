@@ -1,11 +1,11 @@
 format_version: 1.0.0
-name: bad_assets_elastic_versions
-title: "Bad Assets Elastic allow_snapshot versions"
+name: assets_elastic_versions_allowed_snapshot
+title: "Assets Elastic versions allowed snapshot"
 version: 1.0.0
 source:
   license: "Elastic-2.0"
 license: basic
-description: "Bad kibana assets exported using a Elastic SNAPSHOT version"
+description: "Kibana assets exported using a Elastic SNAPSHOT version allowed from manifest"
 type: integration
 categories:
   - custom

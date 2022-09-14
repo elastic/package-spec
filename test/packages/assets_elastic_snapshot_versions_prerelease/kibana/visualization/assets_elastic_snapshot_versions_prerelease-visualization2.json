@@ -1,0 +1,6 @@
+{
+  "id": "assets_elastic_snapshot_versions_prerelease-visualization2",
+  "migrationVersion": {
+    "visualization": "8.4.1"
+  }
+}

@@ -100,9 +100,9 @@ func TestValidateFile(t *testing.T) {
 				"field (root): Additional property license is not allowed",
 			},
 		},
-		"bad_assets_elastic_versions":                {},
-		"bad_assets_elastic_versions_allow_snapshot": {},
-		"bad_assets_elastic_versions_prerelease":     {},
+		"bad_assets_elastic_snapshot_versions":        {},
+		"assets_elastic_versions_allowed_snapshot":    {},
+		"assets_elastic_snapshot_versions_prerelease": {},
 	}
 
 	for pkgName, test := range tests {
@@ -329,9 +329,9 @@ func TestValidateWarnings(t *testing.T) {
 		"visualizations_by_reference": []string{
 			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens)",
 		},
-		"bad_assets_elastic_versions": []string{
-			"prerelease version found in dashboard kibana/dashboard/bad_assets_elastic_versions-overview.json: 8.4.1-SNAPSHOT",
-			"prerelease version found in visualization kibana/visualization/bad_assets_elastic_versions-visualization1.json: 8.4.1-SNAPSHOT",
+		"bad_assets_elastic_snapshot_versions": []string{
+			"prerelease version found in dashboard kibana/dashboard/bad_assets_elastic_snapshot_versions-overview.json: 8.4.1-SNAPSHOT",
+			"prerelease version found in visualization kibana/visualization/bad_assets_elastic_snapshot_versions-visualization1.json: 8.4.1-SNAPSHOT",
 		},
 	}
 	if err := common.EnableWarningsAsErrors(); err != nil {

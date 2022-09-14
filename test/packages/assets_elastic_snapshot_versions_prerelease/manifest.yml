@@ -1,11 +1,11 @@
 format_version: 1.0.0
-name: bad_assets_elastic_versions
-title: "Bad Assets Elastic versions"
-version: 1.0.0
+name: assets_elastic_snapshot_versions_prerelease
+title: "Asse1s Elastic snapshot versions in Prerelease package"
+version: 0.0.1
 source:
   license: "Elastic-2.0"
 license: basic
-description: "Bad kibana assets exported using a Elastic SNAPSHOT version"
+description: "Kibana assets exported using a Elastic SNAPSHOT version in a Prerelease package"
 type: integration
 categories:
   - custom

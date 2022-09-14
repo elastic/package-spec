@@ -1,7 +1,7 @@
 format_version: 1.0.0
-name: bad_assets_elastic_versions
-title: "Bad Asse1s Elastic prerelease versions"
-version: 0.0.1
+name: bad_assets_elastic_snapshot_versions
+title: "Bad Assets Elastic snapshot versions"
+version: 1.0.0
 source:
   license: "Elastic-2.0"
 license: basic

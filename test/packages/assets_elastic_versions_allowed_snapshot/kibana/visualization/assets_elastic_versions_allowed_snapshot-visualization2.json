@@ -1,0 +1,6 @@
+{
+  "id": "assets_elastic_versions_allowed_snapshot-visualization2",
+  "migrationVersion": {
+    "visualization": "8.4.1"
+  }
+}
