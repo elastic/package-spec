@@ -90,7 +90,7 @@ func ValidateSnapshotVersionsInAssets(fsys fspath.FS) ve.ValidationErrors {
 		}
 	}
 
-	return nil
+	return errs
 }
 
 // readMigrationVersionField return the version in migrationVersion from an asset file
