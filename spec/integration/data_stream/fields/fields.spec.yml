@@ -8,12 +8,15 @@ spec:
     type: object
     additionalProperties: false
     patternProperties:
-      # Soft validation on some fields that can be present but are not used.
-      "^(norms|level|title|group)":
+      # Soft validation on some properties that can be present but not validated or used yet.
+      "^(level|group)$":
         anyOf:
           - type: string
           - type: integer
-          - type: boolean
+      "^(footnote|format|title)$":
+        type: string
+      "^(default_field|norms)$":
+        type: boolean
     properties:
       name:
         description: >
@@ -302,6 +305,17 @@ spec:
           this must be the full path, including any parent objects
           (e.g. object1.object2.field).
         type: string
+
+      normalize:
+        description: >
+          Specifies the expected normalizations for a field.
+          `array` normalization implies that the values in the field should always be
+          an array, even if they are single values.
+        type: array
+        items:
+          type: string
+          enum:
+            - array
 
       normalizer:
         description: >
