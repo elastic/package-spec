@@ -227,8 +227,8 @@ spec:
             Source mode to use. This configures how the document source (`_source`) is stored
             for this data stream.
             If configured as `default`, this mode is not configured and it uses Elasticsearch defaults.
-            If configured as `synthetic`, it doesn't store the source, but tries to rebuild it
-            from the indexed fields when queried.
+            If configured as `synthetic`, it enables [synthetic source](https://www.elastic.co/guide/en/elasticsearch/reference/8.4/mapping-source-field.html#synthetic-source),
+            that doesn't store the source, but tries to rebuild it from the indexed fields when queried.
             If no configured, users may override the setting from Fleet UI.
           type: string
           enum:
