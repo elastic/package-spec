@@ -7,6 +7,13 @@ spec:
   items:
     type: object
     additionalProperties: false
+    patternProperties:
+      # Soft validation on some fields that can be present but are not used.
+      "^(norms|level|title|group)":
+        anyOf:
+          - type: string
+          - type: integer
+          - type: boolean
     properties:
       name:
         description: >
@@ -60,6 +67,22 @@ spec:
       value:
         description: The value to associate with a constant_keyword field.
         type: string
+
+      example:
+        description: Example values for this field.
+        anyOf:
+          - type: string
+          - type: number
+          - type: boolean
+          - type: "null"
+          - type: array
+            items:
+              anyOf:
+                - type: string
+                - type: number
+                - type: boolean
+          - type: object
+            additionalProperties: true
 
       metric_type:
         description: >
@@ -313,6 +336,11 @@ versions:
       - op: add
         path: "/items/properties/type/enum/29"
         value: "array"
-      #- op: replace
-      #  path: "/items/additionalProperties"
-      #  value: true
+      - op: replace
+        path: "/items/additionalProperties"
+        value: true
+      - op: remove
+        path: "/items/patternProperties"
+        value: true
+      - op: remove
+        path: "/items/properties/example"

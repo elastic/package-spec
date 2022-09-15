@@ -16,6 +16,9 @@
   - description: Check that referenced ILM policies are defined for the data stream.
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/413
+  - description: Stricter validation of field definitions.
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/420
 - version: 1.18.1-next
   changes:
   - description: Add map as another reference type to check to show warnings
