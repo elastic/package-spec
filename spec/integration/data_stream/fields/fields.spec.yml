@@ -6,7 +6,7 @@ spec:
   type: array
   items:
     type: object
-    additionalProperties: true
+    additionalProperties: false
     properties:
       name:
         description: >
@@ -313,3 +313,6 @@ versions:
       - op: add
         path: "/items/properties/type/enum/29"
         value: "array"
+      #- op: replace
+      #  path: "/items/additionalProperties"
+      #  value: true
