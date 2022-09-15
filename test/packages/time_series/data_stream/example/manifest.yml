@@ -11,6 +11,7 @@ streams:
         default: 10s
 
 elasticsearch:
+  source_mode: "synthetic"
   index_mode: "time_series"
   index_template:
     settings:

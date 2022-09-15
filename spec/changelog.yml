@@ -24,6 +24,9 @@
   - description: Document and validate `object_type` and `object_type_mapping_type`.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/417
+  - description: Add setting to configure the source mode of a data stream
+    type: enhancement
+    link: https://github.com/elastic/package-spec/issues/340
 - version: 1.18.0
   changes:
   - description: Update Go runtime to 1.19.1.

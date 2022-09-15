@@ -222,5 +222,19 @@ spec:
               type: array
               items:
                 type: string
+        source_mode:
+          description: |-
+            Source mode to use. This configures how the document source (`_source`) is stored
+            for this data stream.
+            If configured as `default`, this mode is not configured and it uses Elasticsearch defaults.
+            If configured as `synthetic`, it doesn't store the source, but tries to rebuild it
+            from the indexed fields when queried.
+            If no configured, users may override the setting from Fleet UI.
+          type: string
+          enum:
+          - "default"
+          - "synthetic"
+          examples:
+          - "synthetic"
   required:
   - title
