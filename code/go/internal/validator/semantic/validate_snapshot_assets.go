@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"path"
+	"strings"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
@@ -67,20 +68,37 @@ func ValidateSnapshotVersionsInAssets(fsys fspath.FS) ve.ValidationErrors {
 		for _, objectFile := range objectFiles {
 			filePath := objectFile.Path()
 
+			allVersions := []string{}
 			version, err := readMigrationVersionField(objectFile)
 			if err != nil {
 				errs = append(errs, err)
 				continue
 			}
 
-			snapshot, err := usingSnapshotVersion(version)
+			if version != "" {
+				allVersions = append(allVersions, version)
+			}
+
+			versionPanels, err := readVersionPanelsDashboard(objectFile)
+			if err != nil {
+				errs = append(errs, err)
+				continue
+			}
+
+			if len(versionPanels) > 0 {
+				allVersions = append(allVersions, versionPanels...)
+			}
+
+			allVersions = removeDuplicatedVersions(allVersions)
+
+			snapshot, err := usingSnapshotVersion(allVersions)
 			if err != nil {
 				errs = append(errs, err)
 				continue
 			}
 
 			if snapshot {
-				message := fmt.Sprintf("Warning: prerelease version found in %s %s: %s", asset, filePath, version)
+				message := fmt.Sprintf("Warning: snapshot version found in %s %s: %s", asset, filePath, strings.Join(allVersions, ", "))
 				if warningsAsErrors {
 					errs = append(errs, errors.New(message))
 				} else {
@@ -121,18 +139,54 @@ func readMigrationVersionField(objectFile pkgpath.File) (string, error) {
 	return versions[0], nil
 }
 
+// readVersionPanelsDashboard return the versions used in panels (dashboard)
+func readVersionPanelsDashboard(objectFile pkgpath.File) ([]string, error) {
+	versionReference, err := objectFile.Values(`$.attributes.panelsJSON.*.version`)
+	if err != nil {
+		return nil, err
+	}
+	versions, err := toStringSlice(versionReference)
+	if err != nil {
+		return nil, errors.Errorf("conversion error to string %s %s", versionReference, objectFile.Path())
+	}
+	if len(versions) == 0 {
+		// some assets do not have migrationVersion field, no error raised
+		return nil, nil
+	}
+	log.Printf("Version retrieved from panelsJSON version casted %s %s", versions, objectFile.Path())
+	return versions, nil
+}
+
+func removeDuplicatedVersions(versionSlice []string) []string {
+	allKeys := make(map[string]bool)
+	list := []string{}
+	for _, item := range versionSlice {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+			list = append(list, item)
+		}
+	}
+	return list
+}
+
 // usingSnapshotVersionVersion returns a boolean indicating if version is from a Snapshot version
-func usingSnapshotVersion(version string) (bool, error) {
-	// some assets do not have migrationVersion field, no error raised
-	if version == "" {
+func usingSnapshotVersion(versions []string) (bool, error) {
+
+	if len(versions) == 0 {
+		// some assets do not have migrationVersion field, no error raised
 		return false, nil
 	}
 
-	semVersion, err := semver.NewVersion(version)
-	if err != nil {
-		return false, err
+	for _, version := range versions {
+		semVersion, err := semver.NewVersion(version)
+		if err != nil {
+			return false, err
+		}
+		if semVersion.Prerelease() == elasticPrereleaseTag {
+			return true, nil
+		}
 	}
-	return semVersion.Prerelease() == elasticPrereleaseTag, nil
+	return false, nil
 }
 
 func readAllowSnapshotManifest(fsys fspath.FS) (bool, error) {

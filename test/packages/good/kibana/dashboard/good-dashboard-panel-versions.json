@@ -1,0 +1,13 @@
+{
+  "id": "good-dashboard-panel-versions",
+  "attributes": {
+    "panelsJSON": [
+      {
+        "version": "8.4.1"
+      }
+    ]
+  },
+  "migrationVersion": {
+    "dashboard": "8.4.1"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "assets_elastic_versions_allowed_snapshot-panels",
+  "attributes": {
+    "panelsJSON": [
+      {
+        "version": "8.4.2-SNAPSHOT"
+      }
+    ]
+  },
+  "migrationVersion": {
+    "dashboard": "8.4.1-SNAPSHOT"
+  }
+}

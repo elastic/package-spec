@@ -78,34 +78,39 @@ func createObjectFile(t *testing.T, contents, filename string) (*pkgpath.File, e
 func TestUsingSnapshotVersion(t *testing.T) {
 	cases := []struct {
 		title    string
-		version  string
+		versions []string
 		expected bool
 	}{
 		{
 			title:    "stable release",
-			version:  "8.1.0",
+			versions: []string{"8.1.0"},
 			expected: false,
 		},
 		{
 			title:    "empty version",
-			version:  "",
+			versions: []string{},
 			expected: false,
 		},
 		{
 			title:    "snapshot version",
-			version:  "8.1.0-SNAPSHOT",
+			versions: []string{"8.1.0-SNAPSHOT"},
+			expected: true,
+		},
+		{
+			title:    "different versions",
+			versions: []string{"8.1.0-SNAPSHOT", "8.2.0"},
 			expected: true,
 		},
 		{
 			title:    "other prerelease",
-			version:  "8.1.0-rc1",
+			versions: []string{"8.1.0-rc1"},
 			expected: false,
 		},
 	}
 
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
-			snapshot, err := usingSnapshotVersion(c.version)
+			snapshot, err := usingSnapshotVersion(c.versions)
 			require.NoError(t, err)
 			assert.Equal(t, c.expected, snapshot)
 		})
