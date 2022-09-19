@@ -43,8 +43,7 @@ func ValidateSnapshotVersionsInAssets(fsys fspath.FS) ve.ValidationErrors {
 		return ve.ValidationErrors{err}
 	}
 
-	// versions from dashboards, visualizations, lens, etc.
-	// prereleased versions allowed to contain -SNAPSHOT (no restrictions?)
+	// prerelease package version allowed to contain -SNAPSHOT (no restrictions?)
 	packageVersion, err := semver.NewVersion(manifestVersion)
 	if packageVersion.Major() == 0 || packageVersion.Prerelease() != "" {
 		// no retrictions, it can contain -SNAPSHOT
@@ -61,44 +60,26 @@ func ValidateSnapshotVersionsInAssets(fsys fspath.FS) ve.ValidationErrors {
 		filePaths := path.Join("kibana", asset, "*.json")
 		objectFiles, err := pkgpath.Files(fsys, filePaths)
 		if err != nil {
-			// errs = append(errs, errors.Wrapf(err, "error finding %s files", asset))
 			continue
 		}
 
 		for _, objectFile := range objectFiles {
 			filePath := objectFile.Path()
 
-			allVersions := []string{}
-			version, err := readMigrationVersionField(objectFile)
+			versions, err := getVersionElasticStackAsset(objectFile)
 			if err != nil {
-				errs = append(errs, err)
+				errs = append(errs, errors.Wrap(err, "can't get elastic stack version"))
 				continue
 			}
 
-			if version != "" {
-				allVersions = append(allVersions, version)
-			}
-
-			versionPanels, err := readVersionPanelsDashboard(objectFile)
-			if err != nil {
-				errs = append(errs, err)
-				continue
-			}
-
-			if len(versionPanels) > 0 {
-				allVersions = append(allVersions, versionPanels...)
-			}
-
-			allVersions = removeDuplicatedVersions(allVersions)
-
-			snapshot, err := usingSnapshotVersion(allVersions)
+			snapshot, err := usingSnapshotVersion(versions)
 			if err != nil {
 				errs = append(errs, err)
 				continue
 			}
 
 			if snapshot {
-				message := fmt.Sprintf("Warning: snapshot version found in %s %s: %s", asset, filePath, strings.Join(allVersions, ", "))
+				message := fmt.Sprintf("Warning: snapshot version found in %s %s: %s", asset, filePath, strings.Join(versions, ", "))
 				if warningsAsErrors {
 					errs = append(errs, errors.New(message))
 				} else {
@@ -109,6 +90,31 @@ func ValidateSnapshotVersionsInAssets(fsys fspath.FS) ve.ValidationErrors {
 	}
 
 	return errs
+}
+
+// getVersionElasticStackAsset returns the versions defined in the asset
+func getVersionElasticStackAsset(objectFile pkgpath.File) ([]string, error) {
+	allVersions := []string{}
+	version, err := readMigrationVersionField(objectFile)
+	if err != nil {
+		return nil, err
+	}
+
+	if version != "" {
+		allVersions = append(allVersions, version)
+	}
+
+	versionPanels, err := readVersionPanelsDashboard(objectFile)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(versionPanels) > 0 {
+		allVersions = append(allVersions, versionPanels...)
+	}
+
+	allVersions = removeDuplicatedVersions(allVersions)
+	return allVersions, nil
 }
 
 // readMigrationVersionField return the version in migrationVersion from an asset file
@@ -135,7 +141,6 @@ func readMigrationVersionField(objectFile pkgpath.File) (string, error) {
 		// some assets do not have migrationVersion field, no error raised
 		return "", nil
 	}
-	log.Printf("Version retrieved from migrationField version casted %s %s", versions[0], objectFile.Path())
 	return versions[0], nil
 }
 
@@ -153,7 +158,6 @@ func readVersionPanelsDashboard(objectFile pkgpath.File) ([]string, error) {
 		// some assets do not have migrationVersion field, no error raised
 		return nil, nil
 	}
-	log.Printf("Version retrieved from panelsJSON version casted %s %s", versions, objectFile.Path())
 	return versions, nil
 }
 
@@ -171,7 +175,6 @@ func removeDuplicatedVersions(versionSlice []string) []string {
 
 // usingSnapshotVersionVersion returns a boolean indicating if version is from a Snapshot version
 func usingSnapshotVersion(versions []string) (bool, error) {
-
 	if len(versions) == 0 {
 		// some assets do not have migrationVersion field, no error raised
 		return false, nil
