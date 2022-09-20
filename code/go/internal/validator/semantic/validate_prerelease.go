@@ -11,8 +11,8 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 
-	ve "github.com/elastic/package-spec/code/go/internal/errors"
-	"github.com/elastic/package-spec/code/go/internal/fspath"
+	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 )
 
 var (

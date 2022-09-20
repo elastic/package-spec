@@ -11,12 +11,12 @@ import (
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
 
-	spec "github.com/elastic/package-spec"
-	ve "github.com/elastic/package-spec/code/go/internal/errors"
-	"github.com/elastic/package-spec/code/go/internal/fspath"
-	"github.com/elastic/package-spec/code/go/internal/loader"
-	"github.com/elastic/package-spec/code/go/internal/spectypes"
-	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
+	spec "github.com/elastic/package-spec/v2"
+	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/internal/loader"
+	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/v2/code/go/internal/validator/semantic"
 )
 
 // Spec represents a package specification
