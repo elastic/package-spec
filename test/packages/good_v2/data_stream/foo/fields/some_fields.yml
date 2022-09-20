@@ -58,5 +58,3 @@
   type: keyword
 - name: a/b.c/d
   type: keyword
-- name: some_array
-  type: array # Allowed till 2.0.0

@@ -1,0 +1,11 @@
+{
+    "attributes": {
+        "color": "#e20b7f",
+        "description": "",
+        "name": "abc"
+    },
+    "coreMigrationVersion": "7.15.0",
+    "id": "good_v2-tag-abc-1",
+    "references": [],
+    "type": "tag"
+}
