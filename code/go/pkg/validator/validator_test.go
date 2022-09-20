@@ -341,7 +341,6 @@ func TestValidateWarnings(t *testing.T) {
 		},
 		"bad_assets_elastic_snapshot_versions": []string{
 			"snapshot version found in dashboard kibana/dashboard/bad_assets_elastic_snapshot_versions-overview.json: 8.4.1-SNAPSHOT",
-			"snapshot version found in dashboard kibana/dashboard/bad_assets_elastic_snapshot_versions-panels.json: 8.4.1, 8.4.2-SNAPSHOT",
 			"snapshot version found in visualization kibana/visualization/bad_assets_elastic_snapshot_versions-visualization1.json: 8.4.1-SNAPSHOT",
 		},
 	}

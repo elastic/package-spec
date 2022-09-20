@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"log"
 	"path"
-	"strings"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
@@ -43,19 +42,21 @@ func ValidateSnapshotVersionsInAssets(fsys fspath.FS) ve.ValidationErrors {
 		return ve.ValidationErrors{err}
 	}
 
-	// prerelease package version allowed to contain -SNAPSHOT (no restrictions?)
+	// technical previous and prerelease package versions are allowed to contain
+	// assets built from Elastic stack SNAPSHOT versions
 	packageVersion, err := semver.NewVersion(manifestVersion)
 	if packageVersion.Major() == 0 || packageVersion.Prerelease() != "" {
 		// no retrictions, it can contain -SNAPSHOT
 		return nil
 	}
 
-	// stable versions allowed to contain -SNAPSHOT if allow_snapshot is defined
+	// stable versions allowed to contain assets built from Elastic stack SNAPSHOT versions
+	// if allow_snapshot is set
 	if allowSnapshot {
 		return nil
 	}
 
-	// stable versions not allowed to contain -SNAPSHOT
+	// stable package versions are not allowed to contain assets built from Elastic stack SNAPSHOT versions
 	for _, asset := range assetsToCheck {
 		filePaths := path.Join("kibana", asset, "*.json")
 		objectFiles, err := pkgpath.Files(fsys, filePaths)
@@ -66,20 +67,20 @@ func ValidateSnapshotVersionsInAssets(fsys fspath.FS) ve.ValidationErrors {
 		for _, objectFile := range objectFiles {
 			filePath := objectFile.Path()
 
-			versions, err := getVersionElasticStackAsset(objectFile)
+			assetVersion, err := readMigrationVersionField(objectFile)
 			if err != nil {
-				errs = append(errs, errors.Wrap(err, "can't get elastic stack version"))
+				errs = append(errs, errors.Wrap(err, "can't get elastic stack version of asset"))
 				continue
 			}
 
-			snapshot, err := usingSnapshotVersion(versions)
+			snapshot, err := usingSnapshotVersion(assetVersion)
 			if err != nil {
 				errs = append(errs, err)
 				continue
 			}
 
 			if snapshot {
-				message := fmt.Sprintf("Warning: snapshot version found in %s %s: %s", asset, filePath, strings.Join(versions, ", "))
+				message := fmt.Sprintf("Warning: snapshot version found in %s %s: %s", asset, filePath, assetVersion)
 				if warningsAsErrors {
 					errs = append(errs, errors.New(message))
 				} else {
@@ -90,31 +91,6 @@ func ValidateSnapshotVersionsInAssets(fsys fspath.FS) ve.ValidationErrors {
 	}
 
 	return errs
-}
-
-// getVersionElasticStackAsset returns the versions defined in the asset
-func getVersionElasticStackAsset(objectFile pkgpath.File) ([]string, error) {
-	allVersions := []string{}
-	version, err := readMigrationVersionField(objectFile)
-	if err != nil {
-		return nil, err
-	}
-
-	if version != "" {
-		allVersions = append(allVersions, version)
-	}
-
-	versionPanels, err := readVersionPanelsDashboard(objectFile)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(versionPanels) > 0 {
-		allVersions = append(allVersions, versionPanels...)
-	}
-
-	allVersions = removeDuplicatedVersions(allVersions)
-	return allVersions, nil
 }
 
 // readMigrationVersionField return the version in migrationVersion from an asset file
@@ -144,52 +120,18 @@ func readMigrationVersionField(objectFile pkgpath.File) (string, error) {
 	return versions[0], nil
 }
 
-// readVersionPanelsDashboard return the versions used in panels (dashboard)
-func readVersionPanelsDashboard(objectFile pkgpath.File) ([]string, error) {
-	versionReference, err := objectFile.Values(`$.attributes.panelsJSON.*.version`)
-	if err != nil {
-		return nil, err
-	}
-	versions, err := toStringSlice(versionReference)
-	if err != nil {
-		return nil, errors.Errorf("conversion error to string %s %s", versionReference, objectFile.Path())
-	}
-	if len(versions) == 0 {
-		// some assets do not have migrationVersion field, no error raised
-		return nil, nil
-	}
-	return versions, nil
-}
-
-func removeDuplicatedVersions(versionSlice []string) []string {
-	allKeys := make(map[string]bool)
-	list := []string{}
-	for _, item := range versionSlice {
-		if _, value := allKeys[item]; !value {
-			allKeys[item] = true
-			list = append(list, item)
-		}
-	}
-	return list
-}
-
 // usingSnapshotVersionVersion returns a boolean indicating if version is from a Snapshot version
-func usingSnapshotVersion(versions []string) (bool, error) {
-	if len(versions) == 0 {
-		// some assets do not have migrationVersion field, no error raised
+func usingSnapshotVersion(version string) (bool, error) {
+	if version == "" {
+		// some assets do not have migrationVersion field, allowed
 		return false, nil
 	}
 
-	for _, version := range versions {
-		semVersion, err := semver.NewVersion(version)
-		if err != nil {
-			return false, err
-		}
-		if semVersion.Prerelease() == elasticPrereleaseTag {
-			return true, nil
-		}
+	semVersion, err := semver.NewVersion(version)
+	if err != nil {
+		return false, err
 	}
-	return false, nil
+	return semVersion.Prerelease() == elasticPrereleaseTag, nil
 }
 
 func readAllowSnapshotManifest(fsys fspath.FS) (bool, error) {
