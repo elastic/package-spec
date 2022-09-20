@@ -13,7 +13,7 @@ import (
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
 )
 
 // FolderSpecLoader loads specs from directories.

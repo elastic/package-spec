@@ -10,7 +10,7 @@ import (
 	"github.com/Masterminds/semver/v3"
 	"github.com/stretchr/testify/require"
 
-	"github.com/elastic/package-spec/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 )
 
 func TestNewSpec(t *testing.T) {

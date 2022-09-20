@@ -11,8 +11,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/elastic/package-spec/code/go/internal/errors"
-	"github.com/elastic/package-spec/code/go/internal/validator/common"
+	"github.com/elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

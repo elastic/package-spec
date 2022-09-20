@@ -4,7 +4,7 @@
 
 package semantic
 
-import "github.com/elastic/package-spec/code/go/internal/errors"
+import "github.com/elastic/package-spec/v2/code/go/internal/errors"
 
 // ValidateKibanaNoDanglingObjectIDs returns validation errors if there are any
 // dangling references to Kibana objects in any Kibana object files. That is, it
