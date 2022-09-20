@@ -1,0 +1,6 @@
+{
+  "id": "good-dashboard-version",
+  "migrationVersion": {
+    "dashboard": "8.4.1-SNAPSHOT"
+  }
+}
