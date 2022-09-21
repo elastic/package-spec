@@ -11,7 +11,7 @@ import (
 	"io/fs"
 	"os"
 
-	"github.com/elastic/package-spec/code/go/internal/validator"
+	"github.com/elastic/package-spec/v2/code/go/internal/validator"
 )
 
 // ValidateFromPath validates a package located at the given path against the

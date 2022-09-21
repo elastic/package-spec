@@ -11,8 +11,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/elastic/package-spec/code/go/internal/errors"
-	"github.com/elastic/package-spec/code/go/internal/validator/common"
+	"github.com/elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -27,6 +27,7 @@ func TestValidateFile(t *testing.T) {
 		expectedErrContains []string
 	}{
 		"good":                {},
+		"good_v2":             {},
 		"deploy_custom_agent": {},
 		"deploy_docker":       {},
 		"deploy_terraform":    {},
@@ -238,7 +239,8 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 
 func TestValidateMissingReqiredFields(t *testing.T) {
 	tests := map[string][]string{
-		"good": {},
+		"good":    {},
+		"good_v2": {},
 		"missing_required_fields": {
 			`expected type "constant_keyword" for required field "data_stream.dataset", found "keyword" in "../../../../test/packages/missing_required_fields/data_stream/foo/fields/base-fields.yml"`,
 			`expected field "data_stream.type" with type "constant_keyword" not found in datastream "foo"`,
@@ -323,7 +325,8 @@ func TestValidateDuplicatedFields(t *testing.T) {
 
 func TestValidateWarnings(t *testing.T) {
 	tests := map[string][]string{
-		"good": []string{},
+		"good":    []string{},
+		"good_v2": []string{},
 		"custom_logs": []string{
 			"package with non-stable semantic version and active beta features (enabled in [../../../../test/packages/custom_logs]) can't be released as stable version.",
 		},

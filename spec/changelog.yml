@@ -4,6 +4,22 @@
 ##
 - version: 2.0.0-next
   changes:
+  - description: Add setting to configure the source mode of a data stream
+    type: enhancement
+    link: https://github.com/elastic/package-spec/issues/340
+- version: 2.0.0-rc2
+  changes:
+  - description: Add map as another reference type to check to show warnings
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/414
+  - description: Document and validate `object_type` and `object_type_mapping_type`.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/417
+  - description: Fix import paths for Go code
+    type: bugfix
+    link: https://github.com/elastic/package-spec/issues/423
+- version: 2.0.0-rc1
+  changes:
   - description: Enable validation of duplicated fields.
     type: breaking-change
     link: https://github.com/elastic/package-spec/issues/331
@@ -16,17 +32,9 @@
   - description: Check that referenced ILM policies are defined for the data stream.
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/413
-- version: 1.18.1-next
-  changes:
-  - description: Add map as another reference type to check to show warnings
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/414
-  - description: Document and validate `object_type` and `object_type_mapping_type`.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/417
-  - description: Add setting to configure the source mode of a data stream
-    type: enhancement
-    link: https://github.com/elastic/package-spec/issues/340
+  - description: Stricter validation of field definitions.
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/420
 - version: 1.18.0
   changes:
   - description: Update Go runtime to 1.19.1.

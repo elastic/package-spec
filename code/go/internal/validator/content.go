@@ -11,7 +11,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/elastic/package-spec/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
 )
 
 func validateContentType(fsys fs.FS, path string, contentType spectypes.ContentType) error {

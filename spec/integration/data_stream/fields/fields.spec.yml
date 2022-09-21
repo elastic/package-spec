@@ -6,7 +6,17 @@ spec:
   type: array
   items:
     type: object
-    additionalProperties: true
+    additionalProperties: false
+    patternProperties:
+      # Soft validation on some properties that can be present but not validated or used yet.
+      "^(level|group)$":
+        anyOf:
+          - type: string
+          - type: integer
+      "^(footnote|format|title)$":
+        type: string
+      "^(default_field|norms)$":
+        type: boolean
     properties:
       name:
         description: >
@@ -60,6 +70,22 @@ spec:
       value:
         description: The value to associate with a constant_keyword field.
         type: string
+
+      example:
+        description: Example values for this field.
+        anyOf:
+          - type: string
+          - type: number
+          - type: boolean
+          - type: "null"
+          - type: array
+            items:
+              anyOf:
+                - type: string
+                - type: number
+                - type: boolean
+          - type: object
+            additionalProperties: true
 
       metric_type:
         description: >
@@ -280,6 +306,17 @@ spec:
           (e.g. object1.object2.field).
         type: string
 
+      normalize:
+        description: >
+          Specifies the expected normalizations for a field.
+          `array` normalization implies that the values in the field should always be
+          an array, even if they are single values.
+        type: array
+        items:
+          type: string
+          enum:
+            - array
+
       normalizer:
         description: >
           Specifies the name of a normalizer to apply to keyword fields. A
@@ -313,3 +350,11 @@ versions:
       - op: add
         path: "/items/properties/type/enum/29"
         value: "array"
+      - op: replace
+        path: "/items/additionalProperties"
+        value: true
+      - op: remove
+        path: "/items/patternProperties"
+        value: true
+      - op: remove
+        path: "/items/properties/example"
