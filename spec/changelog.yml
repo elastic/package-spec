@@ -2,6 +2,11 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
+- version: 2.0.0-next
+  changes:
+  - description: Add setting to configure the source mode of a data stream
+    type: enhancement
+    link: https://github.com/elastic/package-spec/issues/340
 - version: 2.0.0-rc2
   changes:
   - description: Add map as another reference type to check to show warnings
