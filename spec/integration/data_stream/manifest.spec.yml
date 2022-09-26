@@ -110,10 +110,15 @@ spec:
       description: Name of data set.
       type: string
     title:
-      description: Title of data stream.
+      description: >
+        Title of data stream. It should include the source of the data that is
+        being collected, and the kind of data collected such as logs or metrics.
+        Words should be uppercased.
       type: string
       examples:
-      - AWS billing metrics
+      - AWS Billing Metrics
+      - Linux Metrics
+      - User Activity Logs
     release:
       description: Stability of data stream.
       type: string
@@ -158,13 +163,24 @@ spec:
             - s3
             - file
           title:
+            description: >
+              Title of the stream. It should include the source of the data that is
+              being collected, and the kind of data collected such as logs or metrics.
+              Words should be uppercased.
             type: string
             examples:
-            - AWS Billing metrics
+            - AWS Billing Metrics
+            - Linux Metrics
+            - User Activity Logs
           description:
+            description: >
+              Description of the stream. It should describe what is being collected and
+              with what collector, following the structure "Collect X from Y with X".
             type: string
             examples:
-            - Collect AWS billing metrics
+            - Collect Metrics from AWS Billing service using Elastic Agent.
+            - Collect Metrics from Linux servers with Elastic Agent.
+            - Collect Logs from Apache Web Server using Elastic Agent.
           template_path:
             description: "Path to Elasticsearch index template for stream."
             type: string
