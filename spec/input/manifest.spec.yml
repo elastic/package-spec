@@ -16,15 +16,9 @@ spec:
       examples:
       - apache
     title:
-      description: The title of the package.
-      type: string
-      examples:
-      - Apache
+      $ref: "../integration/manifest.spec.yml#/definitions/title"
     description:
-      description: A longer description of the package.
-      type: string
-      examples:
-      - Apache Integration
+      $ref: "../integration/manifest.spec.yml#/definitions/description"
     version:
       description: The version of the package.
       $ref: "../integration/manifest.spec.yml#/definitions/version"
