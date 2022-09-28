@@ -59,13 +59,12 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 
 	// Syntactic validations
 	validator := newValidator(rootSpec, &pkg)
-	errs = validator.Validate()
-	if len(errs) != 0 {
-		return errs
-	}
+	errs = append(errs, validator.Validate()...)
 
 	// Semantic validations
-	return s.rules(rootSpec).validate(&pkg)
+	errs = append(errs, s.rules(rootSpec).validate(&pkg)...)
+
+	return errs
 }
 
 func (s Spec) rules(rootSpec spectypes.ItemSpec) validationRules {
