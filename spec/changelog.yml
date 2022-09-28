@@ -4,10 +4,13 @@
 ##
 - version: 2.0.0-next
   changes:
-  - description: Add setting to configure the source mode of a data stream
+  - description: Add setting to configure the source mode of a data stream.
     type: enhancement
     link: https://github.com/elastic/package-spec/issues/340
-  - description: Add infrastructure category
+  - description: Semantic validation is also executed when shema validation fails.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/428
+  - description: Add infrastructure category.
     type: enhancement
     link: https://github.com/elastic/package-spec/issues/429
 - version: 2.0.0-rc2
