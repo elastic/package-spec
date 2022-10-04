@@ -1,14 +1,14 @@
 # Introduction
 
 This repository contains:
-* specifications for Elastic Packages, as served up by the [Elastic Package Registry (EPR)](https://github.com/elastic/package-registry). There may be multiple versions of the specifications; these are resolved when loading the spec depending on the `format_version` of the package. Read more in the _Specification Versioning_ section below.
-* code libraries for validating said specifications; these can be found under the `code` top-level folder.
+* Specifications for Elastic Packages, as served up by the [Elastic Package Registry (EPR)](https://github.com/elastic/package-registry). There may be multiple versions of the specifications; these are resolved when loading the spec depending on the `format_version` of the package. Read more in the _Specification Versioning_ section below.
+* Code libraries for validating said specifications; these can be found under the `code` top-level folder.
 
-Please use this repository to discuss any changes to the specification, either my making issues or PRs to the specification.
+Please use this repository to discuss any changes to the specification, either by making issues or PRs to the specification.
 
 # What is an Elastic Package?
 
-An Elastic Package is a collection of assets for the Elastic Stack. In addition, it contains manifest files which contain additional information about the package. The exact content and structure of a package are described by the package spec.
+An Elastic Package is a collection of assets for the Elastic Stack. In addition, it contains manifest files which contain additional information about the package. The exact content and structure of a package are described by the Package Spec.
 
 A package with all its assets is downloaded as a .zip file from the package-registry by Fleet inside Kibana. The assets are then unpacked and each asset is installed into the related API and the package can be configured.
 
@@ -24,7 +24,7 @@ In contrast, any asset added on the top level will be picked up as json document
 
 ## Supported assets
 
-For a quick overview, these are the assets typically found in an Elastic Package. The package spec will always contain the fully up-to-date list.
+For a quick overview, these are the assets typically found in an Elastic Package. The Package Spec will always contain the fully up-to-date list.
 
 * Elasticsearch
   * Ingest Pipeline
@@ -43,7 +43,7 @@ For a quick overview, these are the assets typically found in an Elastic Package
 * Other
   * fields.yml
 
-The special asset `fields.yml` is used to generate out of a single definition Elasticsearch Index Templates and Kibana index patterns. The exact definition can be found in the package spec.
+The special asset `fields.yml` is used to generate out of a single definition Elasticsearch Index Templates and Kibana index patterns. The exact definition can be found in the Package Spec.
 
 
 # Specification Format
