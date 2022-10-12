@@ -14,7 +14,7 @@ spec:
     services:
       description: Service list
       type: object
-      additionalProperties: false
+      additionalProperties: true
       properties:
         docker-custom-agent:
           description: Custom agent service definition
