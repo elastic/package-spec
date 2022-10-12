@@ -28,3 +28,4 @@ spec:
   required:
     - version
     - services
+    
