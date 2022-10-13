@@ -6,6 +6,13 @@ spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
   additionalProperties: false
+  definitions:
+    service:
+      type: object
+      not:
+        anyOf:
+          - required:
+            - hostname
   properties:
     version:
       description: Docker Compose version
@@ -14,18 +21,15 @@ spec:
     services:
       description: Service list
       type: object
-      additionalProperties: true
+      additionalProperties:
+        description: Additional services
+        "$ref": "#/definitions/service"
       properties:
         docker-custom-agent:
           description: Custom agent service definition
-          type: object
-          not:
-            anyOf:
-              - required:
-                  - hostname
+          "$ref": "#/definitions/service"
       required:
         - docker-custom-agent
   required:
     - version
     - services
-    
