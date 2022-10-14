@@ -1,0 +1,8 @@
+version: "2.3"
+services:
+  docker-custom-agent:
+    host: pid
+    user: root
+  other-container:
+    host: pid
+    user: root
