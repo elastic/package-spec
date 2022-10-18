@@ -26,15 +26,16 @@ func TestValidateFile(t *testing.T) {
 		invalidPkgFilePath  string
 		expectedErrContains []string
 	}{
-		"good":                {},
-		"good_v2":             {},
-		"deploy_custom_agent": {},
-		"deploy_docker":       {},
-		"deploy_terraform":    {},
-		"time_series":         {},
-		"missing_data_stream": {},
-		"icons_dark_mode":     {},
-		"custom_ilm_policy":   {},
+		"good":                               {},
+		"good_v2":                            {},
+		"deploy_custom_agent":                {},
+		"deploy_custom_agent_multi_services": {},
+		"deploy_docker":                      {},
+		"deploy_terraform":                   {},
+		"time_series":                        {},
+		"missing_data_stream":                {},
+		"icons_dark_mode":                    {},
+		"custom_ilm_policy":                  {},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{

@@ -7,6 +7,9 @@
   - description: Prepare for next patch release
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/432
+  - description: Allowing multiple services included as part of custom-agent-deployer
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/436
 - version: 2.0.0
   changes:
   - description: Add setting to configure the source mode of a data stream.
