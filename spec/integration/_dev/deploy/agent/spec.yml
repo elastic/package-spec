@@ -1,5 +1,5 @@
 spec:
-  additionalContents: false
+  additionalContents: true
   contents:
     - description: Custom agent definition.
       type: file
