@@ -1,0 +1,12 @@
+- name: data
+  type: binary
+  description: file chunk
+- name: bid
+  type: keyword
+  description: bid
+  index: false
+- name: last
+  type: boolean
+  description: is the last file chunk
+  index: false
+  

@@ -1,0 +1,9 @@
+format_version: 1.0.0
+name: file_upload_example
+title: File Upload Example
+description: This package contains a file_upload folder.
+version: 0.1.2
+type: integration
+release: beta
+owner:
+  github: elastic/foobar

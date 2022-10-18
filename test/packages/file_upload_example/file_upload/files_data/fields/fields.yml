@@ -1,0 +1,180 @@
+- name: agent_id
+  type: keyword
+  description: agent id
+- name: action_id
+  type: keyword
+  description: action id
+- name: source
+  type: keyword
+  description: source
+- name: file
+  title: File
+  type: group
+  fields:
+    - name: Status
+      type: keyword
+      description: status
+    - name: ChunkSize
+      type: integer
+      description: chunk size
+    - name: Compression
+      type: keyword
+      description: compression type
+    - name: size
+      type: long
+      description: file size
+    - name: name
+      type: keyword
+      description: file name
+    - name: mime_type
+      type: keyword
+      description: file mime type
+    - name: hash
+      title: Hash
+      type: group
+      fields:
+        - name: sha256
+          type: keyword
+          description: file hash in sha256
+    - name: accessed
+      type: date
+      description: date accessed
+    - name: attributes
+      type: keyword
+      description: file attributes
+    - name: created
+      type: date
+      description: file created date
+    - name: ctime
+      type: date
+      description: file created time
+    - name: device
+      type: keyword
+      description: device
+    - name: drive_letter
+      type: keyword
+      description: drive letter
+    - name: extension
+      type: keyword
+      description: file extension
+    - name: directory
+      type: keyword
+      description: file directory
+    - name: gid
+      type: keyword
+      description: gid
+    - name: group
+      type: keyword
+      description: group
+    - name: inode
+      type: keyword
+      description: inode
+    - name: mode
+      type: keyword
+      description: mode
+    - name: mtime
+      type: date
+      description: mtime
+    - name: owner
+      type: keyword
+      description: file owner
+    - name: path
+      type: keyword
+      description: file path
+    - name: target_path
+      type: keyword
+      description: target path
+    - name: type
+      type: keyword
+      description: file type
+    - name: uid
+      type: keyword
+      description: uid
+- name: contents
+  title: Contents
+  type: group
+  fields:
+        - name: size
+      type: long
+      description: file size
+    - name: name
+      type: keyword
+      description: file name
+    - name: mime_type
+      type: keyword
+      description: file mime type
+    - name: hash
+      title: Hash
+      type: group
+      fields:
+        - name: sha256
+          type: keyword
+          description: file hash in sha256
+    - name: accessed
+      type: date
+      description: date accessed
+    - name: attributes
+      type: keyword
+      description: file attributes
+    - name: created
+      type: date
+      description: file created date
+    - name: ctime
+      type: date
+      description: file created time
+    - name: device
+      type: keyword
+      description: device
+    - name: drive_letter
+      type: keyword
+      description: drive letter
+    - name: extension
+      type: keyword
+      description: file extension
+    - name: directory
+      type: keyword
+      description: file directory
+    - name: gid
+      type: keyword
+      description: gid
+    - name: group
+      type: keyword
+      description: group
+    - name: inode
+      type: keyword
+      description: inode
+    - name: mode
+      type: keyword
+      description: mode
+    - name: mtime
+      type: date
+      description: mtime
+    - name: owner
+      type: keyword
+      description: file owner
+    - name: path
+      type: keyword
+      description: file path
+    - name: target_path
+      type: keyword
+      description: target path
+    - name: type
+      type: keyword
+      description: file type
+    - name: uid
+      type: keyword
+      description: uid
+- name: event
+  title: Event
+  type: group
+  fields:
+    - name: id
+      type: keyword
+      description: event id
+- name: host
+  title: Host
+  type: group
+  fields:
+    - name: hostname
+      type: keyword
+      description: hostname
