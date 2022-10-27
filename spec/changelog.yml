@@ -2,6 +2,11 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
+- version: 2.1.1-next
+  changes:
+  - description: Prepare for next version
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/442
 - version: 2.1.0
   changes:
   - description: Allowing multiple services included as part of custom-agent-deployer
