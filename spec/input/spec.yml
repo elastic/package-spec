@@ -51,4 +51,4 @@ spec:
     name: _dev
     required: false
     visibility: private
-    $ref: "../integration/_dev/spec.yml"
+    $ref: "./_dev/spec.yml"

@@ -1,0 +1,8 @@
+spec:
+  additionalContents: false
+  contents:
+    - description: Folder containing system tests
+      type: folder
+      name: system
+      required: false
+      $ref: "../../../integration/data_stream/_dev/test/system/spec.yml"
