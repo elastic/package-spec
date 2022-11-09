@@ -7,6 +7,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/442
+  - description: Add definition of system tests for input packages
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/443
 - version: 2.1.0
   changes:
   - description: Allowing multiple services included as part of custom-agent-deployer
