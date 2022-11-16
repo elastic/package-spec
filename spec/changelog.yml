@@ -12,7 +12,7 @@
     link: https://github.com/elastic/package-spec/pull/443
   - description: Allow to include a sample event in input packages
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/444
+    link: https://github.com/elastic/package-spec/pull/447
 - version: 2.1.0
   changes:
   - description: Allowing multiple services included as part of custom-agent-deployer
