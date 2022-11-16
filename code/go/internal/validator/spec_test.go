@@ -9,6 +9,8 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/stretchr/testify/require"
+
+	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 )
 
 func TestNewSpec(t *testing.T) {
@@ -32,4 +34,31 @@ func TestNewSpec(t *testing.T) {
 			require.Nil(t, spec)
 		}
 	}
+}
+
+func TestNoBetaFeatures_Package_GA(t *testing.T) {
+	// given
+	s := Spec{
+		*semver.MustParse("1.0.0"),
+		fspath.DirFS("testdata/fakespec"),
+	}
+	pkg, err := NewPackage("testdata/packages/features_ga")
+	require.NoError(t, err)
+
+	err = s.ValidatePackage(*pkg)
+	require.Empty(t, err)
+}
+
+func TestBetaFeatures_Package_GA(t *testing.T) {
+	// given
+	s := Spec{
+		*semver.MustParse("1.0.0"),
+		fspath.DirFS("testdata/fakespec"),
+	}
+	pkg, err := NewPackage("testdata/packages/features_beta")
+	require.NoError(t, err)
+
+	errs := s.ValidatePackage(*pkg)
+	require.Len(t, errs, 1)
+	require.Equal(t, errs[0].Error(), "spec for [testdata/packages/features_beta/beta] defines beta features which can't be enabled for packages with a stable semantic version")
 }

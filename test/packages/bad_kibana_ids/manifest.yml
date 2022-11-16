@@ -1,4 +1,4 @@
-format_version: 1.0.4
+format_version: 1.0.0
 name: bad_kibana_ids
 title: Bad Kibana IDs
 description: This package contains Kibana object files with non-matching IDs

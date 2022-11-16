@@ -1,0 +1,28 @@
+format_version: 1.0.0
+name: visualizations_by_reference
+title: BAD
+description: This package is bad.
+version: 0.1.2
+type: integration
+release: beta
+conditions:
+  kibana.version: '^7.9.0'
+policy_templates:
+  - name: apache
+    title: Apache logs and metrics
+    description: Collect logs and metrics from Apache instances
+    inputs:
+      - type: apache/metrics
+        title: Collect metrics from Apache instances
+        description: Collecting Apache status metrics
+        vars:
+          - name: hosts
+            type: text
+            title: Hosts
+            multi: true
+            required: true
+            show_user: true
+            default:
+            - http://127.0.0.1
+owner:
+  github: elastic/foobar

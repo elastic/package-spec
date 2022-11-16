@@ -6,14 +6,14 @@ package semantic
 
 import (
 	"fmt"
-	"path/filepath"
+	"path"
 	"strings"
 
 	"github.com/pkg/errors"
 
-	ve "github.com/elastic/package-spec/code/go/internal/errors"
-	"github.com/elastic/package-spec/code/go/internal/fspath"
-	"github.com/elastic/package-spec/code/go/internal/pkgpath"
+	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
 )
 
 // ValidateKibanaObjectIDs returns validation errors if there are any Kibana
@@ -23,7 +23,7 @@ import (
 func ValidateKibanaObjectIDs(fsys fspath.FS) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 
-	filePaths := filepath.Join("kibana", "*", "*.json")
+	filePaths := path.Join("kibana", "*", "*.json")
 	objectFiles, err := pkgpath.Files(fsys, filePaths)
 	if err != nil {
 		errs = append(errs, errors.Wrap(err, "error finding Kibana object files"))
@@ -40,7 +40,7 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) ve.ValidationErrors {
 		}
 
 		// Special case: object is of type 'security_rule'
-		if filepath.Base(filepath.Dir(filePath)) == "security_rule" {
+		if path.Base(path.Dir(filePath)) == "security_rule" {
 			ruleID, err := objectFile.Values("$.attributes.rule_id")
 			if err != nil {
 				errs = append(errs, errors.Wrapf(err, "unable to get rule ID in file [%s]", fsys.Path(filePath)))
@@ -54,8 +54,8 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) ve.ValidationErrors {
 		}
 
 		// fileID == filename without the extension == expected ID of Kibana object defined inside file.
-		fileName := filepath.Base(filePath)
-		fileExt := filepath.Ext(filePath)
+		fileName := path.Base(filePath)
+		fileExt := path.Ext(filePath)
 		fileID := strings.Replace(fileName, fileExt, "", -1)
 		if fileID != objectID {
 			err := fmt.Errorf("kibana object file [%s] defines non-matching ID [%s]", fsys.Path(filePath), objectID)

@@ -1,3 +1,4 @@
 # no format_version in this file
 name: mypackage
 type: integration
+version: 1.0.0

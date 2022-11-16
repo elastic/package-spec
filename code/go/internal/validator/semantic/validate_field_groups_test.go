@@ -6,13 +6,13 @@ package semantic
 
 import (
 	"fmt"
-	"path/filepath"
+	"path"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/elastic/package-spec/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 )
 
 func TestValidateFieldGroups_Good(t *testing.T) {
@@ -27,7 +27,7 @@ func TestValidateFieldGroups_Bad(t *testing.T) {
 
 	fileError := func(name string, expected string) string {
 		return fmt.Sprintf(`file "%s" is invalid: %s`,
-			filepath.Join(pkgRoot, name),
+			path.Join(pkgRoot, name),
 			expected)
 	}
 

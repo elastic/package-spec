@@ -50,11 +50,37 @@ pipeline {
      Test the source code.
      */
     stage('Test') {
-      steps {
-        cleanup()
-        withMageEnv(){
-          dir("${BASE_DIR}"){
-            sh(label: 'Test', script: 'make test')
+      parallel {
+        stage('Test on Linux') {
+          options { skipDefaultCheckout() }
+          steps {
+            cleanup()
+            withMageEnv(){
+              dir("${BASE_DIR}"){
+                sh(label: 'Test', script: 'make test-ci')
+              }
+            }
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "**/build/test-results/TEST-*.xml")
+              coverageReport(baseDir: "${BASE_DIR}/build/test-coverage", reportFiles: "coverage-unit-report.html", coverageFiles: "coverage-unit-report.xml")
+            }
+          }
+        }
+        stage('Test on Windows') {
+          agent { label 'windows-2022' }
+          options { skipDefaultCheckout() }
+          steps {
+            cleanup()
+            dir("${BASE_DIR}"){
+              goTestJUnit(options: '-v ./code/go/...', output: 'junit-report.xml')
+            }
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/junit-report.xml")
+            }
           }
         }
       }

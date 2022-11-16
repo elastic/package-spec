@@ -1,0 +1,6 @@
+# newer versions go on top
+- version: "2.3.4"
+  changes:
+    - description: Initial draft of the package
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/341

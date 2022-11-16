@@ -1,0 +1,259 @@
+##
+## Describes the specification for a data stream's manifest.yml file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  definitions:
+    # Would like to use `null` type for an empty array which is a valid value
+    # Need to use `"null"` to workaround a bug in the YAML parser implementation (`[]interface(nil)` is just `nil`)
+    # For reference: https://github.com/xeipuuv/gojsonschema/issues/141
+    input_variable_value:
+      anyOf:
+        - type:
+            - string
+            - integer
+            - boolean
+            - "null"
+        - type: array
+          items:
+             $ref: "#/definitions/input_variable_value"
+      examples:
+        - "null"
+        - ""
+        - some string
+        - 1234
+        - true
+        - - 3
+          - mixed
+          - true
+        - - - array
+            - 1
+          - - array
+            - 2
+    vars:
+      description: Input variables.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          name:
+            description: Variable name.
+            type: string
+            examples:
+              - hosts
+          type:
+            description: Data type of variable.
+            type: string
+            enum:
+              - bool
+              - email
+              - integer
+              - password
+              - text
+              - textarea
+              - time_zone
+              - url
+              - yaml
+            examples:
+              - text
+          title:
+            description: Title of variable.
+            type: string
+            examples:
+              - Hosts
+          description:
+            description: Short description of variable.
+            type: string
+            examples:
+              - "Hosts of integration service to connect to"
+          multi:
+            description: Can variable contain multiple values?
+            type: boolean
+            default: false
+            examples:
+              - true
+          required:
+            description: Is variable required?
+            type: boolean
+            default: false
+            examples:
+              - true
+          show_user:
+            description: Should this variable be shown to the user by default?
+            type: boolean
+            default: true
+            examples:
+              - false
+          url_allowed_schemes:
+            description: >
+              List of allowed URL schemes for the url type. If empty, any scheme is allowed.
+              An empty string can be used to indicate that the scheme is not mandatory.
+            type: array
+            items:
+              type: string
+            default: []
+            examples:
+              - ['http', 'https']
+              - ['redis', 'rediss']
+              - ['', 'mysql']
+          default:
+            description: Default value(s) for variable
+            $ref: "#/definitions/input_variable_value"
+        required:
+          - name
+          - type
+  properties:
+    dataset:
+      description: Name of data set.
+      type: string
+    title:
+      description: >
+        Title of data stream. It should include the source of the data that is
+        being collected, and the kind of data collected such as logs or metrics.
+        Words should be uppercased.
+      type: string
+      examples:
+      - AWS Billing Metrics
+      - Linux Metrics
+      - User Activity Logs
+    release:
+      description: Stability of data stream.
+      type: string
+      enum:
+      - experimental
+      - beta
+      examples:
+      - beta
+    ilm_policy:
+      description: The name of an existing ILM (Index Lifecycle Management) policy
+      type: string
+      examples:
+      - diagnostics
+    dataset_is_prefix:
+      description: if true, the index pattern in the ES template will contain the dataset as a prefix only
+      type: boolean
+      default: false
+    type:
+      description: Type of data stream
+      type: string
+      enum:
+      - metrics
+      - logs
+      - synthetics
+      - traces
+      examples:
+      - metrics
+    hidden:
+      description: Specifies if a data stream is hidden
+      type: boolean
+    allow_routing:
+      description: When set to true, agents running this integration are granted data stream privileges for all datasets and namespaces of its type
+      type: boolean
+    streams:
+      description: Streams offered by data stream.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          input:
+            type: string
+            examples:
+            - aws/metrics
+            - s3
+            - file
+          title:
+            description: >
+              Title of the stream. It should include the source of the data that is
+              being collected, and the kind of data collected such as logs or metrics.
+              Words should be uppercased.
+            type: string
+            examples:
+            - AWS Billing Metrics
+            - Linux Metrics
+            - User Activity Logs
+          description:
+            description: >
+              Description of the stream. It should describe what is being collected and
+              with what collector, following the structure "Collect X from Y with X".
+            type: string
+            examples:
+            - Collect Metrics from AWS Billing service using Elastic Agent.
+            - Collect Metrics from Linux servers with Elastic Agent.
+            - Collect Logs from Apache Web Server using Elastic Agent.
+          template_path:
+            description: "Path to Elasticsearch index template for stream."
+            type: string
+          vars:
+            $ref: "#/definitions/vars"
+          enabled:
+            description: Is stream enabled?
+            type: boolean
+        required:
+        - title
+        - description
+        - input
+    elasticsearch:
+      description: Elasticsearch asset definitions
+      type: object
+      additionalProperties: false
+      properties:
+        index_mode:
+          description: |-
+            Index mode to use. Index mode can be used to enable use case specific functionalities.
+            This setting must be installed in the composable index template, not in the package component templates.
+          type: string
+          enum:
+          - "time_series" # Enables time series data streams https://www.elastic.co/guide/en/elasticsearch/reference/master/tsds.html
+          examples:
+          - "time_series"
+        index_template:
+          description: Index template definition
+          type: object
+          additionalProperties: false
+          properties:
+            settings:
+              description: Settings section of index template
+              type: object
+            mappings:
+              description: Mappings section of index template
+              type: object
+            ingest_pipeline:
+              description: Elasticsearch ingest pipeline settings
+              type: object
+              additionalProperties: false
+              properties:
+                name:
+                  description: Ingest pipeline name
+                  type: string
+              required:
+              - name
+        privileges:
+          description: Elasticsearch privilege requirements
+          type: object
+          additionalProperties: false
+          properties:
+            indices:
+              description: Elasticsearch index privilege requirements
+              type: array
+              items:
+                type: string
+        source_mode:
+          description: |-
+            Source mode to use. This configures how the document source (`_source`) is stored
+            for this data stream.
+            If configured as `default`, this mode is not configured and it uses Elasticsearch defaults.
+            If configured as `synthetic`, it enables [synthetic source](https://www.elastic.co/guide/en/elasticsearch/reference/8.4/mapping-source-field.html#synthetic-source),
+            that doesn't store the source, but tries to rebuild it from the indexed fields when queried.
+            If no configured or set to `synthetic`, users may override the setting from Fleet UI.
+          type: string
+          enum:
+          - "default"
+          - "synthetic"
+          examples:
+          - "synthetic"
+  required:
+  - title
