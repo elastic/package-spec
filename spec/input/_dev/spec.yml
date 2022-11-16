@@ -6,9 +6,14 @@ spec:
       type: folder
       name: build
       required: false
-      $ref: "./build/spec.yml"
+      $ref: "../../integration/_dev/build/spec.yml"
     - description: Folder containing configuration related to deploying the package's service(s) required for testing scenarios.
       type: folder
       name: deploy
       required: false
-      $ref: "./deploy/spec.yml"
+      $ref: "../../integration/_dev/deploy/spec.yml"
+    - description: Folder containing test resources.
+      type: folder
+      name: test
+      required: false
+      $ref: "./test/spec.yml"
