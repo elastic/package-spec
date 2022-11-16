@@ -7,6 +7,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/442
+  - description: Add definition of system tests for input packages
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/443
   - description: Add "elasticsearch.dynamic_dataset" and "elasticsearch.dynamic_namespace" to data stream manifest
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/327
