@@ -1,6 +1,5 @@
 title: Nginx access logs
 type: logs
-allow_routing: true
 streams:
   - input: logfile
     vars:
@@ -34,3 +33,5 @@ elasticsearch.index_template.mappings:
     b: 1
 elasticsearch.index_template.ingest_pipeline.name: foobar
 elasticsearch.privileges.indices: [auto_configure, create_doc, monitor]
+elasticsearch.privileges.dynamic_dataset: true
+elasticsearch.privileges.dynamic_namespace: true

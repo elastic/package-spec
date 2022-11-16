@@ -7,7 +7,7 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/442
-  - description: Add "allow_routing" to data stream manifest
+  - description: Add "elasticsearch.privileges.dynamic_dataset" and "elasticsearch.privileges.dynamic_namespace" to data stream manifest
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/327
 - version: 2.1.0
