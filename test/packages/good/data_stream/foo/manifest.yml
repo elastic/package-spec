@@ -33,3 +33,5 @@ elasticsearch.index_template.mappings:
     b: 1
 elasticsearch.index_template.ingest_pipeline.name: foobar
 elasticsearch.privileges.indices: [auto_configure, create_doc, monitor]
+elasticsearch.dynamic_dataset: true
+elasticsearch.dynamic_namespace: true

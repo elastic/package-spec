@@ -252,5 +252,11 @@ spec:
           - "synthetic"
           examples:
           - "synthetic"
+        dynamic_dataset:
+          description: When set to true, agents running this integration are granted data stream privileges for all datasets of its type
+          type: boolean
+        dynamic_namespace:
+          description: When set to true, agents running this integration are granted data stream privileges for all namespaces of its type
+          type: boolean
   required:
   - title
