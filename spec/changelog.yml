@@ -7,9 +7,6 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/442
-  - description: Refactored kibana/csp-rule-template asset
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/359
   - description: Add definition of system tests for input packages
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/443
