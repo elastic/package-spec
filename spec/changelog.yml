@@ -10,6 +10,9 @@
   - description: Add definition of system tests for input packages
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/443
+  - description: Allow to include a sample event in input packages
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/447
   - description: Add "elasticsearch.dynamic_dataset" and "elasticsearch.dynamic_namespace" to data stream manifest
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/327
