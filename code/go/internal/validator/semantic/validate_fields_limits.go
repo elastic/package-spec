@@ -7,8 +7,8 @@ package semantic
 import (
 	"github.com/pkg/errors"
 
-	ve "github.com/elastic/package-spec/code/go/internal/errors"
-	"github.com/elastic/package-spec/code/go/internal/fspath"
+	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 )
 
 // ValidateFieldsLimits verifies limits on fields.

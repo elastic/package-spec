@@ -57,20 +57,29 @@ pipeline {
             cleanup()
             withMageEnv(){
               dir("${BASE_DIR}"){
-                sh(label: 'Test', script: 'make test')
+                sh(label: 'Test', script: 'make test-ci')
               }
+            }
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "**/build/test-results/TEST-*.xml")
+              coverageReport(baseDir: "${BASE_DIR}/build/test-coverage", reportFiles: "coverage-unit-report.html", coverageFiles: "coverage-unit-report.xml")
             }
           }
         }
         stage('Test on Windows') {
-          agent { label 'windows-10' }
+          agent { label 'windows-2022' }
           options { skipDefaultCheckout() }
           steps {
             cleanup()
-            withMageEnv(){
-              dir("${BASE_DIR}"){
-                bat(label: 'Test', script: 'go test -v ./code/go/...')
-              }
+            dir("${BASE_DIR}"){
+              goTestJUnit(options: '-v ./code/go/...', output: 'junit-report.xml')
+            }
+          }
+          post {
+            always {
+              junit(allowEmptyResults: true, keepLongStdio: true, testResults: "${BASE_DIR}/junit-report.xml")
             }
           }
         }

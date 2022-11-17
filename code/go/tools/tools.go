@@ -7,6 +7,8 @@
 package tools
 
 import (
+	_ "github.com/boumenot/gocover-cobertura"
 	_ "github.com/elastic/go-licenser"
 	_ "golang.org/x/lint/golint"
+	_ "gotest.tools/gotestsum"
 )

@@ -11,26 +11,31 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/elastic/package-spec/code/go/internal/errors"
+	"github.com/elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestValidateFile(t *testing.T) {
+	// Workaround for error messages that contain OS-dependant base paths.
+	osTestBasePath := filepath.Join("..", "..", "..", "..", "test", "packages") + string(filepath.Separator)
+
 	tests := map[string]struct {
 		invalidPkgFilePath  string
 		expectedErrContains []string
 	}{
-		"good":                {},
-		"deploy_custom_agent": {},
-		"deploy_docker":       {},
-		"deploy_terraform":    {},
-		"time_series":         {},
-		"missing_data_stream": {},
-		"custom_logs":         {},
-		"httpjson_input":      {},
-		"sql_input":           {},
+		"good":                               {},
+		"good_v2":                            {},
+		"deploy_custom_agent":                {},
+		"deploy_custom_agent_multi_services": {},
+		"deploy_docker":                      {},
+		"deploy_terraform":                   {},
+		"time_series":                        {},
+		"missing_data_stream":                {},
+		"icons_dark_mode":                    {},
+		"custom_ilm_policy":                  {},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
@@ -83,10 +88,28 @@ func TestValidateFile(t *testing.T) {
 				"field \"example.agent.call_duration\" of type histogram can't be a dimension, allowed types for dimensions: constant_keyword, keyword, long, integer, short, byte, double, float, half_float, scaled_float, unsigned_long, ip",
 			},
 		},
+		"bad_fields": {
+			"data_stream/foo/fields/fields.yml",
+			[]string{
+				`field 0.type: 0.type must be one of the following: "alias", "histogram", "constant_keyword", "text", "match_only_text", "keyword", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "date", "date_nanos", "boolean", "binary", "integer_range", "float_range", "long_range", "double_range", "date_range", "ip_range", "group", "geo_point", "object", "ip", "nested", "flattened", "wildcard", "version", "unsigned_long"`,
+			},
+		},
 		"deploy_custom_agent_invalid_property": {
 			"_dev/deploy/agent/custom-agent.yml",
 			[]string{
 				"field services.docker-custom-agent: Must not validate the schema (not)",
+			},
+		},
+		"invalid_field_for_version": {
+			"manifest.yml",
+			[]string{
+				"field (root): Additional property license is not allowed",
+			},
+		},
+		"bad_custom_ilm_policy": {
+			"data_stream/test/manifest.yml",
+			[]string{
+				fmt.Sprintf("field ilm_policy: ILM policy \"logs-bad_custom_ilm_policy.test-notexists\" not found in package, expected definition in \"%sbad_custom_ilm_policy/data_stream/test/elasticsearch/ilm/notexists.json\"", osTestBasePath),
 			},
 		},
 	}
@@ -217,7 +240,8 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 
 func TestValidateMissingReqiredFields(t *testing.T) {
 	tests := map[string][]string{
-		"good": {},
+		"good":    {},
+		"good_v2": {},
 		"missing_required_fields": {
 			`expected type "constant_keyword" for required field "data_stream.dataset", found "keyword" in "../../../../test/packages/missing_required_fields/data_stream/foo/fields/base-fields.yml"`,
 			`expected field "data_stream.type" with type "constant_keyword" not found in datastream "foo"`,
@@ -277,14 +301,13 @@ func TestValidateVersionIntegrity(t *testing.T) {
 }
 
 func TestValidateDuplicatedFields(t *testing.T) {
-	t.Skip("Validation temporarily disabled: https://github.com/elastic/package-spec/issues/331")
 	tests := map[string]string{
 		"bad_duplicated_fields": "field \"event.dataset\" is defined multiple times for data stream \"wrong\", found in: ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/ecs.yml",
 	}
 
 	for pkgName, expectedErrorMessage := range tests {
 		t.Run(pkgName, func(t *testing.T) {
-			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			require.Error(t, errs)
 			vErrs, ok := errs.(errors.ValidationErrors)
 			require.True(t, ok)
@@ -299,6 +322,58 @@ func TestValidateDuplicatedFields(t *testing.T) {
 		})
 	}
 
+}
+
+func TestValidateWarnings(t *testing.T) {
+	tests := map[string][]string{
+		"good":    []string{},
+		"good_v2": []string{},
+		"custom_logs": []string{
+			"package with non-stable semantic version and active beta features (enabled in [../../../../test/packages/custom_logs]) can't be released as stable version.",
+		},
+		"httpjson_input": []string{
+			"package with non-stable semantic version and active beta features (enabled in [../../../../test/packages/httpjson_input]) can't be released as stable version.",
+		},
+		"sql_input": []string{
+			"package with non-stable semantic version and active beta features (enabled in [../../../../test/packages/sql_input]) can't be released as stable version.",
+		},
+		"visualizations_by_reference": []string{
+			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens)",
+		},
+	}
+	if err := common.EnableWarningsAsErrors(); err != nil {
+		require.NoError(t, err)
+	}
+	defer common.DisableWarningsAsErrors()
+
+	for pkgName, expectedWarnContains := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			warnPrefix := fmt.Sprintf("Warning: ")
+
+			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
+			errs := ValidateFromPath(pkgRootPath)
+			if len(expectedWarnContains) == 0 {
+				require.NoError(t, errs)
+			} else {
+				require.Error(t, errs)
+				vErrs, ok := errs.(errors.ValidationErrors)
+				if ok {
+					require.Len(t, errs, len(expectedWarnContains))
+					var warnMessages []string
+					for _, vErr := range vErrs {
+						warnMessages = append(warnMessages, vErr.Error())
+					}
+
+					for _, expectedWarnMessage := range expectedWarnContains {
+						expectedWarn := warnPrefix + expectedWarnMessage
+						require.Contains(t, warnMessages, expectedWarn)
+					}
+					return
+				}
+				require.Equal(t, errs.Error(), expectedWarnContains[0])
+			}
+		})
+	}
 }
 
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {

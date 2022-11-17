@@ -1,0 +1,19 @@
+spec:
+  additionalContents: false
+  developmentFolder: true
+  contents:
+    - description: Folder containing test resources
+      type: folder
+      name: test
+      required: false
+      $ref: "./test/spec.yml"
+    - description: Folder containing configuration related to deploying the package's integration service(s)
+      type: folder
+      name: deploy
+      required: false
+      $ref: "./../../_dev/deploy/spec.yml" # Use "deploy" spec for package
+    - description: Folder containing benchmark resources
+      type: folder
+      name: benchmark
+      required: false
+      $ref: "./benchmark/spec.yml"

@@ -11,9 +11,9 @@ import (
 
 	"github.com/pkg/errors"
 
-	ve "github.com/elastic/package-spec/code/go/internal/errors"
-	"github.com/elastic/package-spec/code/go/internal/fspath"
-	"github.com/elastic/package-spec/code/go/internal/pkgpath"
+	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
 )
 
 // ValidateKibanaObjectIDs returns validation errors if there are any Kibana

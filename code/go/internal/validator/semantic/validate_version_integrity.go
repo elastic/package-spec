@@ -10,9 +10,9 @@ import (
 
 	"github.com/pkg/errors"
 
-	ve "github.com/elastic/package-spec/code/go/internal/errors"
-	"github.com/elastic/package-spec/code/go/internal/fspath"
-	"github.com/elastic/package-spec/code/go/internal/pkgpath"
+	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
 )
 
 // ValidateVersionIntegrity returns validation errors if the version defined in manifest isn't referenced in the latest

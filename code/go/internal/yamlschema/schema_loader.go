@@ -5,39 +5,33 @@
 package yamlschema
 
 import (
+	"io"
 	"io/fs"
-	"io/ioutil"
 	"net/url"
 	"path"
 	"strings"
 
+	"github.com/Masterminds/semver/v3"
+	"github.com/elastic/gojsonschema"
 	"github.com/pkg/errors"
 	"github.com/xeipuuv/gojsonreference"
-	"github.com/xeipuuv/gojsonschema"
 	"gopkg.in/yaml.v3"
 )
 
-type itemSchemaSpec struct {
-	Spec map[string]interface{} `json:"spec" yaml:"spec"`
-}
-
 type yamlReferenceLoader struct {
-	fs     fs.FS
-	source string
+	fs      fs.FS
+	source  string
+	version semver.Version
 }
 
 var _ gojsonschema.JSONLoader = new(yamlReferenceLoader)
 
-type rawReferenceLoader struct {
-	fs     fs.FS
-	source interface{}
-}
-
 // NewReferenceLoaderFileSystem method creates new instance of `yamlReferenceLoader`.
-func NewReferenceLoaderFileSystem(source string, fs fs.FS) gojsonschema.JSONLoader {
+func NewReferenceLoaderFileSystem(source string, fs fs.FS, version semver.Version) gojsonschema.JSONLoader {
 	return &yamlReferenceLoader{
-		fs:     fs,
-		source: source,
+		fs:      fs,
+		source:  source,
+		version: version,
 	}
 }
 
@@ -58,7 +52,7 @@ func (l *yamlReferenceLoader) LoadJSON() (interface{}, error) {
 	}
 	defer itemSchemaFile.Close()
 
-	itemSchemaData, err := ioutil.ReadAll(itemSchemaFile)
+	itemSchemaData, err := io.ReadAll(itemSchemaFile)
 	if err != nil {
 		return nil, errors.Wrap(err, "reading schema file failed")
 	}
@@ -72,7 +66,8 @@ func (l *yamlReferenceLoader) LoadJSON() (interface{}, error) {
 	if err != nil {
 		return nil, errors.Wrapf(err, "schema unmarshalling failed (path: %s)", l.source)
 	}
-	return schema.Spec, nil
+
+	return schema.resolve(l.version)
 }
 
 func (l *yamlReferenceLoader) JsonReference() (gojsonreference.JsonReference, error) {
@@ -92,19 +87,22 @@ func (l *yamlReferenceLoader) JsonReference() (gojsonreference.JsonReference, er
 
 func (l *yamlReferenceLoader) LoaderFactory() gojsonschema.JSONLoaderFactory {
 	return &fileSystemYAMLLoaderFactory{
-		fs: l.fs,
+		fs:      l.fs,
+		version: l.version,
 	}
 }
 
 type fileSystemYAMLLoaderFactory struct {
-	fs fs.FS
+	fs      fs.FS
+	version semver.Version
 }
 
 var _ gojsonschema.JSONLoaderFactory = new(fileSystemYAMLLoaderFactory)
 
 func (f *fileSystemYAMLLoaderFactory) New(source string) gojsonschema.JSONLoader {
 	return &yamlReferenceLoader{
-		fs:     f.fs,
-		source: source,
+		fs:      f.fs,
+		source:  source,
+		version: f.version,
 	}
 }

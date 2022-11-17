@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	ve "github.com/elastic/package-spec/code/go/internal/errors"
+	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 )
 
 func TestValidateGithubLink(t *testing.T) {

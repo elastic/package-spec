@@ -1,0 +1,35 @@
+##
+## Describes the specification for variations available when deploying a package's
+## integration service(s).
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  definitions:
+    service:
+      type: object
+      not:
+        anyOf:
+          - required:
+            - hostname
+  properties:
+    version:
+      description: Docker Compose version
+      type: string
+      pattern: '^2.3$'
+    services:
+      description: Service list
+      type: object
+      additionalProperties:
+        description: Additional services
+        "$ref": "#/definitions/service"
+      properties:
+        docker-custom-agent:
+          description: Custom agent service definition
+          "$ref": "#/definitions/service"
+      required:
+        - docker-custom-agent
+  required:
+    - version
+    - services
