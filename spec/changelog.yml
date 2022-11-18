@@ -2,12 +2,9 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 2.1.1-next
+- version: 2.2.0
   changes:
-  - description: Prepare for next version
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/442
-  - description: Add definition of system tests for input packages
+  - description: Support definition of system tests for input packages
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/443
   - description: Allow to include a sample event in input packages
