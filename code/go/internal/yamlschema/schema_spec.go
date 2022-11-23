@@ -59,7 +59,7 @@ func (i *itemSchemaSpec) resolve(target semver.Version) (map[string]interface{},
 }
 
 func (i *itemSchemaSpec) patchForVersion(target semver.Version) ([]byte, error) {
-	var patch []byte
+	var patch []any
 	for _, version := range i.Versions {
 		if sv, err := semver.NewVersion(version.Before); err != nil {
 			return nil, err
@@ -67,20 +67,10 @@ func (i *itemSchemaSpec) patchForVersion(target semver.Version) ([]byte, error) 
 			continue
 		}
 
-		patchData, err := json.Marshal(version.Patch)
-		if err != nil {
-			return nil, fmt.Errorf("failed to marshal patch: %w", err)
-		}
-
-		if len(patch) == 0 {
-			patch = patchData
-			continue
-		}
-
-		patch, err = jsonpatch.MergeMergePatches(patch, patchData)
-		if err != nil {
-			return nil, fmt.Errorf("failed to combine patch: %w", err)
-		}
+		patch = append(patch, version.Patch...)
 	}
-	return patch, nil
+	if len(patch) == 0 {
+		return nil, nil
+	}
+	return json.Marshal(patch)
 }

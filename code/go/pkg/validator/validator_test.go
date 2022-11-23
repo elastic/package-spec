@@ -106,6 +106,12 @@ func TestValidateFile(t *testing.T) {
 				"field (root): Additional property license is not allowed",
 			},
 		},
+		"bad_release_tag": {
+			"manifest.yml",
+			[]string{
+				"field (root): Additional property release is not allowed",
+			},
+		},
 		"bad_custom_ilm_policy": {
 			"data_stream/test/manifest.yml",
 			[]string{
