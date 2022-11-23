@@ -6,7 +6,7 @@
   changes:
   - description: Remove the release tag, semantic versioning should be used instead.
     type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/450
+    link: https://github.com/elastic/package-spec/pull/452
 - version: 2.2.1-next
   changes:
   - description: Prepare for next version
