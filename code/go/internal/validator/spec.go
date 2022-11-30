@@ -112,7 +112,7 @@ func (vr validationRules) validate(fsys fspath.FS) ve.ValidationErrors {
 	return errs
 }
 
-func (s Spec) AllJSONSchema(pkgType string) ([]renderedJSONSchema, error) {
+func (s Spec) AllJSONSchema(pkgType string) ([]RenderedJSONSchema, error) {
 	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkgType)
 	if err != nil {
 		return nil, err
@@ -126,8 +126,8 @@ func (s Spec) AllJSONSchema(pkgType string) ([]renderedJSONSchema, error) {
 	return contents, nil
 }
 
-func (s Spec) JSONSchema(location, pkgType string) (*renderedJSONSchema, error) {
-	var rendered renderedJSONSchema
+func (s Spec) JSONSchema(location, pkgType string) (*RenderedJSONSchema, error) {
+	var rendered RenderedJSONSchema
 	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkgType)
 	if err != nil {
 		return nil, err
@@ -139,7 +139,7 @@ func (s Spec) JSONSchema(location, pkgType string) (*renderedJSONSchema, error) 
 	}
 
 	for _, content := range contents {
-		r, err := regexp.Compile(content.name)
+		r, err := regexp.Compile(content.Name)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to compile regex")
 		}
@@ -148,19 +148,19 @@ func (s Spec) JSONSchema(location, pkgType string) (*renderedJSONSchema, error) 
 		}
 		rendered = content
 	}
-	if len(rendered.schemaJSON) == 0 {
+	if len(rendered.JSONSchema) == 0 {
 		return nil, errors.Errorf("item path not found: %s", location)
 	}
 	return &rendered, nil
 }
 
-type renderedJSONSchema struct {
-	name       string
-	schemaJSON []byte
+type RenderedJSONSchema struct {
+	Name       string
+	JSONSchema []byte
 }
 
-func marshalSpec(spec spectypes.ItemSpec) ([]renderedJSONSchema, error) {
-	var allContents []renderedJSONSchema
+func marshalSpec(spec spectypes.ItemSpec) ([]RenderedJSONSchema, error) {
+	var allContents []RenderedJSONSchema
 	if len(spec.Contents()) == 0 {
 		key := spec.Name()
 		if key == "" {
@@ -171,7 +171,7 @@ func marshalSpec(spec spectypes.ItemSpec) ([]renderedJSONSchema, error) {
 			return nil, err
 		}
 
-		allContents = append(allContents, renderedJSONSchema{key, contents})
+		allContents = append(allContents, RenderedJSONSchema{key, contents})
 		return allContents, nil
 	}
 	pending := spec.Contents()
@@ -182,7 +182,7 @@ func marshalSpec(spec spectypes.ItemSpec) ([]renderedJSONSchema, error) {
 		}
 		if item.IsDir() {
 			for c, elem := range itemsJSON {
-				itemsJSON[c].name = path.Join(item.Name(), elem.name)
+				itemsJSON[c].Name = path.Join(item.Name(), elem.Name)
 			}
 		}
 		allContents = append(allContents, itemsJSON...)

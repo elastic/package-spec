@@ -114,10 +114,10 @@ func TestMarshal_AllJSSchema(t *testing.T) {
 
 			// check contents of one file
 			for _, jsonschema := range rendered {
-				if jsonschema.name != c.filePath {
+				if jsonschema.Name != c.filePath {
 					continue
 				}
-				assert.Equal(t, string(contents), string(jsonschema.schemaJSON))
+				assert.Equal(t, string(contents), string(jsonschema.JSONSchema))
 				break
 			}
 
@@ -193,7 +193,7 @@ func TestMarshal_GivenJSONSchema(t *testing.T) {
 
 			contents, err := os.ReadFile(c.expectedOutputPath)
 			require.NoError(t, err)
-			assert.Equal(t, string(contents), string(rendered.schemaJSON))
+			assert.Equal(t, string(contents), string(rendered.JSONSchema))
 		})
 	}
 }
