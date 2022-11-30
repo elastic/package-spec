@@ -64,14 +64,38 @@ func TestBetaFeatures_Package_GA(t *testing.T) {
 	require.Equal(t, errs[0].Error(), "spec for [testdata/packages/features_beta/beta] defines beta features which can't be enabled for packages with a stable semantic version")
 }
 
-func TestMarshal_Schema(t *testing.T) {
+func TestMarshal_AllJSSchema(t *testing.T) {
 	// given
 	s := Spec{
 		*semver.MustParse("1.0.0"),
 		fspath.DirFS("testdata/simple-spec"),
 	}
 
-	err := s.JSONSchema("manifest.yml", "")
+	err := s.AllJSONSchema("")
+	require.NoError(t, err)
+
+	s = Spec{
+		*semver.MustParse("2.1.0"),
+		fspath.DirFS("testdata/simple-spec"),
+	}
+
+	err = s.AllJSONSchema("")
+	require.NoError(t, err)
+
+	assert.Equal(t, 1, 2)
+}
+
+func TestMarshal_GivenJSONSchema(t *testing.T) {
+	// given
+	s := Spec{
+		*semver.MustParse("1.0.0"),
+		fspath.DirFS("testdata/simple-spec"),
+	}
+
+	err := s.JSONSchema("noexist.yml", "")
+	require.Error(t, err)
+
+	err = s.JSONSchema("manifest.yml", "")
 	require.NoError(t, err)
 
 	s = Spec{

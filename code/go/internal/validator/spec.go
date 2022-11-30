@@ -9,6 +9,7 @@ import (
 	"io/fs"
 	"log"
 	"path"
+	"regexp"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
@@ -112,7 +113,7 @@ func (vr validationRules) validate(fsys fspath.FS) ve.ValidationErrors {
 	return errs
 }
 
-func (s Spec) JSONSchema(location, pkgType string) error {
+func (s Spec) AllJSONSchema(pkgType string) error {
 	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkgType)
 	if err != nil {
 		return err
@@ -127,6 +128,36 @@ func (s Spec) JSONSchema(location, pkgType string) error {
 	for _, content := range contents {
 		fmt.Printf("%s:\n%s\n", content.name, string(content.schemaJSON))
 	}
+	return nil
+}
+
+func (s Spec) JSONSchema(location, pkgType string) error {
+	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkgType)
+	if err != nil {
+		return err
+	}
+
+	contents, err := marshalSpec(rootSpec)
+	if err != nil {
+		return err
+	}
+
+	var rendered []byte
+	fmt.Printf("Contents Schema:\n")
+	for _, content := range contents {
+		r, err := regexp.Compile(content.name)
+		if err != nil {
+			return errors.Wrap(err, "failed to compile regex")
+		}
+		if !r.MatchString(location) {
+			continue
+		}
+		rendered = content.schemaJSON
+	}
+	if len(rendered) == 0 {
+		return errors.Errorf("item path not found: %s", location)
+	}
+	fmt.Printf("content for %s:\n%s\n", location, rendered)
 	return nil
 }
 
