@@ -1,0 +1,112 @@
+additionalProperties: false
+properties:
+    categories:
+        $ref: ../integration/manifest.spec.yml#/definitions/categories
+    conditions:
+        $ref: ../integration/manifest.spec.yml#/definitions/conditions
+    description:
+        $ref: ../integration/manifest.spec.yml#/definitions/description
+    format_version:
+        $ref: ../integration/manifest.spec.yml#/definitions/version
+        description: The version of the package specification format used by this
+            package.
+    icons:
+        $ref: ../integration/manifest.spec.yml#/definitions/icons
+    license:
+        default: basic
+        deprecated: true
+        description: The license under which the package is being released (deprecated,
+            use subscription instead).
+        enum:
+          - basic
+        examples:
+          - basic
+        type: string
+    name:
+        description: The name of the package.
+        examples:
+          - apache
+        pattern: ^[a-z0-9_]+$
+        type: string
+    owner:
+        $ref: ../integration/manifest.spec.yml#/definitions/owner
+    policy_templates:
+        description: List of policy templates offered by this package.
+        items:
+            additionalProperties: false
+            properties:
+                description:
+                    description: Longer description of policy template.
+                    examples:
+                      - Collect logs and metrics from Apache instances
+                    type: string
+                icons:
+                    $ref: ../integration/manifest.spec.yml#/definitions/icons
+                input:
+                    examples:
+                      - aws/metrics
+                      - s3
+                      - file
+                    type: string
+                name:
+                    description: Name of policy template.
+                    examples:
+                      - apache
+                    type: string
+                screenshots:
+                    $ref: ../integration/manifest.spec.yml#/definitions/screenshots
+                template_path:
+                    description: Path to Elasticsearch index template for stream.
+                    type: string
+                title:
+                    description: Title of policy template.
+                    examples:
+                      - Apache logs and metrics
+                    type: string
+                type:
+                    description: Type of data stream
+                    enum:
+                      - metrics
+                      - logs
+                      - synthetics
+                      - traces
+                    examples:
+                      - metrics
+                    type: string
+                vars:
+                    $ref: ../integration/data_stream/manifest.spec.yml#/definitions/vars
+            required:
+              - name
+              - title
+              - description
+              - type
+              - input
+            type: object
+        type: array
+    screenshots:
+        $ref: ../integration/manifest.spec.yml#/definitions/screenshots
+    source:
+        $ref: ../integration/manifest.spec.yml#/definitions/source
+    title:
+        $ref: ../integration/manifest.spec.yml#/definitions/title
+    type:
+        description: The type of package.
+        enum:
+          - input
+        examples:
+          - input
+        type: string
+    vars:
+        $ref: ../integration/data_stream/manifest.spec.yml#/definitions/vars
+    version:
+        $ref: ../integration/manifest.spec.yml#/definitions/version
+        description: The version of the package.
+required:
+  - format_version
+  - name
+  - title
+  - description
+  - version
+  - type
+  - owner
+type: object
