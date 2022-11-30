@@ -5,6 +5,7 @@
 package validator
 
 import (
+	"os"
 	"testing"
 
 	"github.com/Masterminds/semver/v3"
@@ -87,24 +88,74 @@ func TestMarshal_AllJSSchema(t *testing.T) {
 
 func TestMarshal_GivenJSONSchema(t *testing.T) {
 	// given
-	s := Spec{
-		*semver.MustParse("1.0.0"),
-		fspath.DirFS("testdata/simple-spec"),
+	cases := []struct {
+		title              string
+		version            string
+		specPath           string
+		filePath           string
+		expectedError      bool
+		expectedOutputPath string
+	}{
+		{
+			title:              "not found",
+			version:            "1.0.0",
+			specPath:           "testdata/simple-spec",
+			filePath:           "noexit.yml",
+			expectedError:      true,
+			expectedOutputPath: "",
+		},
+		{
+			title:              "manifest from version 1.0.0",
+			version:            "1.0.0",
+			specPath:           "testdata/simple-spec",
+			filePath:           "manifest.yml",
+			expectedError:      false,
+			expectedOutputPath: "testdata/manifest-1.0.0.yml",
+		},
+		{
+			title:              "manifest from version 2.1.0",
+			version:            "2.1.0",
+			specPath:           "testdata/simple-spec",
+			filePath:           "manifest.yml",
+			expectedError:      false,
+			expectedOutputPath: "testdata/manifest-2.1.0.yml",
+		},
+		{
+			title:              "file with regex",
+			version:            "1.0.0",
+			specPath:           "testdata/simple-spec",
+			filePath:           "data_2.yml",
+			expectedError:      false,
+			expectedOutputPath: "testdata/data-1.0.0.yml",
+		},
+		{
+			title:              "file with regex not found",
+			version:            "1.0.0",
+			specPath:           "testdata/simple-spec",
+			filePath:           "data_ng.yml",
+			expectedError:      true,
+			expectedOutputPath: "",
+		},
 	}
 
-	err := s.JSONSchema("noexist.yml", "")
-	require.Error(t, err)
+	for _, c := range cases {
+		t.Run(c.title, func(t *testing.T) {
+			s := Spec{
+				*semver.MustParse(c.version),
+				fspath.DirFS(c.specPath),
+			}
+			rendered, err := s.JSONSchema(c.filePath, "")
+			if c.expectedError {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
 
-	err = s.JSONSchema("manifest.yml", "")
-	require.NoError(t, err)
-
-	s = Spec{
-		*semver.MustParse("2.1.0"),
-		fspath.DirFS("testdata/simple-spec"),
+			contents, err := os.ReadFile(c.expectedOutputPath)
+			require.NoError(t, err)
+			assert.Equal(t, string(contents), string(rendered.schemaJSON))
+		})
 	}
-
-	err = s.JSONSchema("manifest.yml", "")
-	require.NoError(t, err)
 
 	assert.Equal(t, 1, 2)
 }

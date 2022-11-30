@@ -1,0 +1,21 @@
+additionalProperties: false
+properties:
+    name:
+        description: The name of the package.
+        examples:
+          - apache
+        pattern: ^[a-z0-9_]+$
+        type: string
+    release:
+        default: ga
+        deprecated: true
+        description: The stability of the package (deprecated, use prerelease tags
+            in the version).
+        enum:
+          - experimental
+          - beta
+          - ga
+        examples:
+          - experimental
+        type: string
+type: object

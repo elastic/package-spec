@@ -1,0 +1,27 @@
+additionalProperties: false
+definitions:
+    version:
+        description: Version of the package, following semantic versioning. It can
+            include pre-release labels.
+        examples:
+          - 1.0.0
+          - 1.0.0-beta1
+          - 1.0.0-SNAPSHOT
+          - 1.0.0-next
+        pattern: ^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$
+        type: string
+properties:
+    format_version:
+        $ref: '#/definitions/version'
+        description: The version of the package specification format used by this
+            package.
+    name:
+        description: The name of the package.
+        examples:
+          - apache
+        pattern: ^[a-z0-9_]+$
+        type: string
+    version:
+        $ref: '#/definitions/version'
+        description: The version of the package.
+type: object

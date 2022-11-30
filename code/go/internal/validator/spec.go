@@ -131,34 +131,34 @@ func (s Spec) AllJSONSchema(pkgType string) error {
 	return nil
 }
 
-func (s Spec) JSONSchema(location, pkgType string) error {
+func (s Spec) JSONSchema(location, pkgType string) (*renderedJSONSchema, error) {
+	var rendered renderedJSONSchema
 	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkgType)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	contents, err := marshalSpec(rootSpec)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	var rendered []byte
 	fmt.Printf("Contents Schema:\n")
 	for _, content := range contents {
 		r, err := regexp.Compile(content.name)
 		if err != nil {
-			return errors.Wrap(err, "failed to compile regex")
+			return nil, errors.Wrap(err, "failed to compile regex")
 		}
 		if !r.MatchString(location) {
 			continue
 		}
-		rendered = content.schemaJSON
+		rendered = content
 	}
-	if len(rendered) == 0 {
-		return errors.Errorf("item path not found: %s", location)
+	if len(rendered.schemaJSON) == 0 {
+		return nil, errors.Errorf("item path not found: %s", location)
 	}
-	fmt.Printf("content for %s:\n%s\n", location, rendered)
-	return nil
+	fmt.Printf("content for %s:\n%s\n", location, rendered.schemaJSON)
+	return &rendered, nil
 }
 
 type renderedJSONSchema struct {

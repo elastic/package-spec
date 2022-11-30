@@ -24,3 +24,10 @@ spec:
     name: docs
     required: true
     $ref: "./docs/spec.yml"
+  - description: Folder containing data for the package
+    type: file
+    contentMediaType: "application/x-yaml"
+    sizeLimit: 5MB
+    pattern: "^data_[0-9]+.yml"
+    required: true
+    $ref: "./data.spec.yml"
