@@ -5,7 +5,6 @@
 package validator
 
 import (
-	"fmt"
 	"io/fs"
 	"log"
 	"path"
@@ -113,22 +112,18 @@ func (vr validationRules) validate(fsys fspath.FS) ve.ValidationErrors {
 	return errs
 }
 
-func (s Spec) AllJSONSchema(pkgType string) error {
+func (s Spec) AllJSONSchema(pkgType string) ([]renderedJSONSchema, error) {
 	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkgType)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	contents, err := marshalSpec(rootSpec)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	fmt.Printf("Contents Schema:\n")
-	for _, content := range contents {
-		fmt.Printf("%s:\n%s\n", content.name, string(content.schemaJSON))
-	}
-	return nil
+	return contents, nil
 }
 
 func (s Spec) JSONSchema(location, pkgType string) (*renderedJSONSchema, error) {

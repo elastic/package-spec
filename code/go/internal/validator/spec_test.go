@@ -67,23 +67,63 @@ func TestBetaFeatures_Package_GA(t *testing.T) {
 
 func TestMarshal_AllJSSchema(t *testing.T) {
 	// given
-	s := Spec{
-		*semver.MustParse("1.0.0"),
-		fspath.DirFS("testdata/simple-spec"),
+	cases := []struct {
+		title               string
+		version             string
+		specPath            string
+		filePath            string
+		expectedError       bool
+		expectedOutputPath  string
+		expectedNumberFiles int
+	}{
+		{
+			title:               "manifest from version 1.0.0",
+			version:             "1.0.0",
+			specPath:            "testdata/simple-spec",
+			filePath:            "manifest.yml",
+			expectedError:       false,
+			expectedOutputPath:  "testdata/manifest-1.0.0.yml",
+			expectedNumberFiles: 4,
+		},
+		{
+			title:               "manifest from version 2.1.0",
+			version:             "2.1.0",
+			specPath:            "testdata/simple-spec",
+			filePath:            "manifest.yml",
+			expectedError:       false,
+			expectedOutputPath:  "testdata/manifest-2.1.0.yml",
+			expectedNumberFiles: 4,
+		},
 	}
 
-	err := s.AllJSONSchema("")
-	require.NoError(t, err)
+	for _, c := range cases {
+		t.Run(c.title, func(t *testing.T) {
+			s := Spec{
+				*semver.MustParse(c.version),
+				fspath.DirFS(c.specPath),
+			}
+			rendered, err := s.AllJSONSchema("")
+			if c.expectedError {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
 
-	s = Spec{
-		*semver.MustParse("2.1.0"),
-		fspath.DirFS("testdata/simple-spec"),
+			contents, err := os.ReadFile(c.expectedOutputPath)
+			require.NoError(t, err)
+
+			// check contents of one file
+			for _, jsonschema := range rendered {
+				if jsonschema.name != c.filePath {
+					continue
+				}
+				assert.Equal(t, string(contents), string(jsonschema.schemaJSON))
+				break
+			}
+
+			assert.Equal(t, c.expectedNumberFiles, len(rendered))
+		})
 	}
-
-	err = s.AllJSONSchema("")
-	require.NoError(t, err)
-
-	assert.Equal(t, 1, 2)
 }
 
 func TestMarshal_GivenJSONSchema(t *testing.T) {
@@ -156,6 +196,4 @@ func TestMarshal_GivenJSONSchema(t *testing.T) {
 			assert.Equal(t, string(contents), string(rendered.schemaJSON))
 		})
 	}
-
-	assert.Equal(t, 1, 2)
 }
