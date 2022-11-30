@@ -5,8 +5,10 @@
 package validator
 
 import (
+	"fmt"
 	"io/fs"
 	"log"
+	"path"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
@@ -108,4 +110,58 @@ func (vr validationRules) validate(fsys fspath.FS) ve.ValidationErrors {
 	}
 
 	return errs
+}
+
+func (s Spec) JSONSchema(location, pkgType string) error {
+	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkgType)
+	if err != nil {
+		return err
+	}
+
+	contents, err := marshalSpec(rootSpec)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Contents Schema:\n")
+	for _, content := range contents {
+		fmt.Printf("%s:\n%s\n", content.name, string(content.schemaJSON))
+	}
+	return nil
+}
+
+type renderedJSONSchema struct {
+	name       string
+	schemaJSON []byte
+}
+
+func marshalSpec(spec spectypes.ItemSpec) ([]renderedJSONSchema, error) {
+	var allContents []renderedJSONSchema
+	if len(spec.Contents()) == 0 {
+		key := spec.Name()
+		if key == "" {
+			key = spec.Pattern()
+		}
+		contents, err := spec.Marshal()
+		if err != nil {
+			return nil, err
+		}
+
+		allContents = append(allContents, renderedJSONSchema{key, contents})
+		return allContents, nil
+	}
+	pending := spec.Contents()
+	for _, item := range pending {
+		itemsJSON, err := marshalSpec(item)
+		if err != nil {
+			return nil, err
+		}
+		if item.IsDir() {
+			for c, elem := range itemsJSON {
+				itemsJSON[c].name = path.Join(item.Name(), elem.name)
+			}
+		}
+		allContents = append(allContents, itemsJSON...)
+	}
+	return allContents, nil
 }

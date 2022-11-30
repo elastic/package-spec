@@ -80,4 +80,7 @@ type ItemSpec interface {
 
 	// ValidateSchema validates if the indicated file complies with the schema of the item.
 	ValidateSchema(fsys fs.FS, itemPath string) ve.ValidationErrors
+
+	// Marshal ...
+	Marshal() ([]byte, error)
 }

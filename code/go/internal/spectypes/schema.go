@@ -8,6 +8,7 @@ import (
 	"io/fs"
 
 	"github.com/Masterminds/semver/v3"
+
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 )
 
@@ -15,6 +16,9 @@ import (
 type FileSchema interface {
 	// Validate checks if the file in the given path complies with the schema.
 	Validate(fs fs.FS, path string) ve.ValidationErrors
+
+	// Marshal returns the JSON Schema for that path
+	Marshal() ([]byte, error)
 }
 
 // FileSchemaLoader loads schemas for files.

@@ -1,0 +1,48 @@
+##
+## Describes the specification for the integration package's main manifest.yml file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  definitions:
+    version:
+      description: Version of the package, following semantic versioning. It can include pre-release labels.
+      type: string
+      pattern: '^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$'
+      examples:
+        - "1.0.0"
+        - "1.0.0-beta1"
+        - "1.0.0-SNAPSHOT"
+        - "1.0.0-next"
+  properties:
+    format_version:
+      description: The version of the package specification format used by this package.
+      $ref: "#/definitions/version"
+    name:
+      description: The name of the package.
+      type: string
+      pattern: '^[a-z0-9_]+$'
+      examples:
+      - apache
+    version:
+      description: The version of the package.
+      $ref: "#/definitions/version"
+
+versions:
+  - before: 2.0.0
+    patch:
+      - op: add
+        path: "/properties/release"
+        value:
+          description: The stability of the package (deprecated, use prerelease tags in the version).
+          deprecated: true # See https://github.com/elastic/package-spec/issues/225
+          type: string
+          enum:
+          - experimental
+          - beta
+          - ga
+          default: ga
+          examples:
+          - experimental
+

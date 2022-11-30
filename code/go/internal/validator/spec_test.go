@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/Masterminds/semver/v3"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
@@ -61,4 +62,25 @@ func TestBetaFeatures_Package_GA(t *testing.T) {
 	errs := s.ValidatePackage(*pkg)
 	require.Len(t, errs, 1)
 	require.Equal(t, errs[0].Error(), "spec for [testdata/packages/features_beta/beta] defines beta features which can't be enabled for packages with a stable semantic version")
+}
+
+func TestMarshal_Schema(t *testing.T) {
+	// given
+	s := Spec{
+		*semver.MustParse("1.0.0"),
+		fspath.DirFS("testdata/simple-spec"),
+	}
+
+	err := s.JSONSchema("manifest.yml", "")
+	require.NoError(t, err)
+
+	s = Spec{
+		*semver.MustParse("2.1.0"),
+		fspath.DirFS("testdata/simple-spec"),
+	}
+
+	err = s.JSONSchema("manifest.yml", "")
+	require.NoError(t, err)
+
+	assert.Equal(t, 1, 2)
 }

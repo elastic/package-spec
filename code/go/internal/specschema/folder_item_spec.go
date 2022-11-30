@@ -121,6 +121,10 @@ func (s *ItemSpec) ValidateSchema(fsys fs.FS, itemPath string) ve.ValidationErro
 	return s.itemSpec.ValidateSchema(fsys, itemPath)
 }
 
+func (s *ItemSpec) Marshal() ([]byte, error) {
+	return s.itemSpec.Marshal()
+}
+
 type folderItemSpec struct {
 	Description       string                 `yaml:"description"`
 	ItemType          string                 `yaml:"type"`
@@ -144,6 +148,13 @@ type folderItemSpec struct {
 	Release string `yaml:"release"`
 
 	schema spectypes.FileSchema
+}
+
+func (s *folderItemSpec) Marshal() ([]byte, error) {
+	if s.schema == nil {
+		return nil, nil
+	}
+	return s.schema.Marshal()
 }
 
 func (s *folderItemSpec) setDefaultValues() error {

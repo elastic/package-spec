@@ -11,9 +11,10 @@ import (
 	"path"
 	"sync"
 
-	"github.com/elastic/gojsonschema"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
+
+	"github.com/elastic/gojsonschema"
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
@@ -27,16 +28,25 @@ func NewFileSchemaLoader() *FileSchemaLoader {
 
 func (*FileSchemaLoader) Load(fs fs.FS, schemaPath string, options spectypes.FileSchemaLoadOptions) (spectypes.FileSchema, error) {
 	schemaLoader := NewReferenceLoaderFileSystem("file:///"+schemaPath, fs, options.SpecVersion)
+	schemaJSONInterface, err := schemaLoader.LoadJSON()
+	if err != nil {
+		return nil, err
+	}
+	schemaJSON, ok := schemaJSONInterface.(map[string]interface{})
+	if !ok {
+		return nil, errors.New("invalid schema format")
+	}
 	schema, err := gojsonschema.NewSchema(schemaLoader)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load schema for %q: %v", schemaPath, err)
 	}
-	return &FileSchema{schema, options}, nil
+	return &FileSchema{schema, schemaJSON, options}, nil
 }
 
 type FileSchema struct {
-	schema  *gojsonschema.Schema
-	options spectypes.FileSchemaLoadOptions
+	schema     *gojsonschema.Schema
+	schemaJSON map[string]interface{}
+	options    spectypes.FileSchemaLoadOptions
 }
 
 var formatCheckersMutex sync.Mutex
@@ -134,4 +144,8 @@ func adjustErrorDescription(description string) string {
 		return "data stream doesn't exist"
 	}
 	return description
+}
+
+func (s *FileSchema) Marshal() ([]byte, error) {
+	return yaml.Marshal(s.schemaJSON)
 }
