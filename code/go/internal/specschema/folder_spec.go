@@ -5,7 +5,6 @@
 package specschema
 
 import (
-	"fmt"
 	"io"
 	"io/fs"
 	"path"
@@ -109,7 +108,6 @@ func (l *FolderSpecLoader) loadContents(s *folderItemSpec, fs fs.FS, specPath st
 					Limits:      &ItemSpec{content},
 					ContentType: content.ContentMediaType,
 				}
-				fmt.Printf("Loading fileSpecLoader %s\n", specPath)
 				schema, err := l.fileSpecLoader.Load(fs, specPath, options)
 				if err != nil {
 					return errors.Wrapf(err, "could not load schema for %q", path.Dir(specPath))

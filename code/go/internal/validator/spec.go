@@ -143,7 +143,6 @@ func (s Spec) JSONSchema(location, pkgType string) (*renderedJSONSchema, error) 
 		return nil, err
 	}
 
-	fmt.Printf("Contents Schema:\n")
 	for _, content := range contents {
 		r, err := regexp.Compile(content.name)
 		if err != nil {
@@ -157,7 +156,6 @@ func (s Spec) JSONSchema(location, pkgType string) (*renderedJSONSchema, error) 
 	if len(rendered.schemaJSON) == 0 {
 		return nil, errors.Errorf("item path not found: %s", location)
 	}
-	fmt.Printf("content for %s:\n%s\n", location, rendered.schemaJSON)
 	return &rendered, nil
 }
 
