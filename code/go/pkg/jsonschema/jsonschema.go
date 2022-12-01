@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	"github.com/Masterminds/semver/v3"
+	"github.com/pkg/errors"
 
 	"github.com/elastic/package-spec/v2/code/go/internal/validator"
 )
@@ -42,13 +43,13 @@ func JSONSchema(itemPath, version, pkgType string) ([]byte, error) {
 
 	spec, err := validator.NewSpec(*specVersion)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "invalid package spec version")
 	}
 
 	fmt.Printf("spec %+v", spec)
 	rendered, err := spec.JSONSchema(itemPath, pkgType)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "failed to render jsonschema for %s", itemPath)
 	}
 
 	fmt.Printf("Name: %s\n", itemPath)
