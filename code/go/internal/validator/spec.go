@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"log"
 	"path"
+	"path/filepath"
 	"regexp"
 
 	"github.com/Masterminds/semver/v3"
@@ -138,17 +139,31 @@ func (s Spec) JSONSchema(location, pkgType string) (*RenderedJSONSchema, error) 
 		return nil, err
 	}
 
+	log.Printf("Processing location %s", location)
 	for _, content := range contents {
-		r, err := regexp.Compile(content.Name)
+		matched, err := matchContentWithFile(location, content.Name)
 		if err != nil {
-			return nil, errors.Wrap(err, "failed to compile regex")
+			return nil, err
 		}
-		if !r.MatchString(location) {
+		if !matched {
+			log.Printf(" --- Not matched")
 			continue
 		}
+
+		if content.JSONSchema == nil {
+			log.Printf(" --- content.JSONSchema null")
+			content.JSONSchema = []byte("")
+		}
+
+		if len(rendered.JSONSchema) > 0 && len(content.JSONSchema) == 0 {
+			// not overwrite rendered with contents that are empty strings (e.g. docs/README.md)
+			log.Printf("-- Not overwrite")
+			continue
+		}
+		log.Printf("Assigned content %s", content)
 		rendered = content
 	}
-	if len(rendered.JSONSchema) == 0 {
+	if rendered.JSONSchema == nil {
 		return nil, errors.Errorf("item path not found: %s", location)
 	}
 	return &rendered, nil
@@ -188,4 +203,31 @@ func marshalSpec(spec spectypes.ItemSpec) ([]RenderedJSONSchema, error) {
 		allContents = append(allContents, itemsJSON...)
 	}
 	return allContents, nil
+}
+
+func matchContentWithFile(location, content string) (bool, error) {
+	baseLocation := filepath.Base(location)
+	baseContent := filepath.Base(content)
+
+	dirLocation := filepath.Dir(location)
+	dirContent := filepath.Dir(content)
+
+	log.Printf("- Checking dir location %s - content %s (full content %s)", dirLocation, dirContent, content)
+	if dirLocation != dirContent {
+		return false, nil
+	}
+
+	log.Printf("- Checking base Location %s - Content %s", baseLocation, baseContent)
+	r, err := regexp.Compile(baseContent)
+	if err != nil {
+		log.Printf(" -- Error %+s", err)
+		return false, errors.Wrap(err, "failed to compile regex")
+	}
+	if !r.MatchString(baseLocation) {
+		log.Printf(" -- Not matched %+v", r)
+		return false, nil
+	}
+	log.Printf(" -- Matched %s == %s", location, content)
+
+	return true, nil
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/gorilla/mux"
@@ -11,7 +12,7 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/pkg/jsonschema"
 )
 
-const jsonschemaRouterPath = "/jsonschema/{packageType}/{version}/{filepath}"
+const jsonschemaRouterPath = "/jsonschema/{packageType}/{version}/{filepath:.*}"
 
 func jsonschemaHandler() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -47,11 +48,19 @@ func jsonschemaHandler() func(w http.ResponseWriter, r *http.Request) {
 func serveJsonSchema(w http.ResponseWriter, r *http.Request, packageType, specVersion, filepath string) {
 	rendered, err := jsonschema.JSONSchema(filepath, specVersion, packageType)
 	if err != nil {
-		log.Printf("Error %s", err)
-		internalServerError(w, "not able to render the json schema")
+		message := fmt.Sprintf("error: %s", err)
+		log.Print(message)
+		internalServerError(w, message)
 		return
 	}
 
+	jsonSchemaBytes := len(rendered)
+	if string(rendered) == "" {
+		log.Printf("Empty jsonschema for this file: %s", filepath)
+		jsonSchemaBytes = 0
+	}
+
+	w.Header().Set("X-EPR-JsonSchema-bytes", strconv.Itoa(jsonSchemaBytes))
 	yamlHeader(w)
 	fmt.Fprint(w, string(rendered))
 }

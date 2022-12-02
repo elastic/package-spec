@@ -6,6 +6,7 @@ package jsonschema
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
@@ -14,7 +15,7 @@ import (
 )
 
 func AllJSONSchemas(version, pkgType string) error {
-	fmt.Printf("All json schemas (%s - %s)", pkgType, version)
+	fmt.Printf("All json schemas (%s - %s)\n", pkgType, version)
 	specVersion, err := semver.NewVersion(version)
 	if err != nil {
 		return err
@@ -35,7 +36,7 @@ func AllJSONSchemas(version, pkgType string) error {
 }
 
 func JSONSchema(itemPath, version, pkgType string) ([]byte, error) {
-	fmt.Printf("jsonschema for %s (%s - %s)", itemPath, pkgType, version)
+	log.Printf("jsonschema for %s (%s - %s)\n", itemPath, pkgType, version)
 	specVersion, err := semver.NewVersion(version)
 	if err != nil {
 		return nil, err
@@ -46,13 +47,13 @@ func JSONSchema(itemPath, version, pkgType string) ([]byte, error) {
 		return nil, errors.Wrap(err, "invalid package spec version")
 	}
 
-	fmt.Printf("spec %+v", spec)
+	log.Printf("spec %+v\n", spec)
 	rendered, err := spec.JSONSchema(itemPath, pkgType)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to render jsonschema for %s", itemPath)
 	}
 
-	fmt.Printf("Name: %s\n", itemPath)
-	fmt.Printf("Content:\n%s\n", rendered.JSONSchema)
+	log.Printf("Name: %s\n", itemPath)
+	log.Printf("Content:\n%s\n", rendered.JSONSchema)
 	return rendered.JSONSchema, nil
 }
