@@ -11,7 +11,7 @@ import (
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/validator"
+	"github.com/elastic/package-spec/v2/code/go/internal/spec"
 )
 
 func AllJSONSchemas(version, pkgType string) error {
@@ -21,12 +21,12 @@ func AllJSONSchemas(version, pkgType string) error {
 		return err
 	}
 
-	spec, err := validator.NewSpec(*specVersion)
+	rootSpec, err := spec.NewSpec(*specVersion)
 	if err != nil {
 		return err
 	}
 
-	rendered, err := spec.AllJSONSchema(pkgType)
+	rendered, err := rootSpec.RenderAllJsonSchema(pkgType)
 
 	for _, itemSpec := range rendered {
 		fmt.Printf("Name: %s\n", itemSpec.Name)
@@ -41,12 +41,12 @@ func JSONSchema(itemPath, version, pkgType string) ([]byte, error) {
 		return nil, err
 	}
 
-	spec, err := validator.NewSpec(*specVersion)
+	rootSpec, err := spec.NewSpec(*specVersion)
 	if err != nil {
 		return nil, errors.Wrap(err, "invalid package spec version")
 	}
 
-	rendered, err := spec.JSONSchema(itemPath, pkgType)
+	rendered, err := rootSpec.RenderJsonSchema(itemPath, pkgType)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to render jsonschema for %s", itemPath)
 	}
