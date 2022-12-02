@@ -19,7 +19,7 @@ func TestJSONSchema_RetrieveOneFile(t *testing.T) {
 		pkgType                string
 		filePath               string
 		expectedError          bool
-		expectedJsonSchemaPath string
+		expectedJSONSchemaPath string
 	}{
 		{
 			title:                  "input manifest version 1.0.0",
@@ -27,7 +27,7 @@ func TestJSONSchema_RetrieveOneFile(t *testing.T) {
 			pkgType:                "input",
 			filePath:               "manifest.yml",
 			expectedError:          false,
-			expectedJsonSchemaPath: "testdata/input.manifest.version.1.0.0.yml",
+			expectedJSONSchemaPath: "testdata/input.manifest.version.1.0.0.yml",
 		},
 		{
 			title:                  "integration manifest version 1.0.0",
@@ -35,7 +35,7 @@ func TestJSONSchema_RetrieveOneFile(t *testing.T) {
 			pkgType:                "integration",
 			filePath:               "manifest.yml",
 			expectedError:          false,
-			expectedJsonSchemaPath: "testdata/integration.manifest.version.1.0.0.yml",
+			expectedJSONSchemaPath: "testdata/integration.manifest.version.1.0.0.yml",
 		},
 		{
 			title:                  "input manifest version 2.1.0",
@@ -43,7 +43,7 @@ func TestJSONSchema_RetrieveOneFile(t *testing.T) {
 			pkgType:                "input",
 			filePath:               "manifest.yml",
 			expectedError:          false,
-			expectedJsonSchemaPath: "testdata/input.manifest.version.2.1.0.yml",
+			expectedJSONSchemaPath: "testdata/input.manifest.version.2.1.0.yml",
 		},
 		{
 			title:                  "integration manifest version 2.1.0",
@@ -51,7 +51,7 @@ func TestJSONSchema_RetrieveOneFile(t *testing.T) {
 			pkgType:                "integration",
 			filePath:               "manifest.yml",
 			expectedError:          false,
-			expectedJsonSchemaPath: "testdata/integration.manifest.version.2.1.0.yml",
+			expectedJSONSchemaPath: "testdata/integration.manifest.version.2.1.0.yml",
 		},
 	}
 
@@ -64,7 +64,7 @@ func TestJSONSchema_RetrieveOneFile(t *testing.T) {
 			}
 			require.NoError(t, err)
 
-			contents, err := os.ReadFile(c.expectedJsonSchemaPath)
+			contents, err := os.ReadFile(c.expectedJSONSchemaPath)
 			require.NoError(t, err)
 			assert.Equal(t, string(contents), string(rendered))
 		})

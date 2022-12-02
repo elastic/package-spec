@@ -15,11 +15,13 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
 )
 
+// RenderedJSONSchema represents a rendered JSON schema for a given item path
 type RenderedJSONSchema struct {
 	Name       string
 	JSONSchema []byte
 }
 
+// AllJSONSchemas returns an array of RenderedJSONSchema with all the JSON schemas available with their YAML encoding and their path within the package spec
 func AllJSONSchemas(rootSpec spectypes.ItemSpec) ([]RenderedJSONSchema, error) {
 	contents, err := marshalSpec(rootSpec)
 	if err != nil {
@@ -29,6 +31,7 @@ func AllJSONSchemas(rootSpec spectypes.ItemSpec) ([]RenderedJSONSchema, error) {
 	return contents, nil
 }
 
+// JSONSchema returns a RenderedJSONSchema with the YAML encoding and its path within the package spec
 func JSONSchema(rootSpec spectypes.ItemSpec, location string) (*RenderedJSONSchema, error) {
 	contents, err := marshalSpec(rootSpec)
 	if err != nil {

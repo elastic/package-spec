@@ -40,7 +40,8 @@ func NewSpec(version semver.Version) (*Spec, error) {
 	return &s, nil
 }
 
-func (s Spec) RenderJsonSchema(itemPath, pkgType string) (*jsonschema.RenderedJSONSchema, error) {
+// RenderJSONSchema returns the JSON Schemas related to the itemPath for this spec and a given package type
+func (s Spec) RenderJSONSchema(itemPath, pkgType string) (*jsonschema.RenderedJSONSchema, error) {
 	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkgType)
 	if err != nil {
 		return nil, err
@@ -49,7 +50,8 @@ func (s Spec) RenderJsonSchema(itemPath, pkgType string) (*jsonschema.RenderedJS
 	return jsonschema.JSONSchema(rootSpec, itemPath)
 }
 
-func (s Spec) RenderAllJsonSchema(pkgType string) ([]jsonschema.RenderedJSONSchema, error) {
+// RenderAllJSONSchemas returns all the JSON Schemas for this package spec and a given package type
+func (s Spec) RenderAllJSONSchemas(pkgType string) ([]jsonschema.RenderedJSONSchema, error) {
 	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkgType)
 	if err != nil {
 		return nil, err

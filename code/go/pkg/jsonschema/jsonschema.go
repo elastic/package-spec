@@ -14,6 +14,7 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/internal/spec"
 )
 
+// AllJSONSchemas returns the all the JSON schema related to a given a package type and a package spec version
 func AllJSONSchemas(version, pkgType string) error {
 	fmt.Printf("All json schemas (%s - %s)\n", pkgType, version)
 	specVersion, err := semver.NewVersion(version)
@@ -26,7 +27,7 @@ func AllJSONSchemas(version, pkgType string) error {
 		return err
 	}
 
-	rendered, err := rootSpec.RenderAllJsonSchema(pkgType)
+	rendered, err := rootSpec.RenderAllJSONSchemas(pkgType)
 
 	for _, itemSpec := range rendered {
 		fmt.Printf("Name: %s\n", itemSpec.Name)
@@ -35,6 +36,7 @@ func AllJSONSchemas(version, pkgType string) error {
 	return nil
 }
 
+// JSONSchema returns the JSON schema related to a given item path for a given package type and package spec version
 func JSONSchema(itemPath, version, pkgType string) ([]byte, error) {
 	specVersion, err := semver.NewVersion(version)
 	if err != nil {
@@ -46,7 +48,7 @@ func JSONSchema(itemPath, version, pkgType string) ([]byte, error) {
 		return nil, errors.Wrap(err, "invalid package spec version")
 	}
 
-	rendered, err := rootSpec.RenderJsonSchema(itemPath, pkgType)
+	rendered, err := rootSpec.RenderJSONSchema(itemPath, pkgType)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to render jsonschema for %s", itemPath)
 	}

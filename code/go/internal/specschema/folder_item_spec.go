@@ -121,6 +121,7 @@ func (s *ItemSpec) ValidateSchema(fsys fs.FS, itemPath string) ve.ValidationErro
 	return s.itemSpec.ValidateSchema(fsys, itemPath)
 }
 
+// Marshal returns the YAML encoding of the itemSpec
 func (s *ItemSpec) Marshal() ([]byte, error) {
 	return s.itemSpec.Marshal()
 }
