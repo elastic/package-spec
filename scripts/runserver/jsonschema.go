@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,9 +12,12 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/elastic/package-spec/v2/code/go/pkg/jsonschema"
+	"github.com/elastic/package-spec/v2/scripts/runserver/util"
 )
 
 const jsonschemaRouterPath = "/jsonschema/{packageType}/{version}/{filepath:.*}"
+
+const defaultFormat = "json"
 
 var supportedFormatsSet = map[string]string{
 	"json": "json",
@@ -35,7 +37,7 @@ func supportedFormatsList() []string {
 
 func jsonschemaHandler() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		outputFormat := "json"
+		outputFormat := defaultFormat
 
 		vars := mux.Vars(r)
 		packageType, ok := vars["packageType"]
@@ -103,7 +105,7 @@ func serveJsonSchema(w http.ResponseWriter, r *http.Request, packageType, specVe
 			internalServerError(w, message)
 			return
 		}
-		rendered, err = json.MarshalIndent(jsonSchema, "", "  ")
+		rendered, err = util.MarshalJSONPretty(jsonSchema)
 		if err != nil {
 			message := fmt.Sprintf("error rendering json: %s", err)
 			log.Print(message)
@@ -114,8 +116,8 @@ func serveJsonSchema(w http.ResponseWriter, r *http.Request, packageType, specVe
 		log.Printf("Rendering jsonschema in yaml")
 	}
 
-	w.Header().Set("X-EPR-JsonSchema-Format", format)
-	w.Header().Set("X-EPR-JsonSchema-bytes", strconv.Itoa(jsonSchemaBytes))
+	w.Header().Set("X-Package-Spec-JsonSchema-Format", format)
+	w.Header().Set("X-Package-Spec-JsonSchema-bytes", strconv.Itoa(jsonSchemaBytes))
 	yamlHeader(w)
 	fmt.Fprint(w, string(rendered))
 }
