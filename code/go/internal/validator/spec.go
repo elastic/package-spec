@@ -139,29 +139,25 @@ func (s Spec) JSONSchema(location, pkgType string) (*RenderedJSONSchema, error) 
 		return nil, err
 	}
 
-	log.Printf("Processing location %s", location)
 	for _, content := range contents {
 		matched, err := matchContentWithFile(location, content.Name)
 		if err != nil {
 			return nil, err
 		}
 		if !matched {
-			log.Printf(" --- Not matched")
 			continue
 		}
 
 		if content.JSONSchema == nil {
-			log.Printf(" --- content.JSONSchema null")
 			content.JSONSchema = []byte("")
 		}
 
 		if len(rendered.JSONSchema) > 0 && len(content.JSONSchema) == 0 {
 			// not overwrite rendered with contents that are empty strings (e.g. docs/README.md)
-			log.Printf("-- Not overwrite")
 			continue
 		}
-		log.Printf("Assigned content %s", content)
 		rendered = content
+		log.Printf("Matched item spec %s for path %s", content.Name, location)
 	}
 	if rendered.JSONSchema == nil {
 		return nil, errors.Errorf("item path not found: %s", location)
@@ -212,22 +208,18 @@ func matchContentWithFile(location, content string) (bool, error) {
 	dirLocation := filepath.Dir(location)
 	dirContent := filepath.Dir(content)
 
-	log.Printf("- Checking dir location %s - content %s (full content %s)", dirLocation, dirContent, content)
 	if dirLocation != dirContent {
 		return false, nil
 	}
 
-	log.Printf("- Checking base Location %s - Content %s", baseLocation, baseContent)
 	r, err := regexp.Compile(baseContent)
 	if err != nil {
 		log.Printf(" -- Error %+s", err)
 		return false, errors.Wrap(err, "failed to compile regex")
 	}
 	if !r.MatchString(baseLocation) {
-		log.Printf(" -- Not matched %+v", r)
 		return false, nil
 	}
-	log.Printf(" -- Matched %s == %s", location, content)
 
 	return true, nil
 }

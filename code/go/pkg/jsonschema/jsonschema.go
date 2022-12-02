@@ -36,7 +36,6 @@ func AllJSONSchemas(version, pkgType string) error {
 }
 
 func JSONSchema(itemPath, version, pkgType string) ([]byte, error) {
-	log.Printf("jsonschema for %s (%s - %s)\n", itemPath, pkgType, version)
 	specVersion, err := semver.NewVersion(version)
 	if err != nil {
 		return nil, err
@@ -47,13 +46,11 @@ func JSONSchema(itemPath, version, pkgType string) ([]byte, error) {
 		return nil, errors.Wrap(err, "invalid package spec version")
 	}
 
-	log.Printf("spec %+v\n", spec)
 	rendered, err := spec.JSONSchema(itemPath, pkgType)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to render jsonschema for %s", itemPath)
 	}
 
-	log.Printf("Name: %s\n", itemPath)
-	log.Printf("Content:\n%s\n", rendered.JSONSchema)
+	log.Printf("Rendered jsonschema for path: %s\n", itemPath)
 	return rendered.JSONSchema, nil
 }
