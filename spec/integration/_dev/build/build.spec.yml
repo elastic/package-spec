@@ -20,6 +20,11 @@ spec:
               type: string
               description: Source reference
               pattern: '^git@.+'
+            import_common_dynamic_mappings:
+              type: boolean
+              description: >
+                Whether or not import common used dynamic templates and properties into the package
+              default: false
           required:
             - reference
   required:

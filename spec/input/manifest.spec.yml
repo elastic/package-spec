@@ -113,6 +113,10 @@ spec:
   - owner
 
 versions:
+  - before: 2.3.0
+    patch:
+      - op: remove
+        path: "/properties/elasticsearch"
   - before: 2.0.0
     patch:
       - op: add
@@ -126,5 +130,3 @@ versions:
           default: basic
           examples:
           - basic
-      - op: remove
-        path: "/properties/elasticserch"
