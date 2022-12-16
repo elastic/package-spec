@@ -102,7 +102,7 @@ spec:
       additionalProperties: false
       properties:
         index_template:
-          $ref: "../integration/data_stream/manifest.spec.yml#definitions/elasticsearch_index_template"
+          $ref: "../integration/data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template"
   required:
   - format_version
   - name
