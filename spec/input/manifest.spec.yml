@@ -96,6 +96,13 @@ spec:
       $ref: "../integration/data_stream/manifest.spec.yml#/definitions/vars"
     owner:
       $ref: "../integration/manifest.spec.yml#/definitions/owner"
+    elasticsearch:
+      description: Elasticsearch asset definitions
+      type: object
+      additionalProperties: false
+      properties:
+        index_template:
+          $ref: "../integration/data_stream/manifest.spec.yml#definitions/elasticsearch_index_template"
   required:
   - format_version
   - name
@@ -119,3 +126,5 @@ versions:
           default: basic
           examples:
           - basic
+      - op: remove
+        path: "/properties/elasticserch"
