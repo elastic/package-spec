@@ -29,3 +29,8 @@ spec:
             - reference
   required:
   - dependencies
+versions:
+  - before: 2.3.0
+    patch:
+      - op: remove
+        path: "/properties/dependencies/properties/ecs/properties/import_common_dynamic_mappings"
