@@ -105,6 +105,27 @@ spec:
         required:
           - name
           - type
+    elasticsearch_index_template:
+      description: Index template definition
+      type: object
+      additionalProperties: false
+      properties:
+        settings:
+          description: Settings section of index template
+          type: object
+        mappings:
+          description: Mappings section of index template
+          type: object
+        ingest_pipeline:
+          description: Elasticsearch ingest pipeline settings
+          type: object
+          additionalProperties: false
+          properties:
+            name:
+              description: Ingest pipeline name
+              type: string
+          required:
+          - name
   properties:
     dataset:
       description: Name of data set.
@@ -208,26 +229,7 @@ spec:
           examples:
           - "time_series"
         index_template:
-          description: Index template definition
-          type: object
-          additionalProperties: false
-          properties:
-            settings:
-              description: Settings section of index template
-              type: object
-            mappings:
-              description: Mappings section of index template
-              type: object
-            ingest_pipeline:
-              description: Elasticsearch ingest pipeline settings
-              type: object
-              additionalProperties: false
-              properties:
-                name:
-                  description: Ingest pipeline name
-                  type: string
-              required:
-              - name
+          $ref: "#/definitions/elasticsearch_index_template"
         privileges:
           description: Elasticsearch privilege requirements
           type: object
