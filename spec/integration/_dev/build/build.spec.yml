@@ -20,7 +20,7 @@ spec:
               type: string
               description: Source reference
               pattern: '^git@.+'
-            import_common_dynamic_mappings:
+            import_mappings:
               type: boolean
               description: >
                 Whether or not import common used dynamic templates and properties into the package
@@ -33,4 +33,4 @@ versions:
   - before: 2.3.0
     patch:
       - op: remove
-        path: "/properties/dependencies/properties/ecs/properties/import_common_dynamic_mappings"
+        path: "/properties/dependencies/properties/ecs/properties/import_mappings"
