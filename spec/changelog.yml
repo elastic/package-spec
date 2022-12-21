@@ -2,6 +2,11 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
+- version: 1.5.0
+  changes:
+  - description: Deprecate the `muted` and `enabled` properties of the `csp-rule-template` asset.
+    type: breaking-change
+    link: TODO - fill in
 - version: 2.3.0-next
   changes:
   - description: Remove the release tag, semantic versioning should be used instead.
