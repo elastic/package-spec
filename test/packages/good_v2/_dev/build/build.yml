@@ -1,0 +1,4 @@
+dependencies:
+  ecs:
+    reference: git@v1.9.2
+    import_mappings: true

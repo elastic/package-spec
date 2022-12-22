@@ -7,6 +7,12 @@
   - description: Remove the release tag, semantic versioning should be used instead.
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/452
+  - description: Add support for elasticsearch index templates into input packages.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/455
+  - description: Add flag in _dev/build/build.yml to import ECS mappings.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/455
 - version: 2.2.1-next
   changes:
   - description: Prepare for next version

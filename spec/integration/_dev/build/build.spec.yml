@@ -20,7 +20,17 @@ spec:
               type: string
               description: Source reference
               pattern: '^git@.+'
+            import_mappings:
+              type: boolean
+              description: >
+                Whether or not import common used dynamic templates and properties into the package
+              default: false
           required:
             - reference
   required:
   - dependencies
+versions:
+  - before: 2.3.0
+    patch:
+      - op: remove
+        path: "/properties/dependencies/properties/ecs/properties/import_mappings"
