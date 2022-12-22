@@ -30,9 +30,7 @@
   "id": "good-csp-rule-template-abc-1",
   "type": "csp-rule-template",
   "migrationVersion": {
-    // TODO - Should we add 8.4.0 as well?
     "csp-rule-template": "8.7.0"
   },
-  //  TODO - is this the right core migration version?
-  "coreMigrationVersion": "8.4.0"
+  "coreMigrationVersion": "8.7.0"
 }
