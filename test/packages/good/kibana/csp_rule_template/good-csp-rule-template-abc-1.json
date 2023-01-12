@@ -1,7 +1,5 @@
 {
   "attributes": {
-    "enabled": true,
-    "muted": false,
     "metadata": {
       "id": "6664c1b8-05f2-5872-a516-4b2c3c36d2d7",
       "name": "Ensure that the API server pod specification file permissions are set to 644 or more restrictive (Automated)",
@@ -23,7 +21,8 @@
       ],
       "benchmark": {
         "name": "CIS Kubernetes V1.23",
-        "version": "v1.0.0"
+        "version": "v1.0.0",
+        "id": "cis_k8s"
       },
       "rego_rule_id": "cis_1_1_1"
     }
@@ -31,7 +30,7 @@
   "id": "good-csp-rule-template-abc-1",
   "type": "csp-rule-template",
   "migrationVersion": {
-    "csp-rule-template": "8.4.0"
+    "csp-rule-template": "8.7.0"
   },
-  "coreMigrationVersion": "8.4.0"
+  "coreMigrationVersion": "8.7.0"
 }
