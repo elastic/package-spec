@@ -2,7 +2,7 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 2.3.0-next
+- version: 2.3.0
   changes:
   - description: Remove the release tag, semantic versioning should be used instead.
     type: breaking-change
@@ -13,11 +13,6 @@
   - description: Add flag in _dev/build/build.yml to import ECS mappings.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/455
-- version: 2.2.1-next
-  changes:
-  - description: Prepare for next version
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/449
 - version: 2.2.0
   changes:
   - description: Support definition of system tests for input packages
