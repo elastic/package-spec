@@ -47,8 +47,21 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) ve.ValidationErrors {
 				continue
 			}
 
-			if ruleID != objectID {
-				errs = append(errs, errors.New("rule ID is different from the object ID"))
+			objectIDValue, ok := objectID.(string)
+			if !ok {
+				errs = append(errs, errors.Wrap(err, "expect object ID to be a string"))
+				continue
+			}
+
+			ruleIDValue, ok := ruleID.(string)
+			if !ok {
+				errs = append(errs, errors.Wrap(err, "expect rule ID to be a string"))
+				continue
+			}
+
+			if !strings.HasPrefix(objectIDValue, ruleIDValue) {
+				err := fmt.Errorf("kibana object ID [%s] should start with rule ID [%s]", objectIDValue, ruleIDValue)
+				errs = append(errs, err)
 				continue
 			}
 		}

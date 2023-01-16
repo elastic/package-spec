@@ -245,6 +245,27 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 	}
 }
 
+func TestValidateBadRuleIDs(t *testing.T) {
+	tests := map[string]string{
+		"bad_rule_ids": "kibana object ID [saved_object_id] should start with rule ID [rule_id]",
+	}
+
+	for pkgName, expectedError := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			require.Error(t, errs)
+			vErrs, ok := errs.(errors.ValidationErrors)
+			require.True(t, ok)
+
+			var errMessages []string
+			for _, vErr := range vErrs {
+				errMessages = append(errMessages, vErr.Error())
+			}
+			require.Contains(t, errMessages, expectedError)
+		})
+	}
+}
+
 func TestValidateMissingReqiredFields(t *testing.T) {
 	tests := map[string][]string{
 		"good":    {},
