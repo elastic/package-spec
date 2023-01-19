@@ -176,8 +176,9 @@ spec:
       examples:
       - metrics
     hidden:
-      description: Specifies if a data stream is hidden
+      description: Specifies if a data stream is hidden, resulting in dot prefixed system indices
       type: boolean
+      deprecated: true # https://github.com/elastic/package-spec/issues/464
     streams:
       description: Streams offered by data stream.
       type: array
