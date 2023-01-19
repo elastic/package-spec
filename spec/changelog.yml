@@ -18,6 +18,9 @@
   - description: Add flag in _dev/build/build.yml to import ECS mappings.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/455
+  - description: Add index_pattern.data_stream.hidden flag to data stream manifest
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/465
 - version: 2.2.0
   changes:
   - description: Support definition of system tests for input packages

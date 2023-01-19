@@ -126,6 +126,14 @@ spec:
               type: string
           required:
           - name
+        data_stream:
+          description: Data stream section of index template
+          type: object
+          additionalProperties: false
+          properties:
+            hidden:
+              description: Makes the data stream hidden
+              type: boolean
   properties:
     dataset:
       description: Name of data set.
