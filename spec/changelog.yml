@@ -10,6 +10,9 @@
   - description: Add index_template.data_stream.hidden flag to data stream manifest
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/465
+  - description: Update description of top level hidden field in data_streams and deprecate it.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/466
 - version: 2.3.0
   changes:
   - description: Remove the release tag, semantic versioning should be used instead.
