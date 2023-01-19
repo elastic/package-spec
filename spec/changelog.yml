@@ -7,7 +7,7 @@
   - description: Allow security_rule objects to have rule IDs different from the object IDs.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/463
-  - description: Add index_pattern.data_stream.hidden flag to data stream manifest
+  - description: Add index_template.data_stream.hidden flag to data stream manifest
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/465
 - version: 2.3.0
