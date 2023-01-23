@@ -176,7 +176,9 @@ spec:
       examples:
       - metrics
     hidden:
-      description: Specifies if a data stream is hidden, resulting in dot prefixed system indices
+      description: >
+        Specifies if a data stream is hidden, resulting in dot prefixed system indices.
+        To set the data stream hidden without those dot prefixed indices, check `elasticsearch.index_template.data_stream.hidden` flag.
       type: boolean
       deprecated: true # https://github.com/elastic/package-spec/issues/464
     streams:
