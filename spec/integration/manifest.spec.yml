@@ -40,7 +40,7 @@ spec:
           - elasticsearch_sdk
           - elastic_stack
           - email_security
-          - enterprise_serch
+          - enterprise_search
           - firewall_security
           - google_cloud
           - iam
