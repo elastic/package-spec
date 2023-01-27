@@ -2,11 +2,11 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 2.4.1-next
+- version: 2.5.0
   changes:
-  - description: Prepare for next version
+  - description: Add new subcategories
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/468
+    link: https://github.com/elastic/package-spec/pull/469
 - version: 2.4.0
   changes:
   - description: Allow security_rule objects to have rule IDs different from the object IDs.
