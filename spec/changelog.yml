@@ -4,9 +4,9 @@
 ##
 - version: 2.5.1-next
   changes:
-  - description: Prepare for next version
+  - description: Add category for vulnerability_management
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/470
+    link: https://github.com/elastic/package-spec/pull/471
 - version: 2.5.0
   changes:
   - description: Add new subcategories
