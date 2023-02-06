@@ -7,7 +7,7 @@ require (
 	github.com/PaesslerAG/jsonpath v0.1.1
 	github.com/boumenot/gocover-cobertura v1.2.0
 	github.com/creasty/defaults v1.5.2
-	github.com/elastic/go-licenser v0.3.1
+	github.com/elastic/go-licenser v0.4.1
 	github.com/elastic/gojsonschema v1.2.1
 	github.com/evanphx/json-patch/v5 v5.6.0
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901
