@@ -12,10 +12,10 @@ require (
 	github.com/evanphx/json-patch/v5 v5.6.0
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901
 	github.com/pkg/errors v0.9.1
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.8.1
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
-	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c
+	gopkg.in/yaml.v3 v3.0.1
 	gotest.tools/gotestsum v1.8.1
 )
 
