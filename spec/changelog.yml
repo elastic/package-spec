@@ -2,7 +2,7 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 2.5.1-next
+- version: 2.5.1
   changes:
   - description: Add category for vulnerability_management
     type: enhancement
