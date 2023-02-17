@@ -1,0 +1,9 @@
+format_version: 1.0.0
+name: bad_rule_ids
+title: Bad Rule IDs
+description: This package contains detection rules with non-matching object IDs
+version: 0.1.2
+type: integration
+release: beta
+owner:
+  github: elastic/foobar

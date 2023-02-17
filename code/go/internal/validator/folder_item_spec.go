@@ -5,51 +5,30 @@
 package validator
 
 import (
-	"fmt"
 	"io/fs"
-	"path/filepath"
 	"regexp"
-	"sync"
 
 	"github.com/pkg/errors"
-	"github.com/xeipuuv/gojsonschema"
 
-	ve "github.com/elastic/package-spec/code/go/internal/errors"
-	"github.com/elastic/package-spec/code/go/internal/spectypes"
-	"github.com/elastic/package-spec/code/go/internal/validator/semantic"
-	"github.com/elastic/package-spec/code/go/internal/yamlschema"
+	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
 )
 
-type folderItemSpec struct {
-	Description       string                 `yaml:"description"`
-	ItemType          string                 `yaml:"type"`
-	ContentMediaType  *spectypes.ContentType `yaml:"contentMediaType"`
-	ForbiddenPatterns []string               `yaml:"forbiddenPatterns"`
-	Name              string                 `yaml:"name"`
-	Pattern           string                 `yaml:"pattern"`
-	Required          bool                   `yaml:"required"`
-	Ref               string                 `yaml:"$ref"`
-	Visibility        string                 `yaml:"visibility" default:"public"`
-	commonSpec        `yaml:",inline"`
-}
-
-var formatCheckersMutex sync.Mutex
-
-func (s *folderItemSpec) matchingFileExists(files []fs.DirEntry) (bool, error) {
-	if s.Name != "" {
+func matchingFileExists(spec spectypes.ItemSpec, files []fs.DirEntry) (bool, error) {
+	if spec.Name() != "" {
 		for _, file := range files {
-			if file.Name() == s.Name {
-				return s.isSameType(file), nil
+			if file.Name() == spec.Name() {
+				return spec.IsDir() == file.IsDir(), nil
 			}
 		}
-	} else if s.Pattern != "" {
+	} else if spec.Pattern() != "" {
 		for _, file := range files {
-			isMatch, err := regexp.MatchString(s.Pattern, file.Name())
+			isMatch, err := regexp.MatchString(spec.Pattern(), file.Name())
 			if err != nil {
 				return false, errors.Wrap(err, "invalid folder item spec pattern")
 			}
 			if isMatch {
-				return s.isSameType(file), nil
+				return spec.IsDir() == file.IsDir(), nil
 			}
 		}
 	}
@@ -57,83 +36,26 @@ func (s *folderItemSpec) matchingFileExists(files []fs.DirEntry) (bool, error) {
 	return false, nil
 }
 
-// sameTypeChecker is the interface that parameters of isSameType should implement,
-// this is intended to accept both fs.DirEntry and fs.FileInfo.
-type sameTypeChecker interface {
-	IsDir() bool
-}
-
-func (s *folderItemSpec) isSameType(file sameTypeChecker) bool {
-	switch s.ItemType {
-	case itemTypeFile:
-		return !file.IsDir()
-	case itemTypeFolder:
-		return file.IsDir()
-	}
-
-	return false
-}
-
-func (s *folderItemSpec) validate(schemaFsys fs.FS, fsys fs.FS, folderSpecPath string, itemPath string) ve.ValidationErrors {
-	err := validateMaxSize(fsys, itemPath, s.Limits)
+func validateFile(spec spectypes.ItemSpec, fsys fs.FS, itemPath string) ve.ValidationErrors {
+	err := validateMaxSize(fsys, itemPath, spec)
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}
-	if s.ContentMediaType != nil {
-		err := validateContentType(fsys, itemPath, *s.ContentMediaType)
+	if mediaType := spec.ContentMediaType(); mediaType != nil {
+		err := validateContentType(fsys, itemPath, *mediaType)
 		if err != nil {
 			return ve.ValidationErrors{err}
 		}
-		err = validateContentTypeSize(fsys, itemPath, *s.ContentMediaType, s.Limits)
+		err = validateContentTypeSize(fsys, itemPath, *mediaType, spec)
 		if err != nil {
 			return ve.ValidationErrors{err}
 		}
 	}
 
-	errs := s.validateSchema(schemaFsys, fsys, folderSpecPath, itemPath)
+	errs := spec.ValidateSchema(fsys, itemPath)
 	if len(errs) > 0 {
 		return errs
 	}
 
 	return nil
-}
-
-func (s *folderItemSpec) validateSchema(schemaFsys fs.FS, fsys fs.FS, folderSpecPath, itemPath string) ve.ValidationErrors {
-	if s.Ref == "" {
-		return nil // item's schema is not defined
-	}
-
-	schemaPath := filepath.Join(filepath.Dir(folderSpecPath), s.Ref)
-	schemaLoader := yamlschema.NewReferenceLoaderFileSystem("file:///"+schemaPath, schemaFsys)
-
-	// validation with schema
-	itemData, err := loadItemSchema(fsys, itemPath, s.ContentMediaType)
-	if err != nil {
-		return ve.ValidationErrors{err}
-	}
-	documentLoader := gojsonschema.NewBytesLoader(itemData)
-
-	formatCheckersMutex.Lock()
-	defer func() {
-		semantic.UnloadRelativePathFormatChecker()
-		semantic.UnloadDataStreamNameFormatChecker()
-		formatCheckersMutex.Unlock()
-	}()
-
-	semantic.LoadRelativePathFormatChecker(fsys, filepath.Dir(itemPath), s.Limits.RelativePathSizeLimit)
-	semantic.LoadDataStreamNameFormatChecker(fsys, filepath.Dir(itemPath))
-	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
-	if err != nil {
-		return ve.ValidationErrors{err}
-	}
-
-	if !result.Valid() {
-		var errs ve.ValidationErrors
-		for _, re := range result.Errors() {
-			errs = append(errs, fmt.Errorf("field %s: %s", re.Field(), adjustErrorDescription(re.Description())))
-		}
-		return errs
-	}
-
-	return nil // item content is valid according to the loaded schema
 }

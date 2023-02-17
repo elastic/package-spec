@@ -2,11 +2,11 @@
 version: 2
 updates:
   - package-ecosystem: "gomod"
-    directory: "/code/go"
+    directory: "/"
     schedule:
       interval: "daily"
     labels:
       - automation
     reviewers:
-      - "elastic/integrations-developer-experience"
+      - "elastic/ecosystem"
     open-pull-requests-limit: 10

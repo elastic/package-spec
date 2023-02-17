@@ -5,7 +5,7 @@ import (
 
 	"github.com/gopherjs/gopherjs/js"
 
-	"github.com/elastic/package-spec/code/go/pkg/validator"
+	"github.com/elastic/package-spec/v2/code/go/pkg/validator"
 )
 
 const moduleName = "elasticPackageSpec"

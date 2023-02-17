@@ -1,0 +1,9 @@
+spec:
+  additionalContents: true
+  contents:
+    - description: Custom agent definition.
+      type: file
+      name: "custom-agent.yml"
+      contentMediaType: "application/x-yaml"
+      required: true
+      $ref: "./custom-agent.spec.yml"

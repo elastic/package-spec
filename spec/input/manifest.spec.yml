@@ -1,0 +1,132 @@
+##
+## Describes the specification for the input package's main manifest.yml file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  properties:
+    format_version:
+      description: The version of the package specification format used by this package.
+      $ref: "../integration/manifest.spec.yml#/definitions/version"
+    name:
+      description: The name of the package.
+      type: string
+      pattern: '^[a-z0-9_]+$'
+      examples:
+      - apache
+    title:
+      $ref: "../integration/manifest.spec.yml#/definitions/title"
+    description:
+      $ref: "../integration/manifest.spec.yml#/definitions/description"
+    version:
+      description: The version of the package.
+      $ref: "../integration/manifest.spec.yml#/definitions/version"
+    source:
+      $ref: "../integration/manifest.spec.yml#/definitions/source"
+    type:
+      description: The type of package.
+      type: string
+      enum:
+      - input
+      examples:
+      - input
+    categories:
+      $ref: "../integration/manifest.spec.yml#/definitions/categories"
+    conditions:
+      $ref: "../integration/manifest.spec.yml#/definitions/conditions"
+    policy_templates:
+      description: List of policy templates offered by this package.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          name:
+            description: Name of policy template.
+            type: string
+            examples:
+              - apache
+          type:
+            description: Type of data stream
+            type: string
+            enum:
+              - metrics
+              - logs
+              - synthetics
+              - traces
+            examples:
+              - metrics
+          title:
+            description: Title of policy template.
+            type: string
+            examples:
+              - Apache logs and metrics
+          description:
+            description: Longer description of policy template.
+            type: string
+            examples:
+              - Collect logs and metrics from Apache instances
+          icons:
+            $ref: "../integration/manifest.spec.yml#/definitions/icons"
+          screenshots:
+            $ref: "../integration/manifest.spec.yml#/definitions/screenshots"
+          vars:
+            $ref: "../integration/data_stream/manifest.spec.yml#/definitions/vars"
+          input:
+            type: string
+            examples:
+              - aws/metrics
+              - s3
+              - file
+          template_path:
+            description: "Path to Elasticsearch index template for stream."
+            type: string
+        required:
+          - name
+          - title
+          - description
+          - type
+          - input
+    icons:
+      $ref: "../integration/manifest.spec.yml#/definitions/icons"
+    screenshots:
+      $ref: "../integration/manifest.spec.yml#/definitions/screenshots"
+    vars:
+      $ref: "../integration/data_stream/manifest.spec.yml#/definitions/vars"
+    owner:
+      $ref: "../integration/manifest.spec.yml#/definitions/owner"
+    elasticsearch:
+      description: Elasticsearch asset definitions
+      type: object
+      additionalProperties: false
+      properties:
+        index_template:
+          $ref: "../integration/data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template"
+  required:
+  - format_version
+  - name
+  - title
+  - description
+  - version
+  - type
+  - owner
+
+versions:
+  - before: 2.3.0
+    patch:
+      - op: remove
+        path: "/properties/elasticsearch"
+  - before: 2.0.0
+    patch:
+      - op: add
+        path: "/properties/license"
+        value:
+          description: The license under which the package is being released (deprecated, use subscription instead).
+          deprecated: true # See https://github.com/elastic/package-spec/issues/298.
+          type: string
+          enum:
+          - basic
+          default: basic
+          examples:
+          - basic

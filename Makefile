@@ -11,3 +11,7 @@ check: code/*
 # Tests the language libraries' code
 test: code/*
 	@$(foreach lang,$^,make -C $(lang) test;)
+
+# Tests the language libraries' code to produce the required test files for the CI
+test-ci: code/*
+	@$(foreach lang,$^,make -C $(lang) test-ci;)

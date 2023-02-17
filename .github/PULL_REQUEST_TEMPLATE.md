@@ -19,7 +19,7 @@ List here all the items you have verified BEFORE sending this PR. Please DO NOT 
 -->
 
 - [ ] I have added test packages to [`test/packages`](https://github.com/elastic/package-spec/tree/main/test/packages) that prove my change is effective.
-- [ ] I have added an entry in [`versions/N/changelog.yml`](https://github.com/elastic/package-spec/blob/main/versions/1/changelog.yml).
+- [ ] I have added an entry in [`spec/changelog.yml`](https://github.com/elastic/package-spec/blob/main/spec/changelog.yml).
 
 ## Related issues
 

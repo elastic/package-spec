@@ -1,8 +1,9 @@
-format_version: 1.0.4
+format_version: 1.0.0
 name: good
 title: GOOD
 description: This package is good.
 version: 0.1.2
+type: integration
 release: beta
 conditions:
   kibana.version: '^7.9.0'

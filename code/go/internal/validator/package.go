@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
-	"path/filepath"
+	"path"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
@@ -18,6 +18,8 @@ import (
 // Package represents an Elastic Package Registry package
 type Package struct {
 	Name        string
+	Type        string
+	Version     *semver.Version
 	SpecVersion *semver.Version
 
 	fs       fs.FS
@@ -31,7 +33,7 @@ func (p *Package) Open(name string) (fs.File, error) {
 
 // Path returns a path meaningful for the user.
 func (p *Package) Path(names ...string) string {
-	return filepath.Join(append([]string{p.location}, names...)...)
+	return path.Join(append([]string{p.location}, names...)...)
 }
 
 // NewPackage creates a new Package from a path to the package's root folder
@@ -64,20 +66,37 @@ func NewPackageFromFS(location string, fsys fs.FS) (*Package, error) {
 
 	var manifest struct {
 		Name        string `yaml:"name"`
+		Type        string `yaml:"type"`
+		Version     string `yaml:"version"`
 		SpecVersion string `yaml:"format_version"`
 	}
 	if err := yaml.Unmarshal(data, &manifest); err != nil {
 		return nil, errors.Wrapf(err, "could not parse package manifest file [%v]", pkgManifestPath)
 	}
 
+	if manifest.Type == "" {
+		return nil, errors.New("package type undefined in the package manifest file")
+	}
+
+	if manifest.Version == "" {
+		return nil, errors.New("package version undefined in the package manifest file")
+	}
+
+	packageVersion, err := semver.NewVersion(manifest.Version)
+	if err != nil {
+		return nil, errors.Wrapf(err, "could not read package version from package manifest file [%v]", pkgManifestPath)
+	}
+
 	specVersion, err := semver.NewVersion(manifest.SpecVersion)
 	if err != nil {
-		return nil, errors.Wrapf(err, "could not read specification version from package manifest file [%v]", pkgManifestPath)
+		return nil, errors.Wrapf(err, "could not read specification version from package manifest file [%v]", manifest.SpecVersion)
 	}
 
 	// Instantiate Package object and return it
 	p := Package{
 		Name:        manifest.Name,
+		Type:        manifest.Type,
+		Version:     packageVersion,
 		SpecVersion: specVersion,
 		fs:          fsys,
 

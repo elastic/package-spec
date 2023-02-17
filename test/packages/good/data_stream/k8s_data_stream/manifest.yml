@@ -12,3 +12,5 @@ streams:
         default: /server-status
     title: Nginx access logs
     description: Collect Nginx access logs
+elasticsearch:
+  source_mode: "default"

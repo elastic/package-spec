@@ -26,12 +26,37 @@
   type: text
   description: A field with a pattern defined
   pattern: '^[a-zA-Z]$'
+  example: abcd
 - name: aaa
   type: integer
   metric_type: gauge
+  example: 42
 - name: vehicle_type
   type: constant_keyword
   value: truck
 - name: error.message
   description: Error message.
   type: match_only_text
+  example:
+    - "something failed!"
+    - "panic now"
+- name: metric.*_bytes
+  type: long
+- name: a
+  type: nested
+  include_in_parent: true
+- name: a.b
+  type: keyword
+- name: c
+  type: nested
+  include_in_root: true
+- name: c.d
+  type: keyword
+- name: name-with-dash
+  type: keyword
+- name: a/b
+  type: keyword
+- name: a/b.c/d
+  type: keyword
+- name: some_array
+  type: array # Allowed till 2.0.0

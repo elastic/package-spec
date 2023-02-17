@@ -1,0 +1,36 @@
+##
+## Describes the specification for the package's main manifest.yml file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  properties:
+    dependencies:
+      type: object
+      description: Package dependencies
+      additionalProperties: false
+      properties:
+        ecs:
+          description: ECS dependency
+          type: object
+          additionalProperties: false
+          properties:
+            reference:
+              type: string
+              description: Source reference
+              pattern: '^git@.+'
+            import_mappings:
+              type: boolean
+              description: >
+                Whether or not import common used dynamic templates and properties into the package
+              default: false
+          required:
+            - reference
+  required:
+  - dependencies
+versions:
+  - before: 2.3.0
+    patch:
+      - op: remove
+        path: "/properties/dependencies/properties/ecs/properties/import_mappings"
