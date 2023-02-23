@@ -58,3 +58,6 @@
   type: keyword
 - name: a/b.c/d
   type: keyword
+- name: time-with-format
+  type: date
+  date_format: yyyy-MM-dd

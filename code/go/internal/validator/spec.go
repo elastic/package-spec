@@ -81,6 +81,7 @@ func (s Spec) rules(rootSpec spectypes.ItemSpec) validationRules {
 		{fn: semantic.ValidateFieldsLimits(rootSpec.MaxFieldsPerDataStream())},
 		{fn: semantic.ValidateUniqueFields, since: semver.MustParse("2.0.0")},
 		{fn: semantic.ValidateDimensionFields},
+		{fn: semantic.ValidateDateFields},
 		{fn: semantic.ValidateRequiredFields},
 		{fn: semantic.ValidateVisualizationsUsedByValue},
 		{fn: semantic.ValidateILMPolicyPresent, since: semver.MustParse("2.0.0")},
