@@ -4,9 +4,9 @@
 ##
 - version: 2.5.2-next
   changes:
-  - description: Prepare for next version
+  - description: Add date_format to field of type date
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/479
+    link: https://github.com/elastic/package-spec/pull/123
 - version: 2.5.1
   changes:
   - description: Add category for vulnerability_management
