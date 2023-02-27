@@ -120,7 +120,7 @@ spec:
       date_format:
         description: >
           The date format(s) that can be parsed. 
-          Type date format default to `strict_date_optional_time||epoch_millis`, see the (doc)[https://www.elastic.co/guide/en/elasticsearch/reference/current/date.html#date-params].
+          Type date format default to `strict_date_optional_time||epoch_millis`, see the [doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/date.html#date-params).
           
           In JSON documents, dates are represented as strings. 
           Elasticsearch uses a set of preconfigured formats to recognize 

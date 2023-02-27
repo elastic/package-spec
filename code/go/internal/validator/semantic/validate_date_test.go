@@ -34,6 +34,14 @@ func TestValidateDateFields(t *testing.T) {
 			},
 			valid: true,
 		},
+		{
+			title: "date without date format",
+			field: field{
+				Name: "my_date",
+				Type: "date",
+			},
+			valid: true,
+		},
 	}
 
 	for _, c := range cases {
