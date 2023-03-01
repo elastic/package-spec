@@ -15,6 +15,8 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
 )
 
+// ValidateMinimumKibanaVersion if the package is an input package, and the package version is >= 1.0.0,
+// then the kibana version condition must be >= 8.8.0
 func ValidateMinimumKibanaVersion(fsys fspath.FS) ve.ValidationErrors {
 	manifest, err := readManifest(fsys)
 	if err != nil {
