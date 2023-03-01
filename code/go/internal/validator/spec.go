@@ -77,6 +77,7 @@ func (s Spec) rules(rootSpec spectypes.ItemSpec) validationRules {
 		{fn: semantic.ValidateVersionIntegrity},
 		{fn: semantic.ValidateChangelogLinks},
 		{fn: semantic.ValidatePrerelease},
+		{fn: semantic.ValidateMinimumKibanaVersion},
 		{fn: semantic.ValidateFieldGroups},
 		{fn: semantic.ValidateFieldsLimits(rootSpec.MaxFieldsPerDataStream())},
 		{fn: semantic.ValidateUniqueFields, since: semver.MustParse("2.0.0")},
