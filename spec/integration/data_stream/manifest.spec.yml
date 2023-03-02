@@ -76,6 +76,14 @@ spec:
             default: false
             examples:
               - true
+          options:
+            description: List of options for select type
+            type: array
+            items:
+              type: string
+            default: []
+            examples:
+              - ['node', 'cluster']
           required:
             description: Is variable required?
             type: boolean
