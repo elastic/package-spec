@@ -52,6 +52,7 @@ spec:
               - email
               - integer
               - password
+              - select
               - text
               - textarea
               - time_zone
