@@ -5,7 +5,6 @@
 package pkgpath
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/fs"
 	"os"
@@ -15,8 +14,9 @@ import (
 	"github.com/PaesslerAG/jsonpath"
 	"github.com/joeshaw/multierror"
 	"github.com/pkg/errors"
-	"gopkg.in/yaml.v3"
 
+	"github.com/elastic/go-ucfg/json"
+	"github.com/elastic/go-ucfg/yaml"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 )
 
@@ -66,18 +66,68 @@ func (f File) Values(path string) (interface{}, error) {
 		return nil, errors.Wrap(err, "reading file content failed")
 	}
 
-	var v interface{}
+	v := make(map[string]interface{})
 	if fileExt == "yaml" || fileExt == "yml" {
-		if err := yaml.Unmarshal(contents, &v); err != nil {
-			return nil, errors.Wrapf(err, "unmarshalling YAML file failed (path: %s)", f.fsys.Path(fileName))
+		config, err := yaml.NewConfig(contents)
+		if err != nil {
+			return nil, errors.Wrapf(err, "parsing yaml file failed (path: %s)", f.fsys.Path(fileName))
 		}
+
+		config.Unpack(&v)
 	} else if fileExt == "json" {
-		if err := json.Unmarshal(contents, &v); err != nil {
-			return nil, errors.Wrapf(err, "unmarshalling JSON file failed (path: %s)", f.fsys.Path(fileName))
+		config, err := json.NewConfig(contents)
+		if err != nil {
+			return nil, errors.Wrapf(err, "parsing json file failed (path: %s)", f.fsys.Path(fileName))
 		}
+		config.Unpack(&v)
 	}
 
 	return jsonpath.Get(path, v)
+}
+
+// Same as values but returns an array of values
+func (f File) ValuesArray(path string) ([]interface{}, error) {
+	fileName := f.Name()
+	fileExt := strings.TrimLeft(filepath.Ext(fileName), ".")
+
+	if fileExt != "json" && fileExt != "yaml" && fileExt != "yml" {
+		return nil, fmt.Errorf("cannot extract values from file type = %s", fileExt)
+	}
+
+	contents, err := fs.ReadFile(f.fsys, f.path)
+	if err != nil {
+		return nil, errors.Wrap(err, "reading file content failed")
+	}
+
+	var v []interface{}
+	if fileExt == "yaml" || fileExt == "yml" {
+		config, err := yaml.NewConfig(contents)
+		if err != nil {
+			return nil, errors.Wrapf(err, "parsing yaml file failed (path: %s)", f.fsys.Path(fileName))
+		}
+
+		config.Unpack(&v)
+	} else if fileExt == "json" {
+		config, err := json.NewConfig(contents)
+		if err != nil {
+			return nil, errors.Wrapf(err, "parsing json file failed (path: %s)", f.fsys.Path(fileName))
+		}
+		config.Unpack(&v)
+	}
+
+	pathVal, pathErr := jsonpath.Get(path, v)
+
+	if pathErr != nil {
+		return nil, pathErr
+	}
+
+	vals, ok := pathVal.([]interface{})
+
+	if !ok {
+		return nil, errors.New("conversion error")
+	}
+
+	return vals, nil
 }
 
 // Path returns the complete path to the file.

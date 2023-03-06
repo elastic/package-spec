@@ -78,7 +78,7 @@ func readChangelog(fsys fspath.FS, jsonpath string) ([]string, error) {
 		return nil, errors.New("single changelog file expected")
 	}
 
-	vals, err := f[0].Values(jsonpath)
+	vals, err := f[0].ValuesArray(jsonpath)
 	if err != nil {
 		return nil, errors.Wrap(err, "can't changelog entries")
 	}
@@ -119,7 +119,7 @@ func ensureUniqueVersions(versions []string) error {
 }
 
 func ensureManifestVersionHasChangelogEntry(manifestVersion string, versions []string) error {
-	if manifestVersion == versions[0] {
+	if len(versions) > 0 && manifestVersion == versions[0] {
 		return nil
 	}
 
