@@ -85,7 +85,7 @@ func (f File) Values(path string) (interface{}, error) {
 	return jsonpath.Get(path, v)
 }
 
-// Same as values but returns an array of values
+// ValuesArray Same as values but returns an array of values
 func (f File) ValuesArray(path string) ([]interface{}, error) {
 	fileName := f.Name()
 	fileExt := strings.TrimLeft(filepath.Ext(fileName), ".")
