@@ -80,10 +80,23 @@ spec:
             description: List of options for select type
             type: array
             items:
-              type: string
+              type: object
+              additionalProperties: false
+              properties:
+                value:
+                  type: string
+                  examples:
+                  - node
+                  - cluster
+                text:
+                  type: string
+                  examples:
+                  - node
+                  - cluster
+              required:
+              - value
+              - text
             default: []
-            examples:
-              - ['node', 'cluster']
           required:
             description: Is variable required?
             type: boolean
