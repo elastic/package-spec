@@ -112,7 +112,10 @@ func getKibanaVersionCondition(manifest pkgpath.File) (string, error) {
 
 	val, err := manifest.Values("$.conditions[\"kibana.version\"]")
 	if err != nil {
-		return "", nil
+		val, err = manifest.Values("$.conditions.kibana.version")
+		if err != nil {
+			return "", nil
+		}
 	}
 
 	sVal, ok := val.(string)

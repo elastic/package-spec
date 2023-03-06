@@ -9,7 +9,8 @@ source:
   license: "Apache-2.0"
 conditions:
   elastic.subscription: basic
-  kibana.version: "^8.8.0"
+  kibana:
+    version: "^8.8.0"
 categories:
   - custom
   - datastore
