@@ -120,6 +120,15 @@ func TestValidateFile(t *testing.T) {
 				fmt.Sprintf("field ilm_policy: ILM policy \"logs-bad_custom_ilm_policy.test-notexists\" not found in package, expected definition in \"%sbad_custom_ilm_policy/data_stream/test/elasticsearch/ilm/notexists.json\"", osTestBasePath),
 			},
 		},
+		"bad_select": {
+			"data_stream/foo_stream/manifest.yml",
+			[]string{
+				"field streams.0.vars.1: Must validate \"then\" as \"if\" was valid",
+				"field streams.0.vars.1: options is required",
+				"field streams.0.vars.1: Must validate \"then\" as \"if\" was valid",
+				"field streams.0.vars.2.options: Invalid type. Expected: array, given: null",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
