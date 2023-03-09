@@ -133,7 +133,6 @@ spec:
                 - value
                 - text
               min_items: 1
-              default: []
         else:
           not:
             required:

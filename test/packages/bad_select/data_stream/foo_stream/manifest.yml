@@ -16,4 +16,14 @@ streams:
         type: select
         title: Second Select
         options: []
-
+      - name: my_text
+        type: text
+        title: My Text
+        multi: false
+        required: false
+        show_user: false
+        options:
+          - value: foo
+            text: Foo
+          - value: bar
+            text: Bar

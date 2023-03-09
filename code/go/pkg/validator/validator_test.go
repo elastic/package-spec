@@ -125,8 +125,10 @@ func TestValidateFile(t *testing.T) {
 			[]string{
 				"field streams.0.vars.1: Must validate \"then\" as \"if\" was valid",
 				"field streams.0.vars.1: options is required",
-				"field streams.0.vars.1: Must validate \"then\" as \"if\" was valid",
+				"field streams.0.vars.2: Must validate \"then\" as \"if\" was valid",
 				"field streams.0.vars.2.options: Invalid type. Expected: array, given: null",
+				"field streams.0.vars.3: Must validate \"else\" as \"if\" was not valid",
+				"field streams.0.vars.3: Must not validate the schema (not)",
 			},
 		},
 	}
