@@ -12,23 +12,19 @@ import (
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
 )
 
 // ValidateMinimumKibanaVersion if the package is an input package, and the package version is >= 1.0.0,
 // then the kibana version condition must be >= 8.8.0
 func ValidateMinimumKibanaVersion(fsys fspath.FS) ve.ValidationErrors {
+	pkg, err := packages.NewPackageFromFS(fsys.Path(), fsys)
+	if err != nil {
+		return ve.ValidationErrors{err}
+	}
+
 	manifest, err := readManifest(fsys)
-	if err != nil {
-		return ve.ValidationErrors{err}
-	}
-
-	packageType, err := getPackageType(*manifest)
-	if err != nil {
-		return ve.ValidationErrors{err}
-	}
-
-	packageVersion, err := getPackageVersion(*manifest)
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}
@@ -38,7 +34,7 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) ve.ValidationErrors {
 		return ve.ValidationErrors{err}
 	}
 
-	err = validateMinimumKibanaVersion(packageType, *packageVersion, kibanaVersionCondition)
+	err = validateMinimumKibanaVersion(pkg.Type, *pkg.Version, kibanaVersionCondition)
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}

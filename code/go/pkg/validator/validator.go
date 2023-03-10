@@ -11,6 +11,7 @@ import (
 	"io/fs"
 	"os"
 
+	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 	"github.com/elastic/package-spec/v2/code/go/internal/validator"
 )
 
@@ -47,7 +48,7 @@ func ValidateFromZip(packagePath string) error {
 // ValidateFromFS validates a package against the appropiate specification and returns any errors.
 // Package files are obtained throug the given filesystem.
 func ValidateFromFS(location string, fsys fs.FS) error {
-	pkg, err := validator.NewPackageFromFS(location, fsys)
+	pkg, err := packages.NewPackageFromFS(location, fsys)
 	if err != nil {
 		return err
 	}

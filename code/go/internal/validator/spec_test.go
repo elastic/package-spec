@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 )
 
 func TestNewSpec(t *testing.T) {
@@ -42,7 +43,7 @@ func TestNoBetaFeatures_Package_GA(t *testing.T) {
 		*semver.MustParse("1.0.0"),
 		fspath.DirFS("testdata/fakespec"),
 	}
-	pkg, err := NewPackage("testdata/packages/features_ga")
+	pkg, err := packages.NewPackage("testdata/packages/features_ga")
 	require.NoError(t, err)
 
 	err = s.ValidatePackage(*pkg)
@@ -55,7 +56,7 @@ func TestBetaFeatures_Package_GA(t *testing.T) {
 		*semver.MustParse("1.0.0"),
 		fspath.DirFS("testdata/fakespec"),
 	}
-	pkg, err := NewPackage("testdata/packages/features_beta")
+	pkg, err := packages.NewPackage("testdata/packages/features_beta")
 	require.NoError(t, err)
 
 	errs := s.ValidatePackage(*pkg)
