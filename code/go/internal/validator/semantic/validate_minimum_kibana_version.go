@@ -73,37 +73,6 @@ func readManifest(fsys fspath.FS) (*pkgpath.File, error) {
 	return &f[0], nil
 }
 
-func getPackageType(manifest pkgpath.File) (string, error) {
-
-	val, err := manifest.Values("$.type")
-	if err != nil {
-		return "", errors.Wrap(err, "can't read manifest type")
-	}
-
-	sVal, ok := val.(string)
-	if !ok {
-		return "", errors.New("manifest type is not a string")
-	}
-
-	return sVal, nil
-}
-
-func getPackageVersion(manifest pkgpath.File) (*semver.Version, error) {
-
-	val, err := manifest.Values("$.version")
-	if err != nil {
-		return nil, errors.Wrap(err, "can't read manifest version")
-	}
-
-	sVal, ok := val.(string)
-	if !ok {
-		return nil, errors.New("package version is not a string")
-	}
-
-	sVersion, err := semver.NewVersion(sVal)
-	return sVersion, nil
-}
-
 func getKibanaVersionCondition(manifest pkgpath.File) (string, error) {
 
 	val, err := manifest.Values("$.conditions[\"kibana.version\"]")
