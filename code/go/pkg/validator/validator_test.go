@@ -99,7 +99,7 @@ func TestValidateFile(t *testing.T) {
 		"deploy_custom_agent_invalid_property": {
 			"_dev/deploy/agent/custom-agent.yml",
 			[]string{
-				"field services.docker-custom-agent: Must not validate the schema (not)",
+				"field services.docker-custom-agent: Must not be present",
 			},
 		},
 		"invalid_field_for_version": {
@@ -123,12 +123,9 @@ func TestValidateFile(t *testing.T) {
 		"bad_select": {
 			"data_stream/foo_stream/manifest.yml",
 			[]string{
-				"field streams.0.vars.1: Must validate \"then\" as \"if\" was valid",
 				"field streams.0.vars.1: options is required",
-				"field streams.0.vars.2: Must validate \"then\" as \"if\" was valid",
 				"field streams.0.vars.2.options: Invalid type. Expected: array, given: null",
-				"field streams.0.vars.3: Must validate \"else\" as \"if\" was not valid",
-				"field streams.0.vars.3: Must not validate the schema (not)",
+				"field streams.0.vars.3: Must not be present",
 			},
 		},
 	}

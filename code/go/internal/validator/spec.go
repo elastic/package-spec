@@ -7,6 +7,7 @@ package validator
 import (
 	"io/fs"
 	"log"
+	"strings"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/pkg/errors"
@@ -64,7 +65,38 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	// Semantic validations
 	errs = append(errs, s.rules(rootSpec).validate(&pkg)...)
 
-	return errs
+	// Rename unclear error messages and filter out redundant errors
+	var processedErrs ve.ValidationErrors
+	msgTransforms := []struct {
+		original string
+		new      string
+	}{
+		{"Must not validate the schema (not)", "Must not be present"},
+	}
+	redundant := []string{
+		"Must validate \"then\" as \"if\" was valid",
+		"Must validate \"else\" as \"if\" was not valid",
+	}
+	for _, e := range errs {
+		for _, msg := range msgTransforms {
+			if strings.Contains(e.Error(), msg.original) {
+				processedErrs = append(processedErrs, errors.New(strings.Replace(e.Error(), msg.original, msg.new, 1)))
+			} else if !substringInSlice(e.Error(), redundant) {
+				processedErrs = append(processedErrs, e)
+			}
+		}
+	}
+
+	return processedErrs
+}
+
+func substringInSlice(str string, list []string) bool {
+	for _, substr := range list {
+		if strings.Contains(str, substr) {
+			return true
+		}
+	}
+	return false
 }
 
 func (s Spec) rules(rootSpec spectypes.ItemSpec) validationRules {
