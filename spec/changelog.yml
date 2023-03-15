@@ -2,10 +2,10 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 2.5.2
+- version: 2.6.0-next
   changes:
   - description: Remove monitoring_infrastructure category
-    type: enhancement
+    type: breaking-change
     link: https://github.com/elastic/package-spec/pull/490
 - version: 2.5.1
   changes:
