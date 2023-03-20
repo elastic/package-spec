@@ -65,6 +65,19 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 	// Semantic validations
 	errs = append(errs, s.rules(rootSpec).validate(&pkg)...)
 
+	return processErrors(errs)
+}
+
+func substringInSlice(str string, list []string) bool {
+	for _, substr := range list {
+		if strings.Contains(str, substr) {
+			return true
+		}
+	}
+	return false
+}
+
+func processErrors(errs ve.ValidationErrors) ve.ValidationErrors {
 	// Rename unclear error messages and filter out redundant errors
 	var processedErrs ve.ValidationErrors
 	msgTransforms := []struct {
@@ -81,22 +94,16 @@ func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
 		for _, msg := range msgTransforms {
 			if strings.Contains(e.Error(), msg.original) {
 				processedErrs = append(processedErrs, errors.New(strings.Replace(e.Error(), msg.original, msg.new, 1)))
-			} else if !substringInSlice(e.Error(), redundant) {
-				processedErrs = append(processedErrs, e)
+				continue
 			}
+			if substringInSlice(e.Error(), redundant) {
+				continue
+			}
+			processedErrs = append(processedErrs, e)
 		}
 	}
 
 	return processedErrs
-}
-
-func substringInSlice(str string, list []string) bool {
-	for _, substr := range list {
-		if strings.Contains(str, substr) {
-			return true
-		}
-	}
-	return false
 }
 
 func (s Spec) rules(rootSpec spectypes.ItemSpec) validationRules {
