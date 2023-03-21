@@ -73,7 +73,9 @@ func (f File) Values(path string) (interface{}, error) {
 			return nil, errors.Wrapf(err, "parsing yaml file failed (path: %s)", f.fsys.Path(fileName))
 		}
 
-		config.Unpack(&v)
+		if err = config.Unpack(&v); err != nil {
+			return nil, errors.Wrap(err, "can't unpack file (path: %s)", f.fsys.Path(fileName))
+		}
 	} else if fileExt == "json" {
 		config, err := json.NewConfig(contents)
 		if err != nil {
