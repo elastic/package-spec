@@ -117,6 +117,20 @@ spec:
         - micros
         - nanos
 
+      date_format:
+        description: >
+          The date format(s) that can be parsed. 
+          Type date format default to `strict_date_optional_time||epoch_millis`, see the [doc](https://www.elastic.co/guide/en/elasticsearch/reference/current/date.html#date-params).
+          
+          In JSON documents, dates are represented as strings. 
+          Elasticsearch uses a set of preconfigured formats to recognize 
+          and parse these strings into a long value representing 
+          _milliseconds-since-the-epoch_ in UTC.
+
+          Besides the [built-in formats](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats), your own [custom 
+          formats](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#custom-date-formats) can be specified using the familiar `yyyy/MM/dd` syntax.
+        type: string
+
       dimension:
         description: >
           Declare a field as dimension of time series. This is
