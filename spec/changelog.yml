@@ -2,11 +2,20 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 2.5.2-next
+- version: 2.6.0-next
   changes:
   - description: Release input packages spec as GA
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/485
+  - description: Remove monitoring_infrastructure category
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/490
+  - description: Add date_format to field of type date
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/481
+  - description: Add select as a new field type
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/486
 - version: 2.5.1
   changes:
   - description: Add category for vulnerability_management

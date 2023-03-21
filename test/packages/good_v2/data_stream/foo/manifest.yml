@@ -25,6 +25,17 @@ streams:
         required: true
         show_user: false
         default: /server-status
+      - name: my_select
+        type: select
+        title: My Select
+        multi: false
+        required: false
+        show_user: false
+        options:
+          - value: foo
+            text: Foo
+          - value: bar
+            text: Bar
     title: Nginx access logs
     description: Collect Nginx access logs
 dataset_is_prefix: true

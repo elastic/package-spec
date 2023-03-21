@@ -25,6 +25,7 @@ type field struct {
 	Name       string `yaml:"name"`
 	Type       string `yaml:"type"`
 	Unit       string `yaml:"unit"`
+	DateFormat string `yaml:"date_format"`
 	MetricType string `yaml:"metric_type"`
 	Dimension  bool   `yaml:"dimension"`
 	External   string `yaml:"external"`

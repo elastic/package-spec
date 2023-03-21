@@ -52,6 +52,7 @@ spec:
               - email
               - integer
               - password
+              - select
               - text
               - textarea
               - time_zone
@@ -75,6 +76,7 @@ spec:
             default: false
             examples:
               - true
+          options: true # This allows options to be required when type is select.
           required:
             description: Is variable required?
             type: boolean
@@ -102,6 +104,39 @@ spec:
           default:
             description: Default value(s) for variable
             $ref: "#/definitions/input_variable_value"
+        if:
+          properties:
+            type:
+              const: select
+        then:
+          required:
+            - options
+          properties:
+            options:
+              description: List of options for select type
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  value:
+                    type: string
+                    examples:
+                    - node
+                    - cluster
+                  text:
+                    type: string
+                    examples:
+                    - node
+                    - cluster
+                required:
+                - value
+                - text
+              min_items: 1
+        else:
+          not:
+            required:
+              - options
         required:
           - name
           - type
@@ -273,3 +308,8 @@ spec:
           type: boolean
   required:
   - title
+versions:
+  - before: 2.6.0
+    patch:
+      - op: remove
+        path: /definitions/vars/items/properties/type/enum/4

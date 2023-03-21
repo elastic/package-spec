@@ -93,12 +93,13 @@ func TestValidateFile(t *testing.T) {
 			"data_stream/foo/fields/fields.yml",
 			[]string{
 				`field 0.type: 0.type must be one of the following: "alias", "histogram", "constant_keyword", "text", "match_only_text", "keyword", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "date", "date_nanos", "boolean", "binary", "integer_range", "float_range", "long_range", "double_range", "date_range", "ip_range", "group", "geo_point", "object", "ip", "nested", "flattened", "wildcard", "version", "unsigned_long"`,
+				`field "my_custom_date" of type keyword can't set date_format. date_format is allowed for date field type only`,
 			},
 		},
 		"deploy_custom_agent_invalid_property": {
 			"_dev/deploy/agent/custom-agent.yml",
 			[]string{
-				"field services.docker-custom-agent: Must not validate the schema (not)",
+				"field services.docker-custom-agent: Must not be present",
 			},
 		},
 		"invalid_field_for_version": {
@@ -117,6 +118,14 @@ func TestValidateFile(t *testing.T) {
 			"data_stream/test/manifest.yml",
 			[]string{
 				fmt.Sprintf("field ilm_policy: ILM policy \"logs-bad_custom_ilm_policy.test-notexists\" not found in package, expected definition in \"%sbad_custom_ilm_policy/data_stream/test/elasticsearch/ilm/notexists.json\"", osTestBasePath),
+			},
+		},
+		"bad_select": {
+			"data_stream/foo_stream/manifest.yml",
+			[]string{
+				"field streams.0.vars.1: options is required",
+				"field streams.0.vars.2.options: Invalid type. Expected: array, given: null",
+				"field streams.0.vars.3: Must not be present",
 			},
 		},
 	}

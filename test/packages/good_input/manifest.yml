@@ -1,4 +1,4 @@
-format_version: 2.3.0
+format_version: 2.6.0
 name: good_input
 title: good_input
 description: >-
@@ -60,6 +60,18 @@ policy_templates:
         required: true
         show_user: false
         default: "variables"
+      - name: sql_response_caching
+        type: select
+        title: Response caching
+        description: "Optional response caching time"
+        multi: false
+        required: true
+        show_user: false
+        options:
+          - value: "0"
+            text: None
+          - value: "1"
+            text: "1 day"
 icons:
   - src: "/img/sample-logo.svg"
     type: "image/svg+xml"
