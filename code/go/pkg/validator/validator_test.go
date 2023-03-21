@@ -63,8 +63,9 @@ func TestValidateFile(t *testing.T) {
 				"field icons.0.src: relative path is invalid, target doesn't exist or it exceeds the file size limit",
 			},
 		},
-		"input_template": {},
-		"input_groups":   {},
+		"integration_benchmarks": {},
+		"input_template":         {},
+		"input_groups":           {},
 		"input_groups_bad_data_stream": {
 			"manifest.yml",
 			[]string{

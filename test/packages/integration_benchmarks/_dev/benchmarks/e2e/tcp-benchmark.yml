@@ -1,0 +1,7 @@
+---
+description: A benchmark of the TCP input.
+version: 0.0.1
+data_stream: foo
+warmup_time_period: 1m
+corpora:
+  input_service: tcp-sender
