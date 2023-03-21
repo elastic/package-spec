@@ -99,7 +99,7 @@ func TestValidateFile(t *testing.T) {
 		"deploy_custom_agent_invalid_property": {
 			"_dev/deploy/agent/custom-agent.yml",
 			[]string{
-				"field services.docker-custom-agent: Must not validate the schema (not)",
+				"field services.docker-custom-agent: Must not be present",
 			},
 		},
 		"invalid_field_for_version": {
@@ -118,6 +118,14 @@ func TestValidateFile(t *testing.T) {
 			"data_stream/test/manifest.yml",
 			[]string{
 				fmt.Sprintf("field ilm_policy: ILM policy \"logs-bad_custom_ilm_policy.test-notexists\" not found in package, expected definition in \"%sbad_custom_ilm_policy/data_stream/test/elasticsearch/ilm/notexists.json\"", osTestBasePath),
+			},
+		},
+		"bad_select": {
+			"data_stream/foo_stream/manifest.yml",
+			[]string{
+				"field streams.0.vars.1: options is required",
+				"field streams.0.vars.2.options: Invalid type. Expected: array, given: null",
+				"field streams.0.vars.3: Must not be present",
 			},
 		},
 	}
