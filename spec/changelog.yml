@@ -13,6 +13,9 @@
   - description: Add select as a new field type
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/486
+  - description: Add transform settings.unattended option
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/491
 - version: 2.5.1
   changes:
   - description: Add category for vulnerability_management
