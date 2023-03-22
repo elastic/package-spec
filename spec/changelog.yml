@@ -4,6 +4,9 @@
 ##
 - version: 2.6.0-next
   changes:
+  - description: Release input packages spec as GA
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/485
   - description: Remove monitoring_infrastructure category
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/490

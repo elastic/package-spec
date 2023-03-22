@@ -15,24 +15,25 @@ import (
 	"github.com/pkg/errors"
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
 )
 
 type validator struct {
 	spec       spectypes.ItemSpec
-	pkg        *Package
+	pkg        *packages.Package
 	folderPath string
 
 	totalSize     spectypes.FileSize
 	totalContents int
 }
 
-func newValidator(spec spectypes.ItemSpec, pkg *Package) *validator {
+func newValidator(spec spectypes.ItemSpec, pkg *packages.Package) *validator {
 	return newValidatorForPath(spec, pkg, ".")
 }
 
-func newValidatorForPath(spec spectypes.ItemSpec, pkg *Package, folderPath string) *validator {
+func newValidatorForPath(spec spectypes.ItemSpec, pkg *packages.Package, folderPath string) *validator {
 	return &validator{
 		spec:       spec,
 		pkg:        pkg,

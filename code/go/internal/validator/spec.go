@@ -16,6 +16,7 @@ import (
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/loader"
+	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/v2/code/go/internal/validator/semantic"
 )
@@ -49,7 +50,7 @@ func NewSpec(version semver.Version) (*Spec, error) {
 }
 
 // ValidatePackage validates the given Package against the Spec
-func (s Spec) ValidatePackage(pkg Package) ve.ValidationErrors {
+func (s Spec) ValidatePackage(pkg packages.Package) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 
 	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkg.Type)
@@ -116,6 +117,7 @@ func (s Spec) rules(rootSpec spectypes.ItemSpec) validationRules {
 		{fn: semantic.ValidateVersionIntegrity},
 		{fn: semantic.ValidateChangelogLinks},
 		{fn: semantic.ValidatePrerelease},
+		{fn: semantic.ValidateMinimumKibanaVersion},
 		{fn: semantic.ValidateFieldGroups},
 		{fn: semantic.ValidateFieldsLimits(rootSpec.MaxFieldsPerDataStream())},
 		{fn: semantic.ValidateUniqueFields, since: semver.MustParse("2.0.0")},
