@@ -100,7 +100,7 @@ func TestValidateFile(t *testing.T) {
 		"deploy_custom_agent_invalid_property": {
 			"_dev/deploy/agent/custom-agent.yml",
 			[]string{
-				"field services.docker-custom-agent: Must not validate the schema (not)",
+				"field services.docker-custom-agent: Must not be present",
 			},
 		},
 		"invalid_field_for_version": {
@@ -119,6 +119,14 @@ func TestValidateFile(t *testing.T) {
 			"data_stream/test/manifest.yml",
 			[]string{
 				fmt.Sprintf("field ilm_policy: ILM policy \"logs-bad_custom_ilm_policy.test-notexists\" not found in package, expected definition in \"%sbad_custom_ilm_policy/data_stream/test/elasticsearch/ilm/notexists.json\"", osTestBasePath),
+			},
+		},
+		"bad_select": {
+			"data_stream/foo_stream/manifest.yml",
+			[]string{
+				"field streams.0.vars.1: options is required",
+				"field streams.0.vars.2.options: Invalid type. Expected: array, given: null",
+				"field streams.0.vars.3: Must not be present",
 			},
 		},
 	}
@@ -359,13 +367,13 @@ func TestValidateWarnings(t *testing.T) {
 		"good":    []string{},
 		"good_v2": []string{},
 		"custom_logs": []string{
-			"package with non-stable semantic version and active beta features (enabled in [../../../../test/packages/custom_logs]) can't be released as stable version.",
+			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
 		},
 		"httpjson_input": []string{
-			"package with non-stable semantic version and active beta features (enabled in [../../../../test/packages/httpjson_input]) can't be released as stable version.",
+			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
 		},
 		"sql_input": []string{
-			"package with non-stable semantic version and active beta features (enabled in [../../../../test/packages/sql_input]) can't be released as stable version.",
+			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
 		},
 		"visualizations_by_reference": []string{
 			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens)",

@@ -1,0 +1,29 @@
+title: "Foo Stream"
+type: metrics
+streams:
+  - input: sample/metrics
+    title: Sample metrics
+    description: Collect sample metrics
+    vars:
+      - name: period
+        type: text
+        title: Period
+        default: 10s
+      - name: first_select
+        type: select
+        title: First Select
+      - name: second_select
+        type: select
+        title: Second Select
+        options: []
+      - name: my_text
+        type: text
+        title: My Text
+        multi: false
+        required: false
+        show_user: false
+        options:
+          - value: foo
+            text: Foo
+          - value: bar
+            text: Bar

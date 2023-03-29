@@ -67,7 +67,7 @@ spec:
           "$id": "#root/pivot/aggregations"
           title: Aggregations
           type: object
-        aggs: # This property was missing in the original schema and added manually. 
+        aggs: # This property was missing in the original schema and added manually.
           "$id": "#root/pivot/aggs"
           title: Aggregations
           type: object
@@ -159,6 +159,11 @@ spec:
           title: deduce mappings
           type: boolean
           default: true
+        unattended:
+          "$id": "#root/settings/unattended"
+          title: unattended
+          type: boolean
+          default: false
     _meta:
       "$id": "#root/_meta"
       title: Metadata
