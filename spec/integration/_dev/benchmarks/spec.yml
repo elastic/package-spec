@@ -6,15 +6,15 @@ spec:
       type: folder
       name: e2e
       required: false
-      additionalContents: true
+      additionalContents: false
       contents:
         - description: Folder containing deployable services for benchmarks.
           type: folder
           name: deploy
-          additionalContents: true
+          additionalContents: false
           required: false
           contents:
-            - description: Folder containing docker compose files for benchmarks.
+            - description: Folder containing the docker compose file for benchmarks services and their resources.
               type: folder
               name: docker
               additionalContents: true

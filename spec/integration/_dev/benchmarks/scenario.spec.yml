@@ -8,17 +8,23 @@ spec:
     - corpora
   properties:
     version:
-      description: The package version to benchmark.
+      $ref: "../integration/manifest.spec.yml#/definitions/version"
     data_stream:
       description: The data-stream to benchmark.
+      type: string
     description:
       description: A description of the benchmark scenario.
+      type: string
     corpora:
       description: Corpora settings.
       type: object
       additionalProperties: false
+      required:
+        - input_service
       properties:
         input_service:
           description: The service (found in ./deploy/docker) that will send corpora logs to the elastic agents.
+          type: string
     warmup_time_period:
       description: A time period in seconds for warmup of the benchmark. All response data captured during warmup will not show up in the measurement results.
+      type: integer
