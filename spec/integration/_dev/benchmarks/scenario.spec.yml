@@ -8,7 +8,7 @@ spec:
     - corpora
   properties:
     version:
-      $ref: "../integration/manifest.spec.yml#/definitions/version"
+      $ref: "../../manifest.spec.yml#/definitions/version"
     data_stream:
       description: The data-stream to benchmark.
       type: string
