@@ -1,0 +1,3 @@
+- name: my_custom_field
+  type: integer
+  ignore_malformed: true
