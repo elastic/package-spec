@@ -1,0 +1,14 @@
+- name: no_metrics
+  type: aggregate_metric_double
+  default_metric: "max"
+- name: no_default_metrics
+  type: aggregate_metric_double
+  metrics: [ "min", "max", "sum", "value_count" ]
+- name: wrong_metrics
+  type: aggregate_metric_double
+  metrics: [ "min", "max", "floor" ]
+  default_metric: "max"
+- name: non_aggregate_metric
+  type: long
+  metrics: [ "min", "max", "sum", "value_count" ]
+  default_metric: "max"
