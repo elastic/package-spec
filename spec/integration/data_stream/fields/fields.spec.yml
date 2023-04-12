@@ -424,3 +424,7 @@ versions:
         value: true
       - op: remove
         path: "/items/properties/example"
+  - before: 2.7.0
+    patch:
+      - op: remove
+        path: "/items/properties/type/enum/0"

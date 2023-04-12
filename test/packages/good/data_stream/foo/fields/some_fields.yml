@@ -60,7 +60,3 @@
   type: keyword
 - name: some_array
   type: array # Allowed till 2.0.0
-- name: agg_metric_field
-  type: aggregate_metric_double
-  metrics: ["min", "max", "sum", "value_count"]
-  default_metric: "max"

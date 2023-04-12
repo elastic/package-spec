@@ -1,4 +1,4 @@
-format_version: 2.5.1
+format_version: 2.7.0
 name: bad_aggregate_metric_double
 title: "Bad Aggregate Metric Double"
 version: 0.0.1
