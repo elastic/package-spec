@@ -1,7 +1,7 @@
 - name: no_metrics
   type: aggregate_metric_double
   default_metric: "max"
-- name: no_default_metrics
+- name: no_default_metric
   type: aggregate_metric_double
   metrics: [ "min", "max", "sum", "value_count" ]
 - name: wrong_metrics
