@@ -373,11 +373,11 @@ spec:
 
     allOf:
       - if:
-           properties:
-             type:
-               const: aggregate_metric_double
-           required:
-             - type
+          properties:
+            type:
+              const: aggregate_metric_double
+          required:
+            - type
         then:
           required:
             - default_metric
