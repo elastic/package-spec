@@ -90,6 +90,7 @@ func processErrors(errs ve.ValidationErrors) ve.ValidationErrors {
 	redundant := []string{
 		"Must validate \"then\" as \"if\" was valid",
 		"Must validate \"else\" as \"if\" was not valid",
+		"Must validate all the schemas (allOf)",
 	}
 	for _, e := range errs {
 		for _, msg := range msgTransforms {
