@@ -2,11 +2,11 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 2.6.1-next
+- version: 2.7.0-next
   changes:
-  - description: Prepare for next version
+  - description: Add support for aggregate_metric_double field type
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/494
+    link: https://github.com/elastic/package-spec/pull/500
 - version: 2.6.0
   changes:
   - description: Remove monitoring_infrastructure category

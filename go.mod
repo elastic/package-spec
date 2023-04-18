@@ -3,7 +3,7 @@ module github.com/elastic/package-spec/v2
 go 1.19
 
 require (
-	github.com/Masterminds/semver/v3 v3.2.0
+	github.com/Masterminds/semver/v3 v3.2.1
 	github.com/PaesslerAG/jsonpath v0.1.1
 	github.com/boumenot/gocover-cobertura v1.2.0
 	github.com/creasty/defaults v1.7.0
