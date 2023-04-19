@@ -4,12 +4,15 @@
 ##
 - version: 2.7.0-next
   changes:
-  - description: Add support for aggregate_metric_double field type
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/500
   - description: Add `profiling` data stream type
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/503
+  - description: Add support for aggregate_metric_double field type
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/500
+  - description: Add e2e integration benchmarks spec
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/492
 - version: 2.6.0
   changes:
   - description: Remove monitoring_infrastructure category
