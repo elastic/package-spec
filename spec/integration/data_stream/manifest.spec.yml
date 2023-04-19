@@ -314,3 +314,7 @@ versions:
     patch:
       - op: remove
         path: /definitions/vars/items/properties/type/enum/4
+  - before: 2.7.0
+    patch:
+      - op: remove
+        path: /properties/type/enum/4
