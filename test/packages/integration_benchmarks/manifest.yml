@@ -1,0 +1,9 @@
+format_version: 1.0.0
+name: integration_benchmarks
+title: Integration benchmarks
+description: This package contains a _dev/benchmarks folder.
+version: 0.0.1
+type: integration
+release: beta
+owner:
+  github: elastic/foobar
