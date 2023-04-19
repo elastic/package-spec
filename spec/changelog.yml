@@ -7,6 +7,9 @@
   - description: Add support for aggregate_metric_double field type
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/500
+  - description: Add e2e integration benchmarks spec
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/492
   - description: Add `ignore_malformed` to data_stream/fields/fields.spec.yml
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/498
