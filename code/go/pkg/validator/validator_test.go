@@ -294,7 +294,7 @@ func TestValidateBadRuleIDs(t *testing.T) {
 	}
 }
 
-func TestValidateMissingReqiredFields(t *testing.T) {
+func TestValidateMissingRequiredFields(t *testing.T) {
 	tests := map[string][]string{
 		"good":    {},
 		"good_v2": {},
