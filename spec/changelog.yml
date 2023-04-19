@@ -10,6 +10,9 @@
   - description: Add e2e integration benchmarks spec
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/492
+  - description: Update Go runtime to 1.20.3
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/504
 - version: 2.6.0
   changes:
   - description: Remove monitoring_infrastructure category
