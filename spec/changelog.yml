@@ -24,6 +24,9 @@
   - description: Update Go runtime to 1.20.3
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/504
+  - description: Add support to define runtime fields
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/505
 - version: 2.6.0
   changes:
   - description: Remove monitoring_infrastructure category
