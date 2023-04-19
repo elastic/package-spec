@@ -84,6 +84,16 @@ func TestValidateFile(t *testing.T) {
 				"package version undefined in the package manifest file",
 			},
 		},
+		"bad_aggregate_metric_double": {
+			"data_stream/foo/fields/fields.yml",
+			[]string{
+				`field 0: metrics is required`,
+				`field 1: default_metric is required`,
+				`field 2.metrics.2: 2.metrics.2 must be one of the following: "min", "max", "sum", "value_count", "avg"`,
+				`field 3: Must not be present`,
+				`field 3: Must not be present`,
+			},
+		},
 		"bad_time_series": {
 			"data_stream/example/fields/fields.yml",
 			[]string{
@@ -93,7 +103,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_fields": {
 			"data_stream/foo/fields/fields.yml",
 			[]string{
-				`field 0.type: 0.type must be one of the following: "alias", "histogram", "constant_keyword", "text", "match_only_text", "keyword", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "date", "date_nanos", "boolean", "binary", "integer_range", "float_range", "long_range", "double_range", "date_range", "ip_range", "group", "geo_point", "object", "ip", "nested", "flattened", "wildcard", "version", "unsigned_long"`,
+				`field 0.type: 0.type must be one of the following: "aggregate_metric_double", "alias", "histogram", "constant_keyword", "text", "match_only_text", "keyword", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "date", "date_nanos", "boolean", "binary", "integer_range", "float_range", "long_range", "double_range", "date_range", "ip_range", "group", "geo_point", "object", "ip", "nested", "flattened", "wildcard", "version", "unsigned_long"`,
 				`field "my_custom_date" of type keyword can't set date_format. date_format is allowed for date field type only`,
 			},
 		},

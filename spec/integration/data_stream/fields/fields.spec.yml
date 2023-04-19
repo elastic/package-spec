@@ -3,6 +3,16 @@
 ##
 spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  definitions:
+    metric_aggregation:
+      type: string
+      enum:
+        - min
+        - max
+        - sum
+        - value_count
+        - avg
+
   type: array
   items:
     type: object
@@ -17,6 +27,7 @@ spec:
         type: string
       "^(default_field|norms)$":
         type: boolean
+
     properties:
       name:
         description: >
@@ -29,6 +40,7 @@ spec:
         description: Datatype of field
         type: string
         enum:
+        - aggregate_metric_double
         - alias
         - histogram
         - constant_keyword
@@ -355,6 +367,46 @@ spec:
         type: boolean
         default: false
 
+      # Conditional properties.
+      default_metric: true
+      metrics: true
+
+    allOf:
+      - if:
+          properties:
+            type:
+              const: aggregate_metric_double
+          required:
+            - type
+        then:
+          required:
+            - default_metric
+          properties:
+            default_metric:
+              $ref: "#/definitions/metric_aggregation"
+        else:
+          not:
+            required:
+              - default_metric
+      - if:
+          properties:
+            type:
+              const: aggregate_metric_double
+          required:
+            - type
+        then:
+          required:
+            - metrics
+          properties:
+            metrics:
+              type: array
+              items:
+                $ref: "#/definitions/metric_aggregation"
+        else:
+          not:
+            required:
+              - metrics
+
     required:
     - name
 
@@ -372,3 +424,7 @@ versions:
         value: true
       - op: remove
         path: "/items/properties/example"
+  - before: 2.7.0
+    patch:
+      - op: remove
+        path: "/items/properties/type/enum/0"

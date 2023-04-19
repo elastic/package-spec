@@ -1,15 +1,15 @@
 format_version: 2.7.0
-name: bad_fields
-title: "Bad Fields"
+name: bad_aggregate_metric_double
+title: "Bad Aggregate Metric Double"
 version: 0.0.1
 source:
-  license: "Elastic-2.0"
-description: "This package contains bad fields definitions"
+  license: "Apache-2.0"
+description: "This is a package with issues in aggregate_metric_double fields."
 type: integration
 categories:
   - custom
 conditions:
-  kibana.version: "^8.4.1"
+  kibana.version: "^8.6.2"
   elastic.subscription: "basic"
 screenshots:
   - src: /img/sample-screenshot.png
