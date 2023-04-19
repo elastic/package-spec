@@ -36,6 +36,7 @@ func TestValidateFile(t *testing.T) {
 		"time_series":                        {},
 		"missing_data_stream":                {},
 		"icons_dark_mode":                    {},
+		"ignored_malformed":                  {},
 		"custom_ilm_policy":                  {},
 		"bad_additional_content": {
 			"bad-bad",

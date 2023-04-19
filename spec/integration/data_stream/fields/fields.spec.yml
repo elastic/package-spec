@@ -275,6 +275,16 @@ spec:
         examples:
           - "NULL"
 
+      ignore_malformed:
+        description: >
+          Trying to index the wrong data type into a field throws an exception 
+          by default, and rejects the whole document. The ignore_malformed 
+          parameter, if set to true, allows the exception to be ignored. The 
+          malformed field is not indexed, but other fields in the document are 
+          processed normally. Defaults to false.
+        type: boolean
+        default: false
+
       ignore_above:
         description: >
           Strings longer than the ignore_above setting will not be indexed or
