@@ -430,27 +430,27 @@ spec:
           not:
             required:
               - metrics
-    if:
-      properties:
-        type:
-          enum:
-            - boolean
-            - date
-            - double
-            - geo_point
-            - ip
-            - keyword
-            - long
-      required:
-        - type
-    then:
-      properties:
-        runtime:
-          $ref: "#/definitions/runtime"
-    else:
-      not:
-        required:
-          - runtime
+      - if:
+          properties:
+            type:
+              enum:
+                - boolean
+                - date
+                - double
+                - geo_point
+                - ip
+                - keyword
+                - long
+          required:
+            - type
+        then:
+          properties:
+            runtime:
+              $ref: "#/definitions/runtime"
+        else:
+          not:
+            required:
+              - runtime
 
     required:
     - name
@@ -473,3 +473,7 @@ versions:
     patch:
       - op: remove
         path: "/items/properties/type/enum/0"
+      - op: remove
+        path: "/items/properties/runtime"
+      - op: remove
+        path: "/items/allOf/2"
