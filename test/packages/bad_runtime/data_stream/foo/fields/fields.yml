@@ -1,0 +1,13 @@
+- name: wrong_type
+  type: byte
+  runtime: true
+- name: invalid_runtime_value
+  type: boolean
+  runtime: 30
+- name: invalid_runtime_boolean
+  type: binary
+  runtime: true
+- name: invalid_runtime_string
+  type: binary
+  runtime: |
+    doc['message'].value().doSomething()
