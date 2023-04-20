@@ -1,0 +1,22 @@
+name: profiler_symbolizer
+title: Universal Profiling Symbolizer
+description: Fleet-wide, whole-system, continuous profiling with zero instrumentation.
+format_version: 2.7.0
+type: integration
+policy_templates:
+  - name: universal_profiling_symbolizer
+    title: Universal Profiling Symbolization Service
+    description: Interact with Universal Profiling.
+    inputs:
+      - title: universal_profiling_symbolizer
+        description: Enhance Universal Profiling with additional symbol information
+        type: pf-elastic-symbolizer
+        vars:
+          - name: Symbols object store endpoint
+            type: string
+            title: Endpoint where to fetch public symbols for native executables
+            description: |
+              An object store URL, with an S3-compatible API, where symbolizer will fetch the debug symbols from.
+    multiple: false
+owner:
+  github: elastic/profiling
