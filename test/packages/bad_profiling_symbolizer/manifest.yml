@@ -1,6 +1,6 @@
-name: profiler_symbolizer
-version: 0.0.1
-title: Universal Profiling Symbolizer
+name: bad_profiler_symbolizer
+version: 1.0.0
+title: Universal Profiling Symbolizer that should not be GA yet.
 description: Fleet-wide, whole-system, continuous profiling with zero instrumentation.
 format_version: 2.7.0
 type: integration

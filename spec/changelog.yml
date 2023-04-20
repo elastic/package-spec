@@ -4,7 +4,7 @@
 ##
 - version: 2.7.0-next
   changes:
-  - description: Add `profiling` data stream type
+  - description: Add `profiling` data stream type (technical preview)
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/503
   - description: Add support for aggregate_metric_double field type

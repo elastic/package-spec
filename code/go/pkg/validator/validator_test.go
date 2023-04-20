@@ -38,6 +38,7 @@ func TestValidateFile(t *testing.T) {
 		"icons_dark_mode":                    {},
 		"ignored_malformed":                  {},
 		"custom_ilm_policy":                  {},
+		"profiling_symbolizer":               {},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
@@ -138,6 +139,12 @@ func TestValidateFile(t *testing.T) {
 				"field streams.0.vars.1: options is required",
 				"field streams.0.vars.2.options: Invalid type. Expected: array, given: null",
 				"field streams.0.vars.3: Must not be present",
+			},
+		},
+		"bad_profiling_symbolizer": {
+			"data_stream/example/manifest.yml",
+			[]string{
+				"profiling data type cannot be used in GA packages",
 			},
 		},
 	}

@@ -208,7 +208,7 @@ spec:
       - logs
       - synthetics
       - traces
-      - profiling
+      - profiling # Technical preview.
       examples:
       - metrics
     hidden:
