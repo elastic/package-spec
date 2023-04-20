@@ -145,6 +145,8 @@ func TestValidateFile(t *testing.T) {
 			"data_stream/example/manifest.yml",
 			[]string{
 				"profiling data type cannot be used in GA packages",
+			},
+		},
 		"bad_runtime": {
 			"data_stream/foo/fields/fields.yml",
 			[]string{
