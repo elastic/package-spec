@@ -1,13 +1,8 @@
-title: "Example data stream of the profiling type"
+title: "Universal Profiling Symbols"
 type: profiling
+release: beta
 streams:
-  - input: logfile
-    title: Sample logs
-    description: Collect sample logs
-    vars:
-      - name: paths
-        type: text
-        title: Paths
-        multi: true
-        default:
-          - /var/log/*.log
+  - input: pf-elastic-symbolizer
+    title: Universal Profiling Symbols
+    description: "Collect debug symbols for native binaries"
+    enabled: true
