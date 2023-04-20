@@ -127,6 +127,7 @@ func (s Spec) rules(rootSpec spectypes.ItemSpec) validationRules {
 		{fn: semantic.ValidateRequiredFields},
 		{fn: semantic.ValidateVisualizationsUsedByValue},
 		{fn: semantic.ValidateILMPolicyPresent, since: semver.MustParse("2.0.0")},
+		{fn: semantic.ValidateProfilingNonGA},
 	}
 
 	var validationRules validationRules
