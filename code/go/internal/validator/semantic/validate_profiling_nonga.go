@@ -51,7 +51,7 @@ func validateProfilingTypeNotUsed(fsys fspath.FS, dataStream string) error {
 	manifestPath := path.Join("data_stream", dataStream, "manifest.yml")
 	d, err := fs.ReadFile(fsys, manifestPath)
 	if err != nil {
-		return fmt.Errorf("failed to read data stream manifest in %q: %w", fsys.Path(manifestPath), err)
+		return fmt.Errorf("failed to read data stream manifest in \"%s\": %w", fsys.Path(manifestPath), err)
 	}
 
 	var manifest struct {
@@ -59,11 +59,11 @@ func validateProfilingTypeNotUsed(fsys fspath.FS, dataStream string) error {
 	}
 	err = yaml.Unmarshal(d, &manifest)
 	if err != nil {
-		return fmt.Errorf("failed to parse data stream manifest in %q: %w", fsys.Path(manifestPath), err)
+		return fmt.Errorf("failed to parse data stream manifest in \"%s\": %w", fsys.Path(manifestPath), err)
 	}
 
 	if manifest.Type == "profiling" {
-		return fmt.Errorf("file %q is invalid: profiling data type cannot be used in GA packages", fsys.Path(manifestPath))
+		return fmt.Errorf("file \"%s\" is invalid: profiling data type cannot be used in GA packages", fsys.Path(manifestPath))
 	}
 
 	return nil
