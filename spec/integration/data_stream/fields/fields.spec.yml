@@ -473,6 +473,8 @@ versions:
     patch:
       - op: remove
         path: "/items/properties/type/enum/0"
+  - before: 2.8.0
+    patch:
       - op: remove
         path: "/items/properties/runtime"
       - op: remove
