@@ -44,6 +44,13 @@ func (r *runtime) isEnabled() bool {
 	return false
 }
 
+func (r *runtime) String() string {
+	if r.script != "" {
+		return r.script
+	}
+	return strconv.FormatBool(r.enabled)
+}
+
 func (r *runtime) unmarshalString(text string) error {
 	value, err := strconv.ParseBool(text)
 	if err == nil {

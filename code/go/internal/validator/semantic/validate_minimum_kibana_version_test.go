@@ -56,7 +56,7 @@ func TestValidateKibanaVersionGreaterThan(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.version, func(t *testing.T) {
-			assert.Equal(t, kibanaVersionConditionIsGreaterThanOrEqualTo8_8_0(test.version), test.expectedVal)
+			assert.Equal(t, kibanaVersionConditionIsGreaterThanOrEqualTo(test.version, "8.8.0"), test.expectedVal)
 		})
 	}
 }
@@ -103,7 +103,7 @@ func TestValidateMinimumKibanaVersion(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.packageType+"--"+test.packageVersion.String()+"--"+test.kibanaVersionCondition, func(t *testing.T) {
-			res := validateMinimumKibanaVersion(test.packageType, test.packageVersion, test.kibanaVersionCondition)
+			res := validateMinimumKibanaVersionInputPackages(test.packageType, test.packageVersion, test.kibanaVersionCondition)
 
 			if test.expectedErr == nil {
 				assert.Nil(t, res)

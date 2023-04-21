@@ -139,6 +139,7 @@ func TestValidateFile(t *testing.T) {
 				"field streams.0.vars.1: options is required",
 				"field streams.0.vars.2.options: Invalid type. Expected: array, given: null",
 				"field streams.0.vars.3: Must not be present",
+				"Warning: conditions.kibana.version must be ^8.9.0 or greater to include runtime fields",
 			},
 		},
 		"bad_profiling_symbolizer": {
