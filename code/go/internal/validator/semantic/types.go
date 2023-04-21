@@ -5,9 +5,11 @@
 package semantic
 
 import (
+	"encoding/json"
 	"io/fs"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -21,6 +23,75 @@ const dataStreamDir = "data_stream"
 
 type fields []field
 
+type runtime struct {
+	enabled bool
+	script  string
+}
+
+// Ensure runtime implements these interfaces.
+var (
+	_ json.Unmarshaler = new(runtime)
+	_ yaml.Unmarshaler = new(runtime)
+)
+
+func (r *runtime) isEnabled() bool {
+	if r.enabled {
+		return true
+	}
+	if r.script != "" {
+		return true
+	}
+	return false
+}
+
+func (r *runtime) unmarshalString(text string) error {
+	value, err := strconv.ParseBool(text)
+	if err == nil {
+		r.enabled = value
+		return nil
+	}
+
+	// JSONSchema already checks about the type of this field (e.g. int or float)
+	// if _, err := strconv.Atoi(text); err == nil {
+	// 	return fmt.Errorf("invalid int format: %s", text)
+	// }
+
+	// if _, err := strconv.ParseFloat(text, 8); err == nil {
+	// 	return fmt.Errorf("invalid float format: %s", text)
+	// }
+
+	r.enabled = true
+	r.script = text
+	return nil
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface for field
+func (r *runtime) UnmarshalJSON(data []byte) error {
+	var alias interface{}
+	if err := json.Unmarshal(data, &alias); err != nil {
+		return err
+	}
+
+	switch v := alias.(type) {
+	case bool:
+		r.enabled = v
+	case string:
+		r.enabled = true
+		r.script = v
+	default:
+		// JSONSchema already checks about the type of this field (e.g. int or float)
+		r.enabled = true
+		r.script = string(data)
+	}
+	return nil
+}
+
+// UnmarshalYAML implements the yaml.Marshaler interface for runtime.
+func (r *runtime) UnmarshalYAML(value *yaml.Node) error {
+	// For some reason go-yaml doesn't like the UnmarshalJSON function above.
+	return r.unmarshalString(value.Value)
+}
+
 type field struct {
 	Name       string `yaml:"name"`
 	Type       string `yaml:"type"`
@@ -29,6 +100,8 @@ type field struct {
 	MetricType string `yaml:"metric_type"`
 	Dimension  bool   `yaml:"dimension"`
 	External   string `yaml:"external"`
+
+	Runtime runtime `yaml:"runtime"`
 
 	Fields fields `yaml:"fields"`
 }
