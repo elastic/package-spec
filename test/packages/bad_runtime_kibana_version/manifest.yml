@@ -1,10 +1,10 @@
 format_version: 2.7.0
-name: bad_runtime
-title: "Bad runtime fields"
+name: bad_runtime_kibana_version
+title: "Bad kibana version using runtime fields"
 version: 0.0.1
 source:
   license: "Elastic-2.0"
-description: "This is a package with issues in runtime fields."
+description: "This is a package with wrong kibana version to use runtime fields."
 type: integration
 categories:
   - custom

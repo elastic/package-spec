@@ -139,7 +139,6 @@ func TestValidateFile(t *testing.T) {
 				"field streams.0.vars.1: options is required",
 				"field streams.0.vars.2.options: Invalid type. Expected: array, given: null",
 				"field streams.0.vars.3: Must not be present",
-				"Warning: conditions.kibana.version must be ^8.9.0 or greater to include runtime fields",
 			},
 		},
 		"bad_profiling_symbolizer": {
@@ -148,7 +147,7 @@ func TestValidateFile(t *testing.T) {
 				"profiling data type cannot be used in GA packages",
 			},
 		},
-		"bad_runtime": {
+		"bad_runtime_fields": {
 			"data_stream/foo/fields/fields.yml",
 			[]string{
 				`field 0: Must not be present`,
@@ -390,10 +389,11 @@ func TestValidateDuplicatedFields(t *testing.T) {
 
 }
 
-func TestValidateWarnings(t *testing.T) {
+func TestValidateMinimumKibanaVersions(t *testing.T) {
 	tests := map[string][]string{
-		"good":    []string{},
-		"good_v2": []string{},
+		"good":       []string{},
+		"good_input": []string{},
+		"good_v2":    []string{},
 		"custom_logs": []string{
 			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
 		},
@@ -403,6 +403,45 @@ func TestValidateWarnings(t *testing.T) {
 		"sql_input": []string{
 			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
 		},
+		"bad_runtime_kibana_version": []string{
+			"conditions.kibana.version must be ^8.9.0 or greater to include runtime fields",
+		},
+	}
+
+	for pkgName, expectedErrorMessages := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			err := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			if len(expectedErrorMessages) == 0 {
+				assert.NoError(t, err)
+				return
+			}
+			assert.Error(t, err)
+
+			errs, ok := err.(errors.ValidationErrors)
+			require.True(t, ok)
+			assert.Len(t, errs, len(expectedErrorMessages))
+
+			for _, expectedError := range expectedErrorMessages {
+				found := false
+				for _, foundError := range errs {
+					if foundError.Error() == expectedError {
+						found = true
+						break
+					}
+				}
+				if !found {
+					t.Errorf("expected error: %q", expectedError)
+				}
+			}
+		})
+	}
+
+}
+
+func TestValidateWarnings(t *testing.T) {
+	tests := map[string][]string{
+		"good":    []string{},
+		"good_v2": []string{},
 		"visualizations_by_reference": []string{
 			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens)",
 		},

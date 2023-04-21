@@ -6,10 +6,13 @@ package semantic
 
 import (
 	"errors"
+	"path/filepath"
 	"testing"
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 )
 
 func TestValidateKibanaVersionGreaterThan(t *testing.T) {
@@ -60,9 +63,9 @@ func TestValidateKibanaVersionGreaterThan(t *testing.T) {
 		})
 	}
 }
-func TestValidateMinimumKibanaVersion(t *testing.T) {
+func TestValidateMinimumKibanaVersionInputPackages(t *testing.T) {
 
-	kbnVersionError := errors.New("Warning: conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)")
+	kbnVersionError := errors.New("conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)")
 	var tests = []struct {
 		packageType            string
 		packageVersion         semver.Version
@@ -104,6 +107,59 @@ func TestValidateMinimumKibanaVersion(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.packageType+"--"+test.packageVersion.String()+"--"+test.kibanaVersionCondition, func(t *testing.T) {
 			res := validateMinimumKibanaVersionInputPackages(test.packageType, test.packageVersion, test.kibanaVersionCondition)
+
+			if test.expectedErr == nil {
+				assert.Nil(t, res)
+			} else {
+				assert.Equal(t, test.expectedErr.Error(), res.Error())
+			}
+		})
+	}
+}
+
+func TestValidateMinimumKibanaVersionRuntimeFields(t *testing.T) {
+	kbnVersionError := errors.New("conditions.kibana.version must be ^8.9.0 or greater to include runtime fields")
+	var tests = []struct {
+		pkgRoot                string
+		packageVersion         semver.Version
+		kibanaVersionCondition string
+		expectedErr            error
+	}{
+		{
+			"../../../../../test/packages/good_v2",
+			*semver.MustParse("1.0.0"),
+			"^7.14.0",
+			kbnVersionError,
+		},
+		{
+			"../../../../../test/packages/good_v2",
+			*semver.MustParse("0.1.0"),
+			"^7.14.0",
+			kbnVersionError,
+		},
+		{
+			"../../../../../test/packages/good_v2",
+			*semver.MustParse("1.0.0"),
+			"^7.14.0",
+			kbnVersionError,
+		},
+		{
+			"../../../../../test/packages/good_v2",
+			*semver.MustParse("1.0.0"),
+			"^8.9.0 || ^7.14.0",
+			kbnVersionError,
+		},
+		{
+			"../../../../../test/packages/good_v2",
+			*semver.MustParse("1.0.0"),
+			"^8.9.0",
+			nil,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(filepath.Base(test.pkgRoot)+"--"+test.packageVersion.String()+"--"+test.kibanaVersionCondition, func(t *testing.T) {
+			res := validateMinimumKibanaVersionRuntimeFields(fspath.DirFS(test.pkgRoot), test.packageVersion, test.kibanaVersionCondition)
 
 			if test.expectedErr == nil {
 				assert.Nil(t, res)

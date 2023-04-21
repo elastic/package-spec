@@ -40,7 +40,7 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) ve.ValidationErrors {
 		return ve.ValidationErrors{err}
 	}
 
-	err = validateMinimumKibanaVersionRuntimeFields(fsys, pkg.Type, *pkg.Version, kibanaVersionCondition)
+	err = validateMinimumKibanaVersionRuntimeFields(fsys, *pkg.Version, kibanaVersionCondition)
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}
@@ -62,10 +62,10 @@ func validateMinimumKibanaVersionInputPackages(packageType string, packageVersio
 		return nil
 	}
 
-	return errors.New("Warning: conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)")
+	return errors.New("conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)")
 }
 
-func validateMinimumKibanaVersionRuntimeFields(fsys fspath.FS, ackageType string, packageVersion semver.Version, kibanaVersionCondition string) error {
+func validateMinimumKibanaVersionRuntimeFields(fsys fspath.FS, packageVersion semver.Version, kibanaVersionCondition string) error {
 
 	errs := validateFields(fsys, validateNoRuntimeFields)
 	if len(errs) == 0 {
@@ -76,7 +76,7 @@ func validateMinimumKibanaVersionRuntimeFields(fsys fspath.FS, ackageType string
 		return nil
 	}
 
-	return errors.New("Warning: conditions.kibana.version must be ^8.9.0 or greater to include runtime fields")
+	return errors.New("conditions.kibana.version must be ^8.9.0 or greater to include runtime fields")
 }
 
 func readManifest(fsys fspath.FS) (*pkgpath.File, error) {
