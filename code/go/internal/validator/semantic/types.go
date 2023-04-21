@@ -44,7 +44,7 @@ func (r *runtime) isEnabled() bool {
 	return false
 }
 
-func (r *runtime) String() string {
+func (r runtime) String() string {
 	if r.script != "" {
 		return r.script
 	}

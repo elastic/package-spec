@@ -142,7 +142,7 @@ func kibanaVersionConditionIsGreaterThanOrEqualTo(kibanaVersionCondition, minimu
 
 func validateNoRuntimeFields(fieldsFile string, f field) ve.ValidationErrors {
 	if f.Runtime.isEnabled() {
-		return ve.ValidationErrors{fmt.Errorf("field with runtime key defined (%v)", f.Runtime)}
+		return ve.ValidationErrors{fmt.Errorf("%v file contains a field %s with runtime key defined (%s)", fieldsFile, f.Name, f.Runtime)}
 	}
 	return nil
 }
