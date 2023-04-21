@@ -59,14 +59,6 @@ func (r *runtime) unmarshalString(text string) error {
 	}
 
 	// JSONSchema already checks about the type of this field (e.g. int or float)
-	// if _, err := strconv.Atoi(text); err == nil {
-	// 	return fmt.Errorf("invalid int format: %s", text)
-	// }
-
-	// if _, err := strconv.ParseFloat(text, 8); err == nil {
-	// 	return fmt.Errorf("invalid float format: %s", text)
-	// }
-
 	r.enabled = true
 	r.script = text
 	return nil
