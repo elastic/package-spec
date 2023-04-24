@@ -4,9 +4,9 @@ spec:
   contents:
     - description: Folder containing resources related to package benchmarks.
       type: folder
-      name: benchmarks
+      name: benchmark
       required: false
-      $ref: "./benchmarks/spec.yml"
+      $ref: "./benchmark/spec.yml"
     - description: Folder containing resources related to building the package.
       type: folder
       name: build
