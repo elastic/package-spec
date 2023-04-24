@@ -23,18 +23,18 @@ const dataStreamDir = "data_stream"
 
 type fields []field
 
-type runtime struct {
+type runtimeField struct {
 	enabled bool
 	script  string
 }
 
 // Ensure runtime implements these interfaces.
 var (
-	_ json.Unmarshaler = new(runtime)
-	_ yaml.Unmarshaler = new(runtime)
+	_ json.Unmarshaler = new(runtimeField)
+	_ yaml.Unmarshaler = new(runtimeField)
 )
 
-func (r *runtime) isEnabled() bool {
+func (r *runtimeField) isEnabled() bool {
 	if r.enabled {
 		return true
 	}
@@ -44,14 +44,14 @@ func (r *runtime) isEnabled() bool {
 	return false
 }
 
-func (r runtime) String() string {
+func (r runtimeField) String() string {
 	if r.script != "" {
 		return r.script
 	}
 	return strconv.FormatBool(r.enabled)
 }
 
-func (r *runtime) unmarshalString(text string) error {
+func (r *runtimeField) unmarshalString(text string) error {
 	value, err := strconv.ParseBool(text)
 	if err == nil {
 		r.enabled = value
@@ -65,7 +65,7 @@ func (r *runtime) unmarshalString(text string) error {
 }
 
 // UnmarshalJSON implements the json.Unmarshaler interface for field
-func (r *runtime) UnmarshalJSON(data []byte) error {
+func (r *runtimeField) UnmarshalJSON(data []byte) error {
 	var alias interface{}
 	if err := json.Unmarshal(data, &alias); err != nil {
 		return err
@@ -86,7 +86,7 @@ func (r *runtime) UnmarshalJSON(data []byte) error {
 }
 
 // UnmarshalYAML implements the yaml.Marshaler interface for runtime.
-func (r *runtime) UnmarshalYAML(value *yaml.Node) error {
+func (r *runtimeField) UnmarshalYAML(value *yaml.Node) error {
 	// For some reason go-yaml doesn't like the UnmarshalJSON function above.
 	return r.unmarshalString(value.Value)
 }
@@ -100,7 +100,7 @@ type field struct {
 	Dimension  bool   `yaml:"dimension"`
 	External   string `yaml:"external"`
 
-	Runtime runtime `yaml:"runtime"`
+	Runtime runtimeField `yaml:"runtime"`
 
 	Fields fields `yaml:"fields"`
 }

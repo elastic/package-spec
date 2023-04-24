@@ -67,18 +67,18 @@ func TestRuntimeUnmarshal(t *testing.T) {
 func testRuntimeUnmarshalFormat(t *testing.T, unmarshaler func([]byte, interface{}) error) {
 	cases := []struct {
 		json     string
-		expected runtime
+		expected runtimeField
 		valid    bool
 	}{
-		{"true", runtime{enabled: true, script: ""}, true},
-		{"false", runtime{enabled: false, script: ""}, true},
-		{"42", runtime{enabled: true, script: "42"}, true},
-		{"\"doc['message'].value().doSomething()\"", runtime{enabled: true, script: "doc['message'].value().doSomething()"}, true},
+		{"true", runtimeField{enabled: true, script: ""}, true},
+		{"false", runtimeField{enabled: false, script: ""}, true},
+		{"42", runtimeField{enabled: true, script: "42"}, true},
+		{"\"doc['message'].value().doSomething()\"", runtimeField{enabled: true, script: "doc['message'].value().doSomething()"}, true},
 	}
 
 	for _, c := range cases {
 		t.Run(c.json, func(t *testing.T) {
-			var found runtime
+			var found runtimeField
 			err := unmarshaler([]byte(c.json), &found)
 			if c.valid {
 				require.NoError(t, err)
