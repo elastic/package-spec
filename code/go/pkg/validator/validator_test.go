@@ -147,6 +147,12 @@ func TestValidateFile(t *testing.T) {
 				"profiling data type cannot be used in GA packages",
 			},
 		},
+		"bad_external_without_dev_build": {
+			"data_stream/foo/fields/ecs.yml",
+			[]string{
+				"field container.id with external key defined (\"ecs\") but no ECS reference found (_dev/build/build.yml)",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
