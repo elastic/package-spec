@@ -7,7 +7,10 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/509
-  - description: Improve system benchmarks definition
+  - description: Rename e2e benchmarks to system for consistency with other tests
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/512
+  - description: Extend system benchmarks spec to allow for corpus generator configs
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/512
 - version: 2.7.0
