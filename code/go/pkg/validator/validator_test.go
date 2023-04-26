@@ -6,6 +6,7 @@ package validator
 
 import (
 	"fmt"
+	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -145,12 +146,6 @@ func TestValidateFile(t *testing.T) {
 			"data_stream/example/manifest.yml",
 			[]string{
 				"profiling data type cannot be used in GA packages",
-			},
-		},
-		"bad_external_without_dev_build": {
-			"data_stream/foo/fields/ecs.yml",
-			[]string{
-				"field container.id with external key defined (\"ecs\") but no ECS reference found (_dev/build/build.yml)",
 			},
 		},
 	}
@@ -436,6 +431,88 @@ func TestValidateWarnings(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
+	pkgName := "bad_external_without_dev_build"
+	tests := []struct {
+		title               string
+		invalidPkgFilePath  string
+		buildFileContents   string
+		expectedErrContains []string
+	}{
+		{
+			"valid definition",
+			"data_stream/foo/fields/ecs.yml",
+			"dependencies:\n  ecs:\n    reference: git@v8.6.0\n",
+			[]string{},
+		},
+		{
+			"build file not exist",
+			"data_stream/foo/fields/ecs.yml",
+			"",
+			[]string{
+				"field container.id with external key defined (\"ecs\") but no _dev/build/build.yml found",
+			},
+		},
+		{
+			"ecs not defined",
+			"data_stream/foo/fields/ecs.yml",
+			"dependencies: {}\n",
+			[]string{
+				"field container.id with external key defined (\"ecs\") but no definition found for it (_dev/build/build.yml)",
+			},
+		},
+	}
+
+	pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
+	devFolderPath := filepath.Join(pkgRootPath, "_dev")
+	buildFolderPath := filepath.Join(devFolderPath, "build")
+	buildFilePath := filepath.Join(buildFolderPath, "build.yml")
+
+	defer func() {
+		os.RemoveAll(devFolderPath)
+	}()
+
+	for _, test := range tests {
+		t.Run(test.title, func(t *testing.T) {
+			errPrefix := fmt.Sprintf("file \"%s/%s\" is invalid: ", pkgRootPath, test.invalidPkgFilePath)
+
+			err := os.RemoveAll(devFolderPath)
+			require.NoError(t, err)
+
+			if test.buildFileContents != "" {
+				err := os.MkdirAll(buildFolderPath, 0755)
+				require.NoError(t, err)
+
+				err = os.WriteFile(buildFilePath, []byte(test.buildFileContents), 0644)
+				require.NoError(t, err)
+			}
+
+			errs := ValidateFromPath(pkgRootPath)
+			if len(test.expectedErrContains) == 0 {
+				require.NoError(t, errs)
+			} else {
+				require.Error(t, errs)
+				vErrs, ok := errs.(errors.ValidationErrors)
+				if ok {
+					require.Len(t, errs, len(test.expectedErrContains))
+					var errMessages []string
+					for _, vErr := range vErrs {
+						errMessages = append(errMessages, vErr.Error())
+					}
+
+					for _, expectedErrMessage := range test.expectedErrContains {
+						expectedErr := errPrefix + expectedErrMessage
+						require.Contains(t, errMessages, expectedErr)
+					}
+					return
+				}
+				require.Equal(t, errs.Error(), test.expectedErrContains[0])
+			}
+		})
+	}
+
 }
 
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {

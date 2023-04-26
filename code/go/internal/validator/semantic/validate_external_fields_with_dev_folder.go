@@ -7,8 +7,6 @@ package semantic
 import (
 	"fmt"
 
-	"github.com/pkg/errors"
-
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
@@ -16,44 +14,69 @@ import (
 
 // validateExternalFieldsWithBuildFolder verifies there is no field with external key if there is no _dev/build folder
 func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
+
+	const buildPath = "_dev/build/build.yml"
 	buildFilePathDefined := true
-	// it has _dev/build/build ?
-	if _, err := readECSReference(fsys); err != nil {
+	f, err := pkgpath.Files(fsys, buildPath)
+	if err != nil {
+		return ve.ValidationErrors{fmt.Errorf("not able to read _dev/build/build.yml: %w", err)}
+	}
+
+	if len(f) != 1 {
 		buildFilePathDefined = false
 	}
 
+	mapDependencies := make(map[string]struct{})
+	if buildFilePathDefined {
+		dependencies, err := readDevBuildDependencies(f[0])
+		if err != nil {
+			return ve.ValidationErrors{err}
+		}
+		for _, dep := range dependencies {
+			mapDependencies[dep] = struct{}{}
+		}
+	}
+
 	validateFunc := func(fieldsFile string, f field) ve.ValidationErrors {
-		if buildFilePathDefined {
+		if f.External == "" {
 			return nil
 		}
 
-		if f.External != "" {
-			return ve.ValidationErrors{fmt.Errorf("file \"%s\" is invalid: field %s with external key defined (%q) but no ECS reference found (_dev/build/build.yml)", fieldsFile, f.Name, f.External)}
+		if !buildFilePathDefined {
+			return ve.ValidationErrors{fmt.Errorf("file \"%s\" is invalid: field %s with external key defined (%q) but no _dev/build/build.yml found", fieldsFile, f.Name, f.External)}
+		}
+
+		if _, ok := mapDependencies[f.External]; !ok {
+			return ve.ValidationErrors{fmt.Errorf("file \"%s\" is invalid: field %s with external key defined (%q) but no definition found for it (_dev/build/build.yml)", fieldsFile, f.Name, f.External)}
 		}
 		return nil
 	}
 	return validateFields(fsys, validateFunc)
 }
 
-func readECSReference(fsys fspath.FS) (string, error) {
-	buildPath := "_dev/build/build.yml"
-	f, err := pkgpath.Files(fsys, buildPath)
+func readDevBuildDependencies(f pkgpath.File) ([]string, error) {
+	vals, err := f.Values("$.dependencies")
 	if err != nil {
-		return "", errors.Wrap(err, "can't locate _dev/build/build.yml file")
+		return []string{}, fmt.Errorf("can't read dependencies: %w", err)
 	}
 
-	if len(f) != 1 {
-		return "", errors.New("single build file expected")
-	}
-
-	val, err := f[0].Values("$.dependencies.ecs.reference")
+	dependencies, err := toMapKeysSlice(vals)
 	if err != nil {
-		return "", errors.Wrap(err, "can't read ecs.reference")
+		return []string{}, fmt.Errorf("can't convert to []string: %w", err)
 	}
 
-	sVal, ok := val.(string)
+	return dependencies, nil
+}
+
+func toMapKeysSlice(val interface{}) ([]string, error) {
+	vals, ok := val.(map[string]interface{})
 	if !ok {
-		return "", errors.New("ecs.reference is undefined")
+		return nil, fmt.Errorf("conversion error: %s", val)
 	}
-	return sVal, nil
+
+	var s []string
+	for k, _ := range vals {
+		s = append(s, k)
+	}
+	return s, nil
 }
