@@ -5,6 +5,7 @@
 package semantic
 
 import (
+	"fmt"
 	"io/fs"
 	"os"
 	"path"
@@ -78,6 +79,8 @@ func validateNestedFields(parent string, fieldsFile string, fields fields, valid
 
 func listFieldsFiles(fsys fspath.FS) ([]string, error) {
 	var fieldsFiles []string
+
+	// integration packages
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
 		return nil, err
@@ -85,19 +88,42 @@ func listFieldsFiles(fsys fspath.FS) ([]string, error) {
 
 	for _, dataStream := range dataStreams {
 		fieldsDir := path.Join(dataStreamDir, dataStream, "fields")
-		fs, err := fs.ReadDir(fsys, fieldsDir)
-		if errors.Is(err, os.ErrNotExist) {
+		integrationFieldsFiles, err := readFieldsFolder(fsys, fieldsDir)
+		if err != nil {
+			return nil, fmt.Errorf("cannot read fields file from integration packages: %w", err)
+		}
+
+		if len(integrationFieldsFiles) == 0 {
 			continue
 		}
-		if err != nil {
-			return nil, errors.Wrapf(err, "can't list fields directory (path: %s)", fsys.Path(fieldsDir))
-		}
-
-		for _, f := range fs {
-			fieldsFiles = append(fieldsFiles, path.Join(fieldsDir, f.Name()))
-		}
+		fieldsFiles = append(fieldsFiles, integrationFieldsFiles...)
 	}
 
+	return fieldsFiles, nil
+	// // input packages
+	// inputFieldsFiles, err := readFieldsFolder(fsys, "fields")
+	// if err != nil {
+	// 	return nil, fmt.Errorf("cannot read fields file from input packages: %w", err)
+	// }
+
+	// fieldsFiles = append(fieldsFiles, inputFieldsFiles...)
+
+	// return fieldsFiles, nil
+}
+
+func readFieldsFolder(fsys fspath.FS, fieldsDir string) ([]string, error) {
+	var fieldsFiles []string
+	fs, err := fs.ReadDir(fsys, fieldsDir)
+	if errors.Is(err, os.ErrNotExist) {
+		return []string{}, nil
+	}
+	if err != nil {
+		return nil, errors.Wrapf(err, "can't list fields directory (path: %s)", fsys.Path(fieldsDir))
+	}
+
+	for _, f := range fs {
+		fieldsFiles = append(fieldsFiles, path.Join(fieldsDir, f.Name()))
+	}
 	return fieldsFiles, nil
 }
 
@@ -125,6 +151,25 @@ func dataStreamFromFieldsPath(pkgRoot, fieldsFile string) (string, error) {
 	parts := strings.SplitN(relPath, "/", 2)
 	if len(parts) != 2 {
 		return "", errors.Errorf("could not find data stream for fields file %s", fieldsFile)
+	}
+	dataStream := parts[0]
+	return dataStream, nil
+}
+
+// TODO
+func packageAndDataStreamFromFieldsPath(pkgRoot, fieldsFile string) (string, error) {
+	dataStreamPath := path.Clean(path.Join(pkgRoot, "data_stream")) + "/"
+	packageName := path.Base(pkgRoot)
+
+	if !strings.HasPrefix(path.Clean(fieldsFile), dataStreamPath) && !strings.HasPrefix(path.Clean(fieldsFile), pkgRoot) {
+		return "", errors.Errorf("%q is not a fields file in package %s or data stream %q", fieldsFile, packageName, dataStreamPath)
+	}
+	relPath := strings.TrimPrefix(path.Clean(fieldsFile), dataStreamPath)
+	relPath = strings.TrimPrefix(path.Clean(fieldsFile), pkgRoot)
+
+	parts := strings.SplitN(relPath, "/", 2)
+	if len(parts) != 2 {
+		return "", errors.Errorf("could not find id for fields file %s", fieldsFile)
 	}
 	dataStream := parts[0]
 	return dataStream, nil

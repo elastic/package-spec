@@ -2,3 +2,6 @@
   type: constant_keyword
   description: Sample field to be added.
   value: logs
+- name: date_example
+  type: boolean
+  date_format: yyyy-MM-dd
