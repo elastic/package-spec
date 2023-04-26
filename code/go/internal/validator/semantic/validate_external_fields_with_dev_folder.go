@@ -12,7 +12,7 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
 )
 
-// validateExternalFieldsWithBuildFolder verifies there is no field with external key if there is no _dev/build folder
+// ValidateExternalFieldsWithDevFolder verifies there is no field with external key if there is no _dev/build/build.yml definition
 func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
 
 	const buildPath = "_dev/build/build.yml"
@@ -75,7 +75,7 @@ func toMapKeysSlice(val interface{}) ([]string, error) {
 	}
 
 	var s []string
-	for k, _ := range vals {
+	for k := range vals {
 		s = append(s, k)
 	}
 	return s, nil
