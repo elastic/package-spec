@@ -6,6 +6,7 @@ package validator
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -15,6 +16,7 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
 
+	cp "github.com/otiai10/copy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -434,6 +436,8 @@ func TestValidateWarnings(t *testing.T) {
 }
 
 func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
+	tempDir := t.TempDir()
+
 	pkgName := "bad_external_without_dev_build"
 	tests := []struct {
 		title               string
@@ -466,22 +470,23 @@ func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
 	}
 
 	pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
-	devFolderPath := filepath.Join(pkgRootPath, "_dev")
+
+	err := cp.Copy(pkgRootPath, tempDir)
+	require.NoError(t, err)
+
+	devFolderPath := filepath.Join(tempDir, "_dev")
 	buildFolderPath := filepath.Join(devFolderPath, "build")
 	buildFilePath := filepath.Join(buildFolderPath, "build.yml")
 
-	defer func() {
-		os.RemoveAll(devFolderPath)
-	}()
-
 	for _, test := range tests {
 		t.Run(test.title, func(t *testing.T) {
-			errPrefix := fmt.Sprintf("file \"%s/%s\" is invalid: ", pkgRootPath, test.invalidPkgFilePath)
+			errPrefix := fmt.Sprintf("file \"%s/%s\" is invalid: ", tempDir, test.invalidPkgFilePath)
 
 			err := os.RemoveAll(devFolderPath)
 			require.NoError(t, err)
 
 			if test.buildFileContents != "" {
+				log.Printf("Create directories %s", buildFolderPath)
 				err := os.MkdirAll(buildFolderPath, 0755)
 				require.NoError(t, err)
 
@@ -489,7 +494,7 @@ func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
 				require.NoError(t, err)
 			}
 
-			errs := ValidateFromPath(pkgRootPath)
+			errs := ValidateFromPath(tempDir)
 			if len(test.expectedErrContains) == 0 {
 				require.NoError(t, errs)
 			} else {
