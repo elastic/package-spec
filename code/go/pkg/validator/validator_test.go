@@ -6,7 +6,6 @@ package validator
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -436,7 +435,6 @@ func TestValidateWarnings(t *testing.T) {
 }
 
 func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
-	tempDir := t.TempDir()
 
 	pkgName := "bad_external_without_dev_build"
 	tests := []struct {
@@ -471,22 +469,23 @@ func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
 
 	pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 
-	err := cp.Copy(pkgRootPath, tempDir)
-	require.NoError(t, err)
-
-	devFolderPath := filepath.Join(tempDir, "_dev")
-	buildFolderPath := filepath.Join(devFolderPath, "build")
-	buildFilePath := filepath.Join(buildFolderPath, "build.yml")
-
 	for _, test := range tests {
 		t.Run(test.title, func(t *testing.T) {
+			tempDir := t.TempDir()
+
+			devFolderPath := filepath.Join(tempDir, "_dev")
+			buildFolderPath := filepath.Join(devFolderPath, "build")
+			buildFilePath := filepath.Join(buildFolderPath, "build.yml")
+
 			errPrefix := fmt.Sprintf("file \"%s/%s\" is invalid: ", tempDir, test.invalidPkgFilePath)
 
-			err := os.RemoveAll(devFolderPath)
+			err := cp.Copy(pkgRootPath, tempDir)
+			require.NoError(t, err)
+
+			err = os.RemoveAll(devFolderPath)
 			require.NoError(t, err)
 
 			if test.buildFileContents != "" {
-				log.Printf("Create directories %s", buildFolderPath)
 				err := os.MkdirAll(buildFolderPath, 0755)
 				require.NoError(t, err)
 
