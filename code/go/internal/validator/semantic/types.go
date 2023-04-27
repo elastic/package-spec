@@ -105,7 +105,9 @@ func listFieldsFiles(fsys fspath.FS) ([]string, error) {
 		return nil, fmt.Errorf("cannot read fields file from input packages: %w", err)
 	}
 
-	fieldsFiles = append(fieldsFiles, inputFieldsFiles...)
+	if len(inputFieldsFiles) > 0 {
+		fieldsFiles = append(fieldsFiles, inputFieldsFiles...)
+	}
 
 	return fieldsFiles, nil
 }
@@ -157,15 +159,6 @@ func dataStreamFromFieldsPath(pkgRoot, fieldsFile string) (string, error) {
 	return fmt.Sprintf("%s-%s", packageName, dataStream), nil
 }
 
-func packageFromFieldsPath(pkgRoot, fieldsFile string) (string, error) {
-	inputFieldsPath := path.Clean(path.Join(pkgRoot, "fields")) + "/"
-	if !strings.HasPrefix(path.Clean(fieldsFile), inputFieldsPath) {
-		return "", errors.Errorf("%q is not a fields file in an input package of %q", fieldsFile, inputFieldsPath)
-	}
-	packageName := path.Base(path.Clean(pkgRoot))
-	return packageName, nil
-}
-
 // TODO
 func packageAndDataStreamFromFieldsPath(pkgRoot, fieldsFile string) (string, error) {
 	dataStreamPath := path.Clean(path.Join(pkgRoot, "data_stream")) + "/"
@@ -184,7 +177,8 @@ func packageAndDataStreamFromFieldsPath(pkgRoot, fieldsFile string) (string, err
 			return "", errors.Errorf("could not find data stream for fields file %s", fieldsFile)
 		}
 		dataStream := parts[0]
-		return fmt.Sprintf("%s-%s", packageName, dataStream), nil
+		return dataStream, nil
+		// return fmt.Sprintf("%s-%s", packageName, dataStream), nil
 	}
 
 	return "", errors.Errorf("%q is not a fields file from an integration or input package", fieldsFile)

@@ -5,10 +5,13 @@
 package semantic
 
 import (
+	"fmt"
+
 	"github.com/pkg/errors"
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 )
 
 // ValidateRequiredFields validates that required fields are present and have the expected
@@ -21,10 +24,21 @@ func ValidateRequiredFields(fsys fspath.FS) ve.ValidationErrors {
 		"@timestamp":            "date",
 	}
 
-	return validateRequiredFields(fsys, requiredFields)
+	pkg, err := packages.NewPackageFromFS(fsys.Path(), fsys)
+	if err != nil {
+		return ve.ValidationErrors{err}
+	}
+
+	switch pkg.Type {
+	case "integration":
+		return validateDataStreamRequiredFields(fsys, requiredFields)
+	case "input":
+		return validateInputPackagesRequiresFields(fsys, requiredFields)
+	}
+	return ve.ValidationErrors{fmt.Errorf("package type %s not supported", pkg.Type)}
 }
 
-func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve.ValidationErrors {
+func validateDataStreamRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve.ValidationErrors {
 	// map datastream -> field name -> found
 	foundFields := make(map[string]map[string]struct{})
 
@@ -67,6 +81,39 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve
 			if _, found := dataStreamFields[requiredName]; !found {
 				errs = append(errs, errors.Errorf("expected field %q with type %q not found in datastream %q", requiredName, requiredType, dataStream))
 			}
+		}
+	}
+
+	return errs
+}
+
+func validateInputPackagesRequiresFields(fsys fspath.FS, requiredFields map[string]string) ve.ValidationErrors {
+	// map datastream -> field name -> found
+	foundFields := make(map[string]struct{})
+
+	checkField := func(fieldsFile string, f field) ve.ValidationErrors {
+		expectedType, found := requiredFields[f.Name]
+		if !found {
+			return nil
+		}
+
+		foundFields[f.Name] = struct{}{}
+
+		// Check if type is the expected one, but only for fields what are
+		// not declared as external. External fields won't have a type in
+		// the definition.
+		// More info in https://github.com/elastic/elastic-package/issues/749
+		if f.External == "" && f.Type != expectedType {
+			return ve.ValidationErrors{errors.Errorf("expected type %q for required field %q, found %q in %q", expectedType, f.Name, f.Type, fieldsFile)}
+		}
+
+		return nil
+	}
+	errs := validateFields(fsys, checkField)
+
+	for requiredName, requiredType := range requiredFields {
+		if _, found := foundFields[requiredName]; !found {
+			errs = append(errs, errors.Errorf("expected field %q with type %q not found in input package", requiredName, requiredType))
 		}
 	}
 

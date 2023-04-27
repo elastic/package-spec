@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDataStreamFromFieldsPath(t *testing.T) {
+func TestPackageAndDataStreamFromFieldsPath(t *testing.T) {
 	cases := []struct {
 		pkgRoot    string
 		fieldsFile string
@@ -36,13 +36,18 @@ func TestDataStreamFromFieldsPath(t *testing.T) {
 		{
 			pkgRoot:    "/package/",
 			fieldsFile: "/package/fields/some-fields.yml",
+			expected:   "package",
+		},
+		{
+			pkgRoot:    "/package/",
+			fieldsFile: "/package/fields.yml",
 			fail:       true,
 		},
 	}
 
 	for _, c := range cases {
 		t.Run(c.pkgRoot+"_"+c.fieldsFile, func(t *testing.T) {
-			dataStream, err := dataStreamFromFieldsPath(c.pkgRoot, c.fieldsFile)
+			dataStream, err := packageAndDataStreamFromFieldsPath(c.pkgRoot, c.fieldsFile)
 			if c.fail {
 				assert.Error(t, err)
 			} else {
