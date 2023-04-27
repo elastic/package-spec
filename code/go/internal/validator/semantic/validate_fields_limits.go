@@ -26,7 +26,7 @@ func validateFieldsLimits(fsys fspath.FS, limit int) ve.ValidationErrors {
 			return nil
 		}
 
-		dataStream, err := dataStreamFromFieldsPath(fsys.Path(), fieldsFile)
+		dataStream, err := packageAndDataStreamFromFieldsPath(fsys.Path(), fieldsFile)
 		if err != nil {
 			return ve.ValidationErrors{err}
 		}

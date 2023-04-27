@@ -99,16 +99,15 @@ func listFieldsFiles(fsys fspath.FS) ([]string, error) {
 		fieldsFiles = append(fieldsFiles, integrationFieldsFiles...)
 	}
 
+	// input packages
+	inputFieldsFiles, err := readFieldsFolder(fsys, "fields")
+	if err != nil {
+		return nil, fmt.Errorf("cannot read fields file from input packages: %w", err)
+	}
+
+	fieldsFiles = append(fieldsFiles, inputFieldsFiles...)
+
 	return fieldsFiles, nil
-	// // input packages
-	// inputFieldsFiles, err := readFieldsFolder(fsys, "fields")
-	// if err != nil {
-	// 	return nil, fmt.Errorf("cannot read fields file from input packages: %w", err)
-	// }
-
-	// fieldsFiles = append(fieldsFiles, inputFieldsFiles...)
-
-	// return fieldsFiles, nil
 }
 
 func readFieldsFolder(fsys fspath.FS, fieldsDir string) ([]string, error) {
@@ -153,26 +152,42 @@ func dataStreamFromFieldsPath(pkgRoot, fieldsFile string) (string, error) {
 		return "", errors.Errorf("could not find data stream for fields file %s", fieldsFile)
 	}
 	dataStream := parts[0]
-	return dataStream, nil
+	packageName := path.Base(path.Clean(pkgRoot))
+
+	return fmt.Sprintf("%s-%s", packageName, dataStream), nil
+}
+
+func packageFromFieldsPath(pkgRoot, fieldsFile string) (string, error) {
+	inputFieldsPath := path.Clean(path.Join(pkgRoot, "fields")) + "/"
+	if !strings.HasPrefix(path.Clean(fieldsFile), inputFieldsPath) {
+		return "", errors.Errorf("%q is not a fields file in an input package of %q", fieldsFile, inputFieldsPath)
+	}
+	packageName := path.Base(path.Clean(pkgRoot))
+	return packageName, nil
 }
 
 // TODO
 func packageAndDataStreamFromFieldsPath(pkgRoot, fieldsFile string) (string, error) {
 	dataStreamPath := path.Clean(path.Join(pkgRoot, "data_stream")) + "/"
-	packageName := path.Base(pkgRoot)
+	inputFieldsPath := path.Clean(path.Join(pkgRoot, "fields")) + "/"
+	packageName := path.Base(path.Clean(pkgRoot))
 
-	if !strings.HasPrefix(path.Clean(fieldsFile), dataStreamPath) && !strings.HasPrefix(path.Clean(fieldsFile), pkgRoot) {
-		return "", errors.Errorf("%q is not a fields file in package %s or data stream %q", fieldsFile, packageName, dataStreamPath)
+	if strings.HasPrefix(path.Clean(fieldsFile), inputFieldsPath) {
+		return packageName, nil
 	}
-	relPath := strings.TrimPrefix(path.Clean(fieldsFile), dataStreamPath)
-	relPath = strings.TrimPrefix(path.Clean(fieldsFile), pkgRoot)
 
-	parts := strings.SplitN(relPath, "/", 2)
-	if len(parts) != 2 {
-		return "", errors.Errorf("could not find id for fields file %s", fieldsFile)
+	if strings.HasPrefix(path.Clean(fieldsFile), dataStreamPath) {
+		relPath := strings.TrimPrefix(path.Clean(fieldsFile), dataStreamPath)
+
+		parts := strings.SplitN(relPath, "/", 2)
+		if len(parts) != 2 {
+			return "", errors.Errorf("could not find data stream for fields file %s", fieldsFile)
+		}
+		dataStream := parts[0]
+		return fmt.Sprintf("%s-%s", packageName, dataStream), nil
 	}
-	dataStream := parts[0]
-	return dataStream, nil
+
+	return "", errors.Errorf("%q is not a fields file from an integration or input package", fieldsFile)
 }
 
 func listDataStreams(fsys fspath.FS) ([]string, error) {

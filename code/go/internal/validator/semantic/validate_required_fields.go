@@ -39,7 +39,7 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve
 			return nil
 		}
 
-		datastream, err := dataStreamFromFieldsPath(fsys.Path(), fieldsFile)
+		datastream, err := packageAndDataStreamFromFieldsPath(fsys.Path(), fieldsFile)
 		if err != nil {
 			return ve.ValidationErrors{err}
 		}
