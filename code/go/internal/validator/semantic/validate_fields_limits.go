@@ -20,13 +20,13 @@ func ValidateFieldsLimits(limit int) func(fspath.FS) ve.ValidationErrors {
 
 func validateFieldsLimits(fsys fspath.FS, limit int) ve.ValidationErrors {
 	counts := make(map[string]int)
-	countField := func(fieldsFile string, f field) ve.ValidationErrors {
+	countField := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
 		if len(f.Fields) > 0 {
 			// Don't count groups
 			return nil
 		}
 
-		dataStream, err := packageAndDataStreamFromFieldsPath(fsys.Path(), fieldsFile)
+		dataStream, err := packageAndDataStreamFromFieldsPath(fsys.Path(), metadata.filePath)
 		if err != nil {
 			return ve.ValidationErrors{err}
 		}

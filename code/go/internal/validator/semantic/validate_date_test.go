@@ -44,9 +44,10 @@ func TestValidateDateFields(t *testing.T) {
 		},
 	}
 
+	metadata := fieldFileMetadata{filePath: "fields.yml"}
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
-			errs := validateDateField("fields.yml", c.field)
+			errs := validateDateField(metadata, c.field)
 			if c.valid {
 				assert.Empty(t, errs)
 			} else {

@@ -16,6 +16,7 @@ import (
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 )
 
 const dataStreamDir = "data_stream"
@@ -34,22 +35,35 @@ type field struct {
 	Fields fields `yaml:"fields"`
 }
 
-type validateFunc func(fieldsFile string, f field) ve.ValidationErrors
+type fieldFileMetadata struct {
+	packageName string
+	dataStream  string
+	filePath    string
+}
+
+type validateFunc func(fileMetadata fieldFileMetadata, f field) ve.ValidationErrors
 
 func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
-	fieldsFiles, err := listFieldsFiles(fsys)
+	pkg, err := packages.NewPackageFromFS(fsys.Path(), fsys)
+	if err != nil {
+		return ve.ValidationErrors{err}
+	}
+
+	fieldsFilesMetadata, err := listFieldsFiles(fsys, pkg.Name)
 	if err != nil {
 		return ve.ValidationErrors{errors.Wrap(err, "can't list fields files")}
 	}
 
 	var vErrs ve.ValidationErrors
-	for _, fieldsFile := range fieldsFiles {
-		unmarshaled, err := unmarshalFields(fsys, fieldsFile)
+	for _, metadata := range fieldsFilesMetadata {
+		unmarshaled, err := unmarshalFields(fsys, metadata.filePath)
 		if err != nil {
-			vErrs = append(vErrs, errors.Wrapf(err, `file "%s" is invalid: can't unmarshal fields`, fsys.Path(fieldsFile)))
+			vErrs = append(vErrs, errors.Wrapf(err, `file "%s" is invalid: can't unmarshal fields`, fsys.Path(metadata.filePath)))
 		}
 
-		errs := validateNestedFields("", fsys.Path(fieldsFile), unmarshaled, validate)
+		metadata.filePath = fsys.Path(metadata.filePath)
+
+		errs := validateNestedFields("", metadata, unmarshaled, validate)
 		if len(errs) > 0 {
 			vErrs = append(vErrs, errs...)
 		}
@@ -57,18 +71,18 @@ func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
 	return vErrs
 }
 
-func validateNestedFields(parent string, fieldsFile string, fields fields, validate validateFunc) ve.ValidationErrors {
+func validateNestedFields(parent string, metadata fieldFileMetadata, fields fields, validate validateFunc) ve.ValidationErrors {
 	var result ve.ValidationErrors
 	for _, field := range fields {
 		if len(parent) > 0 {
 			field.Name = parent + "." + field.Name
 		}
-		errs := validate(fieldsFile, field)
+		errs := validate(metadata, field) // fichero, definicion campo (field), packageName, dataStreamName
 		if len(errs) > 0 {
 			result = append(result, errs...)
 		}
 		if len(field.Fields) > 0 {
-			errs := validateNestedFields(field.Name, fieldsFile, field.Fields, validate)
+			errs := validateNestedFields(field.Name, metadata, field.Fields, validate)
 			if len(errs) > 0 {
 				result = append(result, errs...)
 			}
@@ -77,8 +91,8 @@ func validateNestedFields(parent string, fieldsFile string, fields fields, valid
 	return result
 }
 
-func listFieldsFiles(fsys fspath.FS) ([]string, error) {
-	var fieldsFiles []string
+func listFieldsFiles(fsys fspath.FS, pkgName string) ([]fieldFileMetadata, error) {
+	var fieldsFilesMetadata []fieldFileMetadata
 
 	// integration packages
 	dataStreams, err := listDataStreams(fsys)
@@ -96,7 +110,10 @@ func listFieldsFiles(fsys fspath.FS) ([]string, error) {
 		if len(integrationFieldsFiles) == 0 {
 			continue
 		}
-		fieldsFiles = append(fieldsFiles, integrationFieldsFiles...)
+
+		for _, file := range integrationFieldsFiles {
+			fieldsFilesMetadata = append(fieldsFilesMetadata, fieldFileMetadata{filePath: file, dataStream: dataStream, packageName: pkgName})
+		}
 	}
 
 	// input packages
@@ -105,11 +122,11 @@ func listFieldsFiles(fsys fspath.FS) ([]string, error) {
 		return nil, fmt.Errorf("cannot read fields file from input packages: %w", err)
 	}
 
-	if len(inputFieldsFiles) > 0 {
-		fieldsFiles = append(fieldsFiles, inputFieldsFiles...)
+	for _, file := range inputFieldsFiles {
+		fieldsFilesMetadata = append(fieldsFilesMetadata, fieldFileMetadata{filePath: file, dataStream: "", packageName: pkgName})
 	}
 
-	return fieldsFiles, nil
+	return fieldsFilesMetadata, nil
 }
 
 func readFieldsFolder(fsys fspath.FS, fieldsDir string) ([]string, error) {

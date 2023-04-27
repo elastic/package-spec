@@ -45,13 +45,13 @@ func validateDataStreamRequiredFields(fsys fspath.FS, requiredFields map[string]
 		return ve.ValidationErrors{err}
 	}
 
-	checkField := func(fieldsFile string, f field) ve.ValidationErrors {
+	checkField := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
 		expectedType, found := requiredFields[f.Name]
 		if !found {
 			return nil
 		}
 
-		datastream, err := packageAndDataStreamFromFieldsPath(fsys.Path(), fieldsFile)
+		datastream, err := packageAndDataStreamFromFieldsPath(fsys.Path(), metadata.filePath)
 		if err != nil {
 			return ve.ValidationErrors{err}
 		}
@@ -66,7 +66,7 @@ func validateDataStreamRequiredFields(fsys fspath.FS, requiredFields map[string]
 		// the definition.
 		// More info in https://github.com/elastic/elastic-package/issues/749
 		if f.External == "" && f.Type != expectedType {
-			return ve.ValidationErrors{errors.Errorf("expected type %q for required field %q, found %q in %q", expectedType, f.Name, f.Type, fieldsFile)}
+			return ve.ValidationErrors{errors.Errorf("expected type %q for required field %q, found %q in %q", expectedType, f.Name, f.Type, metadata.filePath)}
 		}
 
 		return nil
@@ -89,7 +89,7 @@ func validateInputPackagesRequiresFields(fsys fspath.FS, requiredFields map[stri
 	// map datastream -> field name -> found
 	foundFields := make(map[string]struct{})
 
-	checkField := func(fieldsFile string, f field) ve.ValidationErrors {
+	checkField := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
 		expectedType, found := requiredFields[f.Name]
 		if !found {
 			return nil
@@ -102,7 +102,7 @@ func validateInputPackagesRequiresFields(fsys fspath.FS, requiredFields map[stri
 		// the definition.
 		// More info in https://github.com/elastic/elastic-package/issues/749
 		if f.External == "" && f.Type != expectedType {
-			return ve.ValidationErrors{errors.Errorf("expected type %q for required field %q, found %q in %q", expectedType, f.Name, f.Type, fieldsFile)}
+			return ve.ValidationErrors{errors.Errorf("expected type %q for required field %q, found %q in %q", expectedType, f.Name, f.Type, metadata.filePath)}
 		}
 
 		return nil

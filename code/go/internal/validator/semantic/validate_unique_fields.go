@@ -19,13 +19,13 @@ func ValidateUniqueFields(fsys fspath.FS) ve.ValidationErrors {
 	// data_stream -> field -> files
 	fields := make(map[string]map[string][]string)
 
-	countField := func(fieldsFile string, f field) ve.ValidationErrors {
+	countField := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
 		if len(f.Fields) > 0 {
 			// Don't count groups
 			return nil
 		}
 
-		dataStream, err := packageAndDataStreamFromFieldsPath(fsys.Path(), fieldsFile)
+		dataStream, err := packageAndDataStreamFromFieldsPath(fsys.Path(), metadata.filePath)
 		if err != nil {
 			return ve.ValidationErrors{err}
 		}
@@ -35,7 +35,7 @@ func ValidateUniqueFields(fsys fspath.FS) ve.ValidationErrors {
 			dsMap = make(map[string][]string)
 			fields[dataStream] = dsMap
 		}
-		dsMap[f.Name] = append(dsMap[f.Name], fieldsFile)
+		dsMap[f.Name] = append(dsMap[f.Name], metadata.filePath)
 		return nil
 	}
 

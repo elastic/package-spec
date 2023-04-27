@@ -80,9 +80,10 @@ func TestValidateDimensionFields(t *testing.T) {
 		},
 	}
 
+	metadata := fieldFileMetadata{filePath: "fields.yml"}
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
-			errs := validateDimensionField("fields.yml", c.field)
+			errs := validateDimensionField(metadata, c.field)
 			if c.valid {
 				assert.Empty(t, errs)
 			} else {
