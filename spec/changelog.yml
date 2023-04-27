@@ -7,7 +7,7 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/509
-  - description: Add new subcategories
+  - description: Add new subcategory "advanced_analytics_ueba"
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/515
 - version: 2.7.0
