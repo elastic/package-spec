@@ -5,8 +5,6 @@
 package semantic
 
 import (
-	"fmt"
-
 	"github.com/pkg/errors"
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
@@ -35,7 +33,7 @@ func ValidateRequiredFields(fsys fspath.FS) ve.ValidationErrors {
 	case "input":
 		return validateInputPackagesRequiresFields(fsys, requiredFields)
 	}
-	return ve.ValidationErrors{fmt.Errorf("package type %s not supported", pkg.Type)}
+	return nil
 }
 
 func validateDataStreamRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve.ValidationErrors {
