@@ -117,10 +117,6 @@ func listFieldsFiles(fsys fspath.FS) ([]fieldFileMetadata, error) {
 			return nil, fmt.Errorf("cannot read fields file from integration packages: %w", err)
 		}
 
-		if len(integrationFieldsFiles) == 0 {
-			continue
-		}
-
 		for _, file := range integrationFieldsFiles {
 			fieldsFilesMetadata = append(fieldsFilesMetadata, fieldFileMetadata{filePath: file, dataStream: dataStream})
 		}
