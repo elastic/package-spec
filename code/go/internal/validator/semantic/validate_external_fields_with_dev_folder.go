@@ -28,7 +28,7 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
 
 	mapDependencies := make(map[string]struct{})
 	if buildFilePathDefined {
-		dependencies, err := readDevBuildDependencies(f[0])
+		dependencies, err := readDevBuildDependenciesKeys(f[0])
 		if err != nil {
 			return ve.ValidationErrors{err}
 		}
@@ -54,29 +54,21 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
 	return validateFields(fsys, validateFunc)
 }
 
-func readDevBuildDependencies(f pkgpath.File) ([]string, error) {
+func readDevBuildDependenciesKeys(f pkgpath.File) ([]string, error) {
 	vals, err := f.Values("$.dependencies")
 	if err != nil {
 		return []string{}, fmt.Errorf("can't read dependencies: %w", err)
 	}
 
-	dependencies, err := toMapKeysSlice(vals)
-	if err != nil {
-		return []string{}, fmt.Errorf("can't convert to []string: %w", err)
-	}
-
-	return dependencies, nil
-}
-
-func toMapKeysSlice(val interface{}) ([]string, error) {
-	vals, ok := val.(map[string]interface{})
+	dependencies, ok := vals.(map[string]interface{})
 	if !ok {
-		return nil, fmt.Errorf("conversion error: %s", val)
+		return nil, fmt.Errorf("dependencies expected to be a map, found %T: %s", vals, vals)
 	}
 
-	var s []string
-	for k := range vals {
-		s = append(s, k)
+	var keys []string
+	for k := range dependencies {
+		keys = append(keys, k)
 	}
-	return s, nil
+
+	return keys, nil
 }
