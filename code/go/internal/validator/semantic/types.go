@@ -36,9 +36,17 @@ type field struct {
 }
 
 type fieldFileMetadata struct {
+	packageType string
 	packageName string
 	dataStream  string
 	filePath    string
+}
+
+func (f fieldFileMetadata) ID() string {
+	if f.packageType == "integration" {
+		return f.dataStream
+	}
+	return f.packageName
 }
 
 type validateFunc func(fileMetadata fieldFileMetadata, f field) ve.ValidationErrors
@@ -49,7 +57,7 @@ func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
 		return ve.ValidationErrors{err}
 	}
 
-	fieldsFilesMetadata, err := listFieldsFiles(fsys, pkg.Name)
+	fieldsFilesMetadata, err := listFieldsFiles(fsys)
 	if err != nil {
 		return ve.ValidationErrors{errors.Wrap(err, "can't list fields files")}
 	}
@@ -61,6 +69,8 @@ func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
 			vErrs = append(vErrs, errors.Wrapf(err, `file "%s" is invalid: can't unmarshal fields`, fsys.Path(metadata.filePath)))
 		}
 
+		metadata.packageType = pkg.Type
+		metadata.packageName = pkg.Name
 		metadata.filePath = fsys.Path(metadata.filePath)
 
 		errs := validateNestedFields("", metadata, unmarshaled, validate)
@@ -77,7 +87,7 @@ func validateNestedFields(parent string, metadata fieldFileMetadata, fields fiel
 		if len(parent) > 0 {
 			field.Name = parent + "." + field.Name
 		}
-		errs := validate(metadata, field) // fichero, definicion campo (field), packageName, dataStreamName
+		errs := validate(metadata, field)
 		if len(errs) > 0 {
 			result = append(result, errs...)
 		}
@@ -91,7 +101,7 @@ func validateNestedFields(parent string, metadata fieldFileMetadata, fields fiel
 	return result
 }
 
-func listFieldsFiles(fsys fspath.FS, pkgName string) ([]fieldFileMetadata, error) {
+func listFieldsFiles(fsys fspath.FS) ([]fieldFileMetadata, error) {
 	var fieldsFilesMetadata []fieldFileMetadata
 
 	// integration packages
@@ -112,7 +122,7 @@ func listFieldsFiles(fsys fspath.FS, pkgName string) ([]fieldFileMetadata, error
 		}
 
 		for _, file := range integrationFieldsFiles {
-			fieldsFilesMetadata = append(fieldsFilesMetadata, fieldFileMetadata{filePath: file, dataStream: dataStream, packageName: pkgName})
+			fieldsFilesMetadata = append(fieldsFilesMetadata, fieldFileMetadata{filePath: file, dataStream: dataStream})
 		}
 	}
 
@@ -123,7 +133,7 @@ func listFieldsFiles(fsys fspath.FS, pkgName string) ([]fieldFileMetadata, error
 	}
 
 	for _, file := range inputFieldsFiles {
-		fieldsFilesMetadata = append(fieldsFilesMetadata, fieldFileMetadata{filePath: file, dataStream: "", packageName: pkgName})
+		fieldsFilesMetadata = append(fieldsFilesMetadata, fieldFileMetadata{filePath: file, dataStream: ""})
 	}
 
 	return fieldsFilesMetadata, nil

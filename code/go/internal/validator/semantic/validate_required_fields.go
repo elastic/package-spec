@@ -51,15 +51,12 @@ func validateDataStreamRequiredFields(fsys fspath.FS, requiredFields map[string]
 			return nil
 		}
 
-		datastream, err := packageAndDataStreamFromFieldsPath(fsys.Path(), metadata.filePath)
-		if err != nil {
-			return ve.ValidationErrors{err}
-		}
+		id := metadata.ID()
 
-		if _, ok := foundFields[datastream]; !ok {
-			foundFields[datastream] = make(map[string]struct{})
+		if _, ok := foundFields[id]; !ok {
+			foundFields[id] = make(map[string]struct{})
 		}
-		foundFields[datastream][f.Name] = struct{}{}
+		foundFields[id][f.Name] = struct{}{}
 
 		// Check if type is the expected one, but only for fields what are
 		// not declared as external. External fields won't have a type in
