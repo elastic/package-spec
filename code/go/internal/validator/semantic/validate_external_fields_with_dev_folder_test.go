@@ -7,6 +7,7 @@ package semantic
 import (
 	"os"
 	"path/filepath"
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -48,6 +49,8 @@ func TestReadDevBuildDependenciesKeys(t *testing.T) {
 
 			list, err := readDevBuildDependenciesKeys(f[0])
 			require.NoError(t, err)
+
+			sort.Strings(list)
 			assert.Equal(t, test.expected, list)
 		})
 	}
