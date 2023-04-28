@@ -32,7 +32,7 @@ func ValidateUniqueFields(fsys fspath.FS) ve.ValidationErrors {
 			dsMap = make(map[string][]string)
 			fields[id] = dsMap
 		}
-		dsMap[f.Name] = append(dsMap[f.Name], metadata.filePath)
+		dsMap[f.Name] = append(dsMap[f.Name], metadata.fullFilePath)
 		return nil
 	}
 

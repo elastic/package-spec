@@ -63,7 +63,7 @@ func validateDataStreamRequiredFields(fsys fspath.FS, requiredFields map[string]
 		// the definition.
 		// More info in https://github.com/elastic/elastic-package/issues/749
 		if f.External == "" && f.Type != expectedType {
-			return ve.ValidationErrors{errors.Errorf("expected type %q for required field %q, found %q in %q", expectedType, f.Name, f.Type, metadata.filePath)}
+			return ve.ValidationErrors{errors.Errorf("expected type %q for required field %q, found %q in %q", expectedType, f.Name, f.Type, metadata.fullFilePath)}
 		}
 
 		return nil
@@ -99,7 +99,7 @@ func validateInputPackagesRequiresFields(fsys fspath.FS, requiredFields map[stri
 		// the definition.
 		// More info in https://github.com/elastic/elastic-package/issues/749
 		if f.External == "" && f.Type != expectedType {
-			return ve.ValidationErrors{errors.Errorf("expected type %q for required field %q, found %q in %q", expectedType, f.Name, f.Type, metadata.filePath)}
+			return ve.ValidationErrors{errors.Errorf("expected type %q for required field %q, found %q in %q", expectedType, f.Name, f.Type, metadata.fullFilePath)}
 		}
 
 		return nil

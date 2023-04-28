@@ -9,7 +9,6 @@ import (
 	"io/fs"
 	"os"
 	"path"
-	"strings"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
@@ -36,10 +35,11 @@ type field struct {
 }
 
 type fieldFileMetadata struct {
-	packageType string
-	packageName string
-	dataStream  string
-	filePath    string
+	packageType  string
+	packageName  string
+	dataStream   string
+	filePath     string
+	fullFilePath string
 }
 
 func (f fieldFileMetadata) ID() string {
@@ -52,10 +52,6 @@ func (f fieldFileMetadata) ID() string {
 type validateFunc func(fileMetadata fieldFileMetadata, f field) ve.ValidationErrors
 
 func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
-	pkg, err := packages.NewPackageFromFS(fsys.Path(), fsys)
-	if err != nil {
-		return ve.ValidationErrors{err}
-	}
 
 	fieldsFilesMetadata, err := listFieldsFiles(fsys)
 	if err != nil {
@@ -68,10 +64,6 @@ func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
 		if err != nil {
 			vErrs = append(vErrs, errors.Wrapf(err, `file "%s" is invalid: can't unmarshal fields`, fsys.Path(metadata.filePath)))
 		}
-
-		metadata.packageType = pkg.Type
-		metadata.packageName = pkg.Name
-		metadata.filePath = fsys.Path(metadata.filePath)
 
 		errs := validateNestedFields("", metadata, unmarshaled, validate)
 		if len(errs) > 0 {
@@ -104,6 +96,11 @@ func validateNestedFields(parent string, metadata fieldFileMetadata, fields fiel
 func listFieldsFiles(fsys fspath.FS) ([]fieldFileMetadata, error) {
 	var fieldsFilesMetadata []fieldFileMetadata
 
+	pkg, err := packages.NewPackageFromFS(fsys.Path(), fsys)
+	if err != nil {
+		return nil, ve.ValidationErrors{err}
+	}
+
 	// integration packages
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
@@ -118,7 +115,15 @@ func listFieldsFiles(fsys fspath.FS) ([]fieldFileMetadata, error) {
 		}
 
 		for _, file := range integrationFieldsFiles {
-			fieldsFilesMetadata = append(fieldsFilesMetadata, fieldFileMetadata{filePath: file, dataStream: dataStream})
+			fieldsFilesMetadata = append(
+				fieldsFilesMetadata,
+				fieldFileMetadata{
+					filePath:     file,
+					fullFilePath: fsys.Path(file),
+					dataStream:   dataStream,
+					packageName:  pkg.Name,
+					packageType:  pkg.Type,
+				})
 		}
 	}
 
@@ -129,7 +134,15 @@ func listFieldsFiles(fsys fspath.FS) ([]fieldFileMetadata, error) {
 	}
 
 	for _, file := range inputFieldsFiles {
-		fieldsFilesMetadata = append(fieldsFilesMetadata, fieldFileMetadata{filePath: file, dataStream: ""})
+		fieldsFilesMetadata = append(
+			fieldsFilesMetadata,
+			fieldFileMetadata{
+				filePath:     file,
+				fullFilePath: fsys.Path(file),
+				dataStream:   "",
+				packageName:  pkg.Name,
+				packageType:  pkg.Type,
+			})
 	}
 
 	return fieldsFilesMetadata, nil
@@ -163,48 +176,6 @@ func unmarshalFields(fsys fspath.FS, fieldsPath string) (fields, error) {
 		return nil, errors.Wrapf(err, "yaml.Unmarshal failed (path: %s)", fieldsPath)
 	}
 	return f, nil
-}
-
-func dataStreamFromFieldsPath(pkgRoot, fieldsFile string) (string, error) {
-	dataStreamPath := path.Clean(path.Join(pkgRoot, "data_stream")) + "/"
-	if !strings.HasPrefix(path.Clean(fieldsFile), dataStreamPath) {
-		return "", errors.Errorf("%q is not a fields file in a data stream of %q", fieldsFile, dataStreamPath)
-	}
-	relPath := strings.TrimPrefix(path.Clean(fieldsFile), dataStreamPath)
-
-	parts := strings.SplitN(relPath, "/", 2)
-	if len(parts) != 2 {
-		return "", errors.Errorf("could not find data stream for fields file %s", fieldsFile)
-	}
-	dataStream := parts[0]
-	packageName := path.Base(path.Clean(pkgRoot))
-
-	return fmt.Sprintf("%s-%s", packageName, dataStream), nil
-}
-
-// TODO
-func packageAndDataStreamFromFieldsPath(pkgRoot, fieldsFile string) (string, error) {
-	dataStreamPath := path.Clean(path.Join(pkgRoot, "data_stream")) + "/"
-	inputFieldsPath := path.Clean(path.Join(pkgRoot, "fields")) + "/"
-	packageName := path.Base(path.Clean(pkgRoot))
-
-	if strings.HasPrefix(path.Clean(fieldsFile), inputFieldsPath) {
-		return packageName, nil
-	}
-
-	if strings.HasPrefix(path.Clean(fieldsFile), dataStreamPath) {
-		relPath := strings.TrimPrefix(path.Clean(fieldsFile), dataStreamPath)
-
-		parts := strings.SplitN(relPath, "/", 2)
-		if len(parts) != 2 {
-			return "", errors.Errorf("could not find data stream for fields file %s", fieldsFile)
-		}
-		dataStream := parts[0]
-		return dataStream, nil
-		// return fmt.Sprintf("%s-%s", packageName, dataStream), nil
-	}
-
-	return "", errors.Errorf("%q is not a fields file from an integration or input package", fieldsFile)
 }
 
 func listDataStreams(fsys fspath.FS) ([]string, error) {
