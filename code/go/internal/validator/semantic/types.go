@@ -51,7 +51,7 @@ func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
 	for _, metadata := range fieldsFilesMetadata {
 		unmarshaled, err := unmarshalFields(fsys, metadata.filePath)
 		if err != nil {
-			vErrs = append(vErrs, errors.Wrapf(err, `file "%s" is invalid: can't unmarshal fields`, metadata.fullFilePath))
+			vErrs = append(vErrs, errors.Wrapf(err, `file "%s" is invalid: can't unmarshal fields`, metadata.filePath))
 		}
 
 		errs := validateNestedFields("", metadata, unmarshaled, validate)
