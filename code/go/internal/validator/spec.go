@@ -125,6 +125,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateDimensionFields},
 		{fn: semantic.ValidateDateFields},
 		{fn: semantic.ValidateRequiredFields},
+		{fn: semantic.ValidateExternalFieldsWithDevFolder},
 		{fn: semantic.ValidateVisualizationsUsedByValue, types: []string{"integration"}},
 		{fn: semantic.ValidateILMPolicyPresent, since: semver.MustParse("2.0.0"), types: []string{"integration"}},
 		{fn: semantic.ValidateProfilingNonGA, types: []string{"integration"}},
