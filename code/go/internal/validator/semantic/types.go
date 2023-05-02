@@ -45,7 +45,6 @@ type fieldFileMetadata struct {
 type validateFunc func(fileMetadata fieldFileMetadata, f field) ve.ValidationErrors
 
 func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
-
 	fieldsFilesMetadata, err := listFieldsFiles(fsys)
 	if err != nil {
 		return ve.ValidationErrors{errors.Wrap(err, "can't list fields files")}
@@ -55,7 +54,7 @@ func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
 	for _, metadata := range fieldsFilesMetadata {
 		unmarshaled, err := unmarshalFields(fsys, metadata.filePath)
 		if err != nil {
-			vErrs = append(vErrs, errors.Wrapf(err, `file "%s" is invalid: can't unmarshal fields`, fsys.Path(metadata.filePath)))
+			vErrs = append(vErrs, errors.Wrapf(err, `file "%s" is invalid: can't unmarshal fields`, metadata.fullFilePath))
 		}
 
 		errs := validateNestedFields("", metadata, unmarshaled, validate)
