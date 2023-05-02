@@ -302,6 +302,10 @@ func TestValidateMissingReqiredFields(t *testing.T) {
 			`expected type "constant_keyword" for required field "data_stream.dataset", found "keyword" in "../../../../test/packages/missing_required_fields/data_stream/foo/fields/base-fields.yml"`,
 			`expected field "data_stream.type" with type "constant_keyword" not found in datastream "foo"`,
 		},
+		"missing_required_fields_input": {
+			`expected type "constant_keyword" for required field "data_stream.dataset", found "keyword" in "../../../../test/packages/missing_required_fields/data_stream/foo/fields/base-fields.yml"`,
+			`expected field "data_stream.type" with type "constant_keyword" not found in datastream "foo"`,
+		},
 	}
 
 	for pkgName, expectedErrors := range tests {
@@ -327,7 +331,7 @@ func TestValidateMissingReqiredFields(t *testing.T) {
 					}
 				}
 				if !found {
-					t.Errorf("expected error: %q", expectedError)
+					t.Errorf("expected error: %q (%v)", expectedError, errs)
 				}
 			}
 		})

@@ -31,7 +31,8 @@ func ValidateRequiredFields(fsys fspath.FS) ve.ValidationErrors {
 	case "integration":
 		return validateDataStreamRequiredFields(fsys, requiredFields)
 	case "input":
-		return validateInputPackagesRequiresFields(fsys, requiredFields)
+		// return validateInputPackagesRequiresFields(fsys, requiredFields)
+		return validateDataStreamRequiredFields(fsys, requiredFields)
 	}
 	return nil
 }
