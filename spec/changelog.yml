@@ -7,6 +7,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/509
+  - description: Add new subcategory "advanced_analytics_ueba"
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/515
   - description: Add support for field validation in input packages
     type: bugfix
     link: https://github.com/elastic/package-spec/pull/516
