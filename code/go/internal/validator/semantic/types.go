@@ -15,7 +15,6 @@ import (
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 )
 
 const dataStreamDir = "data_stream"
@@ -35,8 +34,6 @@ type field struct {
 }
 
 type fieldFileMetadata struct {
-	packageType  string
-	packageName  string
 	dataStream   string
 	filePath     string
 	fullFilePath string
@@ -88,11 +85,6 @@ func validateNestedFields(parent string, metadata fieldFileMetadata, fields fiel
 func listFieldsFiles(fsys fspath.FS) ([]fieldFileMetadata, error) {
 	var fieldsFilesMetadata []fieldFileMetadata
 
-	pkg, err := packages.NewPackageFromFS(fsys.Path(), fsys)
-	if err != nil {
-		return nil, ve.ValidationErrors{err}
-	}
-
 	// integration packages
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
@@ -113,8 +105,6 @@ func listFieldsFiles(fsys fspath.FS) ([]fieldFileMetadata, error) {
 					filePath:     file,
 					fullFilePath: fsys.Path(file),
 					dataStream:   dataStream,
-					packageName:  pkg.Name,
-					packageType:  pkg.Type,
 				})
 		}
 	}
@@ -132,8 +122,6 @@ func listFieldsFiles(fsys fspath.FS) ([]fieldFileMetadata, error) {
 				filePath:     file,
 				fullFilePath: fsys.Path(file),
 				dataStream:   "",
-				packageName:  pkg.Name,
-				packageType:  pkg.Type,
 			})
 	}
 
