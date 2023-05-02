@@ -7,6 +7,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/509
+  - description: Add new subcategory "advanced_analytics_ueba"
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/515
   - description: Rename e2e benchmarks to system for consistency with other tests
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/512
