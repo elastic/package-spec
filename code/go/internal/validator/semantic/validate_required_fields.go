@@ -55,15 +55,15 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve
 	foundFields := make(map[string]map[string]struct{})
 
 	checkField := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
-		expectedType, found := requiredFields[f.Name]
-		if !found {
-			return nil
-		}
-
 		if _, ok := foundFields[metadata.dataStream]; !ok {
 			foundFields[metadata.dataStream] = make(map[string]struct{})
 		}
 		foundFields[metadata.dataStream][f.Name] = struct{}{}
+
+		expectedType, found := requiredFields[f.Name]
+		if !found {
+			return nil
+		}
 
 		// Check if type is the expected one, but only for fields what are
 		// not declared as external. External fields won't have a type in
