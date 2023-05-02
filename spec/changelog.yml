@@ -4,6 +4,18 @@
 ##
 - version: 2.8.0-next
   changes:
+  - description: Add new subcategory "advanced_analytics_ueba"
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/515
+  - description: Rename e2e benchmarks to system for consistency with other tests
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/512
+  - description: Extend system benchmarks spec to allow for corpus generator configs
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/512
+  - description: Add validation to avoid fields with external key without _dev/build/build.yml file
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/513
   - description: Add support to define runtime fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/505
