@@ -26,9 +26,8 @@ func validateFieldsLimits(fsys fspath.FS, limit int) ve.ValidationErrors {
 			return nil
 		}
 
-		id := metadata.ID()
-		count, _ := counts[id]
-		counts[id] = count + 1
+		count, _ := counts[metadata.dataStream]
+		counts[metadata.dataStream] = count + 1
 		return nil
 	}
 
