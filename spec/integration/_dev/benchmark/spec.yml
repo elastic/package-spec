@@ -2,9 +2,9 @@ spec:
   additionalContents: false
   developmentFolder: true
   contents:
-    - description: Folder containing end-to-end benchmarks scenarios.
+    - description: Folder containing system benchmarks scenarios.
       type: folder
-      name: e2e
+      name: system
       required: false
       additionalContents: false
       contents:
