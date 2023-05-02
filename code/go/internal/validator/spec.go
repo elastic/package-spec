@@ -140,7 +140,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 			continue
 		}
 
-		if rule.types != nil && !contains(rule.types, pkgType) {
+		if rule.types != nil && !stringSliceContains(rule.types, pkgType) {
 			continue
 		}
 
@@ -150,7 +150,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 	return validationRules
 }
 
-func contains(elems []string, v string) bool {
+func stringSliceContains(elems []string, v string) bool {
 	for _, a := range elems {
 		if a == v {
 			return true
