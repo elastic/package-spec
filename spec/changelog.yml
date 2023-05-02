@@ -7,6 +7,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/509
+  - description: Add new subcategory "advanced_analytics_ueba"
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/515
   - description: Add validation to avoid fields with external key without _dev/build/build.yml file
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/513
