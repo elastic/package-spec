@@ -24,25 +24,25 @@ func ValidateRequiredFields(fsys fspath.FS) ve.ValidationErrors {
 	return validateRequiredFields(fsys, requiredFields)
 }
 
-type UnexpectedTypeRequiredField struct {
+type unexpectedTypeRequiredField struct {
 	field        string
 	expectedType string
 	foundType    string
 	fullPath     string
 }
 
-func (e UnexpectedTypeRequiredField) Error() string {
+func (e unexpectedTypeRequiredField) Error() string {
 	return fmt.Sprintf("expected type %q for required field %q, found %q in %q", e.expectedType, e.field, e.foundType, e.fullPath)
 }
 
-type NotFoundRequiredField struct {
+type notFoundRequiredField struct {
 	field        string
 	expectedType string
 	id           string
 	packageName  string
 }
 
-func (e NotFoundRequiredField) Error() string {
+func (e notFoundRequiredField) Error() string {
 	message := fmt.Sprintf("expected field %q with type %q not found", e.field, e.expectedType)
 	if e.packageName != e.id {
 		message = fmt.Sprintf("%s in datastream %q", message, e.id)
