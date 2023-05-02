@@ -28,6 +28,7 @@ type unexpectedTypeRequiredField struct {
 	field        string
 	expectedType string
 	foundType    string
+	dataStream   string
 	fullPath     string
 }
 
@@ -38,14 +39,13 @@ func (e unexpectedTypeRequiredField) Error() string {
 type notFoundRequiredField struct {
 	field        string
 	expectedType string
-	id           string
-	packageName  string
+	dataStream   string
 }
 
 func (e notFoundRequiredField) Error() string {
 	message := fmt.Sprintf("expected field %q with type %q not found", e.field, e.expectedType)
-	if e.packageName != e.id {
-		message = fmt.Sprintf("%s in datastream %q", message, e.id)
+	if e.dataStream != "" {
+		message = fmt.Sprintf("%s in datastream %q", message, e.dataStream)
 	}
 	return message
 }
@@ -54,30 +54,16 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve
 	// map datastream/package -> field name -> found
 	foundFields := make(map[string]map[string]struct{})
 
-	dataStreams, err := listDataStreams(fsys)
-	if err != nil {
-		return ve.ValidationErrors{err}
-	}
-	packageName := ""
-
 	checkField := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
 		expectedType, found := requiredFields[f.Name]
 		if !found {
 			return nil
 		}
 
-		id := metadata.ID()
-
-		packageName = metadata.packageName
-		// if there are no data streams, then it is an input package and the package name is added
-		if len(dataStreams) == 0 {
-			dataStreams = append(dataStreams, metadata.packageName)
+		if _, ok := foundFields[metadata.dataStream]; !ok {
+			foundFields[metadata.dataStream] = make(map[string]struct{})
 		}
-
-		if _, ok := foundFields[id]; !ok {
-			foundFields[id] = make(map[string]struct{})
-		}
-		foundFields[id][f.Name] = struct{}{}
+		foundFields[metadata.dataStream][f.Name] = struct{}{}
 
 		// Check if type is the expected one, but only for fields what are
 		// not declared as external. External fields won't have a type in
@@ -88,6 +74,7 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve
 				unexpectedTypeRequiredField{
 					field:        f.Name,
 					foundType:    f.Type,
+					dataStream:   metadata.dataStream,
 					fullPath:     metadata.fullFilePath,
 					expectedType: expectedType,
 				},
@@ -98,16 +85,16 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve
 	}
 	errs := validateFields(fsys, checkField)
 
-	for _, dataStream := range dataStreams {
-		dataStreamFields := foundFields[dataStream]
+	// Using the data streams found here, since there could not be a data stream
+	// without the `fields` folder or an input package without that folder
+	for dataStream, dataStreamFields := range foundFields {
 		for requiredName, requiredType := range requiredFields {
 			if _, found := dataStreamFields[requiredName]; !found {
 				errs = append(errs,
 					notFoundRequiredField{
 						field:        requiredName,
 						expectedType: requiredType,
-						id:           dataStream,
-						packageName:  packageName,
+						dataStream:   dataStream,
 					},
 				)
 			}

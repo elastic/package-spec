@@ -42,13 +42,6 @@ type fieldFileMetadata struct {
 	fullFilePath string
 }
 
-func (f fieldFileMetadata) ID() string {
-	if f.packageType == "integration" {
-		return f.dataStream
-	}
-	return f.packageName
-}
-
 type validateFunc func(fileMetadata fieldFileMetadata, f field) ve.ValidationErrors
 
 func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {

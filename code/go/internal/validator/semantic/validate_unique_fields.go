@@ -25,12 +25,10 @@ func ValidateUniqueFields(fsys fspath.FS) ve.ValidationErrors {
 			return nil
 		}
 
-		id := metadata.ID()
-
-		dsMap, found := fields[id]
+		dsMap, found := fields[metadata.dataStream]
 		if !found {
 			dsMap = make(map[string][]string)
-			fields[id] = dsMap
+			fields[metadata.dataStream] = dsMap
 		}
 		dsMap[f.Name] = append(dsMap[f.Name], metadata.fullFilePath)
 		return nil
