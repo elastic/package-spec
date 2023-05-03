@@ -17,14 +17,14 @@ func ValidateDimensionFields(fsys fspath.FS) errors.ValidationErrors {
 	return validateFields(fsys, validateDimensionField)
 }
 
-func validateDimensionField(fieldsFile string, f field) errors.ValidationErrors {
+func validateDimensionField(metadata fieldFileMetadata, f field) errors.ValidationErrors {
 	if f.External != "" {
 		// TODO: External fields can be used as dimensions, but we cannot resolve
 		// them at this point, so accept them as they are by now.
 		return nil
 	}
 	if f.Dimension && !isAllowedDimensionType(f.Type) {
-		return errors.ValidationErrors{fmt.Errorf(`file "%s" is invalid: field "%s" of type %s can't be a dimension, allowed types for dimensions: %s`, fieldsFile, f.Name, f.Type, strings.Join(allowedDimensionTypes, ", "))}
+		return errors.ValidationErrors{fmt.Errorf(`file "%s" is invalid: field "%s" of type %s can't be a dimension, allowed types for dimensions: %s`, metadata.fullFilePath, f.Name, f.Type, strings.Join(allowedDimensionTypes, ", "))}
 	}
 
 	return nil

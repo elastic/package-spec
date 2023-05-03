@@ -16,6 +16,9 @@
   - description: Add validation to avoid fields with external key without _dev/build/build.yml file
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/513
+  - description: Add support for field validation in input packages
+    type: bugfix
+    link: https://github.com/elastic/package-spec/pull/516
   - description: Add support to define runtime fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/505

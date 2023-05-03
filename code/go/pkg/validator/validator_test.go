@@ -313,6 +313,10 @@ func TestValidateMissingRequiredFields(t *testing.T) {
 			`expected type "constant_keyword" for required field "data_stream.dataset", found "keyword" in "../../../../test/packages/missing_required_fields/data_stream/foo/fields/base-fields.yml"`,
 			`expected field "data_stream.type" with type "constant_keyword" not found in datastream "foo"`,
 		},
+		"missing_required_fields_input": {
+			`expected type "constant_keyword" for required field "data_stream.dataset", found "keyword" in "../../../../test/packages/missing_required_fields_input/fields/base-fields.yml"`,
+			`expected field "data_stream.type" with type "constant_keyword" not found`,
+		},
 	}
 
 	for pkgName, expectedErrors := range tests {
@@ -338,7 +342,7 @@ func TestValidateMissingRequiredFields(t *testing.T) {
 					}
 				}
 				if !found {
-					t.Errorf("expected error: %q", expectedError)
+					t.Errorf("expected error: %q (%v)", expectedError, errs)
 				}
 			}
 		})
@@ -369,7 +373,8 @@ func TestValidateVersionIntegrity(t *testing.T) {
 
 func TestValidateDuplicatedFields(t *testing.T) {
 	tests := map[string]string{
-		"bad_duplicated_fields": "field \"event.dataset\" is defined multiple times for data stream \"wrong\", found in: ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/ecs.yml",
+		"bad_duplicated_fields":       "field \"event.dataset\" is defined multiple times for data stream \"wrong\", found in: ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/ecs.yml",
+		"bad_duplicated_fields_input": "field \"event.dataset\" is defined multiple times for data stream \"\", found in: ../../../../test/packages/bad_duplicated_fields_input/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields_input/fields/ecs.yml",
 	}
 
 	for pkgName, expectedErrorMessage := range tests {

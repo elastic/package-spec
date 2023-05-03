@@ -1,0 +1,60 @@
+format_version: 2.5.1
+name: missing_required_fields_input
+title: "Missing Required fields Input package"
+version: 0.0.1
+source:
+  license: "Elastic-2.0"
+description: "This input package does not have the expected fields"
+type: input
+categories:
+  - custom
+conditions:
+  kibana.version: "^8.6.2"
+  elastic.subscription: "basic"
+screenshots:
+  - src: /img/sample-screenshot.png
+    title: Sample screenshot
+    size: 600x600
+    type: image/png
+icons:
+  - src: /img/sample-logo.svg
+    title: Sample logo
+    size: 32x32
+    type: image/svg+xml
+policy_templates:
+  - name: sample
+    type: logs
+    input: log_file
+    title: Sample logs
+    description: Collect sample logs
+    vars:
+      - name: paths
+        required: true
+        title: Log file path
+        description: Path to log files to be collected
+        type: text
+        multi: true
+      - name: data_stream.dataset
+        required: true
+        title: Dataset name
+        description: >
+          Set the name for your dataset. Changing the dataset will send the data to a different index. You can't use `-` in the name of a dataset and only valid characters for [Elasticsearch index names](https://www.elastic.co/guide/en/elasticsearch/reference/current/docs-index_.html).
+
+        type: text
+      - name: tags
+        type: text
+        title: Tags
+        description: Tags to include in the published event
+        multi: true
+        show_user: false
+      - name: processors
+        type: yaml
+        title: Processors
+        multi: false
+        required: false
+        show_user: false
+        description: >-
+          Processors are used to reduce the number of fields in the exported event or to enhance the event with metadata. This executes in the agent before the logs are parsed. See [Processors](https://www.elastic.co/guide/en/beats/filebeat/current/filtering-and-enhancing-data.html) for details.
+
+owner:
+  github: elastic/integrations
