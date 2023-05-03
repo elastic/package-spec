@@ -20,18 +20,14 @@ func ValidateFieldsLimits(limit int) func(fspath.FS) ve.ValidationErrors {
 
 func validateFieldsLimits(fsys fspath.FS, limit int) ve.ValidationErrors {
 	counts := make(map[string]int)
-	countField := func(fieldsFile string, f field) ve.ValidationErrors {
+	countField := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
 		if len(f.Fields) > 0 {
 			// Don't count groups
 			return nil
 		}
 
-		dataStream, err := dataStreamFromFieldsPath(fsys.Path(), fieldsFile)
-		if err != nil {
-			return ve.ValidationErrors{err}
-		}
-		count, _ := counts[dataStream]
-		counts[dataStream] = count + 1
+		count, _ := counts[metadata.dataStream]
+		counts[metadata.dataStream] = count + 1
 		return nil
 	}
 
@@ -41,9 +37,9 @@ func validateFieldsLimits(fsys fspath.FS, limit int) ve.ValidationErrors {
 	}
 
 	var errs ve.ValidationErrors
-	for dataStream, count := range counts {
+	for id, count := range counts {
 		if count > limit {
-			errs = append(errs, errors.Errorf("data stream %s has more than %d fields (%d)", dataStream, limit, count))
+			errs = append(errs, errors.Errorf("data stream %s has more than %d fields (%d)", id, limit, count))
 		}
 	}
 	return errs

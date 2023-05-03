@@ -37,17 +37,17 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
 		}
 	}
 
-	validateFunc := func(fieldsFile string, f field) ve.ValidationErrors {
+	validateFunc := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
 		if f.External == "" {
 			return nil
 		}
 
 		if !buildFilePathDefined {
-			return ve.ValidationErrors{fmt.Errorf("file \"%s\" is invalid: field %s with external key defined (%q) but no _dev/build/build.yml found", fieldsFile, f.Name, f.External)}
+			return ve.ValidationErrors{fmt.Errorf("file \"%s\" is invalid: field %s with external key defined (%q) but no _dev/build/build.yml found", metadata.fullFilePath, f.Name, f.External)}
 		}
 
 		if _, ok := mapDependencies[f.External]; !ok {
-			return ve.ValidationErrors{fmt.Errorf("file \"%s\" is invalid: field %s with external key defined (%q) but no definition found for it (_dev/build/build.yml)", fieldsFile, f.Name, f.External)}
+			return ve.ValidationErrors{fmt.Errorf("file \"%s\" is invalid: field %s with external key defined (%q) but no definition found for it (_dev/build/build.yml)", metadata.fullFilePath, f.Name, f.External)}
 		}
 		return nil
 	}

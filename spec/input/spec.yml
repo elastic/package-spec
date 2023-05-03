@@ -11,6 +11,7 @@ spec:
   sizeLimit: 30MB
   configurationSizeLimit: 5MB
   relativePathSizeLimit: 3MB
+  fieldsPerDataStreamLimit: 2048
   contents:
   - description: The main package manifest file
     type: file

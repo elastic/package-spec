@@ -19,23 +19,18 @@ func ValidateUniqueFields(fsys fspath.FS) ve.ValidationErrors {
 	// data_stream -> field -> files
 	fields := make(map[string]map[string][]string)
 
-	countField := func(fieldsFile string, f field) ve.ValidationErrors {
+	countField := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
 		if len(f.Fields) > 0 {
 			// Don't count groups
 			return nil
 		}
 
-		dataStream, err := dataStreamFromFieldsPath(fsys.Path(), fieldsFile)
-		if err != nil {
-			return ve.ValidationErrors{err}
-		}
-
-		dsMap, found := fields[dataStream]
+		dsMap, found := fields[metadata.dataStream]
 		if !found {
 			dsMap = make(map[string][]string)
-			fields[dataStream] = dsMap
+			fields[metadata.dataStream] = dsMap
 		}
-		dsMap[f.Name] = append(dsMap[f.Name], fieldsFile)
+		dsMap[f.Name] = append(dsMap[f.Name], metadata.fullFilePath)
 		return nil
 	}
 
@@ -45,13 +40,13 @@ func ValidateUniqueFields(fsys fspath.FS) ve.ValidationErrors {
 	}
 
 	var errs ve.ValidationErrors
-	for dataStream, dataStreamFields := range fields {
-		for field, files := range dataStreamFields {
+	for id, defs := range fields {
+		for field, files := range defs {
 			if len(files) > 1 {
 				sort.Strings(files)
 				errs = append(errs,
 					errors.Errorf("field %q is defined multiple times for data stream %q, found in: %s",
-						field, dataStream, strings.Join(files, ", ")))
+						field, id, strings.Join(files, ", ")))
 			}
 		}
 

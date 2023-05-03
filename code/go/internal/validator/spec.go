@@ -64,7 +64,7 @@ func (s Spec) ValidatePackage(pkg packages.Package) ve.ValidationErrors {
 	errs = append(errs, validator.Validate()...)
 
 	// Semantic validations
-	errs = append(errs, s.rules(rootSpec).validate(&pkg)...)
+	errs = append(errs, s.rules(pkg.Type, rootSpec).validate(&pkg)...)
 
 	return processErrors(errs)
 }
@@ -108,13 +108,13 @@ func processErrors(errs ve.ValidationErrors) ve.ValidationErrors {
 	return processedErrs
 }
 
-func (s Spec) rules(rootSpec spectypes.ItemSpec) validationRules {
+func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules {
 	rulesDef := []struct {
 		fn    validationRule
 		since *semver.Version
 		until *semver.Version
+		types []string
 	}{
-		{fn: semantic.ValidateKibanaObjectIDs},
 		{fn: semantic.ValidateVersionIntegrity},
 		{fn: semantic.ValidateChangelogLinks},
 		{fn: semantic.ValidatePrerelease},
@@ -125,10 +125,11 @@ func (s Spec) rules(rootSpec spectypes.ItemSpec) validationRules {
 		{fn: semantic.ValidateDimensionFields},
 		{fn: semantic.ValidateDateFields},
 		{fn: semantic.ValidateRequiredFields},
-		{fn: semantic.ValidateVisualizationsUsedByValue},
-		{fn: semantic.ValidateILMPolicyPresent, since: semver.MustParse("2.0.0")},
-		{fn: semantic.ValidateProfilingNonGA},
 		{fn: semantic.ValidateExternalFieldsWithDevFolder},
+		{fn: semantic.ValidateVisualizationsUsedByValue, types: []string{"integration"}},
+		{fn: semantic.ValidateILMPolicyPresent, since: semver.MustParse("2.0.0"), types: []string{"integration"}},
+		{fn: semantic.ValidateProfilingNonGA, types: []string{"integration"}},
+		{fn: semantic.ValidateKibanaObjectIDs, types: []string{"integration"}},
 	}
 
 	var validationRules validationRules
@@ -139,10 +140,24 @@ func (s Spec) rules(rootSpec spectypes.ItemSpec) validationRules {
 		if rule.until != nil && !s.version.LessThan(rule.until) {
 			continue
 		}
+
+		if rule.types != nil && !stringSliceContains(rule.types, pkgType) {
+			continue
+		}
+
 		validationRules = append(validationRules, rule.fn)
 	}
 
 	return validationRules
+}
+
+func stringSliceContains(elems []string, v string) bool {
+	for _, a := range elems {
+		if a == v {
+			return true
+		}
+	}
+	return false
 }
 
 func (vr validationRules) validate(fsys fspath.FS) ve.ValidationErrors {
