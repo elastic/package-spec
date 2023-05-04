@@ -12,6 +12,19 @@ spec:
         - sum
         - value_count
         - avg
+    runtime:
+      description: >
+        Specifies if this field is evaluated at query time. If it is set to true,
+        it creates a runtime script with `params._source['<field>']`. If this field
+        is a string, it creates the runtime script using this string set in the
+        definition. More info at https://www.elastic.co/guide/en/elasticsearch/reference/current/runtime-mapping-fields.html
+      anyOf:
+        - type: string
+        - type: boolean
+      default: false
+      examples:
+        - true
+        - "doc['message'].value().doSomething()"
 
   type: array
   items:
@@ -380,6 +393,7 @@ spec:
       # Conditional properties.
       default_metric: true
       metrics: true
+      runtime: true
 
     allOf:
       - if:
@@ -416,6 +430,27 @@ spec:
           not:
             required:
               - metrics
+      - if:
+          properties:
+            type:
+              enum:
+                - boolean
+                - date
+                - double
+                - geo_point
+                - ip
+                - keyword
+                - long
+          required:
+            - type
+        then:
+          properties:
+            runtime:
+              $ref: "#/definitions/runtime"
+        else:
+          not:
+            required:
+              - runtime
 
     required:
     - name
@@ -438,3 +473,9 @@ versions:
     patch:
       - op: remove
         path: "/items/properties/type/enum/0"
+  - before: 2.8.0
+    patch:
+      - op: remove
+        path: "/items/properties/runtime"
+      - op: remove
+        path: "/items/allOf/2"

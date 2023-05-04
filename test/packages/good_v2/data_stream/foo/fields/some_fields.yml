@@ -65,3 +65,10 @@
   type: aggregate_metric_double
   metrics: ["min", "max", "sum", "value_count"]
   default_metric: "max"
+- name: runtime_boolean
+  type: boolean
+  runtime: true
+- name: runtime_string
+  type: keyword
+  runtime: |
+    doc['message'].value().doSomething()

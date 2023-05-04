@@ -5,10 +5,12 @@
 package semantic
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/fs"
 	"os"
 	"path"
+	"strconv"
 
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
@@ -21,6 +23,74 @@ const dataStreamDir = "data_stream"
 
 type fields []field
 
+type runtimeField struct {
+	enabled bool
+	script  string
+}
+
+// Ensure runtime implements these interfaces.
+var (
+	_ json.Unmarshaler = new(runtimeField)
+	_ yaml.Unmarshaler = new(runtimeField)
+)
+
+func (r *runtimeField) isEnabled() bool {
+	if r.enabled {
+		return true
+	}
+	if r.script != "" {
+		return true
+	}
+	return false
+}
+
+func (r runtimeField) String() string {
+	if r.script != "" {
+		return r.script
+	}
+	return strconv.FormatBool(r.enabled)
+}
+
+func (r *runtimeField) unmarshalString(text string) error {
+	value, err := strconv.ParseBool(text)
+	if err == nil {
+		r.enabled = value
+		return nil
+	}
+
+	// JSONSchema already checks about the type of this field (e.g. int or float)
+	r.enabled = true
+	r.script = text
+	return nil
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface for field
+func (r *runtimeField) UnmarshalJSON(data []byte) error {
+	var alias interface{}
+	if err := json.Unmarshal(data, &alias); err != nil {
+		return err
+	}
+
+	switch v := alias.(type) {
+	case bool:
+		r.enabled = v
+	case string:
+		r.enabled = true
+		r.script = v
+	default:
+		// JSONSchema already checks about the type of this field (e.g. int or float)
+		r.enabled = true
+		r.script = string(data)
+	}
+	return nil
+}
+
+// UnmarshalYAML implements the yaml.Marshaler interface for runtime.
+func (r *runtimeField) UnmarshalYAML(value *yaml.Node) error {
+	// For some reason go-yaml doesn't like the UnmarshalJSON function above.
+	return r.unmarshalString(value.Value)
+}
+
 type field struct {
 	Name       string `yaml:"name"`
 	Type       string `yaml:"type"`
@@ -29,6 +99,8 @@ type field struct {
 	MetricType string `yaml:"metric_type"`
 	Dimension  bool   `yaml:"dimension"`
 	External   string `yaml:"external"`
+
+	Runtime runtimeField `yaml:"runtime"`
 
 	Fields fields `yaml:"fields"`
 }

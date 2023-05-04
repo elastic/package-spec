@@ -5,11 +5,13 @@
 package semantic
 
 import (
+	"encoding/json"
 	"path"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/yaml.v3"
 
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 )
@@ -118,6 +120,41 @@ func TestListFieldsFiles(t *testing.T) {
 
 			for i, metadata := range fieldFilesMetadata {
 				assert.Equal(t, c.expected[i], metadata)
+			}
+		})
+	}
+}
+
+func TestRuntimeUnmarshal(t *testing.T) {
+	t.Run("json", func(t *testing.T) {
+		testRuntimeUnmarshalFormat(t, json.Unmarshal)
+	})
+	t.Run("yaml", func(t *testing.T) {
+		testRuntimeUnmarshalFormat(t, yaml.Unmarshal)
+	})
+}
+
+func testRuntimeUnmarshalFormat(t *testing.T, unmarshaler func([]byte, interface{}) error) {
+	cases := []struct {
+		json     string
+		expected runtimeField
+		valid    bool
+	}{
+		{"true", runtimeField{enabled: true, script: ""}, true},
+		{"false", runtimeField{enabled: false, script: ""}, true},
+		{"42", runtimeField{enabled: true, script: "42"}, true},
+		{"\"doc['message'].value().doSomething()\"", runtimeField{enabled: true, script: "doc['message'].value().doSomething()"}, true},
+	}
+
+	for _, c := range cases {
+		t.Run(c.json, func(t *testing.T) {
+			var found runtimeField
+			err := unmarshaler([]byte(c.json), &found)
+			if c.valid {
+				require.NoError(t, err)
+				assert.Equal(t, c.expected, found)
+			} else {
+				require.Error(t, err)
 			}
 		})
 	}

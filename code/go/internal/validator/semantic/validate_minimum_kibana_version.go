@@ -5,6 +5,7 @@
 package semantic
 
 import (
+	"fmt"
 	"regexp"
 
 	"github.com/Masterminds/semver/v3"
@@ -34,7 +35,12 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) ve.ValidationErrors {
 		return ve.ValidationErrors{err}
 	}
 
-	err = validateMinimumKibanaVersion(pkg.Type, *pkg.Version, kibanaVersionCondition)
+	err = validateMinimumKibanaVersionInputPackages(pkg.Type, *pkg.Version, kibanaVersionCondition)
+	if err != nil {
+		return ve.ValidationErrors{err}
+	}
+
+	err = validateMinimumKibanaVersionRuntimeFields(fsys, *pkg.Version, kibanaVersionCondition)
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}
@@ -42,7 +48,7 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) ve.ValidationErrors {
 	return nil
 }
 
-func validateMinimumKibanaVersion(packageType string, packageVersion semver.Version, kibanaVersionCondition string) error {
+func validateMinimumKibanaVersionInputPackages(packageType string, packageVersion semver.Version, kibanaVersionCondition string) error {
 
 	if packageType != "input" {
 		return nil
@@ -52,11 +58,25 @@ func validateMinimumKibanaVersion(packageType string, packageVersion semver.Vers
 		return nil
 	}
 
-	if kibanaVersionConditionIsGreaterThanOrEqualTo8_8_0(kibanaVersionCondition) {
+	if kibanaVersionConditionIsGreaterThanOrEqualTo(kibanaVersionCondition, "8.8.0") {
 		return nil
 	}
 
-	return errors.New("Warning: conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)")
+	return errors.New("conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)")
+}
+
+func validateMinimumKibanaVersionRuntimeFields(fsys fspath.FS, packageVersion semver.Version, kibanaVersionCondition string) error {
+
+	errs := validateFields(fsys, validateNoRuntimeFields)
+	if len(errs) == 0 {
+		return nil
+	}
+
+	if kibanaVersionConditionIsGreaterThanOrEqualTo(kibanaVersionCondition, "8.9.0") {
+		return nil
+	}
+
+	return errors.New("conditions.kibana.version must be ^8.9.0 or greater to include runtime fields")
 }
 
 func readManifest(fsys fspath.FS) (*pkgpath.File, error) {
@@ -91,18 +111,18 @@ func getKibanaVersionCondition(manifest pkgpath.File) (string, error) {
 	return sVal, nil
 }
 
-func kibanaVersionConditionIsGreaterThanOrEqualTo8_8_0(kibanaVersionCondition string) bool {
+func kibanaVersionConditionIsGreaterThanOrEqualTo(kibanaVersionCondition, minimumVersion string) bool {
 	if kibanaVersionCondition == "" {
 		return false
 	}
 
-	if kibanaVersionCondition == "^8.8.0" {
+	if kibanaVersionCondition == fmt.Sprintf("^%s", minimumVersion) {
 		return true
 	}
 
 	// get all versions e.g 8.8.0, 8.8.1 from "^8.8.0 || ^8.8.1" and check if any of them is less than 8.8.0
 	pattern := `(\d+\.\d+\.\d+)`
-	semver8_8_0 := semver.MustParse("8.8.0")
+	minSemver := semver.MustParse(minimumVersion)
 	regex := regexp.MustCompile(pattern)
 	matches := regex.FindAllString(kibanaVersionCondition, -1)
 
@@ -112,10 +132,17 @@ func kibanaVersionConditionIsGreaterThanOrEqualTo8_8_0(kibanaVersionCondition st
 			return false
 		}
 
-		if matchVersion.LessThan(semver8_8_0) {
+		if matchVersion.LessThan(minSemver) {
 			return false
 		}
 	}
 
 	return true
+}
+
+func validateNoRuntimeFields(metadata fieldFileMetadata, f field) ve.ValidationErrors {
+	if f.Runtime.isEnabled() {
+		return ve.ValidationErrors{fmt.Errorf("%v file contains a field %s with runtime key defined (%s)", metadata.fullFilePath, f.Name, f.Runtime)}
+	}
+	return nil
 }

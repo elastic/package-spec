@@ -1,0 +1,7 @@
+- name: runtime_field_boolean
+  type: keyword
+  runtime: true
+- name: runtime_field_script
+  type: keyword
+  runtime: |
+    doc['message'].value().doSomething()
