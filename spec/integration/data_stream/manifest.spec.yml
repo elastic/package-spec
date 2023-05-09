@@ -84,7 +84,7 @@ spec:
             examples:
               - true
           secret:
-            description: Is this variable a sensitive value that should be securely stored? Secret vars are only referenceable via the secret provider, eg. ${secret.<name>}
+            description: Is this variable a sensitive value that should be securely stored? This will mean the value is write-only in Fleet.
             type: boolean
             default: false
             examples:
