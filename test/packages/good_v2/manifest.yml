@@ -19,6 +19,11 @@ policy_templates:
         description: Collecting Apache status metrics
         multi: false
         vars:
+          - name: password
+            type: password
+            title: Password
+            show_user: true
+            secret: true
           - name: hosts
             type: url
             url_allowed_schemes: ['http', 'https']

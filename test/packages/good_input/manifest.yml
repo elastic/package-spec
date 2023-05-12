@@ -30,6 +30,11 @@ policy_templates:
         show_user: true
         default:
           - http://127.0.0.1
+      - name: password
+        type: password
+        title: Password
+        show_user: true
+        secret: true
       - name: period
         type: text
         title: Period
