@@ -7,6 +7,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/522
+  - description: Extend benchmarks spec to add rally scenario
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/
 - version: 2.8.0
   changes:
   - description: Add new subcategory "advanced_analytics_ueba"

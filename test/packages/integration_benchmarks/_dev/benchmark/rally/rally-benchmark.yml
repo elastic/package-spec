@@ -1,0 +1,8 @@
+---
+description: Benchmark 20MiB of data ingested
+data_stream.name: test
+warmup_time_period: 10s
+corpora.generator.size: 20MiB
+corpora.generator.template.raw: {"@timestamp": "2016-12-07T10:04:37.000Z", "message": "a message"}
+corpora.generator.config.path: ./20mb-track/config.yml
+corpora.generator.fields.path: ./20mb-track/fields.yml
