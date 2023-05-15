@@ -14,6 +14,8 @@
     type: histogram
     metric_type: gauge
     dimension: true # This should fail, a histogram cannot be a dimension.
-  - name: agent.no_valid
+  - name: no_valid_type
     type: boolean
+    metric_type: gauge
+  - name: no_type
     metric_type: gauge

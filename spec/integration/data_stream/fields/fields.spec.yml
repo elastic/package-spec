@@ -453,7 +453,6 @@ spec:
               - runtime
       - if:
           required:
-            - type
             - metric_type
         then:
           properties:
@@ -470,10 +469,8 @@ spec:
                 - half_float
                 - scaled_float
                 - unsigned_long
-        else:
-          not:
-            required:
-              - metric_type
+          required:
+            - type
     required:
     - name
 
