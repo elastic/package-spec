@@ -101,6 +101,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_time_series": {
 			"data_stream/example/fields/fields.yml",
 			[]string{
+				`field 0.fields.4.type: 0.fields.4.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
 				"field \"example.agent.call_duration\" of type histogram can't be a dimension, allowed types for dimensions: constant_keyword, keyword, long, integer, short, byte, double, float, half_float, scaled_float, unsigned_long, ip",
 			},
 		},
