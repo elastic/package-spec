@@ -328,6 +328,10 @@ spec:
           - object
           - short
           - text
+          - integer
+          - half_float
+          - scaled_float
+          - unsigned_long
 
       object_type_mapping_type:
         description: >
@@ -454,6 +458,9 @@ spec:
       - if:
           required:
             - metric_type
+          not:
+            required:
+              - object_type
         then:
           properties:
             type:
@@ -469,6 +476,43 @@ spec:
                 - half_float
                 - scaled_float
                 - unsigned_long
+          required:
+            - type
+      - if:
+          properties:
+            type:
+              const: object
+          required:
+            - metric_type
+            - object_type
+        then:
+          properties:
+            type:
+              enum:
+                - object
+            object_type:
+              enum:
+                - histogram
+                - long
+                - integer
+                - short
+                - byte
+                - double
+                - float
+                - half_float
+                - scaled_float
+                - unsigned_long
+          required:
+            - type
+            - object_type
+      - if:
+          required:
+            - object_type
+        then:
+          properties:
+            type:
+              enum:
+                - object
           required:
             - type
     required:

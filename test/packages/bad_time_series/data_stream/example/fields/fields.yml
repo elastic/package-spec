@@ -19,3 +19,14 @@
     metric_type: gauge
   - name: no_type
     metric_type: gauge
+  - name: field_object
+    type: double
+    object_type: double
+    metric_type: gauge
+  - name: field_object
+    type: object
+    object_type: boolean
+    metric_type: gauge
+  - name: field_object
+    type: object
+    metric_type: gauge
