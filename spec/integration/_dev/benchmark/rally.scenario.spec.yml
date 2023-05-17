@@ -5,43 +5,18 @@ spec:
     - data_stream
   properties:
     package:
-      description: The package to benchmark.
-      type: string
+      $ref: "./system.scenario.spec.yml#/definitions/package"
     description:
-      description: A description of the rally benchmark scenario.
-      type: string
+      $ref: "./system.scenario.spec.yml#/definitions/description"
     version:
       $ref: "../../manifest.spec.yml#/definitions/version"
     data_stream:
-      description: Data-stream parameters.
-      type: object
-      additionalProperties: false
-      required:
-        - name
-      properties:
-        name:
-          description: The name of the data_stream to benchmark.
-          type: string
+      $ref: "./system.scenario.spec.yml#/definitions/data_stream"
     warmup_time_period:
-      description: |
-        A time period as a duration string for warmup of the benchmark. 
-        All response data captured during warmup will not show up in the measurement results.
-        By default the value is 0 seconds, which means that all data captured will be taken into account for the benchmark results.
-      type: string
-      default: ""
-      example: 10s
+      $ref: "./system.scenario.spec.yml#/definitions/warmup_time_period"
     benchmark_time_period:
-      description: |
-        A time period as a duration string for the duration of the benchmark.
-        By default the value is 0 seconds, which means that the benchmark will run until no more data is ingested.
-      type: string
-      default: ""
-      example: 10m
+      $ref: "./system.scenario.spec.yml#/definitions/benchmark_time_period"
     wait_for_data_timeout:
-      description: Timeout for waiting for data during a rally benchmark.
-      type: string
-      default: 10m
-      example: 10m
+      $ref: "./system.scenario.spec.yml#/definitions/wait_for_data_timeout"
     corpora:
-      type: object
-      $ref: "../corpora.spec.yml#/properties/corpora"
+      $ref: "./system.scenario.spec.yml#/definitions/corpora"
