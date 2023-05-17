@@ -17,25 +17,21 @@ spec:
             - description: Folder containing deployment files for a Docker-based service deployment
               type: folder
               name: docker
-              $ref: "./docker/spec.yml"
+              $ref: "./deploy/docker/spec.yml"
             - description: Folder containing deployment files for a Terraform-based service deployment
               type: folder
               name: tf
-              $ref: "./tf/spec.yml"
-            - description: Folder containing deployment files for a Cusom Agent service deployment
-              type: folder
-              name: agent
-              $ref: "./agent/spec.yml"
+              $ref: "./deploy/tf/spec.yml"
             - description: Folder containing deployment files for a Kubernetes service deployment
               type: folder
               name: k8s
-              $ref: "./k8s/spec.yml"
+              $ref: "./deploy/k8s/spec.yml"
             - description: Configuration file describing variations available for deployment
               type: file
               name: "variants.yml"
               contentMediaType: "application/x-yaml"
               required: false
-              $ref: "./variants.spec.yml"
+              $ref: "./deploy/variants.spec.yml"
         - description: A benchmark scenario.
           type: file
           pattern: '^.+\.yml$'
