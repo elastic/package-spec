@@ -6,7 +6,7 @@ spec:
       type: folder
       name: system
       required: false
-      additionalContents: false
+      additionalContents: true
       contents:
         - description: Folder containing deployable services for benchmarks.
           type: folder
@@ -14,17 +14,28 @@ spec:
           additionalContents: false
           required: false
           contents:
-            - description: Folder containing the docker compose file for benchmarks services and their resources.
+            - description: Folder containing deployment files for a Docker-based service deployment
               type: folder
               name: docker
-              additionalContents: true
+              $ref: "./docker/spec.yml"
+            - description: Folder containing deployment files for a Terraform-based service deployment
+              type: folder
+              name: tf
+              $ref: "./tf/spec.yml"
+            - description: Folder containing deployment files for a Cusom Agent service deployment
+              type: folder
+              name: agent
+              $ref: "./agent/spec.yml"
+            - description: Folder containing deployment files for a Kubernetes service deployment
+              type: folder
+              name: k8s
+              $ref: "./k8s/spec.yml"
+            - description: Configuration file describing variations available for deployment
+              type: file
+              name: "variants.yml"
+              contentMediaType: "application/x-yaml"
               required: false
-              contents:
-                - description: Docker Compose configuration file for deploying benchmarks additional services.
-                  type: file
-                  name: "docker-compose.yml"
-                  contentMediaType: "application/x-yaml"
-                  required: true
+              $ref: "./variants.spec.yml"
         - description: A benchmark scenario.
           type: file
           pattern: '^.+\.yml$'

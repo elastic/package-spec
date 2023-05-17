@@ -27,11 +27,17 @@ spec:
       description: Data-stream parameters.
       type: object
       additionalProperties: false
-      required:
+      oneOf:
+      - required:
         - name
+      - required:
+        - dataset
       properties:
         name:
-          description: The name of the data_stream to benchmark.
+          description: The name of the dataset to benchmark.
+          type: string
+        dataset:
+          description: The name of the dataset to benchmark.
           type: string
         vars:
           description: The data_stream specific variables.
