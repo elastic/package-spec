@@ -1,28 +1,11 @@
 spec:
-  type: object
-  additionalProperties: false
-  required:
-    - data_stream
-    - input
-  properties:
+  definitions:
     package:
       description: The package to benchmark.
       type: string
     description:
       description: A description of the benchmark scenario.
       type: string
-    version:
-      $ref: "../../manifest.spec.yml#/definitions/version"
-    input:
-      description: The input of the package to benchmark.
-      type: string
-    vars:
-      description: The package level variables.
-      type:
-        - object
-        - "null"
-      additionalProperties: true
-      default: ~
     data_stream:
       description: Data-stream parameters.
       type: object
@@ -56,7 +39,7 @@ spec:
       default: ""
       example: 10m
     wait_for_data_timeout:
-      description: Timeout for waiting for data during a system benchmark.
+      description: Timeout for waiting for data during a benchmark.
       type: string
       default: 10m
       example: 10m
@@ -64,6 +47,8 @@ spec:
       description: Corpora settings.
       type: object
       additionalProperties: false
+      required:
+        - generator
       properties:
         generator:
           description: Configuration for the corpus generator.
@@ -79,6 +64,11 @@ spec:
               description: A string describing the amount of data to generate.
               type: string
               example: 10MiB
+              deprecated: true # as for https://github.com/elastic/elastic-integration-corpus-generator-tool/pull/94
+            tot_events:
+              description: An integer describing the total number of events to generate.
+              type: integer
+              example: 1000
             template:
               description: Configuration for the generator template.
               type: object
@@ -136,3 +126,35 @@ spec:
               type: string
               default: ""
               example: SIGHUP
+  type: object
+  additionalProperties: false
+  required:
+    - data_stream
+    - input
+  properties:
+    package:
+      $ref: "#/definitions/package"
+    description:
+      $ref: "#/definitions/description"
+    version:
+      $ref: "../../manifest.spec.yml#/definitions/version"
+    input:
+      description: The input of the package to benchmark.
+      type: string
+    vars:
+      description: The package level variables.
+      type:
+        - object
+        - "null"
+      additionalProperties: true
+      default: ~
+    data_stream:
+      $ref: "#/definitions/data_stream"
+    warmup_time_period:
+      $ref: "#/definitions/warmup_time_period"
+    benchmark_time_period:
+      $ref: "#/definitions/benchmark_time_period"
+    wait_for_data_timeout:
+      $ref: "#/definitions/wait_for_data_timeout"
+    corpora:
+      $ref: "#/definitions/corpora"

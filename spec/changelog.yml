@@ -10,6 +10,9 @@
   - description: Add validation for data types of metrics
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/525
+  - description: Extend benchmarks spec to add rally scenario
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/524
 - version: 2.8.0
   changes:
   - description: Add new subcategory "advanced_analytics_ueba"
