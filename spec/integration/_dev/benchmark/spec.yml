@@ -11,20 +11,7 @@ spec:
         - description: Folder containing deployable services for benchmarks.
           type: folder
           name: deploy
-          additionalContents: false
-          required: false
-          contents:
-            - description: Folder containing the docker compose file for benchmarks services and their resources.
-              type: folder
-              name: docker
-              additionalContents: true
-              required: false
-              contents:
-                - description: Docker Compose configuration file for deploying benchmarks additional services.
-                  type: file
-                  name: "docker-compose.yml"
-                  contentMediaType: "application/x-yaml"
-                  required: true
+          $ref: "./deploy/spec.yml"
         - description: A system benchmark scenario.
           type: file
           pattern: '^.+\.yml$'
@@ -40,20 +27,7 @@ spec:
         - description: Folder containing deployable services for benchmarks.
           type: folder
           name: deploy
-          additionalContents: false
-          required: false
-          contents:
-            - description: Folder containing the docker compose file for benchmarks services and their resources.
-              type: folder
-              name: docker
-              additionalContents: true
-              required: false
-              contents:
-                - description: Docker Compose configuration file for deploying benchmarks additional services.
-                  type: file
-                  name: "docker-compose.yml"
-                  contentMediaType: "application/x-yaml"
-                  required: true
+          $ref: "./deploy/spec.yml"
         - description: A rally benchmark scenario.
           type: file
           pattern: '^.+\.yml$'
