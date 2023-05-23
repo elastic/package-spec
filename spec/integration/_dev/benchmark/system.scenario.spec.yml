@@ -64,7 +64,7 @@ spec:
               description: A string describing the amount of data to generate.
               type: string
               example: 10MiB
-              deprecated: true
+              deprecated: true # as for https://github.com/elastic/elastic-integration-corpus-generator-tool/pull/94
             tot_events:
               description: An integer describing the total number of events to generate.
               type: integer
