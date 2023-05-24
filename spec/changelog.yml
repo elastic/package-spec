@@ -10,6 +10,9 @@
   - description: Add validation for data types of metrics
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/525
+  - description: Extend benchmarks spec to add rally scenario
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/524
   - description: Add variants definitions in benchmark input services.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/526
