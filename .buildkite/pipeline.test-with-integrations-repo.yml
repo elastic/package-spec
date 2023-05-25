@@ -12,4 +12,21 @@ steps:
       image: "golang:${GOLANG_VERSION}"
       cpu: "8"
       memory: "4G"
+  - label: ":linux: Tests on Linux"
+    key: test
+    command: "make test-ci"
+    agents:
+      image: "golang:${GOLANG_VERSION}"
+      cpu: "8"
+      memory: "4G"
+
+  - label: ":hammer: Create PR in integrations"
+    key: pr-integrations
+    command: ".buildkite/scripts/test-with-integrations.sh"
+    agents:
+      provider: "gcp"
+    depends_on:
+      - check
+      - test
+
 
