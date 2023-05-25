@@ -12,7 +12,7 @@ metadata:
       url: https://www.elastic.co/guide/en/integrations-developer/current/package-spec.html
 
 spec:
-  type: tool
+  type: library
   owner: group:ingest-fp
   system: platform-ingest
   lifecycle: production
