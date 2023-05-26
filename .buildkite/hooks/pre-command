@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -euo pipefail
+
+function retry {
+    local retries=$1
+    shift
+
+    local count=0
+    until "$@"; do
+        exit=$?
+        wait=$((2 ** count))
+        count=$((count + 1))
+        if [ $count -lt "$retries" ]; then
+            >&2 echo "Retry $count/$retries exited $exit, retrying in $wait seconds..."
+            sleep $wait
+        else
+            >&2 echo "Retry $count/$retries exited $exit, no more retries left."
+            return $exit
+        fi
+    done
+    return 0
+}
+
+GITHUB_TOKEN_VAULT_PATH=kv/ci-shared/platform-ingest/github_token
+
+# Secrets must be redacted
+# https://buildkite.com/docs/pipelines/managing-log-output#redacted-environment-variables
+
+if [[ "$BUILDKITE_PIPELINE_SLUG" == "package-spec-test-with-integrations" && "$BUILDKITE_STEP_KEY" == "pr-integrations" ]]; then
+    export GITHUB_USERNAME_SECRET=$(retry 5 vault kv get -field username ${GITHUB_TOKEN_VAULT_PATH})
+    export GITHUB_EMAIL_SECRET=$(retry 5 vault kv get -field email ${GITHUB_TOKEN_VAULT_PATH})
+    export GITHUB_TOKEN=$(retry 5 vault kv get -field token ${GITHUB_TOKEN_VAULT_PATH})
+fi
