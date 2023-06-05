@@ -13,25 +13,7 @@ spec:
           name: deploy
           additionalContents: false
           required: false
-          contents:
-            - description: Folder containing deployment files for a Docker-based service deployment
-              type: folder
-              name: docker
-              $ref: "./deploy/docker/spec.yml"
-            - description: Folder containing deployment files for a Terraform-based service deployment
-              type: folder
-              name: tf
-              $ref: "./deploy/tf/spec.yml"
-            - description: Folder containing deployment files for a Kubernetes service deployment
-              type: folder
-              name: k8s
-              $ref: "./deploy/k8s/spec.yml"
-            - description: Configuration file describing variations available for deployment
-              type: file
-              name: "variants.yml"
-              contentMediaType: "application/x-yaml"
-              required: false
-              $ref: "./deploy/variants.spec.yml"
+          $ref: "./deploy/spec.yml"
         - description: A system benchmark scenario.
           type: file
           pattern: '^.+\.yml$'
