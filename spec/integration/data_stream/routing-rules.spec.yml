@@ -1,0 +1,52 @@
+##
+## Describes the specification for a data stream's manifest.yml file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  definitions:
+    route:
+      type: object
+      properties:
+        dataset:
+          type: string
+          examples:
+          - nginx.error
+          - nginx
+        if:
+          type: string
+          examples:
+          - "ctx?.file?.path?.contains('/var/log/nginx/error')"
+          - "ctx?.container?.image?.name == 'nginx'"
+        namespace:
+          type: array
+          items:
+            type: string
+          examples:
+            - default
+            - "{{ labels.dasta_stream.namespace}}"
+      required:
+        - dataset
+        - if
+        - namespace
+  properties:
+    routing_rules:
+      description: Routing rules set.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          name:
+            type: string
+          rules:
+            type: array
+            items:
+              $ref: "#/definitions/route"
+        required:
+          - name
+          - rules
+
+  required:
+    - routing_rules
