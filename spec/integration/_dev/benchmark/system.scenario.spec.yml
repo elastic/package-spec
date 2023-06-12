@@ -6,6 +6,10 @@ spec:
     description:
       description: A description of the benchmark scenario.
       type: string
+    policy_template:
+      description: |
+        The policy template to use, if none is set, will pick the first one in the list.
+      type: string
     data_stream:
       description: Data-stream parameters.
       type: object
