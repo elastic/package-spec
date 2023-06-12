@@ -11,8 +11,6 @@ spec:
         - description: Folder containing deployable services for benchmarks.
           type: folder
           name: deploy
-          additionalContents: false
-          required: false
           $ref: "./deploy/spec.yml"
         - description: A system benchmark scenario.
           type: file

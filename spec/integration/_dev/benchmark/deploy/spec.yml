@@ -1,6 +1,6 @@
 spec:
   additionalContents: false
-  required: true
+  required: false
   contents:
     - description: Folder containing deployment files for a Docker-based service deployment
       type: folder
