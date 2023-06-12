@@ -160,6 +160,12 @@ func TestValidateFile(t *testing.T) {
 				`field 3: Must not be present`,
 			},
 		},
+		"bad_routing_rules": {
+			"data_stream/rules/manifest.yml",
+			[]string{
+				`field (root): dataset is required`,
+			},
+		},
 	}
 
 	for pkgName, test := range tests {

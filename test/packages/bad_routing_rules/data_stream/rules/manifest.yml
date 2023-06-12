@@ -1,6 +1,19 @@
+title: "Rules"
+type: logs
+streams:
+  - input: logfile
+    title: Sample logs
+    description: Collect sample logs
+    vars:
+      - name: paths
+        type: text
+        title: Paths
+        multi: true
+        default:
+          - /var/log/*.log
 routing_rules:
   # "Local" routing rules are included under this current dataset, not a special case
-  - name: nginx
+  - dataset: routing_rules
     rules: # Route error logs to `nginx.error` when they're sourced from an error logfile
     - dataset: nginx.error
       if: "ctx?.file?.path?.contains('/var/log/nginx/error')"
@@ -16,19 +29,19 @@ routing_rules:
         - default
 
   # Route K8's container logs to this catch-all dataset for further routing
-  - name: k8s.router
+  - dataset: k8s.router
     rules:
-    - dataset: nginx
-      if: "ctx?.container?.image?.name == 'nginx'"
+    - dataset: routing_rules
+      if: "ctx?.container?.image?.name == 'routing_rules'"
       namespace:
         - "{{labels.data_stream.namespace}}"
         - default
 
   # Route syslog entries tagged with nginx to this catch-all dataset
-  - name: syslog
+  - dataset: syslog
     rules:
-    - dataset: nginx
-      if: "ctx?.tags?.contains('nginx')"
+    - dataset: routing_rules
+      if: "ctx?.tags?.contains('routing_rules')"
       namespace:
         - "{{labels.data_stream.namespace}}"
         - default

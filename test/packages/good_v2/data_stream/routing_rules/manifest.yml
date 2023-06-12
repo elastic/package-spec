@@ -1,5 +1,6 @@
 title: "This data stream contains routing rules definitions"
 type: logs
+dataset: routing_rules
 streams:
   - input: logfile
     title: Sample logs
@@ -11,3 +12,38 @@ streams:
         multi: true
         default:
           - /var/log/*.log
+
+routing_rules:
+  # "Local" routing rules are included under this current dataset, not a special case
+  - dataset: routing_rules
+    rules: # Route error logs to `nginx.error` when they're sourced from an error logfile
+    - dataset: nginx.error
+      if: "ctx?.file?.path?.contains('/var/log/nginx/error')"
+      namespace:
+        - "{{labels.data_stream.namespace}}"
+        - default
+
+    # Route access logs to `nginx.access` when they're sourced from an access logfile
+    - dataset: nginx.access
+      if: "ctx?.file?.path?.contains('/var/log/nginx/access')"
+      namespace:
+        - "{{labels.data_stream.namespace}}"
+        - default
+
+  # Route K8's container logs to this catch-all dataset for further routing
+  - dataset: k8s.router
+    rules:
+    - dataset: routing_rules
+      if: "ctx?.container?.image?.name == 'routing_rules'"
+      namespace:
+        - "{{labels.data_stream.namespace}}"
+        - default
+
+  # Route syslog entries tagged with nginx to this catch-all dataset
+  - dataset: syslog
+    rules:
+    - dataset: routing_rules
+      if: "ctx?.tags?.contains('routing_rules')"
+      namespace:
+        - "{{labels.data_stream.namespace}}"
+        - default

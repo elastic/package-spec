@@ -169,6 +169,31 @@ spec:
             hidden:
               description: Makes the data stream hidden
               type: boolean
+    route:
+      description: Routing rule definition
+      type: object
+      properties:
+        dataset:
+          type: string
+          examples:
+          - nginx.error
+          - nginx
+        if:
+          type: string
+          examples:
+          - "ctx?.file?.path?.contains('/var/log/nginx/error')"
+          - "ctx?.container?.image?.name == 'nginx'"
+        namespace:
+          type: array
+          items:
+            type: string
+          examples:
+            - default
+            - "{{ labels.dasta_stream.namespace}}"
+      required:
+        - dataset
+        - if
+        - namespace
   properties:
     dataset:
       description: Name of data set.
@@ -307,6 +332,29 @@ spec:
         dynamic_namespace:
           description: When set to true, agents running this integration are granted data stream privileges for all namespaces of its type
           type: boolean
+    routing_rules:
+      description: Routing rules set.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          dataset:
+            type: string
+          rules:
+            type: array
+            items:
+              $ref: "#/definitions/route"
+        required:
+          - dataset
+          - rules
+  allOf:
+    - if:
+        required:
+          - routing_rules
+      then:
+        required:
+          - dataset
   required:
   - title
 versions:
@@ -318,3 +366,7 @@ versions:
     patch:
       - op: remove
         path: /properties/type/enum/4
+  - before: 2.9.0
+    patch:
+      - op: remove
+        path: /properties/routing_rules

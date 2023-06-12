@@ -78,10 +78,10 @@ spec:
       required: false
       visibility: private
       $ref: "./_dev/spec.yml"
-    - description: Routing rules definitions file
-      type: file
-      contentMediaType: "application/x-yaml"
-      sizeLimit: 5MB
-      name: "routing_rules.yml"
-      required: false
-      $ref: "./routing-rules.spec.yml"
+        # - description: Routing rules definitions file
+        #   type: file
+        #   contentMediaType: "application/x-yaml"
+        #   sizeLimit: 5MB
+        #   name: "routing_rules.yml"
+        #   required: false
+        #   $ref: "./routing-rules.spec.yml"
