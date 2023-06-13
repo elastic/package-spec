@@ -10,7 +10,7 @@
   - description: Extend benchmarks spec to add rally scenario
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/524
-  - description: Add support to define routing rules in data streams
+  - description: Add support to define routing rules in data streams (technical preview)
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/535
 - version: 2.8.0
