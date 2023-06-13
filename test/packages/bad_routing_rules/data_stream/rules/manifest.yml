@@ -14,16 +14,16 @@ streams:
 routing_rules:
   # "Local" routing rules are included under this current dataset, not a special case
   - dataset: routing_rules
-    rules: # Route error logs to `nginx.error` when they're sourced from an error logfile
-    - dataset: nginx.error
-      if: "ctx?.file?.path?.contains('/var/log/nginx/error')"
+    rules: # Route error logs to `routing_rules.error` when they're sourced from an error logfile
+    - dataset: routing_rules.error
+      if: "ctx?.file?.path?.contains('/var/log/routing_rules/error')"
       namespace:
         - "{{labels.data_stream.namespace}}"
         - default
 
-    # Route access logs to `nginx.access` when they're sourced from an access logfile
-    - dataset: nginx.access
-      if: "ctx?.file?.path?.contains('/var/log/nginx/access')"
+    # Route access logs to `routing_rules.access` when they're sourced from an access logfile
+    - dataset: routing_rules.access
+      if: "ctx?.file?.path?.contains('/var/log/routing_rules/access')"
       namespace:
         - "{{labels.data_stream.namespace}}"
         - default
@@ -37,7 +37,7 @@ routing_rules:
         - "{{labels.data_stream.namespace}}"
         - default
 
-  # Route syslog entries tagged with nginx to this catch-all dataset
+  # Route syslog entries tagged with routing_rules to this catch-all dataset
   - dataset: syslog
     rules:
     - dataset: routing_rules
