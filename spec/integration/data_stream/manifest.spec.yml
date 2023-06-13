@@ -332,7 +332,7 @@ spec:
         dynamic_namespace:
           description: When set to true, agents running this integration are granted data stream privileges for all namespaces of its type
           type: boolean
-    routing_rules:
+    routing_rules:  # technical preview
       description: Routing rules set.
       type: array
       items:
