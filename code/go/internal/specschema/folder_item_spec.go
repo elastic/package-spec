@@ -170,6 +170,7 @@ func (s *folderItemSpec) propagateContentLimits() {
 	}
 }
 
+// SpecLimits represents limits related to an item
 type SpecLimits struct {
 	// Limit to the total number of elements in a directory.
 	TotalContentsLimit int `json:"totalContentsLimit" yaml:"totalContentsLimit"`
