@@ -59,7 +59,6 @@ func (s Spec) ValidatePackage(pkg packages.Package) ve.ValidationErrors {
 		return errs
 	}
 
-	log.Printf("Validating package...")
 	// Syntactic validations
 	validator := newValidator(rootSpec, &pkg)
 	errs = append(errs, validator.Validate()...)

@@ -169,18 +169,13 @@ func (v *validator) Validate() ve.ValidationErrors {
 }
 
 func (v *validator) findItemSpec(folderItemName string) (spectypes.ItemSpec, error) {
-	log.Printf("Looking for item spec -> %s", folderItemName)
 	for _, itemSpec := range v.spec.Contents() {
-		log.Printf("Looking for name %s -> %s", folderItemName, itemSpec.Name())
 		if itemSpec.Name() != "" && itemSpec.Name() == folderItemName {
-			log.Printf("  - Found -> %s", folderItemName)
 			return itemSpec, nil
 		}
 		if itemSpec.Pattern() != "" {
-			log.Printf("Looking for pattern %s -> %s", folderItemName, itemSpec.Pattern())
 			isMatch, err := regexp.MatchString(strings.ReplaceAll(itemSpec.Pattern(), "{PACKAGE_NAME}", v.pkg.Name), folderItemName)
 			if err != nil {
-				log.Printf("   - invalid folder iteam spec pattern %s -> %s", folderItemName, itemSpec.Pattern())
 				return nil, errors.Wrap(err, "invalid folder item spec pattern")
 			}
 			if isMatch {
@@ -188,7 +183,6 @@ func (v *validator) findItemSpec(folderItemName string) (spectypes.ItemSpec, err
 				for _, forbidden := range itemSpec.ForbiddenPatterns() {
 					isForbidden, err = regexp.MatchString(forbidden, folderItemName)
 					if err != nil {
-						log.Printf("   - invalid forbidden pattern for folder item %s -> %s", folderItemName, itemSpec.Pattern())
 						return nil, errors.Wrap(err, "invalid forbidden pattern for folder item")
 					}
 
@@ -198,7 +192,6 @@ func (v *validator) findItemSpec(folderItemName string) (spectypes.ItemSpec, err
 				}
 
 				if !isForbidden {
-					log.Printf("   - Found %s -> %s", folderItemName, itemSpec.Pattern())
 					return itemSpec, nil
 				}
 			}
@@ -206,6 +199,5 @@ func (v *validator) findItemSpec(folderItemName string) (spectypes.ItemSpec, err
 	}
 
 	// No item spec found
-	log.Printf("   - Not Found -> %s", folderItemName)
 	return nil, nil
 }

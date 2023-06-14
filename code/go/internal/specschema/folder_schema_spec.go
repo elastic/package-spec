@@ -28,11 +28,6 @@ func (f *folderSchemaSpec) resolve(target semver.Version) (*folderItemSpec, erro
 	}
 	if len(patchJSON) == 0 {
 		// Nothing to do.
-		spec, err := json.Marshal(f.Spec)
-		if err != nil {
-			return nil, fmt.Errorf("failed to unmarshal spec for patching: %w", err)
-		}
-
 		return f.Spec, nil
 	}
 
