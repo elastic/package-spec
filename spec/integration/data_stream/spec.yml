@@ -78,11 +78,3 @@ spec:
       required: false
       visibility: private
       $ref: "./_dev/spec.yml"
-
-
-versions:
-  - before: 2.9.0
-    patch:
-      - op: replace
-        path: "/contents/0/contents/0/name"
-        value: "manifiesto.yml"
