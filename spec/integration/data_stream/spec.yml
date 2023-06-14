@@ -86,4 +86,3 @@ versions:
       - op: replace
         path: "/contents/0/contents/0/name"
         value: "manifiesto.yml"
-

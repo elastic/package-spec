@@ -98,9 +98,10 @@ func (l *FolderSpecLoader) loadFolderSpec(s *folderItemSpec, specPath string) er
 
 	newSpec.propagateContentLimits()
 
-	s = newSpec
+	// TODO add comment
+	*s = *newSpec
 
-	specBytes, _ := json.Marshal(newSpec)
+	specBytes, _ := json.Marshal(s)
 	log.Printf("Final spec:\n%s", specBytes)
 
 	return nil
