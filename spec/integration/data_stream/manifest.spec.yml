@@ -182,7 +182,11 @@ spec:
             Supports field references with a mustache-like syntax (denoted as {{double}} or {{{triple}}} curly braces).
             When resolving field references, the processor replaces invalid characters with _.
             Uses the <dataset> part of the index name as a fallback if all field references resolve to a null, missing, or non-string value
-          type: string
+          anyOf:
+            - type: string
+            - type: array
+              items:
+                type: string
           examples:
           - nginx.error
           - nginx
@@ -200,7 +204,11 @@ spec:
             Supports field references with a mustache-like syntax (denoted as {{double}} or {{{triple}}} curly braces).
             When resolving field references, the processor replaces invalid characters with _.
             Uses the <namespace> part of the index name as a fallback if all field references resolve to a null, missing, or non-string value.
-          type: array
+          anyOf:
+            - type: string
+            - type: array
+              items:
+                type: string
           items:
             type: string
           examples:
