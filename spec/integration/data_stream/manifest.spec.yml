@@ -169,7 +169,7 @@ spec:
             hidden:
               description: Makes the data stream hidden
               type: boolean
-    route:
+    routing_rule:
       description: Routing rule definition
       type: object
       properties:
@@ -344,7 +344,7 @@ spec:
           rules:
             type: array
             items:
-              $ref: "#/definitions/route"
+              $ref: "#/definitions/routing_rule"
         required:
           - dataset
           - rules
