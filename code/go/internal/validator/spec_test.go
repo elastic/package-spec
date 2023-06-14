@@ -61,7 +61,7 @@ func TestBetaFeatures_Package_GA(t *testing.T) {
 
 	errs := s.ValidatePackage(*pkg)
 	require.Len(t, errs, 1)
-	require.Equal(t, errs[0].Error(), "spec for [testdata/packages/features_beta/beta] defines beta features which can't be enabled for packages with a stable semantic version")
+	require.Equal(t, "spec for [testdata/packages/features_beta/beta] defines beta features which can't be enabled for packages with a stable semantic version", errs[0].Error())
 }
 
 func TestFolderSpecInvalid(t *testing.T) {
@@ -102,7 +102,7 @@ func TestFolderSpecInvalid(t *testing.T) {
 
 			errs := s.ValidatePackage(*pkg)
 			if c.valid {
-				require.Len(t, errs, 0)
+				require.Empty(t, errs)
 				return
 			}
 			require.Len(t, errs, 1)
