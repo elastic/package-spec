@@ -5,11 +5,15 @@
 package specschema
 
 import (
+	"encoding/json"
+	"fmt"
 	"io"
 	"io/fs"
+	"log"
 	"path"
 
 	"github.com/Masterminds/semver/v3"
+	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 
@@ -21,6 +25,19 @@ type FolderSpecLoader struct {
 	fs             fs.FS
 	fileSpecLoader spectypes.FileSchemaLoader
 	specVersion    semver.Version
+}
+
+type folderSchemaSpec struct {
+	Spec     *folderItemSpec       `yaml:"spec"`
+	Versions []folderSchemaVersion `json:"versions" yaml:"versions"`
+}
+
+type folderSchemaVersion struct {
+	// Before is the first version that didn't include this change.
+	Before string `json:"before" yaml:"before"`
+
+	// Patch is a list of JSON patch operations as defined by RFC6902.
+	Patch []interface{} `json:"patch" yaml:"patch"`
 }
 
 // NewFolderSpecLoader creates a new `FolderSpecLoader` that loads schemas from the given directories.
@@ -44,6 +61,7 @@ func (l *FolderSpecLoader) Load(specPath string) (*ItemSpec, error) {
 }
 
 func (l *FolderSpecLoader) loadFolderSpec(s *folderItemSpec, specPath string) error {
+	log.Printf("Reading file: %s", specPath)
 	specFile, err := l.fs.Open(specPath)
 	if err != nil {
 		return errors.Wrap(err, "could not open folder specification file")
@@ -55,27 +73,97 @@ func (l *FolderSpecLoader) loadFolderSpec(s *folderItemSpec, specPath string) er
 		return errors.Wrap(err, "could not read folder specification file")
 	}
 
-	var wrapper struct {
-		Spec *folderItemSpec `yaml:"spec"`
-	}
-	wrapper.Spec = s
-	if err := yaml.Unmarshal(data, &wrapper); err != nil {
+	var folderSpec folderSchemaSpec
+	folderSpec.Spec = s
+	if err := yaml.Unmarshal(data, &folderSpec); err != nil {
 		return errors.Wrap(err, "could not parse folder specification file")
 	}
 
-	err = l.loadContents(s, l.fs, specPath)
+	newSpec, err := folderSpec.resolve(l.specVersion)
 	if err != nil {
 		return err
 	}
 
-	err = s.setDefaultValues()
+	err = l.loadContents(newSpec, l.fs, specPath)
+	if err != nil {
+		return err
+	}
+
+	err = newSpec.setDefaultValues()
 	if err != nil {
 		return errors.Wrap(err, "could not set default values")
 	}
 
-	s.propagateContentLimits()
+	newSpec.propagateContentLimits()
+
+	s = newSpec
+	s.Contents
+
+	specBytes, _ := json.Marshal(newSpec)
+	log.Printf("Final spec:\n%s", specBytes)
 
 	return nil
+}
+
+func (f *folderSchemaSpec) resolve(target semver.Version) (*folderItemSpec, error) {
+	patchJSON, err := f.patchForVersion(target)
+	if err != nil {
+		return nil, err
+	}
+	if len(patchJSON) == 0 {
+		// Nothing to do.
+		spec, err := json.Marshal(f.Spec)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal spec for patching: %w", err)
+		}
+
+		log.Printf("no versions -> applying spec:\n%s", string(spec))
+
+		return f.Spec, nil
+	}
+
+	patch, err := jsonpatch.DecodePatch(patchJSON)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode patch: %w", err)
+	}
+
+	spec, err := json.Marshal(f.Spec)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal spec for patching: %w", err)
+	}
+
+	log.Printf("spec before applying:\n%s", string(spec))
+	log.Printf("Applied patchJson:\n%s", string(patchJSON))
+	log.Printf("---")
+	spec, err = patch.Apply(spec)
+	if err != nil {
+		return nil, fmt.Errorf("failed to apply patch: %w", err)
+	}
+	log.Printf("spec after applying:\n%s", string(spec))
+
+	var resolved folderItemSpec
+	err = json.Unmarshal(spec, &resolved)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal resolved spec: %w", err)
+	}
+	return &resolved, nil
+}
+
+func (f *folderSchemaSpec) patchForVersion(target semver.Version) ([]byte, error) {
+	var patch []any
+	for _, version := range f.Versions {
+		if sv, err := semver.NewVersion(version.Before); err != nil {
+			return nil, err
+		} else if !target.LessThan(sv) {
+			continue
+		}
+
+		patch = append(patch, version.Patch...)
+	}
+	if len(patch) == 0 {
+		return nil, nil
+	}
+	return json.Marshal(patch)
 }
 
 func (l *FolderSpecLoader) loadContents(s *folderItemSpec, fs fs.FS, specPath string) error {
