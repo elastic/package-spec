@@ -28,7 +28,7 @@ type FolderSpecLoader struct {
 }
 
 type folderSchemaSpec struct {
-	Spec     *folderItemSpec       `yaml:"spec"`
+	Spec     *folderItemSpec       `json:"spec" yaml:"spec"`
 	Versions []folderSchemaVersion `json:"versions" yaml:"versions"`
 }
 
@@ -57,6 +57,8 @@ func (l *FolderSpecLoader) Load(specPath string) (*ItemSpec, error) {
 	if err != nil {
 		return nil, err
 	}
+	specBytes, _ := json.Marshal(spec)
+	log.Printf(">>> Load Method --> spec:\n%s", specBytes)
 	return &ItemSpec{&spec}, nil
 }
 
@@ -97,7 +99,6 @@ func (l *FolderSpecLoader) loadFolderSpec(s *folderItemSpec, specPath string) er
 	newSpec.propagateContentLimits()
 
 	s = newSpec
-	s.Contents
 
 	specBytes, _ := json.Marshal(newSpec)
 	log.Printf("Final spec:\n%s", specBytes)
@@ -203,7 +204,8 @@ func (l *FolderSpecLoader) loadContents(s *folderItemSpec, fs fs.FS, specPath st
 				content.schema = schema
 			case spectypes.ItemTypeFolder:
 				p := path.Join(path.Dir(specPath), content.Ref)
-				err := l.loadFolderSpec(content, p)
+				var err error
+				err = l.loadFolderSpec(content, p)
 				if err != nil {
 					return errors.Wrapf(err, "could not load spec for %q", p)
 				}

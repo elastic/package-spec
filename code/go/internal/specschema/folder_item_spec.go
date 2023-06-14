@@ -28,33 +28,33 @@ type ItemSpec struct {
 // MaxTotalContents is the maximum number of files and directories
 // inside a directory and its children directories.
 func (s *ItemSpec) MaxTotalContents() int {
-	return s.itemSpec.Limits.TotalContentsLimit
+	return s.itemSpec.SpecLimits.TotalContentsLimit
 }
 
 // MaxTotalSize is the maximum size of a file, or all the files and
 // directories inside a directory.
 func (s *ItemSpec) MaxTotalSize() spectypes.FileSize {
-	return s.itemSpec.Limits.TotalSizeLimit
+	return s.itemSpec.SpecLimits.TotalSizeLimit
 }
 
 // MaxFileSize is the maximum size of an individual file.
 func (s *ItemSpec) MaxFileSize() spectypes.FileSize {
-	return s.itemSpec.Limits.SizeLimit
+	return s.itemSpec.SpecLimits.SizeLimit
 }
 
 // MaxConfigurationSize is the maximum size of a configuration file.
 func (s *ItemSpec) MaxConfigurationSize() spectypes.FileSize {
-	return s.itemSpec.Limits.ConfigurationSizeLimit
+	return s.itemSpec.SpecLimits.ConfigurationSizeLimit
 }
 
 // MaxRelativePathSize is the maximum size of a file indicated with a relative path.
 func (s *ItemSpec) MaxRelativePathSize() spectypes.FileSize {
-	return s.itemSpec.Limits.RelativePathSizeLimit
+	return s.itemSpec.SpecLimits.RelativePathSizeLimit
 }
 
 // MaxFieldsPerDataStream is the maxumum number of fields that each data stream can define.
 func (s *ItemSpec) MaxFieldsPerDataStream() int {
-	return s.itemSpec.Limits.FieldsPerDataStreamLimit
+	return s.itemSpec.SpecLimits.FieldsPerDataStreamLimit
 }
 
 // AdditionalContents returns true if the item can contain contents not defined in the spec.
@@ -136,7 +136,7 @@ type folderItemSpec struct {
 	Contents           []*folderItemSpec `json:"contents" yaml:"contents"`
 	DevelopmentFolder  bool              `json:"developmentFolder" yaml:"developmentFolder"`
 
-	Limits specLimits `json:"limits,inline" yaml:"limits,inline"`
+	SpecLimits
 
 	// Release type of the spec: beta, ga.
 	// Packages using beta features won't be able to go GA.
@@ -164,12 +164,12 @@ func (s *folderItemSpec) setDefaultValues() error {
 
 func (s *folderItemSpec) propagateContentLimits() {
 	for _, content := range s.Contents {
-		content.Limits.update(s.Limits)
+		content.SpecLimits.update(s.SpecLimits)
 		content.propagateContentLimits()
 	}
 }
 
-type specLimits struct {
+type SpecLimits struct {
 	// Limit to the total number of elements in a directory.
 	TotalContentsLimit int `json:"totalContentsLimit" yaml:"totalContentsLimit"`
 
@@ -189,7 +189,7 @@ type specLimits struct {
 	FieldsPerDataStreamLimit int `json:"fieldsPerDataStreamLimit" yaml:"fieldsPerDataStreamLimit"`
 }
 
-func (l *specLimits) update(o specLimits) {
+func (l *SpecLimits) update(o SpecLimits) {
 	target := reflect.ValueOf(l).Elem()
 	source := reflect.ValueOf(&o).Elem()
 	for i := 0; i < target.NumField(); i++ {
