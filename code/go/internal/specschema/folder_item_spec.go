@@ -122,26 +122,26 @@ func (s *ItemSpec) ValidateSchema(fsys fs.FS, itemPath string) ve.ValidationErro
 }
 
 type folderItemSpec struct {
-	Description       string                 `yaml:"description"`
-	ItemType          string                 `yaml:"type"`
-	ContentMediaType  *spectypes.ContentType `yaml:"contentMediaType"`
-	ForbiddenPatterns []string               `yaml:"forbiddenPatterns"`
-	Name              string                 `yaml:"name"`
-	Pattern           string                 `yaml:"pattern"`
-	Required          bool                   `yaml:"required"`
-	Ref               string                 `yaml:"$ref"`
-	Visibility        string                 `yaml:"visibility" default:"public"`
+	Description       string                 `json:"description" yaml:"description"`
+	ItemType          string                 `json:"type" yaml:"type"`
+	ContentMediaType  *spectypes.ContentType `json:"contentMediaType" yaml:"contentMediaType"`
+	ForbiddenPatterns []string               `json:"forbiddenPatterns" yaml:"forbiddenPatterns"`
+	Name              string                 `json:"name" yaml:"name"`
+	Pattern           string                 `json:"pattern" yaml:"pattern"`
+	Required          bool                   `json:"required" yaml:"required"`
+	Ref               string                 `json:"$ref" yaml:"$ref"`
+	Visibility        string                 `json:"visibility" yaml:"visibility" default:"public"`
 
-	AdditionalContents bool              `yaml:"additionalContents"`
-	Contents           []*folderItemSpec `yaml:"contents"`
-	DevelopmentFolder  bool              `yaml:"developmentFolder"`
+	AdditionalContents bool              `json:"additionalContents" yaml:"additionalContents"`
+	Contents           []*folderItemSpec `json:"contents" yaml:"contents"`
+	DevelopmentFolder  bool              `json:"developmentFolder" yaml:"developmentFolder"`
 
-	Limits specLimits `yaml:",inline"`
+	Limits specLimits `json:"limits,inline" yaml:"limits,inline"`
 
 	// Release type of the spec: beta, ga.
 	// Packages using beta features won't be able to go GA.
 	// Default release: ga
-	Release string `yaml:"release"`
+	Release string `json:"release" yaml:"release"`
 
 	schema spectypes.FileSchema
 }
@@ -171,22 +171,22 @@ func (s *folderItemSpec) propagateContentLimits() {
 
 type specLimits struct {
 	// Limit to the total number of elements in a directory.
-	TotalContentsLimit int `yaml:"totalContentsLimit"`
+	TotalContentsLimit int `json:"totalContentsLimit" yaml:"totalContentsLimit"`
 
 	// Limit to the total size of files in a directory.
-	TotalSizeLimit spectypes.FileSize `yaml:"totalSizeLimit"`
+	TotalSizeLimit spectypes.FileSize `json:"totalSizeLimit" yaml:"totalSizeLimit"`
 
 	// Limit to individual files.
-	SizeLimit spectypes.FileSize `yaml:"sizeLimit"`
+	SizeLimit spectypes.FileSize `json:"sizeLimit" yaml:"sizeLimit"`
 
 	// Limit to individual configuration files (yaml files).
-	ConfigurationSizeLimit spectypes.FileSize `yaml:"configurationSizeLimit"`
+	ConfigurationSizeLimit spectypes.FileSize `json:"configurationSizeLimit" yaml:"configurationSizeLimit"`
 
 	// Limit to files referenced as relative paths (images).
-	RelativePathSizeLimit spectypes.FileSize `yaml:"relativePathSizeLimit"`
+	RelativePathSizeLimit spectypes.FileSize `json:"relativePathSizeLimit" yaml:"relativePathSizeLimit"`
 
 	// Maximum number of fields per data stream, can only be set at the root level spec.
-	FieldsPerDataStreamLimit int `yaml:"fieldsPerDataStreamLimit"`
+	FieldsPerDataStreamLimit int `json:"fieldsPerDataStreamLimit" yaml:"fieldsPerDataStreamLimit"`
 }
 
 func (l *specLimits) update(o specLimits) {
