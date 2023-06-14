@@ -1,0 +1,17 @@
+spec:
+  additionalContents: false
+  contents:
+    - description: A data stream's manifest file
+      type: file
+      contentMediaType: "application/x-yaml"
+      sizeLimit: 5MB
+      name: "manifest.yml"
+      required: true
+      $ref: "./manifest.spec.yml"
+
+versions:
+  - before: 2.0.0
+    patch:
+      - op: replace
+        path: "/additionalContents"
+        value: true

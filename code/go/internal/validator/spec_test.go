@@ -63,3 +63,51 @@ func TestBetaFeatures_Package_GA(t *testing.T) {
 	require.Len(t, errs, 1)
 	require.Equal(t, errs[0].Error(), "spec for [testdata/packages/features_beta/beta] defines beta features which can't be enabled for packages with a stable semantic version")
 }
+
+func TestFolderSpecInvalid(t *testing.T) {
+	// given
+	cases := []struct {
+		title         string
+		version       semver.Version
+		spec          fspath.FS
+		pkgPath       string
+		valid         bool
+		expectedError string
+	}{
+		{
+			title:   "valid spec",
+			version: *semver.MustParse("1.0.0"),
+			spec:    fspath.DirFS("testdata/fakespec"),
+			pkgPath: "testdata/packages/folder_spec_patches",
+			valid:   true,
+		},
+		{
+			title:         "valid spec",
+			version:       *semver.MustParse("2.0.0"),
+			spec:          fspath.DirFS("testdata/fakespec"),
+			pkgPath:       "testdata/packages/folder_spec_patches",
+			valid:         false,
+			expectedError: "item [other.yml] is not allowed in folder [testdata/packages/folder_spec_patches/patches]",
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.title, func(t *testing.T) {
+			s := Spec{
+				c.version,
+				c.spec,
+			}
+			pkg, err := packages.NewPackage(c.pkgPath)
+			require.NoError(t, err)
+
+			errs := s.ValidatePackage(*pkg)
+			if c.valid {
+				require.Len(t, errs, 0)
+				return
+			}
+			require.Len(t, errs, 1)
+			require.Equal(t, c.expectedError, errs[0].Error())
+		})
+	}
+
+}
