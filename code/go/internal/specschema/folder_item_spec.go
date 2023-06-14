@@ -5,11 +5,11 @@
 package specschema
 
 import (
+	"fmt"
 	"io/fs"
 	"reflect"
 
 	"github.com/creasty/defaults"
-	"github.com/pkg/errors"
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
@@ -150,7 +150,7 @@ type folderItemSpec struct {
 func (s *folderItemSpec) setDefaultValues() error {
 	err := defaults.Set(s)
 	if err != nil {
-		return errors.Wrap(err, "could not set default values")
+		return fmt.Errorf("could not set default values: %w", err)
 	}
 
 	for _, content := range s.Contents {
