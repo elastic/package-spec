@@ -75,7 +75,6 @@ func (v *validator) Validate() ve.ValidationErrors {
 
 	for _, file := range files {
 		fileName := file.Name()
-		log.Printf("Checking %s", fileName)
 		itemSpec, err := v.findItemSpec(fileName)
 		if err != nil {
 			errs = append(errs, err)
@@ -96,8 +95,6 @@ func (v *validator) Validate() ve.ValidationErrors {
 
 		if itemSpec == nil && !v.spec.AdditionalContents() {
 			// No spec found for current folder item and we do not allow additional contents in folder.
-			log.Printf("Spec with errors: \n%+v", v.spec.Contents())
-			log.Printf("item [%s] is not allowed in folder [%s] itemSpec %t Additional contents %t", fileName, v.pkg.Path(v.folderPath), itemSpec == nil, v.spec.AdditionalContents())
 			errs = append(errs, fmt.Errorf("item [%s] is not allowed in folder [%s]", fileName, v.pkg.Path(v.folderPath)))
 			continue
 		}
