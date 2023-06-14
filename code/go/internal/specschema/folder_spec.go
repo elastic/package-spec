@@ -122,8 +122,7 @@ func (l *FolderSpecLoader) loadContents(s *folderItemSpec, fs fs.FS, specPath st
 				content.schema = schema
 			case spectypes.ItemTypeFolder:
 				p := path.Join(path.Dir(specPath), content.Ref)
-				var err error
-				err = l.loadFolderSpec(content, p)
+				err := l.loadFolderSpec(content, p)
 				if err != nil {
 					return errors.Wrapf(err, "could not load spec for %q", p)
 				}

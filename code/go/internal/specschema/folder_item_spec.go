@@ -136,7 +136,8 @@ type folderItemSpec struct {
 	Contents           []*folderItemSpec `json:"contents" yaml:"contents"`
 	DevelopmentFolder  bool              `json:"developmentFolder" yaml:"developmentFolder"`
 
-	SpecLimits `yaml:",inline"` // json should not have inline
+	// As it is required to be inline both in yaml and json, this struct must be public embedded field
+	SpecLimits `yaml:",inline"`
 
 	// Release type of the spec: beta, ga.
 	// Packages using beta features won't be able to go GA.
