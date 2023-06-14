@@ -1,7 +1,7 @@
 spec:
   additionalContents: false
   contents:
-  - description: Folder containing agent definitions
+  - description: Folder containing input definitions
     type: folder
     name: stream
     required: true
