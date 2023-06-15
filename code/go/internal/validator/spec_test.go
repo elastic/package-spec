@@ -104,15 +104,24 @@ func TestFolderSpecInvalid(t *testing.T) {
 			},
 		},
 		{
-			title:   "invalid spec chaining patches- extra file 3.0.0",
+			title:   "invalid spec chaining patches- extra file 2.9.0",
 			version: *semver.MustParse("2.9.0"),
 			spec:    fspath.DirFS("testdata/fakespec"),
 			pkgPath: "testdata/packages/folder_spec_patches_chain",
 			valid:   false,
 			expectedErrors: []string{
 				"item [other.yml] is not allowed in folder [testdata/packages/folder_spec_patches_chain/patches]",
-				"expecting to find [manifest.yml] file in folder [testdata/packages/folder_spec_patches_chain/patches/data_stream]",
 				"expecting to find [other.yml] file in folder [testdata/packages/folder_spec_patches_chain/patches/data_stream]",
+			},
+		},
+		{
+			title:   "invalid spec chaining patches- extra file 3.0.0",
+			version: *semver.MustParse("3.0.0"),
+			spec:    fspath.DirFS("testdata/fakespec"),
+			pkgPath: "testdata/packages/folder_spec_patches_chain",
+			valid:   false,
+			expectedErrors: []string{
+				"item [other.yml] is not allowed in folder [testdata/packages/folder_spec_patches_chain/patches]",
 			},
 		},
 	}
