@@ -28,7 +28,7 @@ func (f *folderSchemaSpec) resolve(target semver.Version) (*folderItemSpec, erro
 		return f.Spec, nil
 	}
 
-	spec, err := specpatch.ResolvePatches(f.Spec, patchJSON)
+	spec, err := specpatch.ResolvePatch(f.Spec, patchJSON)
 	if err != nil {
 		return nil, fmt.Errorf("failed to apply patch: %w", err)
 	}

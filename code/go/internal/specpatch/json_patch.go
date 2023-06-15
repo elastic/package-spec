@@ -12,6 +12,7 @@ import (
 	jsonpatch "github.com/evanphx/json-patch/v5"
 )
 
+// Version represents the JSON patches to be applied in each version
 type Version struct {
 	// Before is the first version that didn't include this change.
 	Before string `json:"before" yaml:"before"`
@@ -20,6 +21,8 @@ type Version struct {
 	Patch []interface{} `json:"patch" yaml:"patch"`
 }
 
+// PatchForVersion obtains the JSON patch to be applied given a specific version (e.g. 2.0.0)
+// and a list of patches per version (Version struct)
 func PatchForVersion(target semver.Version, versions []Version) ([]byte, error) {
 	var patch []any
 	for _, version := range versions {
@@ -37,7 +40,8 @@ func PatchForVersion(target semver.Version, versions []Version) ([]byte, error) 
 	return json.Marshal(patch)
 }
 
-func ResolvePatches(spec any, patchJSON []byte) ([]byte, error) {
+// ResolvePatch applies the JSON patch to the given spec
+func ResolvePatch(spec any, patchJSON []byte) ([]byte, error) {
 	patch, err := jsonpatch.DecodePatch(patchJSON)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode patch: %w", err)
