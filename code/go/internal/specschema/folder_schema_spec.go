@@ -9,24 +9,17 @@ import (
 	"fmt"
 
 	"github.com/Masterminds/semver/v3"
-	jsonpatch "github.com/evanphx/json-patch/v5"
+
+	"github.com/elastic/package-spec/v2/code/go/internal/specpatch"
 )
 
 type folderSchemaSpec struct {
-	Spec     *folderItemSpec       `json:"spec" yaml:"spec"`
-	Versions []folderSchemaVersion `json:"versions" yaml:"versions"`
-}
-
-type folderSchemaVersion struct {
-	// Before is the first version that didn't include this change.
-	Before string `json:"before" yaml:"before"`
-
-	// Patch is a list of JSON patch operations as defined by RFC6902.
-	Patch []interface{} `json:"patch" yaml:"patch"`
+	Spec     *folderItemSpec     `json:"spec" yaml:"spec"`
+	Versions []specpatch.Version `json:"versions" yaml:"versions"`
 }
 
 func (f *folderSchemaSpec) resolve(target semver.Version) (*folderItemSpec, error) {
-	patchJSON, err := f.patchForVersion(target)
+	patchJSON, err := specpatch.PatchForVersion(target, f.Versions)
 	if err != nil {
 		return nil, err
 	}
@@ -35,17 +28,7 @@ func (f *folderSchemaSpec) resolve(target semver.Version) (*folderItemSpec, erro
 		return f.Spec, nil
 	}
 
-	patch, err := jsonpatch.DecodePatch(patchJSON)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode patch: %w", err)
-	}
-
-	spec, err := json.Marshal(f.Spec)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal spec for patching: %w", err)
-	}
-
-	spec, err = patch.Apply(spec)
+	spec, err := specpatch.ResolvePatches(f.Spec, patchJSON)
 	if err != nil {
 		return nil, fmt.Errorf("failed to apply patch: %w", err)
 	}
