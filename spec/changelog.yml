@@ -7,6 +7,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/542
+  - description: Add support for JSON Patches in folder spec files
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/540
 - version: 2.8.1
   changes:
   - description: Add validation for data types of metrics
@@ -15,9 +18,6 @@
   - description: Extend benchmarks spec to add rally scenario
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/524
-  - description: Add support for JSON Patches in folder spec files
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/540
 - version: 2.8.0
   changes:
   - description: Add new subcategory "advanced_analytics_ueba"
