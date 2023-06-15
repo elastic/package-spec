@@ -14,6 +14,7 @@ spec:
       required: false
       $ref: "./data_stream/spec.yml"
 
+# JSON patches for newer versions should be placed on top
 versions:
   - before: 2.1.0
     patch:

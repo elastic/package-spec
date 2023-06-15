@@ -12,6 +12,7 @@ spec:
       pattern: '^[a-z0-9_]+$'
       examples:
       - apache
+# JSON patches for newer versions should be placed on top
 versions:
   ## This is invalid, when this patch is applied, the `license` property doesn't exist in the spec.
   - before: 3.0.0

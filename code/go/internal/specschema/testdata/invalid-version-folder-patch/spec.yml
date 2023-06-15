@@ -13,6 +13,7 @@ spec:
     required: true
     $ref: "./manifest.spec.yml"
 
+# JSON patches for newer versions should be placed on top
 versions:
   ## This is invalid, when this patch is applied, there is no second item
   - before: 3.0.0

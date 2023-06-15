@@ -16,6 +16,7 @@ spec:
       required: false
       $ref: "./other.spec.yml"
 
+# JSON patches for newer versions should be placed on top
 versions:
   - before: 3.0.0
     patch:

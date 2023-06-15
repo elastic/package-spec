@@ -13,6 +13,7 @@ spec:
       examples:
       - apache
 
+# JSON patches for newer versions should be placed on top
 versions:
   - before: 2.0.0
     patch:
