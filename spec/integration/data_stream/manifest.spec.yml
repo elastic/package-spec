@@ -322,6 +322,10 @@ spec:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 2.9.0
+    patch:
+      - op: remove
+        path: /definitions/vars/items/properties/secret
   - before: 2.7.0
     patch:
       - op: remove
