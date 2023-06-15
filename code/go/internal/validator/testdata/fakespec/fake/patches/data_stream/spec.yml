@@ -8,24 +8,17 @@ spec:
       name: "manifest.yml"
       required: true
       $ref: "./manifest.spec.yml"
-    - description: Folder containing data stream definitions
-      type: folder
-      name: data_stream
+    - description: A data stream's manifest file
+      type: file
+      contentMediaType: "application/x-yaml"
+      sizeLimit: 5MB
+      name: "other.yml"
       required: false
-      $ref: "./data_stream/spec.yml"
+      $ref: "./other.spec.yml"
 
 versions:
-  - before: 2.1.0
+  - before: 3.0.0
     patch:
       - op: replace
         path: "/contents/1/required"
         value: true
-  - before: 2.0.0
-    patch:
-      - op: replace
-        path: "/additionalContents"
-        value: true
-      - op: replace
-        path: "/contents/1/required"
-        value: false
-
