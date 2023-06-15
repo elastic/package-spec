@@ -17,8 +17,7 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
 )
 
-// ValidateMinimumKibanaVersion if the package is an input package, and the package version is >= 1.0.0,
-// then the kibana version condition must be >= 8.8.0
+// ValidateMinimumKibanaVersion ensures the minimum kibana version
 func ValidateMinimumKibanaVersion(fsys fspath.FS) ve.ValidationErrors {
 	pkg, err := packages.NewPackageFromFS(fsys.Path(), fsys)
 	if err != nil {
@@ -48,6 +47,8 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) ve.ValidationErrors {
 	return nil
 }
 
+// validateMinimumKibanaVersionInputPackages if the package is an input package, and the package version is >= 1.0.0,
+// then the kibana version condition must be >= 8.8.0
 func validateMinimumKibanaVersionInputPackages(packageType string, packageVersion semver.Version, kibanaVersionCondition string) error {
 
 	if packageType != "input" {
@@ -65,6 +66,8 @@ func validateMinimumKibanaVersionInputPackages(packageType string, packageVersio
 	return errors.New("conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)")
 }
 
+// validateMinimumKibanaVersionInputPackages if the package defines any runtime field,
+// then the kibana version condition must be >= 8.10.0
 func validateMinimumKibanaVersionRuntimeFields(fsys fspath.FS, packageVersion semver.Version, kibanaVersionCondition string) error {
 
 	errs := validateFields(fsys, validateNoRuntimeFields)
@@ -72,11 +75,11 @@ func validateMinimumKibanaVersionRuntimeFields(fsys fspath.FS, packageVersion se
 		return nil
 	}
 
-	if kibanaVersionConditionIsGreaterThanOrEqualTo(kibanaVersionCondition, "8.9.0") {
+	if kibanaVersionConditionIsGreaterThanOrEqualTo(kibanaVersionCondition, "8.10.0") {
 		return nil
 	}
 
-	return errors.New("conditions.kibana.version must be ^8.9.0 or greater to include runtime fields")
+	return errors.New("conditions.kibana.version must be ^8.10.0 or greater to include runtime fields")
 }
 
 func readManifest(fsys fspath.FS) (*pkgpath.File, error) {
