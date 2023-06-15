@@ -160,12 +160,6 @@ func TestValidateFile(t *testing.T) {
 				`field 3: Must not be present`,
 			},
 		},
-		"bad_routing_rules": {
-			"data_stream/rules/manifest.yml",
-			[]string{
-				`field (root): dataset is required`,
-			},
-		},
 	}
 
 	for pkgName, test := range tests {
@@ -575,6 +569,34 @@ func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
 					return
 				}
 				require.Equal(t, errs.Error(), test.expectedErrContains[0])
+			}
+		})
+	}
+}
+
+func TestValidateRoutingRules(t *testing.T) {
+	tests := map[string][]string{
+		"good_v2": []string{},
+		"bad_routing_rules": []string{
+			`routing rules defined in data stream "rules" but dataset field is missing: dataset field is required in data stream "rules"`,
+		},
+	}
+
+	for pkgName, expectedErrorMessages := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			err := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			if len(expectedErrorMessages) == 0 {
+				assert.NoError(t, err)
+				return
+			}
+			assert.Error(t, err)
+
+			errs, ok := err.(errors.ValidationErrors)
+			require.True(t, ok)
+			assert.Len(t, errs, len(expectedErrorMessages))
+
+			for _, foundError := range errs {
+				require.Contains(t, expectedErrorMessages, foundError.Error())
 			}
 		})
 	}

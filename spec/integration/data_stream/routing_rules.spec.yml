@@ -1,0 +1,76 @@
+##
+## Describes the specification for a routing rules yml file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  definitions:
+    routing_rule:
+      description: Routing rule definition
+      type: object
+      properties:
+        dataset:
+          description: >
+            Field references or a static value for the dataset part of the data stream name.
+            In addition to the criteria for index names, cannot contain - and must be no longer than 100 characters.
+            Example values are nginx.access and nginx.error.
+
+            Supports field references with a mustache-like syntax (denoted as {{double}} or {{{triple}}} curly braces).
+            When resolving field references, the processor replaces invalid characters with _.
+            Uses the <dataset> part of the index name as a fallback if all field references resolve to a null, missing, or non-string value
+          anyOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+          examples:
+          - nginx.error
+          - nginx
+        if:
+          description: Conditionally execute the processor
+          type: string
+          examples:
+          - "ctx?.file?.path?.contains('/var/log/nginx/error')"
+          - "ctx?.container?.image?.name == 'nginx'"
+        namespace:
+          description: >
+            Field references or a static value for the namespace part of the data stream name.
+            See the criteria for index names for allowed characters. Must be no longer than 100 characters.
+
+            Supports field references with a mustache-like syntax (denoted as {{double}} or {{{triple}}} curly braces).
+            When resolving field references, the processor replaces invalid characters with _.
+            Uses the <namespace> part of the index name as a fallback if all field references resolve to a null, missing, or non-string value.
+          anyOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+          items:
+            type: string
+          examples:
+            - default
+            - "{{ labels.dasta_stream.namespace}}"
+      required:
+        - dataset
+        - if
+        - namespace
+  properties:
+    routing_rules:  # technical preview
+      description: Routing rules set.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          dataset:
+            type: string
+          rules:
+            type: array
+            items:
+              $ref: "#/definitions/routing_rule"
+        required:
+          - dataset
+          - rules
+  required:
+  - routing_rules

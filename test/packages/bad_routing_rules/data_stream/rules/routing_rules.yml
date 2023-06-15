@@ -1,0 +1,35 @@
+routing_rules:
+  # "Local" routing rules are included under this current dataset, not a special case
+  - dataset: routing_rules
+    rules: # Route error logs to `routing_rules.error` when they're sourced from an error logfile
+    - dataset: routing_rules.error
+      if: "ctx?.file?.path?.contains('/var/log/routing_rules/error')"
+      namespace:
+        - "{{labels.data_stream.namespace}}"
+        - default
+
+    # Route access logs to `routing_rules.access` when they're sourced from an access logfile
+    - dataset: routing_rules.access
+      if: "ctx?.file?.path?.contains('/var/log/routing_rules/access')"
+      namespace:
+        - "{{labels.data_stream.namespace}}"
+        - default
+
+  # Route K8's container logs to this catch-all dataset for further routing
+  - dataset: k8s.router
+    rules:
+    - dataset: routing_rules
+      if: "ctx?.container?.image?.name == 'routing_rules'"
+      namespace:
+        - "{{labels.data_stream.namespace}}"
+        - default
+
+  # Route syslog entries tagged with routing_rules to this catch-all dataset
+  - dataset: syslog
+    rules:
+    - dataset: routing_rules
+      if: "ctx?.tags?.contains('routing_rules')"
+      namespace:
+        - "{{labels.data_stream.namespace}}"
+        - default
+
