@@ -4,15 +4,20 @@
 ##
 - version: 2.9.0-next
   changes:
+  - description: Prepare for next version
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/542
+  - description: Add support to define routing rules in data streams (technical preview)
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/535
+- version: 2.8.1
+  changes:
   - description: Add validation for data types of metrics
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/525
   - description: Extend benchmarks spec to add rally scenario
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/524
-  - description: Add support to define routing rules in data streams (technical preview)
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/535
 - version: 2.8.0
   changes:
   - description: Add new subcategory "advanced_analytics_ueba"
