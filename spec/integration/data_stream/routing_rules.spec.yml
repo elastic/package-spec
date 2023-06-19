@@ -64,8 +64,10 @@ spec:
         additionalProperties: false
         properties:
           dataset:
+            description: Source dataset to be used for this reroute processsor
             type: string
           rules:
+            description: List of routing rules
             type: array
             items:
               $ref: "#/definitions/routing_rule"
