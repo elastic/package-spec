@@ -91,4 +91,4 @@ spec:
 #   - before: 2.9.0
 #     patch:
 #       - op: remove
-#         path: "/contents/0/contents/7"
+#         path: "/contents/0/contents/7" # remove routing_rules file definition
