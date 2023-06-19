@@ -413,7 +413,7 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
 		},
 		"bad_runtime_kibana_version": []string{
-			"conditions.kibana.version must be ^8.9.0 or greater to include runtime fields",
+			"conditions.kibana.version must be ^8.10.0 or greater to include runtime fields",
 		},
 	}
 
