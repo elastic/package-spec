@@ -118,7 +118,7 @@ func TestValidateMinimumKibanaVersionInputPackages(t *testing.T) {
 }
 
 func TestValidateMinimumKibanaVersionRuntimeFields(t *testing.T) {
-	kbnVersionError := errors.New("conditions.kibana.version must be ^8.9.0 or greater to include runtime fields")
+	kbnVersionError := errors.New("conditions.kibana.version must be ^8.10.0 or greater to include runtime fields")
 	var tests = []struct {
 		pkgRoot                string
 		packageVersion         semver.Version
@@ -146,13 +146,13 @@ func TestValidateMinimumKibanaVersionRuntimeFields(t *testing.T) {
 		{
 			"../../../../../test/packages/good_v2",
 			*semver.MustParse("1.0.0"),
-			"^8.9.0 || ^7.14.0",
+			"^8.10.0 || ^7.14.0",
 			kbnVersionError,
 		},
 		{
 			"../../../../../test/packages/good_v2",
 			*semver.MustParse("1.0.0"),
-			"^8.9.0",
+			"^8.10.0",
 			nil,
 		},
 	}
