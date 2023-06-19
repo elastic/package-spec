@@ -7,6 +7,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/542
+  - description: Update minimum kibana version required for runtime fields
+    type: bugfix
+    link: https://github.com/elastic/package-spec/pull/543
   - description: Add support to define routing rules in data streams (technical preview)
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/535
