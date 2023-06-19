@@ -169,55 +169,6 @@ spec:
             hidden:
               description: Makes the data stream hidden
               type: boolean
-    routing_rule:
-      description: Routing rule definition
-      type: object
-      properties:
-        dataset:
-          description: >
-            Field references or a static value for the dataset part of the data stream name.
-            In addition to the criteria for index names, cannot contain - and must be no longer than 100 characters.
-            Example values are nginx.access and nginx.error.
-
-            Supports field references with a mustache-like syntax (denoted as {{double}} or {{{triple}}} curly braces).
-            When resolving field references, the processor replaces invalid characters with _.
-            Uses the <dataset> part of the index name as a fallback if all field references resolve to a null, missing, or non-string value
-          anyOf:
-            - type: string
-            - type: array
-              items:
-                type: string
-          examples:
-          - nginx.error
-          - nginx
-        if:
-          description: Conditionally execute the processor
-          type: string
-          examples:
-          - "ctx?.file?.path?.contains('/var/log/nginx/error')"
-          - "ctx?.container?.image?.name == 'nginx'"
-        namespace:
-          description: >
-            Field references or a static value for the namespace part of the data stream name.
-            See the criteria for index names for allowed characters. Must be no longer than 100 characters.
-
-            Supports field references with a mustache-like syntax (denoted as {{double}} or {{{triple}}} curly braces).
-            When resolving field references, the processor replaces invalid characters with _.
-            Uses the <namespace> part of the index name as a fallback if all field references resolve to a null, missing, or non-string value.
-          anyOf:
-            - type: string
-            - type: array
-              items:
-                type: string
-          items:
-            type: string
-          examples:
-            - default
-            - "{{ labels.dasta_stream.namespace}}"
-      required:
-        - dataset
-        - if
-        - namespace
   properties:
     dataset:
       description: Name of data set.
@@ -356,29 +307,6 @@ spec:
         dynamic_namespace:
           description: When set to true, agents running this integration are granted data stream privileges for all namespaces of its type
           type: boolean
-    routing_rules:  # technical preview
-      description: Routing rules set.
-      type: array
-      items:
-        type: object
-        additionalProperties: false
-        properties:
-          dataset:
-            type: string
-          rules:
-            type: array
-            items:
-              $ref: "#/definitions/routing_rule"
-        required:
-          - dataset
-          - rules
-  allOf:
-    - if:
-        required:
-          - routing_rules
-      then:
-        required:
-          - dataset
   required:
   - title
 versions:
@@ -390,7 +318,3 @@ versions:
     patch:
       - op: remove
         path: /properties/type/enum/4
-  - before: 2.9.0
-    patch:
-      - op: remove
-        path: /properties/routing_rules
