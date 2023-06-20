@@ -69,7 +69,7 @@ func anyRoutingRulesInDataStream(fsys fspath.FS, dataStream string) (bool, error
 		return false, fmt.Errorf("single routing rules expected")
 	}
 
-	vals, err := f[0].Values("$.")
+	vals, err := f[0].Values("$[*]")
 	if err != nil {
 		return false, fmt.Errorf("can't read routing_rules: %w", err)
 	}
