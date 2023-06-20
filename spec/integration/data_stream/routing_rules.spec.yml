@@ -3,8 +3,6 @@
 ##
 spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
-  type: object
-  additionalProperties: false
   definitions:
     routing_rule:
       description: Routing rule definition
@@ -55,24 +53,22 @@ spec:
         - dataset
         - if
         - namespace
-  properties:
-    routing_rules:  # technical preview
-      description: Routing rules set.
-      type: array
-      items:
-        type: object
-        additionalProperties: false
-        properties:
-          dataset:
-            description: Source dataset to be used for this reroute processsor
-            type: string
-          rules:
-            description: List of routing rules
-            type: array
-            items:
-              $ref: "#/definitions/routing_rule"
-        required:
-          - dataset
-          - rules
-  required:
-  - routing_rules
+  type: array
+  description: Routing rules set.
+  items:
+     type: object
+     additionalProperties: false
+     properties:
+       dataset:
+         description: >
+           Source dataset to be used by this reroute processsor.
+           If applicable, documents from this dataset will be routed according to the rules defined.
+         type: string
+       rules:
+         description: List of routing rules
+         type: array
+         items:
+           $ref: "#/definitions/routing_rule"
+     required:
+       - dataset
+       - rules
