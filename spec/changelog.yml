@@ -21,6 +21,15 @@
   - description: Extend benchmarks spec to add rally scenario
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/524
+  - description: Add variants definitions in benchmark input services.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/526
+  - description: Add tf and k8s benchmark input service definitions.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/526
+  - description: Add `data_stream.dataset` as an alternative to `data_stream.name` for benchmarks.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/526
 - version: 2.8.0
   changes:
   - description: Add new subcategory "advanced_analytics_ueba"
