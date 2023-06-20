@@ -87,8 +87,8 @@ spec:
       $ref: "./routing_rules.spec.yml"
 
 # TODO add JSON patch to remove routing_rules.yml entry
-# versions:
-#   - before: 2.9.0
-#     patch:
-#       - op: remove
-#         path: "/contents/0/contents/7" # remove routing_rules file definition
+versions:
+  - before: 2.9.0
+    patch:
+      - op: remove
+        path: "/contents/0/contents/7" # remove routing_rules file definition
