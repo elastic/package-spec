@@ -6,15 +6,25 @@ spec:
     description:
       description: A description of the benchmark scenario.
       type: string
+    policy_template:
+      description: |
+        The policy template to use, if none is set, will pick the first one in the list.
+      type: string
     data_stream:
       description: Data-stream parameters.
       type: object
       additionalProperties: false
-      required:
+      oneOf:
+      - required:
         - name
+      - required:
+        - dataset
       properties:
         name:
-          description: The name of the data_stream to benchmark.
+          description: The name of the dataset to benchmark.
+          type: string
+        dataset:
+          description: The name of the dataset to benchmark.
           type: string
         vars:
           description: The data_stream specific variables.

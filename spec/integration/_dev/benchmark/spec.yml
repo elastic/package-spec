@@ -12,6 +12,11 @@ spec:
           type: folder
           name: deploy
           $ref: "./deploy/spec.yml"
+        - description: A folder containing resources used by one or more benchmarks.
+          type: folder
+          pattern: '^[a-z0-9]+-benchmark$'
+          additionalContents: true
+          required: false
         - description: A system benchmark scenario.
           type: file
           pattern: '^.+\.yml$'

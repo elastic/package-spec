@@ -13,6 +13,15 @@
   - description: Add support for JSON Patches in folder spec files
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/540
+  - description: Add variants definitions in benchmark input services.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/526
+  - description: Add tf and k8s benchmark input service definitions.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/526
+  - description: Add `data_stream.dataset` as an alternative to `data_stream.name` for benchmarks.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/526
   - description: Add support to define routing rules in data streams (technical preview)
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/535
