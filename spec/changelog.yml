@@ -22,6 +22,9 @@
   - description: Add `data_stream.dataset` as an alternative to `data_stream.name` for benchmarks.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/526
+  - description: Add ability to specify secret vars
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/339
 - version: 2.8.1
   changes:
   - description: Add validation for data types of metrics

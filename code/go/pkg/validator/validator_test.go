@@ -160,6 +160,12 @@ func TestValidateFile(t *testing.T) {
 				`field 3: Must not be present`,
 			},
 		},
+		"bad_secret_vars": {
+			"manifest.yml",
+			[]string{
+				"field vars.0: Additional property secret is not allowed",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {

@@ -83,6 +83,17 @@ spec:
             default: false
             examples:
               - true
+          secret:
+            description: >
+              Specifying that a variable is secret means that Kibana will store the value
+              separate from the package policy in a more secure index. 
+              This is useful for passwords and other sensitive information.
+              One caveat is that secrets are write-only, once a user writes a secret var
+              they cannot read it again, only overwrite it.
+            type: boolean
+            default: false
+            examples:
+              - true
           show_user:
             description: Should this variable be shown to the user by default?
             type: boolean
@@ -311,6 +322,10 @@ spec:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 2.9.0
+    patch:
+      - op: remove
+        path: /definitions/vars/items/properties/secret
   - before: 2.7.0
     patch:
       - op: remove
