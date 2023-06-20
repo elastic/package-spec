@@ -2,7 +2,7 @@
 // or more contributor license agreements. Licensed under the Elastic License;
 // you may not use this file except in compliance with the Elastic License.
 
-package yamlschema
+package specschema
 
 import (
 	"encoding/json"
@@ -13,36 +13,37 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/internal/specpatch"
 )
 
-type itemSchemaSpec struct {
-	Spec     map[string]interface{} `json:"spec" yaml:"spec"`
-	Versions []specpatch.Version    `json:"versions" yaml:"versions"`
+type folderSchemaSpec struct {
+	Spec     *folderItemSpec     `json:"spec" yaml:"spec"`
+	Versions []specpatch.Version `json:"versions" yaml:"versions"`
 }
 
-func (i *itemSchemaSpec) resolve(target semver.Version) (map[string]interface{}, error) {
-	patchJSON, err := specpatch.PatchForVersion(target, i.Versions)
+func (f *folderSchemaSpec) resolve(target semver.Version) (*folderItemSpec, error) {
+	patchJSON, err := specpatch.PatchForVersion(target, f.Versions)
 	if err != nil {
 		return nil, err
 	}
 	if len(patchJSON) == 0 {
 		// Nothing to do.
-		return i.Spec, nil
+		return f.Spec, nil
 	}
-	spec, err := specpatch.ResolvePatch(i.Spec, patchJSON)
+
+	spec, err := specpatch.ResolvePatch(f.Spec, patchJSON)
 	if err != nil {
 		return nil, fmt.Errorf("failed to apply patch: %w", err)
 	}
 
-	var resolved map[string]interface{}
+	var resolved folderItemSpec
 	err = json.Unmarshal(spec, &resolved)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal resolved spec: %w", err)
 	}
-	return resolved, nil
+	return &resolved, nil
 }
 
-func (i *itemSchemaSpec) patchForVersion(target semver.Version) ([]byte, error) {
+func (f *folderSchemaSpec) patchForVersion(target semver.Version) ([]byte, error) {
 	var patch []any
-	for _, version := range i.Versions {
+	for _, version := range f.Versions {
 		if sv, err := semver.NewVersion(version.Before); err != nil {
 			return nil, err
 		} else if !target.LessThan(sv) {

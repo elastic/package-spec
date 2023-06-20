@@ -5,11 +5,11 @@
 package specschema
 
 import (
+	"fmt"
 	"io/fs"
 	"reflect"
 
 	"github.com/creasty/defaults"
-	"github.com/pkg/errors"
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
@@ -28,33 +28,33 @@ type ItemSpec struct {
 // MaxTotalContents is the maximum number of files and directories
 // inside a directory and its children directories.
 func (s *ItemSpec) MaxTotalContents() int {
-	return s.itemSpec.Limits.TotalContentsLimit
+	return s.itemSpec.SpecLimits.TotalContentsLimit
 }
 
 // MaxTotalSize is the maximum size of a file, or all the files and
 // directories inside a directory.
 func (s *ItemSpec) MaxTotalSize() spectypes.FileSize {
-	return s.itemSpec.Limits.TotalSizeLimit
+	return s.itemSpec.SpecLimits.TotalSizeLimit
 }
 
 // MaxFileSize is the maximum size of an individual file.
 func (s *ItemSpec) MaxFileSize() spectypes.FileSize {
-	return s.itemSpec.Limits.SizeLimit
+	return s.itemSpec.SpecLimits.SizeLimit
 }
 
 // MaxConfigurationSize is the maximum size of a configuration file.
 func (s *ItemSpec) MaxConfigurationSize() spectypes.FileSize {
-	return s.itemSpec.Limits.ConfigurationSizeLimit
+	return s.itemSpec.SpecLimits.ConfigurationSizeLimit
 }
 
 // MaxRelativePathSize is the maximum size of a file indicated with a relative path.
 func (s *ItemSpec) MaxRelativePathSize() spectypes.FileSize {
-	return s.itemSpec.Limits.RelativePathSizeLimit
+	return s.itemSpec.SpecLimits.RelativePathSizeLimit
 }
 
 // MaxFieldsPerDataStream is the maxumum number of fields that each data stream can define.
 func (s *ItemSpec) MaxFieldsPerDataStream() int {
-	return s.itemSpec.Limits.FieldsPerDataStreamLimit
+	return s.itemSpec.SpecLimits.FieldsPerDataStreamLimit
 }
 
 // AdditionalContents returns true if the item can contain contents not defined in the spec.
@@ -122,26 +122,27 @@ func (s *ItemSpec) ValidateSchema(fsys fs.FS, itemPath string) ve.ValidationErro
 }
 
 type folderItemSpec struct {
-	Description       string                 `yaml:"description"`
-	ItemType          string                 `yaml:"type"`
-	ContentMediaType  *spectypes.ContentType `yaml:"contentMediaType"`
-	ForbiddenPatterns []string               `yaml:"forbiddenPatterns"`
-	Name              string                 `yaml:"name"`
-	Pattern           string                 `yaml:"pattern"`
-	Required          bool                   `yaml:"required"`
-	Ref               string                 `yaml:"$ref"`
-	Visibility        string                 `yaml:"visibility" default:"public"`
+	Description       string                 `json:"description" yaml:"description"`
+	ItemType          string                 `json:"type" yaml:"type"`
+	ContentMediaType  *spectypes.ContentType `json:"contentMediaType" yaml:"contentMediaType"`
+	ForbiddenPatterns []string               `json:"forbiddenPatterns" yaml:"forbiddenPatterns"`
+	Name              string                 `json:"name" yaml:"name"`
+	Pattern           string                 `json:"pattern" yaml:"pattern"`
+	Required          bool                   `json:"required" yaml:"required"`
+	Ref               string                 `json:"$ref" yaml:"$ref"`
+	Visibility        string                 `json:"visibility" yaml:"visibility" default:"public"`
 
-	AdditionalContents bool              `yaml:"additionalContents"`
-	Contents           []*folderItemSpec `yaml:"contents"`
-	DevelopmentFolder  bool              `yaml:"developmentFolder"`
+	AdditionalContents bool              `json:"additionalContents" yaml:"additionalContents"`
+	Contents           []*folderItemSpec `json:"contents" yaml:"contents"`
+	DevelopmentFolder  bool              `json:"developmentFolder" yaml:"developmentFolder"`
 
-	Limits specLimits `yaml:",inline"`
+	// As it is required to be inline both in yaml and json, this struct must be public embedded field
+	SpecLimits `yaml:",inline"`
 
 	// Release type of the spec: beta, ga.
 	// Packages using beta features won't be able to go GA.
 	// Default release: ga
-	Release string `yaml:"release"`
+	Release string `json:"release" yaml:"release"`
 
 	schema spectypes.FileSchema
 }
@@ -149,7 +150,7 @@ type folderItemSpec struct {
 func (s *folderItemSpec) setDefaultValues() error {
 	err := defaults.Set(s)
 	if err != nil {
-		return errors.Wrap(err, "could not set default values")
+		return fmt.Errorf("could not set default values: %w", err)
 	}
 
 	for _, content := range s.Contents {
@@ -164,32 +165,33 @@ func (s *folderItemSpec) setDefaultValues() error {
 
 func (s *folderItemSpec) propagateContentLimits() {
 	for _, content := range s.Contents {
-		content.Limits.update(s.Limits)
+		content.SpecLimits.update(s.SpecLimits)
 		content.propagateContentLimits()
 	}
 }
 
-type specLimits struct {
+// SpecLimits represents limits related to an item
+type SpecLimits struct {
 	// Limit to the total number of elements in a directory.
-	TotalContentsLimit int `yaml:"totalContentsLimit"`
+	TotalContentsLimit int `json:"totalContentsLimit" yaml:"totalContentsLimit"`
 
 	// Limit to the total size of files in a directory.
-	TotalSizeLimit spectypes.FileSize `yaml:"totalSizeLimit"`
+	TotalSizeLimit spectypes.FileSize `json:"totalSizeLimit" yaml:"totalSizeLimit"`
 
 	// Limit to individual files.
-	SizeLimit spectypes.FileSize `yaml:"sizeLimit"`
+	SizeLimit spectypes.FileSize `json:"sizeLimit" yaml:"sizeLimit"`
 
 	// Limit to individual configuration files (yaml files).
-	ConfigurationSizeLimit spectypes.FileSize `yaml:"configurationSizeLimit"`
+	ConfigurationSizeLimit spectypes.FileSize `json:"configurationSizeLimit" yaml:"configurationSizeLimit"`
 
 	// Limit to files referenced as relative paths (images).
-	RelativePathSizeLimit spectypes.FileSize `yaml:"relativePathSizeLimit"`
+	RelativePathSizeLimit spectypes.FileSize `json:"relativePathSizeLimit" yaml:"relativePathSizeLimit"`
 
 	// Maximum number of fields per data stream, can only be set at the root level spec.
-	FieldsPerDataStreamLimit int `yaml:"fieldsPerDataStreamLimit"`
+	FieldsPerDataStreamLimit int `json:"fieldsPerDataStreamLimit" yaml:"fieldsPerDataStreamLimit"`
 }
 
-func (l *specLimits) update(o specLimits) {
+func (l *SpecLimits) update(o SpecLimits) {
 	target := reflect.ValueOf(l).Elem()
 	source := reflect.ValueOf(&o).Elem()
 	for i := 0; i < target.NumField(); i++ {

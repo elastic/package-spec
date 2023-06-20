@@ -1,0 +1,34 @@
+##
+## Entrypoint of "integration packages" specification.
+##
+## Describes the folders and files that make up a package.
+##
+spec:
+  contents:
+  - description: The main package manifest file
+    type: file
+    contentMediaType: "application/x-yaml"
+    sizeLimit: 5MB
+    name: "manifest.yml"
+    required: true
+    $ref: "./manifest.spec.yml"
+
+# JSON patches for newer versions should be placed on top
+versions:
+  ## This is invalid, when this patch is applied, there is no second item
+  - before: 3.0.0
+    patch:
+      - op: replace
+        path: '/contents/1/required'
+        value: false
+  - before: 2.0.0
+    patch:
+      - op: add
+        path: '/contents/1'
+        value:
+          - description: "Another file"
+            type: file
+            contentMediaType: "application/x-yaml"
+            name: "another.yml"
+            required: true
+            $ref: "./another.spec.yml"
