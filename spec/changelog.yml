@@ -10,6 +10,9 @@
   - description: Update minimum kibana version required for runtime fields
     type: bugfix
     link: https://github.com/elastic/package-spec/pull/543
+  - description: Add support for JSON Patches in folder spec files
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/540
   - description: Add support to define routing rules in data streams (technical preview)
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/535
