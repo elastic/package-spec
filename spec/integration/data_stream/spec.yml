@@ -81,7 +81,6 @@ spec:
     - description: File containing routing rules definitions (technical preview)
       type: file
       contentMediaType: "application/x-yaml"
-      sizeLimit: 5MB
       name: "routing_rules.yml"
       required: false
       $ref: "./routing_rules.spec.yml"
