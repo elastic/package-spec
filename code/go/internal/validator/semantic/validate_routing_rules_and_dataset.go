@@ -65,6 +65,11 @@ func anyRoutingRulesInDataStream(fsys fspath.FS, dataStream string) (bool, error
 	if err != nil {
 		return false, nil
 	}
+
+	if len(f) == 0 {
+		return false, nil
+	}
+
 	if len(f) != 1 {
 		return false, fmt.Errorf("single routing rules expected")
 	}
