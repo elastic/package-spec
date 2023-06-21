@@ -8,7 +8,7 @@ spec:
       description: Routing rule definition
       type: object
       properties:
-        dataset:
+        target_dataset:
           description: >
             Field references or a static value for the dataset part of the data stream name.
             In addition to the criteria for index names, cannot contain - and must be no longer than 100 characters.
@@ -50,7 +50,7 @@ spec:
             - default
             - "{{ labels.dasta_stream.namespace}}"
       required:
-        - dataset
+        - target_dataset
         - if
         - namespace
   type: array
@@ -59,7 +59,7 @@ spec:
      type: object
      additionalProperties: false
      properties:
-       dataset:
+       source_dataset:
          description: >
            Source dataset to be used by this reroute processsor.
            If applicable, documents from this dataset will be routed according to the rules defined.
@@ -70,5 +70,5 @@ spec:
          items:
            $ref: "#/definitions/routing_rule"
      required:
-       - dataset
+       - source_dataset
        - rules
