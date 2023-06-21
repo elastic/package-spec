@@ -5,7 +5,7 @@ spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   definitions:
     routing_rule:
-      description: Routing rule definition
+      description: Routing rule definition (technical preview)
       type: object
       properties:
         target_dataset:
