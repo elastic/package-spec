@@ -9,6 +9,12 @@ source:
 conditions:
   kibana.version: '^8.10.0'
   elastic.subscription: 'basic'
+vars:
+  - name: package_password
+    type: password
+    title: Package Level Secret
+    show_user: true
+    secret: true
 policy_templates:
   - name: apache
     title: Apache logs and metrics
@@ -19,6 +25,11 @@ policy_templates:
         description: Collecting Apache status metrics
         multi: false
         vars:
+          - name: input_password
+            type: password
+            title: Input Level Secret
+            show_user: true
+            secret: true
           - name: hosts
             type: url
             url_allowed_schemes: ['http', 'https']

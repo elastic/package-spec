@@ -22,6 +22,9 @@
   - description: Add `data_stream.dataset` as an alternative to `data_stream.name` for benchmarks.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/526
+  - description: Add ability to specify secret vars
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/339
   - description: Add support to define routing rules in data streams (technical preview)
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/535
