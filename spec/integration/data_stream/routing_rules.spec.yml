@@ -53,6 +53,8 @@ spec:
         - target_dataset
         - if
         - namespace
+  # this is not an object because using the source dataset as key would require to support keys with dots.
+  # keys with dots are expanded here https://github.com/elastic/package-spec/blob/66abf8992f3ab7e9dd0b833e4ab9b43fc8b16471/code/go/internal/yamlschema/loader.go#L92
   type: array
   description: Routing rules set.
   items:
