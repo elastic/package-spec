@@ -25,6 +25,9 @@
   - description: Add ability to specify secret vars
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/339
+  - description: Add support to define routing rules in data streams (technical preview)
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/535
 - version: 2.8.1
   changes:
   - description: Add validation for data types of metrics

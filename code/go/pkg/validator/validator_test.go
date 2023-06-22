@@ -578,6 +578,38 @@ func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestValidateRoutingRules(t *testing.T) {
+	tests := map[string][]string{
+		"good":    []string{},
+		"good_v2": []string{},
+		"bad_routing_rules": []string{
+			`routing rules defined in data stream "rules" but dataset field is missing: dataset field is required in data stream "rules"`,
+		},
+		"bad_routing_rules_wrong_spec": []string{
+			`item [routing_rules.yml] is not allowed in folder [../../../../test/packages/bad_routing_rules_wrong_spec/data_stream/rules]`,
+		},
+	}
+
+	for pkgName, expectedErrorMessages := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			err := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			if len(expectedErrorMessages) == 0 {
+				assert.NoError(t, err)
+				return
+			}
+			assert.Error(t, err)
+
+			errs, ok := err.(errors.ValidationErrors)
+			require.True(t, ok)
+			assert.Len(t, errs, len(expectedErrorMessages))
+
+			for _, foundError := range errs {
+				require.Contains(t, expectedErrorMessages, foundError.Error())
+			}
+		})
+	}
 
 }
 
