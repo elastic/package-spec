@@ -45,3 +45,17 @@ with_jq() {
     chmod +x ${WORKSPACE}/bin/jq
     jq --version
 }
+
+with_mage() {
+    local install_packages=(
+            "github.com/magefile/mage"
+            "github.com/elastic/go-licenser"
+            "golang.org/x/tools/cmd/goimports"
+            "github.com/jstemmer/go-junit-report"
+            "gotest.tools/gotestsum"
+    )
+
+    for pkg in "${install_packages[@]}"; do
+        go install "${pkg}@latest"
+    done
+}
