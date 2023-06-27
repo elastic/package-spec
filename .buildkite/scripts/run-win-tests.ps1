@@ -8,39 +8,27 @@ function fixCRLF {
     git reset --quiet --hard
 }
 
-# function withGolang($version) {
-#     Write-Host "-- Install golang --"
-#     choco install -y golang --version $version
-#     $env:ChocolateyInstall = Convert-Path "$((Get-Command choco).Path)\..\.."
-#     Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-#     refreshenv
-#     go version
-#     go env
-# }
-
-function withGoJUnitReport {
-    Write-Host "-- Install go-junit-report --"
-    go install github.com/jstemmer/go-junit-report/v2@latest
-}
-
-function withMage($version) {
-    Write-Host "-- Install Mage --"
-    go mod download -x
-    go install github.com/magefile/mage@v$version
+function installGoDependencies {
+    $installPackages = @(
+        "github.com/magefile/mage"
+        "github.com/elastic/go-licenser"
+        "golang.org/x/tools/cmd/goimports"
+        "github.com/jstemmer/go-junit-report"
+        "gotest.tools/gotestsum"
+    )
+    foreach ($pkg in $installPackages) {
+        go install "$pkg@latest"
+    }
 }
 
 fixCRLF
-#withGolang $env:SETUP_GOLANG_VERSION
-withMage $env:SETUP_MAGE_VERSION
-withGoJUnitReport
+installGoDependencies
 
 $ErrorActionPreference = "Continue" # set +e
-mage -debug test > test-report.txt
+
+gotestsum --format testname --junitfile "junit-report.xml" -- "-v ./code/go/..."
+
 $EXITCODE=$LASTEXITCODE
 $ErrorActionPreference = "Stop"
-
-Get-Content test-report.txt | go-junit-report > "unicode-tests-report-win.xml"
-Get-Content unicode-tests-report-win.xml -Encoding Unicode | Set-Content -Encoding UTF8 tests-report-win.xml
-Remove-Item unicode-tests-report-win.xml, test-report.txt
 
 Exit $EXITCODE

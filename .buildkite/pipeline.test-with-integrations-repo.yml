@@ -1,5 +1,6 @@
 env:
   SETUP_GVM_VERSION: 'v0.5.0' # https://github.com/andrewkroh/gvm/issues/44#issuecomment-1013231151
+  SETUP_MAGE_VERSION: "latest"
   GH_CLI_VERSION: "2.29.0"
   JQ_VERSION: "1.6"
   GO_LINUX_AGENT_IMAGE: "golang:${GO_VERSION}"
@@ -19,7 +20,7 @@ steps:
     steps:
       - label: ":linux: Tests on Linux"
         key: linux-test
-        command: "make test-ci"
+        command: ".buildkite/scripts/run-linux-tests.sh"
         agents:
           image: "${GO_LINUX_AGENT_IMAGE}"
           cpu: "8"
@@ -49,10 +50,10 @@ steps:
           - step: "windows-test"
             allow_failure: true
 
-  - label: ":hammer: Create PR in integrations"
-    key: pr-integrations
-    command: ".buildkite/scripts/test-with-integrations.sh"
-    agents:
-      provider: "gcp"
-    depends_on:
-      - tests
+  # - label: ":hammer: Create PR in integrations"
+  #   key: pr-integrations
+  #   command: ".buildkite/scripts/test-with-integrations.sh"
+  #   agents:
+  #     provider: "gcp"
+  #   depends_on:
+  #     - tests

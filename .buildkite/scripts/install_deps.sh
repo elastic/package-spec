@@ -9,8 +9,15 @@ add_bin_path(){
     export PATH="${WORKSPACE}/bin:${PATH}"
 }
 
+create_workspace() {
+    local path=${1}
+    if [[ ! -d "${WORKSPACE}/${path}" ]]; then
+    mkdir -p ${WORKSPACE}/${path}
+    fi
+}
+
 with_go() {
-    mkdir -p ${WORKSPACE}/bin
+    create_workspace "bin"
     retry 5 curl -sL -o ${WORKSPACE}/bin/gvm "https://github.com/andrewkroh/gvm/releases/download/${SETUP_GVM_VERSION}/gvm-linux-amd64"
     chmod +x ${WORKSPACE}/bin/gvm
     eval "$(gvm $(cat .go-version))"
@@ -20,8 +27,8 @@ with_go() {
 }
 
 with_github_cli() {
-    mkdir -p ${WORKSPACE}/bin
-    mkdir -p ${WORKSPACE}/tmp
+    create_workspace "bin"
+    create_workspace "tmp"
 
     local gh_filename="gh_${GH_CLI_VERSION}_linux_amd64"
     local gh_tar_file="${gh_filename}.tar.gz"
@@ -39,14 +46,14 @@ with_github_cli() {
 }
 
 with_jq() {
-    mkdir -p ${WORKSPACE}/bin
+    create_workspace "bin"
     retry 5 curl -sL -o ${WORKSPACE}/bin/jq "https://github.com/stedolan/jq/releases/download/jq-${JQ_VERSION}/jq-linux64"
 
     chmod +x ${WORKSPACE}/bin/jq
     jq --version
 }
 
-with_mage() {
+install_go_dependencies() {
     local install_packages=(
             "github.com/magefile/mage"
             "github.com/elastic/go-licenser"
@@ -54,7 +61,6 @@ with_mage() {
             "github.com/jstemmer/go-junit-report"
             "gotest.tools/gotestsum"
     )
-
     for pkg in "${install_packages[@]}"; do
         go install "${pkg}@latest"
     done
