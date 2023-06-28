@@ -27,7 +27,10 @@
       "build_on_comment": true,
       "trigger_comment_regex": "^(?:(?:buildkite\\W+)?(?:build|test)\\W+(?:this|it))|^/test$",
       "always_trigger_comment_regex": "^(?:(?:buildkite\\W+)?(?:build|test)\\W+(?:this|it))|^/test$",
-      "fail_on_not_mergeable": true
+      "skip_ci_labels": [ ],
+      "skip_target_branches": [ ],
+      "skip_ci_on_only_changed": [ ],
+      "always_require_ci_on_changed": [ ]
     }
   ]
 }
