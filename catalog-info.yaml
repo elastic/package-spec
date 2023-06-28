@@ -86,11 +86,12 @@ spec:
       name: package-spec
       description: 'EPR package specifications'
     spec:
-      branch_configuration: main
+      branch_configuration: "main v2.*"
       pipeline_file: ".buildkite/pipeline.yml"
       provider_settings:
         build_pull_request_forks: false
         build_pull_requests: true
+        build_tags: true
         filter_enabled: true
         filter_condition: >-
           build.pull_request.id == null || (build.creator.name == 'elasticmachine' && build.pull_request.id != null)
