@@ -35,7 +35,7 @@ installGoDependencies
 
 $ErrorActionPreference = "Continue" # set +e
 
-gotestsum --format testname --junitfile junit-report.xml -- -v ./code/go/...
+gotestsum --format testname --junitfile build/test-results/junit-win-report.xml -- -v ./code/go/...
 
 $EXITCODE=$LASTEXITCODE
 $ErrorActionPreference = "Stop"
