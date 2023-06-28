@@ -42,7 +42,7 @@ steps:
       - label: ":junit: Junit annotate"
         plugins:
           - junit-annotate#v2.4.1:
-              artifacts: "bbuild/test-results/*.xml"
+              artifacts: "build/test-results/*.xml"
         agents:
           provider: "gcp"
         depends_on:
