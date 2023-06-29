@@ -19,7 +19,7 @@ func TestValidationErrorsMultiple(t *testing.T) {
 	require.Len(t, ve, 2)
 	require.Contains(t, ve.Error(), "found 2 validation errors:")
 	require.Contains(t, ve.Error(), "error 1")
-	require.Contains(t, ve.Error(), "error 777")
+	require.Contains(t, ve.Error(), "error 2")
 }
 
 func TestValidationErrorsSingle(t *testing.T) {
