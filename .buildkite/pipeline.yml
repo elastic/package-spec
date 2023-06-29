@@ -43,6 +43,7 @@ steps:
         plugins:
           - junit-annotate#v2.4.1:
               artifacts: "build/test-results/*.xml"
+              fail-build-on-error: true
         agents:
           provider: "gcp"
         depends_on:
