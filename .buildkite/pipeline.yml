@@ -37,12 +37,12 @@ steps:
           provider: "gcp"
           image: "${GO_WINDOWS_AGENT_IMAGE}"
         artifact_paths:
-          - build/test-results/*.xml
+          - build/*.xml
 
       - label: ":junit: Junit annotate"
         plugins:
           - junit-annotate#v2.4.1:
-              artifacts: "build/test-results/*.xml"
+              artifacts: "build/*.xml"
               fail-build-on-error: true
         agents:
           provider: "gcp"
