@@ -32,6 +32,7 @@ checkout_merge() {
     }
 }
 
+export GO_VERSION="$(< .go-version)"
 pull_request="${BUILDKITE_PULL_REQUEST:-false}"
 
 if [[ "${pull_request}" == "false" ]]; then
@@ -48,8 +49,6 @@ checkout_merge "${TARGET_BRANCH}" "${PR_COMMIT}" "${MERGE_BRANCH}"
 
 echo "Commit information"
 git log --format=%B -n 1
-
-export GO_VERSION="$(< .go-version)"
 
 # Ensure buildkite groups are rendered
 echo ""
