@@ -5,7 +5,6 @@ set -euo pipefail
 source .buildkite/scripts/tooling.sh
 
 GITHUB_TOKEN_VAULT_PATH=kv/ci-shared/platform-ingest/github_token
-export GO_VERSION="$(< .go-version)"
 
 # Secrets must be redacted
 # https://buildkite.com/docs/pipelines/managing-log-output#redacted-environment-variables
