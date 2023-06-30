@@ -32,11 +32,9 @@ checkout_merge() {
     }
 }
 
-ls -l
-
 pull_request="${BUILDKITE_PULL_REQUEST:-false}"
 
-if [[ "${pull_request}" != "false" ]]; then
+if [[ "${pull_request}" == "false" ]]; then
     echo "Not a pull request, skipping"
     exit 0
 fi
@@ -48,12 +46,10 @@ MERGE_BRANCH="pr_merge_${PR_ID}"
 
 checkout_merge "${TARGET_BRANCH}" "${PR_COMMIT}" "${MERGE_BRANCH}"
 
-ls -l
-
-export GO_VERSION="$(< .go-version)"
-
 echo "Commit information"
 git log --format=%B -n 1
+
+#export GO_VERSION="$(< .go-version)"
 
 # Ensure buildkite groups are rendered
 echo ""
