@@ -34,7 +34,7 @@ checkout_merge() {
 
 pull_request="${BUILDKITE_PULL_REQUEST:-false}"
 
-if [[ "${pull_request}" != "false" ]]; then
+if [[ "${pull_request}" == "false" ]]; then
     echo "Not a pull request, skipping"
     exit 0
 fi
