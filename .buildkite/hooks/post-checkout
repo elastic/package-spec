@@ -32,7 +32,8 @@ checkout_merge() {
     }
 }
 
-export GO_VERSION="$(< .go-version)"
+ls -l
+
 echo $GO_VERSION
 
 pull_request="${BUILDKITE_PULL_REQUEST:-false}"
@@ -48,6 +49,10 @@ PR_ID=${BUILDKITE_PULL_REQUEST}
 MERGE_BRANCH="pr_merge_${PR_ID}"
 
 checkout_merge "${TARGET_BRANCH}" "${PR_COMMIT}" "${MERGE_BRANCH}"
+
+ls -l
+
+export GO_VERSION="$(< .go-version)"
 
 echo "Commit information"
 git log --format=%B -n 1
