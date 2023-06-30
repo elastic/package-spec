@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
-export GO_VERSION="$(cat .go-version)"
+export GO_VERSION="$(< .go-version | tr -d '"')"
+echo "${GO_VERSION}"
 
 checkout_merge() {
     local target_branch=$1
