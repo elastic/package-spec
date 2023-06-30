@@ -34,8 +34,6 @@ checkout_merge() {
 
 ls -l
 
-echo $GO_VERSION
-
 pull_request="${BUILDKITE_PULL_REQUEST:-false}"
 
 if [[ "${pull_request}" != "false" ]]; then
