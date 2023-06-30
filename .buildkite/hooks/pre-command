@@ -4,6 +4,9 @@ set -euo pipefail
 
 source .buildkite/scripts/tooling.sh
 
+export GO_VERSION="$(< .go-version | tr -d '"')"
+echo "${GO_VERSION}"
+
 GITHUB_TOKEN_VAULT_PATH=kv/ci-shared/platform-ingest/github_token
 
 # Secrets must be redacted
