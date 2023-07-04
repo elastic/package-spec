@@ -1,0 +1,17 @@
+##
+## Describes the specification for the data lifecycle configuration.
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  items:
+    data_retention:
+      description: |-
+        Every document collected will be stored at least during this time frame.
+        Any time after this duration the documents could be deleted.
+      type: string
+      examples:
+        - "7d"
+  required:
+    - data_retention
+
+
