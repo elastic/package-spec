@@ -4,6 +4,9 @@
 ##
 - version: 2.10.0-next
   changes:
+  - description: Packages can define required stack capabilities
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/561
   - description: Add specific settings for data retention lifecycle configuration (for DLM).
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/556
