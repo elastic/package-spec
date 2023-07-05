@@ -6,7 +6,7 @@
   changes:
   - description: Add specific settings for data retention lifecycle configuration (for DLM).
     type: enhancement
-    link: https://github.com/elastic/package-spec/issues/556
+    link: https://github.com/elastic/package-spec/pull/556
 - version: 2.9.0
   changes:
   - description: Update minimum kibana version required for runtime fields
