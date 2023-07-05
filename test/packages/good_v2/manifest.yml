@@ -1,4 +1,4 @@
-format_version: 2.9.0
+format_version: 2.10.0
 name: good_v2
 title: Good package
 description: This package is good for format version 2
@@ -9,6 +9,8 @@ source:
 conditions:
   kibana.version: '^8.10.0'
   elastic.subscription: 'basic'
+  elastic.capabilities:
+    - observability
 vars:
   - name: package_password
     type: password

@@ -1,4 +1,4 @@
-format_version: 2.9.0
+format_version: 2.10.0
 name: good_input
 title: good_input
 description: >-
@@ -9,6 +9,7 @@ source:
   license: "Apache-2.0"
 conditions:
   elastic.subscription: basic
+  elastic.capabilities: [observability]
   kibana:
     version: "^8.10.0"
 categories:
