@@ -107,6 +107,7 @@ spec:
                 The package should not be used in deployments without the indicated features.
                 Packages that don't indicate any capability condition can be used on any deployment.
               type: array
+              uniqueItems: true
               items:
                 type: string
                 enum:
