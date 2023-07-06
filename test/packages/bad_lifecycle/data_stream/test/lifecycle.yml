@@ -1,0 +1,2 @@
+data_retention: "30d"
+max_age: "365d"
