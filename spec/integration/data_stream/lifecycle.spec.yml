@@ -3,7 +3,8 @@
 ##
 spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
-  items:
+  additionalProperties: false
+  properties:
     data_retention:
       description: |-
         Every document collected will be stored at least during this time frame.

@@ -166,6 +166,12 @@ func TestValidateFile(t *testing.T) {
 				"field vars.0: Additional property secret is not allowed",
 			},
 		},
+		"bad_lifecycle": {
+			"data_stream/test/lifecycle.yml",
+			[]string{
+				"field (root): Additional property max_age is not allowed",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
