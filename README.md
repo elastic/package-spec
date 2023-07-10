@@ -100,11 +100,13 @@ A package specifying its `format_version` as `x.y.z` must be valid against speci
 
 While developing on a new branch, there are some [Makefile targets](./Makefile) available
 that will help you in this development phase:
-- `make update`: add required licence header in all the needed files.
+- `make update`: add required license header in all the needed files.
 - `make test`: run all the tests 
 - `make check`: run lint and ensures that license headers are in-place.
 
-Remember to add unit tests or a test package where your feature can be checked.
+Remember to add unit tests or a test package under `test/packages/` folder where
+your changes can be checked.
+
 Once your changes are ready to review, create a Pull Request.
 
 
@@ -131,7 +133,7 @@ Usually, this would require the following steps:
     - Creating this PR would automatically trigger a new Jenkins pipeline.
 
 
-This process can be done also automatically from your Pull Request too by adding a comment `test integrations`. Example:
+This process can also be done automatically from your Pull Request too by adding a comment `test integrations`. Example:
 - Comment: https://github.com/elastic/package-spec/pull/540#issuecomment-1593491304
 - Pull Request created in integrations repository: https://github.com/elastic/integrations/pull/6587
 
