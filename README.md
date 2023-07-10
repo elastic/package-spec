@@ -95,3 +95,46 @@ Package specifications are versioned. Versions follow the [semantic versioning](
 ## Version Compatibility between Packages and Specifications
 
 A package specifying its `format_version` as `x.y.z` must be valid against specifications in the semantic version range `[x.y.z, X.0.0)`, where `X = x + 1`.
+
+## Development
+
+While developing on a new branch, there are some [Makefile targets](./Makefile) available
+that will help you in this development phase:
+- `make update`: add required licence header in all the needed files.
+- `make test`: run all the tests 
+- `make check`: run lint and ensures that license headers are in-place.
+
+Remember to add unit tests or a test package where your feature can be checked.
+Once your changes are ready to review, create a Pull Request.
+
+
+### Testing with integrations repository
+
+While working on a new branch, it is interesting to test these changes
+with all the packages defined in the [integrations repository](https://github.com/elastic/integrations).
+This allows to test a much wider scenarios than the test packages that are defined in this repository.
+
+Usually, this would require the following steps:
+1. Create your package-spec pull request and push all your commits
+2. Get the SHA of the latest changeset of your PR:
+   ```bash
+    $ git show -s --pretty=format:%H
+   a86c0814e30b6a9dede26889a67e7df1bf827357
+   ```
+3. Go to your clone of the [integrations repository](https://github.com/elastic/integrations), and update go.mod and go.sum with that changeset:
+   ```bash
+   cd /path/to/integrations/repostiory
+   go mod edit -replace github.com/elastic/package-spec/v2=github.com/<your_github_user>/package-spec/v2@a86c0814e30b6a9dede26889a67e7df1bf827357
+   go mod tidy
+   ```
+4. Push these changes into a branch and create a Pull Request
+    - Creating this PR would automatically trigger a new Jenkins pipeline.
+
+
+This process can be done also automatically from your Pull Request too by adding a comment `test integrations`. Example:
+- Comment: https://github.com/elastic/package-spec/pull/540#issuecomment-1593491304
+- Pull Request created in integrations repository: https://github.com/elastic/integrations/pull/6587
+
+This comment triggers this [Buildkite pipeline](https://github.com/elastic/package-spec/blob/72f19e94c61cc5c590aeefbeddfa025a95025b4e/.buildkite/pipeline.test-with-integrations-repo.yml) ([Buildkite job](https://buildkite.com/elastic/package-spec-test-with-integrations))
+
+**NOTE**: Remember to close this PR in the integrations repository once you close the package-spec Pull Request.
