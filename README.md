@@ -107,7 +107,7 @@ that will help you in this development phase:
 Remember to add unit tests or a test package under `test/packages/` folder where
 your changes can be checked.
 
-Once your changes are ready to review, create a Pull Request.
+Once your changes are ready to review, [submit a Pull Request](https://help.github.com/articles/creating-a-pull-request).
 
 
 ### Testing with integrations repository
