@@ -96,7 +96,14 @@ Package specifications are versioned. Versions follow the [semantic versioning](
 
 A package specifying its `format_version` as `x.y.z` must be valid against specifications in the semantic version range `[x.y.z, X.0.0)`, where `X = x + 1`.
 
-## Development
+# Development
+
+Download the latest main of `package-spec` repository:
+```bash 
+git clone https://github.com/elastic/package-spec.git
+cd package-spec
+make test
+```
 
 While developing on a new branch, there are some [Makefile targets](./Makefile) available
 that will help you in this development phase:
@@ -110,7 +117,7 @@ your changes can be checked.
 Once your changes are ready to review, [submit a Pull Request](https://help.github.com/articles/creating-a-pull-request).
 
 
-### Testing with integrations repository
+## Testing with integrations repository
 
 While working on a new branch, it is interesting to test these changes
 with all the packages defined in the [integrations repository](https://github.com/elastic/integrations).
