@@ -1,13 +1,13 @@
 queue_rules:
   - name: default
     conditions:
-      - check-success=package-spec/pr-merge
+      - check-success=buildkite/package-spec
       - check-success=CLA
 
 pull_request_rules:
   - name: automatic merge of bot 🤖
     conditions:
-      - check-success=package-spec/pr-merge
+      - check-success=buildkite/package-spec
       - check-success=CLA
       - base=main
       - author~=^dependabot(|-preview)\[bot\]$
