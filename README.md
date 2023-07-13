@@ -123,7 +123,18 @@ While working on a new branch, it is interesting to test these changes
 with all the packages defined in the [integrations repository](https://github.com/elastic/integrations).
 This allows to test a much wider scenarios than the test packages that are defined in this repository.
 
-Usually, this would require the following steps:
+This process can also be done automatically from your Pull Request by adding a comment `test integrations`. Example:
+- Comment: https://github.com/elastic/package-spec/pull/540#issuecomment-1593491304
+- Pull Request created in integrations repository: https://github.com/elastic/integrations/pull/6587
+
+This comment triggers this [Buildkite pipeline](https://github.com/elastic/package-spec/blob/72f19e94c61cc5c590aeefbeddfa025a95025b4e/.buildkite/pipeline.test-with-integrations-repo.yml) ([Buildkite job](https://buildkite.com/elastic/package-spec-test-with-integrations))
+
+This pipeline creates a new draft Pull Request in integration updating the required dependencies to test your own changes. As a new pull request is created, a CI
+job will be triggered to test all the packages defined in this repository. A new comment with the link to this new Pull Request will be posted in your package-spec Pull Request.
+
+**NOTE**: Remember to close this PR in the integrations repository once you close the package-spec Pull Request.
+
+Usually, this process would require the following manual steps:
 1. Create your package-spec pull request and push all your commits
 2. Get the SHA of the latest changeset of your PR:
    ```bash
@@ -140,10 +151,3 @@ Usually, this would require the following steps:
     - Creating this PR would automatically trigger a new Jenkins pipeline.
 
 
-This process can also be done automatically from your Pull Request by adding a comment `test integrations`. Example:
-- Comment: https://github.com/elastic/package-spec/pull/540#issuecomment-1593491304
-- Pull Request created in integrations repository: https://github.com/elastic/integrations/pull/6587
-
-This comment triggers this [Buildkite pipeline](https://github.com/elastic/package-spec/blob/72f19e94c61cc5c590aeefbeddfa025a95025b4e/.buildkite/pipeline.test-with-integrations-repo.yml) ([Buildkite job](https://buildkite.com/elastic/package-spec-test-with-integrations))
-
-**NOTE**: Remember to close this PR in the integrations repository once you close the package-spec Pull Request.
