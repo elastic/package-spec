@@ -102,7 +102,7 @@ This comment triggers this [Buildkite pipeline](https://github.com/elastic/packa
 This pipeline creates a new draft Pull Request in integration updating the required dependencies to test your own changes. As a new pull request is created, a CI
 job will be triggered to test all the packages defined in this repository. A new comment with the link to this new Pull Request will be posted in your package-spec Pull Request.
 
-**NOTE**: Remember to close this PR in the integrations repository once you close the package-spec Pull Request.
+**IMPORTANT**: Remember to close this PR in the integrations repository once you close the package-spec Pull Request.
 
 Usually, this process would require the following manual steps:
 1. Create your package-spec pull request and push all your commits
