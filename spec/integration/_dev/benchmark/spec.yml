@@ -11,23 +11,31 @@ spec:
         - description: Folder containing deployable services for benchmarks.
           type: folder
           name: deploy
-          additionalContents: false
+          $ref: "./deploy/spec.yml"
+        - description: A folder containing resources used by one or more benchmarks.
+          type: folder
+          pattern: '^[a-z0-9]+-benchmark$'
+          additionalContents: true
           required: false
-          contents:
-            - description: Folder containing the docker compose file for benchmarks services and their resources.
-              type: folder
-              name: docker
-              additionalContents: true
-              required: false
-              contents:
-                - description: Docker Compose configuration file for deploying benchmarks additional services.
-                  type: file
-                  name: "docker-compose.yml"
-                  contentMediaType: "application/x-yaml"
-                  required: true
-        - description: A benchmark scenario.
+        - description: A system benchmark scenario.
           type: file
           pattern: '^.+\.yml$'
           contentMediaType: "application/x-yaml; require-document-dashes=true"
           required: false
-          $ref: './scenario.spec.yml'
+          $ref: './system.scenario.spec.yml'
+    - description: Folder containing rally benchmarks scenarios.
+      type: folder
+      name: rally
+      required: false
+      additionalContents: false
+      contents:
+        - description: Folder containing deployable services for benchmarks.
+          type: folder
+          name: deploy
+          $ref: "./deploy/spec.yml"
+        - description: A rally benchmark scenario.
+          type: file
+          pattern: '^.+\.yml$'
+          contentMediaType: "application/x-yaml; require-document-dashes=true"
+          required: false
+          $ref: './rally.scenario.spec.yml'

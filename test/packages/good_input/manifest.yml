@@ -1,4 +1,4 @@
-format_version: 2.8.0
+format_version: 2.10.0
 name: good_input
 title: good_input
 description: >-
@@ -9,8 +9,9 @@ source:
   license: "Apache-2.0"
 conditions:
   elastic.subscription: basic
+  elastic.capabilities: [observability]
   kibana:
-    version: "^8.9.0"
+    version: "^8.10.0"
 categories:
   - custom
   - datastore
@@ -30,6 +31,11 @@ policy_templates:
         show_user: true
         default:
           - http://127.0.0.1
+      - name: password
+        type: password
+        title: Password
+        show_user: true
+        secret: true
       - name: period
         type: text
         title: Period

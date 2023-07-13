@@ -163,6 +163,18 @@ func TestValidateFile(t *testing.T) {
 				`field 3: Must not be present`,
 			},
 		},
+		"bad_secret_vars": {
+			"manifest.yml",
+			[]string{
+				"field vars.0: Additional property secret is not allowed",
+			},
+		},
+		"bad_lifecycle": {
+			"data_stream/test/lifecycle.yml",
+			[]string{
+				"field (root): Additional property max_age is not allowed",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
@@ -416,7 +428,7 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
 		},
 		"bad_runtime_kibana_version": []string{
-			"conditions.kibana.version must be ^8.9.0 or greater to include runtime fields",
+			"conditions.kibana.version must be ^8.10.0 or greater to include runtime fields",
 		},
 	}
 
@@ -572,6 +584,38 @@ func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
 					return
 				}
 				require.Equal(t, errs.Error(), test.expectedErrContains[0])
+			}
+		})
+	}
+}
+
+func TestValidateRoutingRules(t *testing.T) {
+	tests := map[string][]string{
+		"good":    []string{},
+		"good_v2": []string{},
+		"bad_routing_rules": []string{
+			`routing rules defined in data stream "rules" but dataset field is missing: dataset field is required in data stream "rules"`,
+		},
+		"bad_routing_rules_wrong_spec": []string{
+			`item [routing_rules.yml] is not allowed in folder [../../../../test/packages/bad_routing_rules_wrong_spec/data_stream/rules]`,
+		},
+	}
+
+	for pkgName, expectedErrorMessages := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			err := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			if len(expectedErrorMessages) == 0 {
+				assert.NoError(t, err)
+				return
+			}
+			assert.Error(t, err)
+
+			errs, ok := err.(errors.ValidationErrors)
+			require.True(t, ok)
+			assert.Len(t, errs, len(expectedErrorMessages))
+
+			for _, foundError := range errs {
+				require.Contains(t, expectedErrorMessages, foundError.Error())
 			}
 		})
 	}

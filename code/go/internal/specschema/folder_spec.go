@@ -5,12 +5,12 @@
 package specschema
 
 import (
+	"fmt"
 	"io"
 	"io/fs"
 	"path"
 
 	"github.com/Masterminds/semver/v3"
-	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
@@ -46,34 +46,41 @@ func (l *FolderSpecLoader) Load(specPath string) (*ItemSpec, error) {
 func (l *FolderSpecLoader) loadFolderSpec(s *folderItemSpec, specPath string) error {
 	specFile, err := l.fs.Open(specPath)
 	if err != nil {
-		return errors.Wrap(err, "could not open folder specification file")
+		return fmt.Errorf("could not open folder specification file: %w", err)
 	}
 	defer specFile.Close()
 
 	data, err := io.ReadAll(specFile)
 	if err != nil {
-		return errors.Wrap(err, "could not read folder specification file")
+		return fmt.Errorf("could not read folder specification file: %w", err)
 	}
 
-	var wrapper struct {
-		Spec *folderItemSpec `yaml:"spec"`
-	}
-	wrapper.Spec = s
-	if err := yaml.Unmarshal(data, &wrapper); err != nil {
-		return errors.Wrap(err, "could not parse folder specification file")
+	var folderSpec folderSchemaSpec
+	folderSpec.Spec = s
+	if err := yaml.Unmarshal(data, &folderSpec); err != nil {
+		return fmt.Errorf("could not parse folder specification file: %w", err)
 	}
 
-	err = l.loadContents(s, l.fs, specPath)
+	newSpec, err := folderSpec.resolve(l.specVersion)
 	if err != nil {
 		return err
 	}
 
-	err = s.setDefaultValues()
+	err = l.loadContents(newSpec, l.fs, specPath)
 	if err != nil {
-		return errors.Wrap(err, "could not set default values")
+		return err
 	}
 
-	s.propagateContentLimits()
+	err = newSpec.setDefaultValues()
+	if err != nil {
+		return fmt.Errorf("could not set default values: %w", err)
+	}
+
+	newSpec.propagateContentLimits()
+
+	// it is required to assign the real values to be able to
+	// use all the calculated contents in following iterations
+	*s = *newSpec
 
 	return nil
 }
@@ -87,7 +94,7 @@ func (l *FolderSpecLoader) loadContents(s *folderItemSpec, fs fs.FS, specPath st
 
 		// TODO: Visibility not used at the moment.
 		if v := content.Visibility; v != "" && v != visibilityTypePrivate && v != visibilityTypePublic {
-			return errors.Errorf("item [%s] visibility is expected to be private or public, not [%s]", path.Join(specPath, content.Name), content.Visibility)
+			return fmt.Errorf("item [%s] visibility is expected to be private or public, not [%s]", path.Join(specPath, content.Name), content.Visibility)
 		}
 
 		// All folders inside a development folder are too.
@@ -110,14 +117,14 @@ func (l *FolderSpecLoader) loadContents(s *folderItemSpec, fs fs.FS, specPath st
 				}
 				schema, err := l.fileSpecLoader.Load(fs, specPath, options)
 				if err != nil {
-					return errors.Wrapf(err, "could not load schema for %q", path.Dir(specPath))
+					return fmt.Errorf("could not load schema for %q: %w", path.Dir(specPath), err)
 				}
 				content.schema = schema
 			case spectypes.ItemTypeFolder:
 				p := path.Join(path.Dir(specPath), content.Ref)
 				err := l.loadFolderSpec(content, p)
 				if err != nil {
-					return errors.Wrapf(err, "could not load spec for %q", p)
+					return fmt.Errorf("could not load spec for %q: %w", p, err)
 				}
 			}
 

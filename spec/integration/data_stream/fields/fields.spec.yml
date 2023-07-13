@@ -518,7 +518,18 @@ spec:
     required:
     - name
 
+# JSON patches for newer versions should be placed on top
 versions:
+  - before: 2.8.0
+    patch:
+      - op: remove
+        path: "/items/properties/runtime"
+      - op: remove
+        path: "/items/allOf/2"
+  - before: 2.7.0
+    patch:
+      - op: remove
+        path: "/items/properties/type/enum/0"
   - before: 2.0.0
     patch:
       - op: add
@@ -532,13 +543,3 @@ versions:
         value: true
       - op: remove
         path: "/items/properties/example"
-  - before: 2.7.0
-    patch:
-      - op: remove
-        path: "/items/properties/type/enum/0"
-  - before: 2.8.0
-    patch:
-      - op: remove
-        path: "/items/properties/runtime"
-      - op: remove
-        path: "/items/allOf/2"
