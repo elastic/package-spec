@@ -25,11 +25,14 @@ func isInstalled(packageName string) error {
 var featuresFS embed.FS
 
 func TestSpecCompliance(t *testing.T) {
+	paths := []string{"features"}
+	checkFeaturesVersions(t, featuresFS, paths)
+
 	suite := godog.TestSuite{
 		ScenarioInitializer: InitializeScenario,
 		Options: &godog.Options{
 			Format:   "pretty,junit:report.xml",
-			Paths:    []string{"features"},
+			Paths:    paths,
 			Tags:     versionsToTest(t),
 			FS:       featuresFS,
 			TestingT: t,

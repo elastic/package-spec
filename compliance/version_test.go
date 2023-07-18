@@ -5,11 +5,15 @@
 package main
 
 import (
+	"fmt"
+	"io/fs"
 	"os"
 	"strings"
 	"testing"
 
 	"github.com/Masterminds/semver/v3"
+	"github.com/cucumber/godog"
+	cucumbermessages "github.com/cucumber/messages/go/v21"
 	"github.com/stretchr/testify/require"
 
 	spec "github.com/elastic/package-spec/v2"
@@ -53,4 +57,58 @@ func versionsToTest(t *testing.T) string {
 	}
 
 	return result.String()
+}
+
+// checkFeaturesVersions checks that all features and scenarios contain only valid version tags.
+func checkFeaturesVersions(t *testing.T, fs fs.FS, paths []string) {
+	suite := godog.TestSuite{
+		Options: &godog.Options{
+			Paths:    paths,
+			FS:       fs,
+			TestingT: t,
+			Strict:   false,
+		},
+	}
+
+	features, err := suite.RetrieveFeatures()
+	require.NoError(t, err)
+
+	versionsInChangelog, err := spec.VersionsInChangelog()
+	require.NoError(t, err)
+
+	var versions []string
+	for _, v := range versionsInChangelog {
+		v, _ := v.SetPrerelease("")
+		versions = append(versions, v.String())
+	}
+
+	validTags := func(tags []*cucumbermessages.Tag) error {
+		for _, tag := range tags {
+			if !sliceContains[string](versions, strings.TrimLeft(tag.Name, "@")) {
+				return fmt.Errorf("tag indicates an unknown spec version %s", tag.Name)
+			}
+		}
+		return nil
+	}
+
+	for _, feature := range features {
+		if err := validTags(feature.Feature.Tags); err != nil {
+			t.Fatalf("Feature %q has an invalid tag: %s", feature.Feature.Name, err)
+		}
+
+		for _, child := range feature.Feature.Children {
+			if err := validTags(child.Scenario.Tags); err != nil {
+				t.Fatalf("Scenario %q in feature %q has an invalid tag: %s", child.Scenario.Name, feature.Feature.Name, err)
+			}
+		}
+	}
+}
+
+func sliceContains[T comparable](slice []T, x T) bool {
+	for _, elem := range slice {
+		if elem == x {
+			return true
+		}
+	}
+	return false
 }
