@@ -3,5 +3,7 @@ Feature: Runtime fields
 
   @2.8.0
   Scenario: Installer leverages runtime parameter
-    When "package-with-runtime-fields" is installed.
-    Then index template for "package-with-runtime-fields" includes runtime fields.
+   Given an "integration" package
+    When the package has "runtime-fields"
+     And the package is installed
+    Then index template "includes runtime fields"

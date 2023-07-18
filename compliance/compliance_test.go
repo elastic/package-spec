@@ -11,16 +11,6 @@ import (
 	"github.com/cucumber/godog"
 )
 
-func indexTemplateForIncludesRuntimeFields(packageName string) error {
-	//return godog.ErrPending
-	return nil
-}
-
-func isInstalled(packageName string) error {
-	//return godog.ErrPending
-	return nil
-}
-
 //go:embed features/*
 var featuresFS embed.FS
 
@@ -46,6 +36,10 @@ func TestSpecCompliance(t *testing.T) {
 }
 
 func InitializeScenario(ctx *godog.ScenarioContext) {
-	ctx.Step(`^index template for "([^"]*)" includes runtime fields\.$`, indexTemplateForIncludesRuntimeFields)
-	ctx.Step(`^"([^"]*)" is installed\.$`, isInstalled)
+	sm := newScenarioManager(ctx)
+
+	ctx.Step(`^an "([^"]*)" package$`, sm.createPackage)
+	ctx.Step(`^index template "([^"]*)"$`, sm.checkIndexTemplate)
+	ctx.Step(`^the package has "([^"]*)"$`, sm.addToPackage)
+	ctx.Step(`^the package is installed$`, sm.installPackage)
 }
