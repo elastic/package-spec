@@ -328,6 +328,10 @@ spec:
           - object
           - short
           - text
+          - integer
+          - half_float
+          - scaled_float
+          - unsigned_long
 
       object_type_mapping_type:
         description: >
@@ -454,6 +458,9 @@ spec:
       - if:
           required:
             - metric_type
+          not:
+            required:
+              - object_type
         then:
           properties:
             type:
@@ -471,17 +478,58 @@ spec:
                 - unsigned_long
           required:
             - type
+      - if:
+          required:
+            - object_type
+        then:
+          properties:
+            type:
+              enum:
+                - object
+          required:
+            - type
+      - if:
+          properties:
+            type:
+              const: object
+          required:
+            - metric_type
+            - object_type
+        then:
+          properties:
+            type:
+              enum:
+                - object
+            object_type:
+              enum:
+                - histogram
+                - long
+                - integer
+                - short
+                - byte
+                - double
+                - float
+                - half_float
+                - scaled_float
+                - unsigned_long
+          required:
+            - type
+            - object_type
     required:
     - name
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 2.10.0
+    patch:
+      - op: remove
+        path: "/items/allOf/5" # removing if related to object_type and metric_type
   - before: 2.8.0
     patch:
       - op: remove
         path: "/items/properties/runtime"
       - op: remove
-        path: "/items/allOf/2"
+        path: "/items/allOf/2" # remove if related to runtime fields allowed types
   - before: 2.7.0
     patch:
       - op: remove
@@ -499,3 +547,7 @@ versions:
         value: true
       - op: remove
         path: "/items/properties/example"
+      - op: remove
+        # removing if related to ensure type is object if object_type is defined
+        # it should be /items/allOf/4 , but there is a JSON Patch removing second element for runtime fields in 2.8.0
+        path: "/items/allOf/3"
