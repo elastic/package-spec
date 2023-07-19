@@ -9,7 +9,6 @@
     - security_rule
     - csp_rule_template
     - ml_module
-    - tag
     - osquery_pack_asset
     - osquery_saved_query
 - text: Bar
@@ -19,6 +18,6 @@
 - text: myCustomTag
   asset_types:
     - dashboard
-    - tag
+    - map
   asset_ids:
     - id1

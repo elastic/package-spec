@@ -9,9 +9,9 @@
     - security_rule
     - csp_rule_template
     - ml_module
-    - tag
     - osquery_pack_asset
     - osquery_saved_query
+    - tag
     - foo
 - text: Bar
   asset_ids:
