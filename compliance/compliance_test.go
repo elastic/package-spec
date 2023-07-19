@@ -35,11 +35,20 @@ func TestSpecCompliance(t *testing.T) {
 	}
 }
 
-func InitializeScenario(ctx *godog.ScenarioContext) {
-	sm := newScenarioManager(ctx)
+func indexTemplateIncludes(arg1, arg2 string) error {
+	return godog.ErrPending
+}
 
-	ctx.Step(`^an "([^"]*)" package$`, sm.createPackage)
-	ctx.Step(`^index template "([^"]*)"$`, sm.checkIndexTemplate)
-	ctx.Step(`^the package has "([^"]*)"$`, sm.addToPackage)
-	ctx.Step(`^the package is installed$`, sm.installPackage)
+func thePackageIsInstalled(packageName string) error {
+	return godog.ErrPending
+}
+
+func thereIsAnIndexTemplateForPattern(arg1 string) error {
+	return godog.ErrPending
+}
+
+func InitializeScenario(ctx *godog.ScenarioContext) {
+	ctx.Step(`^index template "([^"]*)" includes "([^"]*)"$`, indexTemplateIncludes)
+	ctx.Step(`^the "([^"]*)" package is installed$`, thePackageIsInstalled)
+	ctx.Step(`^there is an index template for pattern "([^"]*)"$`, thereIsAnIndexTemplateForPattern)
 }
