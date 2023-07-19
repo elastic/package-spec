@@ -112,6 +112,7 @@ func TestValidateMinimumKibanaVersionInputPackages(t *testing.T) {
 			if test.expectedErr == nil {
 				assert.Nil(t, res)
 			} else {
+				require.Error(t, res)
 				assert.Equal(t, test.expectedErr.Error(), res.Error())
 			}
 		})
@@ -165,6 +166,7 @@ func TestValidateMinimumKibanaVersionRuntimeFields(t *testing.T) {
 			if test.expectedErr == nil {
 				assert.Nil(t, res)
 			} else {
+				require.Error(t, res)
 				assert.Equal(t, test.expectedErr.Error(), res.Error())
 			}
 		})
