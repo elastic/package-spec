@@ -82,7 +82,10 @@ func checkFeaturesVersions(t *testing.T, fs fs.FS, paths []string) {
 		versions = append(versions, v.String())
 	}
 
-	validTags := func(tags []*cucumbermessages.Tag) error {
+	validTags := func(tags []*cucumbermessages.Tag, requireTags bool) error {
+		if requireTags && len(tags) == 0 {
+			return fmt.Errorf("no version tags")
+		}
 		for _, tag := range tags {
 			if !sliceContains[string](versions, strings.TrimLeft(tag.Name, "@")) {
 				return fmt.Errorf("tag indicates an unknown spec version %s", tag.Name)
@@ -92,12 +95,12 @@ func checkFeaturesVersions(t *testing.T, fs fs.FS, paths []string) {
 	}
 
 	for _, feature := range features {
-		if err := validTags(feature.Feature.Tags); err != nil {
+		if err := validTags(feature.Feature.Tags, false); err != nil {
 			t.Fatalf("Feature %q has an invalid tag: %s", feature.Feature.Name, err)
 		}
 
 		for _, child := range feature.Feature.Children {
-			if err := validTags(child.Scenario.Tags); err != nil {
+			if err := validTags(child.Scenario.Tags, true); err != nil {
 				t.Fatalf("Scenario %q in feature %q has an invalid tag: %s", child.Scenario.Name, feature.Feature.Name, err)
 			}
 		}

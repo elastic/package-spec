@@ -10,4 +10,3 @@ Feature: Minimal packages
   Scenario: Input package can be installed
    Given the "basic_input" package is installed
     Then there is an index template for pattern "metrics-basic_input.foo-*"
-

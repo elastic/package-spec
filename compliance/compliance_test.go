@@ -6,6 +6,10 @@ package main
 
 import (
 	"embed"
+	"errors"
+	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/cucumber/godog"
@@ -40,7 +44,20 @@ func indexTemplateIncludes(arg1, arg2 string) error {
 }
 
 func thePackageIsInstalled(packageName string) error {
-	return godog.ErrPending
+	packagePath := filepath.Join("testdata", "packages", packageName)
+	info, err := os.Stat(packagePath)
+	if errors.Is(err, os.ErrNotExist) {
+		return godog.ErrPending
+	}
+	if !info.IsDir() {
+		return fmt.Errorf("\"%s\" should be a directory", packagePath)
+	}
+
+	err = elasticPackageInstall(packagePath)
+	if err != nil {
+		return fmt.Errorf("cannot install package %q: %w", packagePath, err)
+	}
+	return nil
 }
 
 func thereIsAnIndexTemplateForPattern(arg1 string) error {
