@@ -130,20 +130,6 @@ func readManifest(fsys fspath.FS) (*pkgpath.File, error) {
 	return &f[0], nil
 }
 
-func readSavedObjectTags(fsys fspath.FS) (*pkgpath.File, error) {
-	manifestPath := "kibana/tags.yml"
-	f, err := pkgpath.Files(fsys, manifestPath)
-	if err != nil {
-		return nil, fmt.Errorf("can't locate kibana/tags file: %w", err)
-	}
-
-	if len(f) != 1 {
-		return nil, fmt.Errorf("single kibana/tags file expected")
-	}
-
-	return &f[0], nil
-}
-
 func getKibanaVersionCondition(manifest pkgpath.File) (string, error) {
 
 	val, err := manifest.Values("$.conditions[\"kibana.version\"]")
