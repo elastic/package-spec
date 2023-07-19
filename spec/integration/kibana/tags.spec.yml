@@ -1,0 +1,51 @@
+##
+## Describes the specification for a routing rules yml file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: array
+  description: Tags automatically added to saved object assets.
+  items:
+     type: object
+     additionalProperties: false
+     properties:
+       text:
+         description: Tag name.
+         type: string
+       asset_types:
+         description: Asset types where this tag is going to be added.
+         type: array
+         items:
+           type: string
+           enum: # added the same types that are allowed under kibana folder
+             - dashboard
+             - visualization
+             - search
+             - map
+             - lens
+             - index_pattern
+             - security_rule
+             - csp_rule_template
+             - ml_module
+             - tag
+             - osquery_pack_asset
+             - osquery_saved_query
+       asset_ids:
+         description: Asset IDs where this tag is going to be added.
+         type: array
+         items:
+           type: string
+     if:
+       required:
+         - asset_types
+     then:
+       not:
+         required:
+           - asset_ids
+     oneOf:
+       - required:
+          - text
+          - asset_types
+       - required:
+          - text
+          - asset_ids
