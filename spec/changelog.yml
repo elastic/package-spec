@@ -10,9 +10,12 @@
   - description: Add specific settings for data retention lifecycle configuration (for DLM).
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/556
-  - description: Add new validation for usages of metric_type field
+  - description: Add new validation for usages of metric_type field.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/527
+  - description: Add asset tags to package level under kibana folder.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/567
 - version: 2.9.0
   changes:
   - description: Update minimum kibana version required for runtime fields
