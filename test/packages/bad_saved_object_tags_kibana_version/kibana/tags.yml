@@ -1,4 +1,4 @@
-- text: Something
+- text: Foo
   asset_types:
     - dashboard
     - visualization
@@ -12,7 +12,13 @@
     - tag
     - osquery_pack_asset
     - osquery_saved_query
-- text: Other
+- text: Bar
   asset_ids:
     - id1
     - id2
+- text: myCustomTag
+  asset_types:
+    - dashboard
+    - tag
+  asset_ids:
+    - id1

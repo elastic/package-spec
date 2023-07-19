@@ -35,13 +35,6 @@ spec:
          type: array
          items:
            type: string
-     if:
-       required:
-         - asset_types
-     then:
-       not:
-         required:
-           - asset_ids
      oneOf:
        - required:
           - text
