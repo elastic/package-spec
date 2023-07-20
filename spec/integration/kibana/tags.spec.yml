@@ -13,7 +13,10 @@ spec:
          description: Tag name.
          type: string
        asset_types:
-         description: Asset types where this tag is going to be added.
+         description: >
+           This tag will be added to all the assets of these types included in the package.
+           If two or more pacakges define the same tag, there will be just one tag created in Kibana and
+           all the assets will be using the same tag.
          type: array
          items:
            type: string
@@ -30,7 +33,10 @@ spec:
              - osquery_pack_asset
              - osquery_saved_query
        asset_ids:
-         description: Asset IDs where this tag is going to be added.
+         description: >
+           Asset IDs where this tag is going to be added.
+           If two or more pacakges define the same tag, there will be just one tag created in Kibana and
+           all the assets will be using the same tag.
          type: array
          items:
            type: string
