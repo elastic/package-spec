@@ -240,6 +240,13 @@ spec:
           description: GitHub repository name of package maintainer.
           type: string
           pattern: '^(([a-zA-Z0-9-]+)|([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+))$'
+        type:
+          description: Describes who owns the package and the level of support that is provided.
+          type: string
+          enum:
+            - "elastic"
+            - "partner"
+            - "community"
       required:
         - github
   properties:
