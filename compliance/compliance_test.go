@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/cucumber/godog"
+	"golang.org/x/exp/slices"
 )
 
 //go:embed features/*
@@ -85,7 +86,21 @@ func aPolicyIsCreatedWithPackageAndDataset(packageName, dataset string) error {
 }
 
 func thereIsAnIndexTemplateWithPattern(indexTemplateName, pattern string) error {
-	return godog.ErrPending
+	es, err := NewElasticsearchClient()
+	if err != nil {
+		return err
+	}
+
+	indexTemplate, err := es.IndexTemplate(indexTemplateName)
+	if err != nil {
+		return err
+	}
+
+	if !slices.Contains[string](indexTemplate.IndexPatterns, pattern) {
+		return fmt.Errorf("index template %q not found in %s", pattern, indexTemplate.IndexPatterns)
+	}
+
+	return nil
 }
 
 func InitializeScenario(ctx *godog.ScenarioContext) {

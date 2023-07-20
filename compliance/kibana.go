@@ -107,7 +107,7 @@ func (k *Kibana) CreatePolicyForPackage(name string, version string) (string, er
 }
 
 func (k *Kibana) buildPolicyName(packageName string) string {
-	return "test-" + packageName
+	return "test-policy-" + packageName
 }
 
 func (k *Kibana) deletePackagePolicyForPackage(name string) error {
