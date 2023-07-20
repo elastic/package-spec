@@ -13,25 +13,42 @@ import (
 
 const elasticPackageImportPath = "github.com/elastic/elastic-package"
 
-func elasticPackageInstall(packagePath string) error {
+type ElasticPackage struct {
+	home string
+}
+
+func NewElasticPackage() (*ElasticPackage, error) {
 	tmpDir, err := os.MkdirTemp("", "elastic-package-XXX")
 	if err != nil {
-		return fmt.Errorf("failed to create configuration directory: %w", err)
+		return nil, fmt.Errorf("failed to create configuration directory: %w", err)
 	}
-	defer os.RemoveAll(tmpDir)
 
+	return &ElasticPackage{
+		home: filepath.Join(tmpDir, ".elastic-package"),
+	}, nil
+}
+
+func (ep *ElasticPackage) Close() error {
+	if ep.home == "" {
+		return nil
+	}
+
+	return os.RemoveAll(ep.home)
+}
+
+func (ep *ElasticPackage) Install(packagePath string) error {
 	cmd := exec.Command("go", "run", elasticPackageImportPath, "install")
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	cmd.Env = append(os.Environ(),
-		"ELASTIC_PACKAGE_DATA_HOME="+filepath.Join(tmpDir, ".elastic-package"),
+		"ELASTIC_PACKAGE_DATA_HOME="+ep.home,
 		elasticPackageGetEnv("ELASTICSEARCH_HOST"),
 		elasticPackageGetEnv("ELASTICSEARCH_PASSWORD"),
 		elasticPackageGetEnv("ELASTICSEARCH_USERNAME"),
 		elasticPackageGetEnv("KIBANA_HOST"),
 	)
 	cmd.Dir = packagePath
-	err = cmd.Run()
+	err := cmd.Run()
 	if err != nil {
 		fmt.Errorf("elastic-package failed: %w", err)
 	}

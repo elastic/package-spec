@@ -4,9 +4,11 @@ Feature: Minimal packages
   @1.0.0
   Scenario: Integration package can be installed
    Given the "basic_integration" package is installed
-    Then there is an index template for pattern "metrics-basic_integration.foo-*"
+     And a policy is created with "basic_integration" package
+    Then there is an index template "metrics-basic_integration.foo" with pattern "metrics-basic_integration.foo-*"
 
   @2.6.0
   Scenario: Input package can be installed
    Given the "basic_input" package is installed
-    Then there is an index template for pattern "metrics-basic_input.foo-*"
+     And a policy is created with "basic_input" package and dataset "spec.input-test"
+    Then there is an index template "metrics-spec.input-test" with pattern "metrics-spec.input-test-*"
