@@ -81,8 +81,18 @@ func aPolicyIsCreatedWithPackage(packageName string) error {
 	return nil
 }
 
-func aPolicyIsCreatedWithPackageAndDataset(packageName, dataset string) error {
-	return godog.ErrPending
+func aPolicyIsCreatedWithPackageInputAndDataset(packageName, templateName, inputName, inputType, dataset string) error {
+	const version = "1.0.0" // TODO: Add support for package and version
+
+	kibana, err := NewKibanaClient()
+	if err != nil {
+		return err
+	}
+	_, err = kibana.CreatePolicyForPackageInputAndDataset(packageName, version, templateName, inputName, inputType, dataset)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func thereIsAnIndexTemplateWithPattern(indexTemplateName, pattern string) error {
@@ -107,6 +117,6 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^index template "([^"]*)" includes "([^"]*)"$`, indexTemplateIncludes)
 	ctx.Step(`^the "([^"]*)" package is installed$`, thePackageIsInstalled)
 	ctx.Step(`^a policy is created with "([^"]*)" package$`, aPolicyIsCreatedWithPackage)
-	ctx.Step(`^a policy is created with "([^"]*)" package and dataset "([^"]*)"$`, aPolicyIsCreatedWithPackageAndDataset)
+	ctx.Step(`^a policy is created with "([^"]*)" package, "([^"]*)" template, "([^"]*)" input, "([^"]*)" input type and dataset "([^"]*)"$`, aPolicyIsCreatedWithPackageInputAndDataset)
 	ctx.Step(`^there is an index template "([^"]*)" with pattern "([^"]*)"$`, thereIsAnIndexTemplateWithPattern)
 }

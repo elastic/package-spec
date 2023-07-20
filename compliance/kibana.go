@@ -41,9 +41,15 @@ type createPackagePolicyRequest struct {
 		Name    string `json:"name"`
 		Version string `json:"version"`
 	} `json:"package"`
-	Inputs map[string]struct {
-		Streams map[string]any `json:"streams,omitempty"`
-	} `json:"inputs,omitempty"`
+	Inputs map[string]packagePolicyInput `json:"inputs,omitempty"`
+}
+
+type packagePolicyInput struct {
+	Streams map[string]packagePolicyStream `json:"streams,omitempty"`
+}
+
+type packagePolicyStream struct {
+	Vars map[string]any `json:"vars,omitempty"`
 }
 
 type packagePolicyResponse struct {
@@ -98,7 +104,26 @@ func (k *Kibana) CreatePolicyForPackage(name string, version string) (string, er
 		return "", fmt.Errorf("failed to create agent policy: %w", err)
 	}
 
-	err = k.createPackagePolicy(agentPolicy.Item.ID, name, version)
+	err = k.createPackagePolicy(agentPolicy.Item.ID, name, version, "", "", "", "")
+	if err != nil {
+		return "", fmt.Errorf("failed to create package policy: %w", err)
+	}
+
+	return agentPolicy.Item.ID, nil
+}
+
+func (k *Kibana) CreatePolicyForPackageInputAndDataset(name, version, templateName, inputName, inputType, dataset string) (string, error) {
+	err := k.deletePackagePolicyForPackage(name)
+	if err != nil {
+		return "", fmt.Errorf("failed to delete agent policy: %w", err)
+	}
+
+	agentPolicy, err := k.createAgentPolicyForPackage(name)
+	if err != nil {
+		return "", fmt.Errorf("failed to create agent policy: %w", err)
+	}
+
+	err = k.createPackagePolicy(agentPolicy.Item.ID, name, version, templateName, inputName, inputType, dataset)
 	if err != nil {
 		return "", fmt.Errorf("failed to create package policy: %w", err)
 	}
@@ -208,7 +233,7 @@ func (k *Kibana) createAgentPolicyForPackage(name string) (*agentPolicyResponse,
 		if err != nil {
 			return nil, fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
 		}
-		return nil, fmt.Errorf("request failed with status %d, body: %q", resp.StatusCode, string(respBody))
+		return nil, fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
 	}
 
 	var agentPolicy agentPolicyResponse
@@ -220,16 +245,37 @@ func (k *Kibana) createAgentPolicyForPackage(name string) (*agentPolicyResponse,
 	return &agentPolicy, nil
 }
 
-func (k *Kibana) createPackagePolicy(agentPolicyID string, name string, version string) error {
+func (k *Kibana) createPackagePolicy(agentPolicyID, name, version, templateName, inputName, inputType, dataset string) error {
 	var packagePolicyRequest createPackagePolicyRequest
+	packagePolicyRequest.Name = name + "-test-1"
 	packagePolicyRequest.PolicyID = agentPolicyID
 	packagePolicyRequest.Package.Name = name
 	packagePolicyRequest.Package.Version = version
+
+	if templateName != "" && inputName != "" && inputType != "" {
+		policyInputName := templateName + "-" + inputType
+		policyStreamName := name + "." + inputName
+		vars := make(map[string]any)
+		if dataset != "" {
+			vars["data_stream.dataset"] = dataset
+		}
+		packagePolicyRequest.Inputs = map[string]packagePolicyInput{
+			policyInputName: packagePolicyInput{
+				Streams: map[string]packagePolicyStream{
+					policyStreamName: packagePolicyStream{
+						Vars: vars,
+					},
+				},
+			},
+		}
+	}
 
 	body, err := json.Marshal(packagePolicyRequest)
 	if err != nil {
 		return err
 	}
+
+	fmt.Println(string(body))
 
 	req, err := k.newRequest(http.MethodPost, apiPackagePolicyPath, bytes.NewReader(body))
 	if err != nil {
@@ -240,7 +286,15 @@ func (k *Kibana) createPackagePolicy(agentPolicyID string, name string, version 
 	if err != nil {
 		return err
 	}
-	resp.Body.Close()
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
+	}
 
 	return nil
 }

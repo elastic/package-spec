@@ -21,5 +21,12 @@ icons:
     title: Sample logo
     size: 32x32
     type: image/svg+xml
+policy_templates:
+  - name: test
+    type: logs
+    title: Test
+    description: Test log policy
+    input: logfile
+    template_path: input.yml.hbs
 owner:
   github: elastic/ecosystem
