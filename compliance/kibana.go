@@ -275,8 +275,6 @@ func (k *Kibana) createPackagePolicy(agentPolicyID, name, version, templateName,
 		return err
 	}
 
-	fmt.Println(string(body))
-
 	req, err := k.newRequest(http.MethodPost, apiPackagePolicyPath, bytes.NewReader(body))
 	if err != nil {
 		return err
