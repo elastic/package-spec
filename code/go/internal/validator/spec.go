@@ -92,6 +92,7 @@ func processErrors(errs ve.ValidationErrors) ve.ValidationErrors {
 		"Must validate \"else\" as \"if\" was not valid",
 		"Must validate all the schemas (allOf)",
 		"Must validate at least one schema (anyOf)",
+		"Must validate one and only one schema (oneOf)",
 	}
 	for _, e := range errs {
 		for _, msg := range msgTransforms {
