@@ -237,7 +237,7 @@ spec:
       additionalProperties: false
       properties:
         github:
-          description: Package maintainer GitHub team name.
+          description: Github team name of the package maintainer.
           type: string
           pattern: '^(([a-zA-Z0-9-]+)|([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+))$'
       required:
