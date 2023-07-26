@@ -25,3 +25,8 @@ spec:
       type: file
       contentMediaType: "application/json"
       required: false
+    - description: log files with events to ingest
+      name: logs
+      type: folder
+      required: false
+      $ref: "./logs/spec.yml"

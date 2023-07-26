@@ -1,0 +1,8 @@
+spec:
+  additionalContents: false
+  contents:
+  - description: Log files to add into terraform resources
+    type: file
+    contentMediaType: "text/plain"
+    pattern: '^*.log$'
+    required: false
