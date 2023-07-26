@@ -16,6 +16,9 @@
   - description: Add asset tags to package level under kibana folder.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/567
+  - description: Add support for log files in deploy terraform spec
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/571
 - version: 2.9.0
   changes:
   - description: Update minimum kibana version required for runtime fields

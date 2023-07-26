@@ -25,3 +25,8 @@ spec:
       type: file
       contentMediaType: "application/json"
       required: false
+    - description: Files that can be used with Terraform resources or provisioners
+      name: files
+      type: folder
+      required: false
+      $ref: "./files/spec.yml"
