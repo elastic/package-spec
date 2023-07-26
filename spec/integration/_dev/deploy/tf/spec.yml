@@ -25,8 +25,8 @@ spec:
       type: file
       contentMediaType: "application/json"
       required: false
-    - description: log files with events to ingest
-      name: logs
+    - description: Files that can be used with Terraform resources or provisioners
+      name: files
       type: folder
       required: false
-      $ref: "./logs/spec.yml"
+      $ref: "./files/spec.yml"

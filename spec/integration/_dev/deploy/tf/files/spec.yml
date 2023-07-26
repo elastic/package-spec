@@ -1,0 +1,18 @@
+spec:
+  additionalContents: false
+  contents:
+  - description: Log / conf files to add into terraform resources
+    type: file
+    contentMediaType: "text/plain"
+    pattern: '^*.(log|conf)$'
+    required: false
+  - description: YAML files to add into terraform resources
+    type: file
+    contentMediaType: "application/yml"
+    pattern: ^*.(yml|yaml)$
+    required: false
+  - description: JSON files to add into terraform resources
+    type: file
+    contentMediaType: "application/json"
+    pattern: '^*.json$'
+    required: false
