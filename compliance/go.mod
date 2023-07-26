@@ -7,9 +7,10 @@ require (
 	github.com/cucumber/godog v0.12.7-0.20230607093746-72db47c51993
 	github.com/cucumber/messages/go/v21 v21.0.1
 	github.com/elastic/elastic-package v0.84.0
-	github.com/elastic/go-elasticsearch/v8 v8.8.2
+	github.com/elastic/go-elasticsearch/v8 v8.9.0
 	github.com/elastic/package-spec/v2 v2.9.0
 	github.com/stretchr/testify v1.8.4
+	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1
 )
 
 require (
@@ -128,7 +129,6 @@ require (
 	go.mongodb.org/mongo-driver v1.11.1 // indirect
 	go.starlark.net v0.0.0-20221205180719-3fd0dac74452 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
-	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1 // indirect
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/oauth2 v0.4.0 // indirect

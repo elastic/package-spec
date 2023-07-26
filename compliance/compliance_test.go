@@ -6,13 +6,16 @@ package main
 
 import (
 	"embed"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/cucumber/godog"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"golang.org/x/exp/slices"
 )
 
@@ -21,6 +24,9 @@ var featuresFS embed.FS
 
 func TestSpecCompliance(t *testing.T) {
 	paths := []string{"features"}
+	if pathsEnv := os.Getenv("TEST_SPEC_FEATURES"); pathsEnv != "" {
+		paths = strings.Split(pathsEnv, ",")
+	}
 	checkFeaturesVersions(t, featuresFS, paths)
 
 	suite := godog.TestSuite{
@@ -40,11 +46,41 @@ func TestSpecCompliance(t *testing.T) {
 	}
 }
 
-func indexTemplateIncludes(arg1, arg2 string) error {
-	return godog.ErrPending
+func indexTemplateHasAFieldWith(indexTemplateName, fieldName, condition string) error {
+	es, err := NewElasticsearchClient()
+	if err != nil {
+		return err
+	}
+
+	indexTemplate, err := es.SimulateIndexTemplate(indexTemplateName)
+	if err != nil {
+		return err
+	}
+
+	fieldMapping, err := indexTemplate.FieldMapping(fieldName)
+	if err != nil {
+		return err
+	}
+
+	// TODO: Properly build conditions.
+	switch condition {
+	case "runtime:true":
+		if _, isRuntime := fieldMapping.(types.RuntimeField); isRuntime {
+			return nil
+		}
+	}
+
+	d, err := json.MarshalIndent(fieldMapping, "", "  ")
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Found the following mapping of type %T for field %q:\n", fieldMapping, fieldName)
+	fmt.Println(string(d))
+	return fmt.Errorf("conditon %q not satisfied by field %q", condition, fieldName)
 }
 
 func thePackageIsInstalled(packageName string) error {
+	// TODO: embed sample packages, so we can build a standalone test binary.
 	packagePath := filepath.Join("testdata", "packages", packageName)
 	info, err := os.Stat(packagePath)
 	if errors.Is(err, os.ErrNotExist) {
@@ -64,6 +100,7 @@ func thePackageIsInstalled(packageName string) error {
 	if err != nil {
 		return fmt.Errorf("cannot install package %q: %w", packagePath, err)
 	}
+
 	return nil
 }
 
@@ -114,7 +151,7 @@ func thereIsAnIndexTemplateWithPattern(indexTemplateName, pattern string) error 
 }
 
 func InitializeScenario(ctx *godog.ScenarioContext) {
-	ctx.Step(`^index template "([^"]*)" includes "([^"]*)"$`, indexTemplateIncludes)
+	ctx.Step(`^index template "([^"]*)" has a field "([^"]*)" with "([^"]*)"$`, indexTemplateHasAFieldWith)
 	ctx.Step(`^the "([^"]*)" package is installed$`, thePackageIsInstalled)
 	ctx.Step(`^a policy is created with "([^"]*)" package$`, aPolicyIsCreatedWithPackage)
 	ctx.Step(`^a policy is created with "([^"]*)" package, "([^"]*)" template, "([^"]*)" input, "([^"]*)" input type and dataset "([^"]*)"$`, aPolicyIsCreatedWithPackageInputAndDataset)

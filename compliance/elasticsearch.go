@@ -16,10 +16,12 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 )
 
+// Elasticsearch is an elasticsearch client.
 type Elasticsearch struct {
 	client *elasticsearch.TypedClient
 }
 
+// NewElasticsearchClient creates a new Elasticsearch client.
 func NewElasticsearchClient() (*Elasticsearch, error) {
 	config := elasticsearch.Config{
 		Addresses: []string{
@@ -67,4 +69,13 @@ func (es *Elasticsearch) IndexTemplate(name string) (*types.IndexTemplate, error
 	}
 
 	return &resp.IndexTemplates[0].IndexTemplate, nil
+}
+
+func (es *Elasticsearch) SimulateIndexTemplate(name string) (*SimulatedIndexTemplate, error) {
+	resp, err := es.client.Indices.SimulateTemplate().Name(name).Do(context.TODO())
+	if err != nil {
+		return nil, err
+	}
+
+	return &SimulatedIndexTemplate{resp.Template}, nil
 }

@@ -50,7 +50,7 @@ func (ep *ElasticPackage) Install(packagePath string) error {
 	cmd.Dir = packagePath
 	err := cmd.Run()
 	if err != nil {
-		fmt.Errorf("elastic-package failed: %w", err)
+		return fmt.Errorf("elastic-package failed: %w", err)
 	}
 	return nil
 }

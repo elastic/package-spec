@@ -4,4 +4,5 @@ Feature: Runtime fields
   @2.8.0
   Scenario: Installer leverages runtime parameter
    Given the "runtime_fields" package is installed
-    Then index template "metrics-runtime_fields.foo" includes "runtime fields"
+     And a policy is created with "runtime_fields" package
+    Then index template "metrics-runtime_fields.foo" has a field "foo.runtime_field" with "runtime:true"
