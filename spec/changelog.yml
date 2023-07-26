@@ -10,9 +10,15 @@
   - description: Add specific settings for data retention lifecycle configuration (for DLM).
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/556
-  - description: Add new validation for usages of metric_type field
+  - description: Add new validation for usages of metric_type field.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/527
+  - description: Add asset tags to package level under kibana folder.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/567
+  - description: Add support for log files in deploy terraform spec
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/571
   - description: Add owner.type field to indicate package support level
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/568
