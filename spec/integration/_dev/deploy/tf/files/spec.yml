@@ -8,7 +8,7 @@ spec:
     required: false
   - description: YAML files to add into terraform resources
     type: file
-    contentMediaType: "application/yml"
+    contentMediaType: "application/x-yaml"
     pattern: ^*.(yml|yaml)$
     required: false
   - description: JSON files to add into terraform resources
