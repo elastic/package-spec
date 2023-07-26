@@ -243,10 +243,13 @@ spec:
         type:
           description: Describes who owns the package and the level of support that is provided.
           type: string
+          default: community
           enum:
-            - "elastic"
-            - "partner"
-            - "community"
+            - elastic
+            - partner
+            - community
+          examples:
+            - community
       required:
         - github
   properties:
