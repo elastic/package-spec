@@ -10,3 +10,8 @@ spec:
     name: ga
     required: true
     $ref: "./ga/spec.yml"
+  - description: Folder containing JSON patches
+    type: folder
+    name: patches
+    required: false
+    $ref: "./patches/spec.yml"

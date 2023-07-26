@@ -101,6 +101,20 @@ func TestValidateFile(t *testing.T) {
 		"bad_time_series": {
 			"data_stream/example/fields/fields.yml",
 			[]string{
+				`field 0.fields.4.type: 0.fields.4.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
+				`field 0.fields.5: type is required`,
+				`field 0.fields.8.type: 0.fields.8.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
+				"field \"example.agent.call_duration\" of type histogram can't be a dimension, allowed types for dimensions: constant_keyword, keyword, long, integer, short, byte, double, float, half_float, scaled_float, unsigned_long, ip",
+			},
+		},
+		"bad_metric_type_fields": {
+			"data_stream/example/fields/fields.yml",
+			[]string{
+				`field 0.fields.4.type: 0.fields.4.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
+				`field 0.fields.5: type is required`,
+				`field 0.fields.6.type: 0.fields.6.type must be one of the following: "object"`,
+				`field 0.fields.7.object_type: 0.fields.7.object_type must be one of the following: "histogram", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
+				`field 0.fields.8.type: 0.fields.8.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
 				"field \"example.agent.call_duration\" of type histogram can't be a dimension, allowed types for dimensions: constant_keyword, keyword, long, integer, short, byte, double, float, half_float, scaled_float, unsigned_long, ip",
 			},
 		},
@@ -156,6 +170,28 @@ func TestValidateFile(t *testing.T) {
 				`field 1.runtime: Invalid type. Expected: string, given: integer`,
 				`field 2: Must not be present`,
 				`field 3: Must not be present`,
+			},
+		},
+		"bad_secret_vars": {
+			"manifest.yml",
+			[]string{
+				"field vars.0: Additional property secret is not allowed",
+			},
+		},
+		"bad_lifecycle": {
+			"data_stream/test/lifecycle.yml",
+			[]string{
+				"field (root): Additional property max_age is not allowed",
+			},
+		},
+		"bad_saved_object_tags": {
+			"kibana/tags.yml",
+			[]string{
+				`field 0.asset_types.11: 0.asset_types.11 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
+				`field 0.asset_types.12: 0.asset_types.12 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
+				`field 1.asset_ids.1: Invalid type. Expected: string, given: integer`,
+				`field 2: text is required`,
+				`field 3: asset_types is required`,
 			},
 		},
 	}
@@ -411,7 +447,10 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
 		},
 		"bad_runtime_kibana_version": []string{
-			"conditions.kibana.version must be ^8.9.0 or greater to include runtime fields",
+			"conditions.kibana.version must be ^8.10.0 or greater to include runtime fields",
+		},
+		"bad_saved_object_tags_kibana_version": []string{
+			"conditions.kibana.version must be ^8.10.0 or greater to include saved object tags file: kibana/tags.yml",
 		},
 	}
 
@@ -437,7 +476,7 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 					}
 				}
 				if !found {
-					t.Errorf("expected error: %q", expectedError)
+					t.Errorf("expected error: %q, found: %q", expectedError, errs)
 				}
 			}
 		})
@@ -567,6 +606,38 @@ func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
 					return
 				}
 				require.Equal(t, errs.Error(), test.expectedErrContains[0])
+			}
+		})
+	}
+}
+
+func TestValidateRoutingRules(t *testing.T) {
+	tests := map[string][]string{
+		"good":    []string{},
+		"good_v2": []string{},
+		"bad_routing_rules": []string{
+			`routing rules defined in data stream "rules" but dataset field is missing: dataset field is required in data stream "rules"`,
+		},
+		"bad_routing_rules_wrong_spec": []string{
+			`item [routing_rules.yml] is not allowed in folder [../../../../test/packages/bad_routing_rules_wrong_spec/data_stream/rules]`,
+		},
+	}
+
+	for pkgName, expectedErrorMessages := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			err := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			if len(expectedErrorMessages) == 0 {
+				assert.NoError(t, err)
+				return
+			}
+			assert.Error(t, err)
+
+			errs, ok := err.(errors.ValidationErrors)
+			require.True(t, ok)
+			assert.Len(t, errs, len(expectedErrorMessages))
+
+			for _, foundError := range errs {
+				require.Contains(t, expectedErrorMessages, foundError.Error())
 			}
 		})
 	}

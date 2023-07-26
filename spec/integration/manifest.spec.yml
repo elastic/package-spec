@@ -101,6 +101,22 @@ spec:
               default: basic
               examples:
               - basic
+            capabilities:
+              description: |-
+                Stack features that are required by the package to work properly.
+                The package should not be used in deployments without the indicated features.
+                Packages that don't indicate any capability condition can be used on any deployment.
+              type: array
+              uniqueItems: true
+              items:
+                type: string
+                enum:
+                  - apm
+                  - enterprise_search
+                  - observability
+                  - security
+                  - serverless_search
+                  - uptime
         kibana:
           description: Kibana conditions
           type: object
@@ -221,7 +237,7 @@ spec:
       additionalProperties: false
       properties:
         github:
-          description: GitHub repository name of package maintainer.
+          description: Github team name of the package maintainer.
           type: string
           pattern: '^(([a-zA-Z0-9-]+)|([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+))$'
       required:
@@ -377,7 +393,12 @@ spec:
   - type
   - owner
 
+# JSON patches for newer versions should be placed on top
 versions:
+  - before: 2.10.0
+    patch:
+      - op: remove
+        path: "/definitions/conditions/properties/elastic/properties/capabilities"
   - before: 2.3.0
     patch:
       - op: add

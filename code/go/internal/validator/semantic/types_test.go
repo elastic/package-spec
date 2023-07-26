@@ -80,6 +80,11 @@ func TestListFieldsFiles(t *testing.T) {
 					dataStream:   "pe",
 				},
 				fieldFileMetadata{
+					filePath:     "data_stream/routing_rules/fields/base-fields.yml",
+					fullFilePath: "../../../../../test/packages/good_v2/data_stream/routing_rules/fields/base-fields.yml",
+					dataStream:   "routing_rules",
+				},
+				fieldFileMetadata{
 					filePath:     "data_stream/skipped_tests/fields/base-fields.yml",
 					fullFilePath: "../../../../../test/packages/good_v2/data_stream/skipped_tests/fields/base-fields.yml",
 					dataStream:   "skipped_tests",

@@ -1,0 +1,170 @@
+spec:
+  definitions:
+    package:
+      description: The package to benchmark.
+      type: string
+    description:
+      description: A description of the benchmark scenario.
+      type: string
+    policy_template:
+      description: |
+        The policy template to use, if none is set, will pick the first one in the list.
+      type: string
+    data_stream:
+      description: Data-stream parameters.
+      type: object
+      additionalProperties: false
+      oneOf:
+      - required:
+        - name
+      - required:
+        - dataset
+      properties:
+        name:
+          description: The name of the dataset to benchmark.
+          type: string
+        dataset:
+          description: The name of the dataset to benchmark.
+          type: string
+        vars:
+          description: The data_stream specific variables.
+          type:
+            - object
+            - "null"
+          additionalProperties: true
+          default: ~
+    warmup_time_period:
+      description: |
+        A time period as a duration string for warmup of the benchmark. 
+        All response data captured during warmup will not show up in the measurement results.
+        By default the value is 0 seconds, which means that all data captured will be taken into account for the benchmark results.
+      type: string
+      default: ""
+      example: 10s
+    benchmark_time_period:
+      description: |
+        A time period as a duration string for the duration of the benchmark.
+        By default the value is 0 seconds, which means that the benchmark will run until no more data is ingested.
+      type: string
+      default: ""
+      example: 10m
+    wait_for_data_timeout:
+      description: Timeout for waiting for data during a benchmark.
+      type: string
+      default: 10m
+      example: 10m
+    corpora:
+      description: Corpora settings.
+      type: object
+      additionalProperties: false
+      required:
+        - generator
+      properties:
+        generator:
+          description: Configuration for the corpus generator.
+          type: object
+          additionalProperties: false
+          required:
+            - size
+            - template
+            - config
+            - fields
+          properties:
+            size:
+              description: A string describing the amount of data to generate.
+              type: string
+              example: 10MiB
+              deprecated: true # as for https://github.com/elastic/elastic-integration-corpus-generator-tool/pull/94
+            tot_events:
+              description: An integer describing the total number of events to generate.
+              type: integer
+              example: 1000
+            template:
+              description: Configuration for the generator template.
+              type: object
+              additionalProperties: false
+              properties:
+                raw:
+                  description: Raw template.
+                  type: string
+                path:
+                  description: Template path.
+                  type: string
+                type:
+                  description: The type of template.
+                  type: string
+                  enum:
+                    - placeholder
+                    - gotext
+                  default: placeholder
+            config:
+              description: Configuration for the generator.
+              type: object
+              additionalProperties: false
+              properties:
+                raw:
+                  description: Raw config.
+                  type: object
+                  additionalProperties: true
+                path:
+                  description: Config path.
+                  type: string
+            fields:
+              description: Fields description for the generator.
+              type: object
+              additionalProperties: false
+              properties:
+                raw:
+                  description: Raw fields.
+                  type: object
+                  additionalProperties: true
+                path:
+                  description: Fields path.
+                  type: string
+        input_service:
+          description: Options for the service (found in ./deploy/docker) that will send corpora logs to the elastic agents.
+          type: object
+          additionalProperties: false
+          required:
+            - name
+          properties:
+            name:
+              description: The name of the input service.
+              type: string
+            signal:
+              description: The signal to send to the service once the benchmark is ready to start.
+              type: string
+              default: ""
+              example: SIGHUP
+  type: object
+  additionalProperties: false
+  required:
+    - data_stream
+    - input
+  properties:
+    package:
+      $ref: "#/definitions/package"
+    description:
+      $ref: "#/definitions/description"
+    version:
+      $ref: "../../manifest.spec.yml#/definitions/version"
+    input:
+      description: The input of the package to benchmark.
+      type: string
+    vars:
+      description: The package level variables.
+      type:
+        - object
+        - "null"
+      additionalProperties: true
+      default: ~
+    data_stream:
+      $ref: "#/definitions/data_stream"
+    warmup_time_period:
+      $ref: "#/definitions/warmup_time_period"
+    benchmark_time_period:
+      $ref: "#/definitions/benchmark_time_period"
+    wait_for_data_timeout:
+      $ref: "#/definitions/wait_for_data_timeout"
+    corpora:
+      $ref: "#/definitions/corpora"

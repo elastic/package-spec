@@ -9,24 +9,17 @@ import (
 	"fmt"
 
 	"github.com/Masterminds/semver/v3"
-	jsonpatch "github.com/evanphx/json-patch/v5"
+
+	"github.com/elastic/package-spec/v2/code/go/internal/specpatch"
 )
 
 type itemSchemaSpec struct {
 	Spec     map[string]interface{} `json:"spec" yaml:"spec"`
-	Versions []itemSchemaVersion    `json:"versions" yaml:"versions"`
-}
-
-type itemSchemaVersion struct {
-	// Before is the first version that didn't include this change.
-	Before string `json:"before" yaml:"before"`
-
-	// Patch is a list of JSON patch operations as defined by RFC6902.
-	Patch []interface{} `json:"patch" yaml:"patch"`
+	Versions []specpatch.Version    `json:"versions" yaml:"versions"`
 }
 
 func (i *itemSchemaSpec) resolve(target semver.Version) (map[string]interface{}, error) {
-	patchJSON, err := i.patchForVersion(target)
+	patchJSON, err := specpatch.PatchForVersion(target, i.Versions)
 	if err != nil {
 		return nil, err
 	}
@@ -34,18 +27,7 @@ func (i *itemSchemaSpec) resolve(target semver.Version) (map[string]interface{},
 		// Nothing to do.
 		return i.Spec, nil
 	}
-
-	patch, err := jsonpatch.DecodePatch(patchJSON)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode patch: %w", err)
-	}
-
-	spec, err := json.Marshal(i.Spec)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal spec for patching: %w", err)
-	}
-
-	spec, err = patch.Apply(spec)
+	spec, err := specpatch.ResolvePatch(i.Spec, patchJSON)
 	if err != nil {
 		return nil, fmt.Errorf("failed to apply patch: %w", err)
 	}

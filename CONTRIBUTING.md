@@ -64,3 +64,59 @@ Currently, the following custom formats are available:
 * `relative-path`: Relative path to the package root directory. The format checker verifies if the path is correct and
   the file exists.
 * `data-stream-name`: Name of a data stream. The format checker verifies if the data stream exists.
+
+
+## Development
+
+Download the latest main of `package-spec` repository:
+```bash 
+git clone https://github.com/elastic/package-spec.git
+cd package-spec
+make test
+```
+
+While developing on a new branch, there are some [Makefile targets](./Makefile) available
+that will help you in this development phase:
+- `make update`: add required license header in all the needed files.
+- `make test`: run all the tests 
+- `make check`: run lint and ensures that license headers are in-place.
+
+Remember to add unit tests or a test package under `test/packages/` folder where
+your changes can be checked.
+
+Once your changes are ready to review, [submit a Pull Request](https://help.github.com/articles/creating-a-pull-request).
+
+
+### Testing with integrations repository
+
+While working on a new branch, it is interesting to test these changes
+with all the packages defined in the [integrations repository](https://github.com/elastic/integrations).
+This allows to test a much wider scenarios than the test packages that are defined in this repository.
+
+This process can also be done automatically from your Pull Request by adding a comment `test integrations`. Example:
+- Comment: https://github.com/elastic/package-spec/pull/540#issuecomment-1593491304
+- Pull Request created in integrations repository: https://github.com/elastic/integrations/pull/6587
+
+This comment triggers this [Buildkite pipeline](https://github.com/elastic/package-spec/blob/72f19e94c61cc5c590aeefbeddfa025a95025b4e/.buildkite/pipeline.test-with-integrations-repo.yml) ([Buildkite job](https://buildkite.com/elastic/package-spec-test-with-integrations))
+
+This pipeline creates a new draft Pull Request in integration updating the required dependencies to test your own changes. As a new pull request is created, a CI
+job will be triggered to test all the packages defined in this repository. A new comment with the link to this new Pull Request will be posted in your package-spec Pull Request.
+
+**IMPORTANT**: Remember to close this PR in the integrations repository once you close the package-spec Pull Request.
+
+Usually, this process would require the following manual steps:
+1. Create your package-spec pull request and push all your commits
+2. Get the SHA of the latest changeset of your PR:
+   ```bash
+    $ git show -s --pretty=format:%H
+   a86c0814e30b6a9dede26889a67e7df1bf827357
+   ```
+3. Go to your clone of the [integrations repository](https://github.com/elastic/integrations), and update go.mod and go.sum with that changeset:
+   ```bash
+   cd /path/to/integrations/repostiory
+   go mod edit -replace github.com/elastic/package-spec/v2=github.com/<your_github_user>/package-spec/v2@a86c0814e30b6a9dede26889a67e7df1bf827357
+   go mod tidy
+   ```
+4. Push these changes into a branch and create a Pull Request
+    - Creating this PR would automatically trigger a new Jenkins pipeline.
+

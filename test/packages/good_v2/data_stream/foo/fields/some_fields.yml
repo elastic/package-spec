@@ -72,3 +72,17 @@
   type: keyword
   runtime: |
     doc['message'].value().doSomething()
+- name: metric.a.*.gauge
+  type: object
+  object_type: integer
+  metric_type: gauge
+- name: metric.b.*.gauge
+  type: integer
+  metric_type: gauge
+- name: metric.c.*.gauge
+  type: aggregate_metric_double
+  metric_type: gauge
+  default_metric: max
+  metrics:
+    - min
+    - max

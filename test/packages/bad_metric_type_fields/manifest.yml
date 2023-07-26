@@ -1,0 +1,32 @@
+format_version: 2.10.0
+name: bad_metric_type_fields
+title: "Package with fields using metric_type"
+version: 0.0.1
+description: "This is a package with fields using metric type"
+type: integration
+categories:
+  - custom
+  - monitoring
+conditions:
+  kibana.version: "^7.16.0"
+  elastic.subscription: basic
+screenshots:
+  - src: /img/sample-screenshot.png
+    title: Sample screenshot
+    size: 600x600
+    type: image/png
+icons:
+  - src: /img/sample-logo.svg
+    title: Sample logo
+    size: 32x32
+    type: image/svg+xml
+policy_templates:
+  - name: sample
+    title: Sample logs
+    description: Collect sample logs
+    inputs:
+      - type: logfile
+        title: Collect sample logs from instances
+        description: Collecting sample logs
+owner:
+  github: elastic/integrations-developer-experience

@@ -11,6 +11,7 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 )
@@ -111,6 +112,7 @@ func TestValidateMinimumKibanaVersionInputPackages(t *testing.T) {
 			if test.expectedErr == nil {
 				assert.Nil(t, res)
 			} else {
+				require.Error(t, res)
 				assert.Equal(t, test.expectedErr.Error(), res.Error())
 			}
 		})
@@ -118,7 +120,7 @@ func TestValidateMinimumKibanaVersionInputPackages(t *testing.T) {
 }
 
 func TestValidateMinimumKibanaVersionRuntimeFields(t *testing.T) {
-	kbnVersionError := errors.New("conditions.kibana.version must be ^8.9.0 or greater to include runtime fields")
+	kbnVersionError := errors.New("conditions.kibana.version must be ^8.10.0 or greater to include runtime fields")
 	var tests = []struct {
 		pkgRoot                string
 		packageVersion         semver.Version
@@ -146,13 +148,13 @@ func TestValidateMinimumKibanaVersionRuntimeFields(t *testing.T) {
 		{
 			"../../../../../test/packages/good_v2",
 			*semver.MustParse("1.0.0"),
-			"^8.9.0 || ^7.14.0",
+			"^8.10.0 || ^7.14.0",
 			kbnVersionError,
 		},
 		{
 			"../../../../../test/packages/good_v2",
 			*semver.MustParse("1.0.0"),
-			"^8.9.0",
+			"^8.10.0",
 			nil,
 		},
 	}
@@ -164,6 +166,60 @@ func TestValidateMinimumKibanaVersionRuntimeFields(t *testing.T) {
 			if test.expectedErr == nil {
 				assert.Nil(t, res)
 			} else {
+				require.Error(t, res)
+				assert.Equal(t, test.expectedErr.Error(), res.Error())
+			}
+		})
+	}
+}
+
+func TestValidateMinimumKibanaVersionSavedObjectsTags(t *testing.T) {
+	kbnVersionError := errors.New("conditions.kibana.version must be ^8.10.0 or greater to include saved object tags file: kibana/tags.yml")
+	var tests = []struct {
+		pkgRoot                string
+		pkgType                string
+		packageVersion         semver.Version
+		kibanaVersionCondition string
+		expectedErr            error
+	}{
+		{
+			"../../../../../test/packages/good_v2",
+			"integration",
+			*semver.MustParse("1.0.0"),
+			"^7.14.0",
+			kbnVersionError,
+		},
+		{
+			"../../../../../test/packages/good_v2",
+			"integration",
+			*semver.MustParse("1.0.0"),
+			"^8.10.0 || ^7.14.0",
+			kbnVersionError,
+		},
+		{
+			"../../../../../test/packages/good_v2",
+			"integration",
+			*semver.MustParse("1.0.0"),
+			"^8.10.0",
+			nil,
+		},
+		{
+			"../../../../../test/packages/good_input",
+			"input",
+			*semver.MustParse("1.0.0"),
+			"^7.17.0",
+			nil,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(filepath.Base(test.pkgRoot)+"--"+test.packageVersion.String()+"--"+test.kibanaVersionCondition, func(t *testing.T) {
+			res := validateMinimumKibanaVersionSavedObjectTags(fspath.DirFS(test.pkgRoot), test.pkgType, test.packageVersion, test.kibanaVersionCondition)
+
+			if test.expectedErr == nil {
+				assert.Nil(t, res)
+			} else {
+				require.Error(t, res)
 				assert.Equal(t, test.expectedErr.Error(), res.Error())
 			}
 		})

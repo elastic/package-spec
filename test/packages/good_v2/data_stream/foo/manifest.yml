@@ -3,6 +3,11 @@ type: logs
 streams:
   - input: logfile
     vars:
+      - name: stream_password
+        type: password
+        title: Stream Level Secret
+        show_user: true
+        secret: true
       - name: empty_array
         type: text
         title: Empty array

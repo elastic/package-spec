@@ -92,6 +92,7 @@ func processErrors(errs ve.ValidationErrors) ve.ValidationErrors {
 		"Must validate \"else\" as \"if\" was not valid",
 		"Must validate all the schemas (allOf)",
 		"Must validate at least one schema (anyOf)",
+		"Must validate one and only one schema (oneOf)",
 	}
 	for _, e := range errs {
 		for _, msg := range msgTransforms {
@@ -131,6 +132,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateILMPolicyPresent, since: semver.MustParse("2.0.0"), types: []string{"integration"}},
 		{fn: semantic.ValidateProfilingNonGA, types: []string{"integration"}},
 		{fn: semantic.ValidateKibanaObjectIDs, types: []string{"integration"}},
+		{fn: semantic.ValidateRoutingRulesAndDataset, types: []string{"integration"}, since: semver.MustParse("2.9.0")},
 	}
 
 	var validationRules validationRules

@@ -1,0 +1,25 @@
+spec:
+  additionalContents: false
+  contents:
+    - description: A data stream's manifest file
+      type: file
+      contentMediaType: "application/x-yaml"
+      sizeLimit: 5MB
+      name: "manifest.yml"
+      required: true
+      $ref: "./manifest.spec.yml"
+    - description: A data stream's manifest file
+      type: file
+      contentMediaType: "application/x-yaml"
+      sizeLimit: 5MB
+      name: "other.yml"
+      required: false
+      $ref: "./other.spec.yml"
+
+# JSON patches for newer versions should be placed on top
+versions:
+  - before: 3.0.0
+    patch:
+      - op: replace
+        path: "/contents/1/required"
+        value: true

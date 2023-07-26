@@ -78,3 +78,25 @@ spec:
       required: false
       visibility: private
       $ref: "./_dev/spec.yml"
+    - description: File containing routing rules definitions (technical preview)
+      type: file
+      contentMediaType: "application/x-yaml"
+      name: "routing_rules.yml"
+      required: false
+      $ref: "./routing_rules.spec.yml"
+    - description: File containing lifecycle configuration (technical preview)
+      type: file
+      contentMediaType: "application/x-yaml"
+      name: "lifecycle.yml"
+      required: false
+      $ref: "lifecycle.spec.yml"
+
+versions:
+  - before: 2.10.0
+    patch:
+      - op: remove
+        path: "/contents/0/contents/8" # remove lifecycle definition
+  - before: 2.9.0
+    patch:
+      - op: remove
+        path: "/contents/0/contents/7" # remove routing_rules file definition

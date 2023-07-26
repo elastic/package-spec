@@ -95,3 +95,7 @@ Package specifications are versioned. Versions follow the [semantic versioning](
 ## Version Compatibility between Packages and Specifications
 
 A package specifying its `format_version` as `x.y.z` must be valid against specifications in the semantic version range `[x.y.z, X.0.0)`, where `X = x + 1`.
+
+## Contributing
+
+Please check out our [contributing documentation](./CONTRIBUTING.md) for guidelines about how to contribute in the specification for Elastic Packages.
