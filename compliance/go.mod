@@ -8,9 +8,11 @@ require (
 	github.com/cucumber/messages/go/v21 v21.0.1
 	github.com/elastic/elastic-package v0.84.0
 	github.com/elastic/go-elasticsearch/v8 v8.9.0
+	github.com/elastic/go-licenser v0.4.1
 	github.com/elastic/package-spec/v2 v2.9.0
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1
+	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
 )
 
 require (
@@ -137,6 +139,7 @@ require (
 	golang.org/x/term v0.10.0 // indirect
 	golang.org/x/text v0.11.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
+	golang.org/x/tools v0.11.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect

@@ -59,6 +59,7 @@ func NewElasticsearchClient() (*Elasticsearch, error) {
 	}, nil
 }
 
+// IndexTemplate looks for an index template.
 func (es *Elasticsearch) IndexTemplate(name string) (*types.IndexTemplate, error) {
 	resp, err := es.client.Indices.GetIndexTemplate().Name(name).Do(context.TODO())
 	if err != nil {
@@ -71,6 +72,8 @@ func (es *Elasticsearch) IndexTemplate(name string) (*types.IndexTemplate, error
 	return &resp.IndexTemplates[0].IndexTemplate, nil
 }
 
+// SimulateIndexTemplate simulates the instantiation of an index template, resolving its
+// component templates.
 func (es *Elasticsearch) SimulateIndexTemplate(name string) (*SimulatedIndexTemplate, error) {
 	resp, err := es.client.Indices.SimulateTemplate().Name(name).Do(context.TODO())
 	if err != nil {

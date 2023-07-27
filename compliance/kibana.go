@@ -56,6 +56,7 @@ type packagePolicyResponse struct {
 	Items []json.RawMessage `json:"items"`
 }
 
+// Kibana is a kibana client.
 type Kibana struct {
 	Host     string
 	Username string
@@ -64,6 +65,7 @@ type Kibana struct {
 	client *http.Client
 }
 
+// NewKibanaClient creates a new Kibana client using environment variables for its initialization.
 func NewKibanaClient() (*Kibana, error) {
 	var client http.Client
 	if caCert := elasticPackageGetEnv("CA_CERT"); caCert != "" {
@@ -93,6 +95,7 @@ func NewKibanaClient() (*Kibana, error) {
 	}, nil
 }
 
+// CreatePolicyForPackage creates a new policy for a package.
 func (k *Kibana) CreatePolicyForPackage(name string, version string) (string, error) {
 	err := k.deletePackagePolicyForPackage(name)
 	if err != nil {
@@ -112,6 +115,8 @@ func (k *Kibana) CreatePolicyForPackage(name string, version string) (string, er
 	return agentPolicy.Item.ID, nil
 }
 
+// CreatePolicyForPackageInputAndDataset creates a policy for a package with a custom dataset.
+// XXX: Pass the path of the manifest and read input name and type from there.
 func (k *Kibana) CreatePolicyForPackageInputAndDataset(name, version, templateName, inputName, inputType, dataset string) (string, error) {
 	err := k.deletePackagePolicyForPackage(name)
 	if err != nil {

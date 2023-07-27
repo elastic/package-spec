@@ -13,10 +13,12 @@ import (
 
 const elasticPackageImportPath = "github.com/elastic/elastic-package"
 
+// ElasticPackage is a wrapper for the elastic-package command.
 type ElasticPackage struct {
 	home string
 }
 
+// NewElasticPackage creates a new wrapper for the elastic-package command.
 func NewElasticPackage() (*ElasticPackage, error) {
 	tmpDir, err := os.MkdirTemp("", "elastic-package-XXX")
 	if err != nil {
@@ -28,6 +30,7 @@ func NewElasticPackage() (*ElasticPackage, error) {
 	}, nil
 }
 
+// Close releases resources associated with this elastic-package wrapped command.
 func (ep *ElasticPackage) Close() error {
 	if ep.home == "" {
 		return nil
@@ -36,6 +39,7 @@ func (ep *ElasticPackage) Close() error {
 	return os.RemoveAll(ep.home)
 }
 
+// Install installs the package in the given path.
 func (ep *ElasticPackage) Install(packagePath string) error {
 	cmd := exec.Command("go", "run", elasticPackageImportPath, "install")
 	cmd.Stderr = os.Stderr
