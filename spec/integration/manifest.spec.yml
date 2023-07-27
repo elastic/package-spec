@@ -409,6 +409,9 @@ versions:
     patch:
       - op: remove
         path: "/definitions/conditions/properties/elastic/properties/capabilities"
+      - op: replace
+        path: "/definitions/owner/properties/type/default"
+        value: elastic
   - before: 2.3.0
     patch:
       - op: add
