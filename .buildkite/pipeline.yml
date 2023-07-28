@@ -39,22 +39,8 @@ steps:
         artifact_paths:
           - "*.xml"
 
-      - label: "Elastic Stack {{matrix.stack_version}} compliance with Spec {{matrix.spec_version}}"
-        command: ".buildkite/scripts/run-installer-compliance.sh {{matrix.stack_version}} {{matrix.spec_version}}"
-        agents:
-          provider: "gcp"
-        matrix:
-          # Skipped case here is a hack because buildkite wants a non-empty setup, and we want only
-          # a list of sets of variables, that is only possible with adjustments.
-          setup: {stack_version: skip, spec_version: skip}
-          adjustments:
-            - {with: {stack_version: skip, spec_version: skip}, skip: true}
-            - with:
-                stack_version: 8.10.0-SNAPSHOT
-                spec_version: 2.10.0
-            - with:
-                stack_version: 8.9.0
-                spec_version: 2.7.0
+      - label: ":pipeline: Trigger Compliance tests"
+        command: ".buildkite/pipeline.trigger.compliance.tests.sh | buildkite-agent pipeline upload"
 
       - label: ":junit: Junit annotate"
         plugins:
