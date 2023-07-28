@@ -3,6 +3,7 @@
 env:
   SETUP_GVM_VERSION: 'v0.5.0' # https://github.com/andrewkroh/gvm/issues/44#issuecomment-1013231151
   SETUP_MAGE_VERSION: "latest"
+  DOCKER_COMPOSE_VERSION: "v2.17.2"
   GO_VERSION: "1.20.3"
   GO_LINUX_AGENT_IMAGE: "golang:${GO_VERSION}"
   GO_WINDOWS_AGENT_IMAGE: "family/ci-windows-2022"
@@ -38,6 +39,23 @@ steps:
         artifact_paths:
           - "*.xml"
 
+      - label: "Elastic Stack {{matrix.stack_version}} compliance with Spec {{matrix.spec_version}}"
+        command: ".buildkite/scripts/run-installer-compliance.sh {{matrix.stack_version}} {{matrix.spec_version}}"
+        agents:
+          provider: "gcp"
+        matrix:
+          # Skipped case here is a hack because buildkite wants a non-empty setup, and we want only
+          # a list of sets of variables, that is only possible with adjustments.
+          setup: {stack_version: skip, spec_version: skip}
+          adjustments:
+            - {with: {stack_version: skip, spec_version: skip}, skip: true}
+            - with:
+                stack_version: 8.10.0-SNAPSHOT
+                spec_version: 2.10.0
+            - with:
+                stack_version: 8.9.0
+                spec_version: 2.7.0
+
       - label: ":junit: Junit annotate"
         plugins:
           - junit-annotate#v2.4.1:
@@ -50,3 +68,4 @@ steps:
             allow_failure: true
           - step: "windows-test"
             allow_failure: true
+

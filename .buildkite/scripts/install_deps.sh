@@ -46,6 +46,13 @@ with_jq() {
     jq --version
 }
 
+with_docker_compose() {
+    mkdir -p ${WORKSPACE}/bin
+    retry 5 curl -SL -o ${WORKSPACE}/bin/docker-compose "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-x86_64"
+    chmod +x ${WORKSPACE}/bin/docker-compose
+    docker-compose version
+}
+
 install_go_dependencies() {
     local install_packages=(
             "github.com/magefile/mage"

@@ -9,9 +9,9 @@ check: code/* compliance
 	@$(foreach lang,$^,make -C $(lang) check;)
 
 # Tests the language libraries' code
-test: code/* compliance
+test: code/*
 	@$(foreach lang,$^,make -C $(lang) test;)
 
 # Tests the language libraries' code to produce the required test files for the CI
-test-ci: code/* compliance
+test-ci: code/*
 	@$(foreach lang,$^,make -C $(lang) test-ci;)
