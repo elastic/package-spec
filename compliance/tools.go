@@ -10,4 +10,5 @@ import (
 	_ "github.com/elastic/elastic-package"
 	_ "github.com/elastic/go-licenser"
 	_ "golang.org/x/lint"
+	_ "gotest.tools/gotestsum"
 )

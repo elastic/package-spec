@@ -5,7 +5,6 @@ TEST_RESULTS_FOLDER = $(PWD)/build/test-results
 golicenser_cmd = go run github.com/elastic/go-licenser
 golint_cmd = go run golang.org/x/lint/golint
 gotestsum_cmd = go run gotest.tools/gotestsum
-gocobertura_cmd = go run github.com/boumenot/gocover-cobertura
 
 update:
 	# Add license headers
@@ -36,5 +35,4 @@ test:
 	@go test -v ./...
 
 test-ci: $(CODE_COVERAGE_REPORT_NAME_UNIT) $(TEST_RESULTS_FOLDER)
-	@$(gotestsum_cmd) --junitfile "$(TEST_RESULTS_FOLDER)/TEST-unit.xml" -- -count=1 -coverprofile=$(CODE_COVERAGE_REPORT_NAME_UNIT).out ./...
-	@$(gocobertura_cmd) < $(CODE_COVERAGE_REPORT_NAME_UNIT).out > $(CODE_COVERAGE_REPORT_NAME_UNIT).xml
+	@$(gotestsum_cmd) --junitfile "$(TEST_RESULTS_FOLDER)/TEST-unit.xml" -- -count=1 ./...
