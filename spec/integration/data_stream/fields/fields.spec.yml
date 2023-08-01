@@ -557,6 +557,16 @@ spec:
               enum:
                 - group
                 - nested
+      - if:
+          required:
+            - subobjects
+        then:
+          properties:
+            type:
+              enum:
+                - object
+          required:
+            - type            
 
     required:
     - name
