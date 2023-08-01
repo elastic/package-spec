@@ -402,6 +402,15 @@ spec:
           fields.
         type: boolean
         default: false
+      
+      subobjects:
+        description: >
+          Specifies if field names containing dots should be expanded into subobjects.
+          For example, if this is set to `true`, a field named `foo.bar` will be
+          expanded into an object with a field named `bar` inside an object
+          named `foo`.
+        type: boolean
+        default: true
 
       # Conditional properties.
       default_metric: true
