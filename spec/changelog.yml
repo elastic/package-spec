@@ -21,7 +21,7 @@
     link: https://github.com/elastic/package-spec/pull/571
   - description: Add aliases to transform spec
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/1111 #TODO change PR number
+    link: https://github.com/elastic/package-spec/pull/574
 - version: 2.9.0
   changes:
   - description: Update minimum kibana version required for runtime fields
