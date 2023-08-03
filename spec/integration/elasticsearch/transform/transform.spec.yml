@@ -111,6 +111,26 @@ spec:
           title: Pipeline
           type: string
           pattern: "^.*$"
+        aliases:
+          "$id": "#root/dest/aliases"
+          title: Aliases
+          type: array
+          items:
+            type: object
+            required:
+            - alias
+            additionalProperties: false
+            properties:
+              alias:
+                "$id": "#root/dest/aliases/alias"
+                title: Alias
+                type: string
+                examples:
+                  - mylogs
+              move_on_creation:
+                "$id": "#root/dest/aliases/move_on_creation"
+                title: Move on Creation
+                type: boolean
     frequency:
       "$id": "#root/frequency"
       title: Frequency
