@@ -17,11 +17,6 @@ description: Maximum priced ecommerce data by customer_id in Asia
 dest:
   index: kibana_sample_data_ecommerce_transform1
   pipeline: add_timestamp_pipeline
-  aliases:
-    - name: kibana_sample_alias1
-      move_on_creation: false
-    - name: kibana_sample_alias2
-      move_on_creation: true
 frequency: 5m
 sync:
   time:
