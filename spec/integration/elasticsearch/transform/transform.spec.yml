@@ -258,4 +258,4 @@ versions:
   - before: 2.10.0
     patch:
       - op: remove
-        path: "/properties/dest/aliases"
+        path: "/properties/dest/properties/aliases"
