@@ -122,9 +122,9 @@ spec:
             - alias
             additionalProperties: false
             properties:
-              alias:
-                "$id": "#root/dest/aliases/alias"
-                title: Alias
+              name:
+                "$id": "#root/dest/aliases/name"
+                title: Name of the alias
                 type: string
                 description: The name of the alias
                 examples:
@@ -253,3 +253,9 @@ spec:
               examples:
               - 10s
               pattern: "^.*$"
+
+versions:
+  - before: 2.10.0
+    patch:
+      - op: remove
+        path: "/properties/dest/properties/aliases"
