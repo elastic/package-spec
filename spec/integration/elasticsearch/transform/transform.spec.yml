@@ -119,7 +119,7 @@ spec:
           items:
             type: object
             required:
-            - alias
+            - name
             additionalProperties: false
             properties:
               name:
