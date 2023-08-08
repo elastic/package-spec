@@ -119,12 +119,12 @@ spec:
           items:
             type: object
             required:
-            - name
+            - alias
             additionalProperties: false
             properties:
               alias:
                 "$id": "#root/dest/aliases/alias"
-                title: Name of the alias
+                title: Alias
                 type: string
                 description: The name of the alias
                 examples:
