@@ -111,6 +111,30 @@ spec:
           title: Pipeline
           type: string
           pattern: "^.*$"
+        aliases:
+          "$id": "#root/dest/aliases"
+          title: Aliases
+          type: array
+          description: The aliases that the destination index for the transform should have.
+          items:
+            type: object
+            required:
+            - alias
+            additionalProperties: false
+            properties:
+              alias:
+                "$id": "#root/dest/aliases/alias"
+                title: Alias
+                type: string
+                description: The name of the alias
+                examples:
+                  - mylogs
+              move_on_creation:
+                "$id": "#root/dest/aliases/move_on_creation"
+                title: Move on Creation
+                type: boolean
+                description: Whether or not the destination index should be the only index in this alias. If true, all the other indices will be removed from this alias before adding the destination index to this alias.
+                default: false
     frequency:
       "$id": "#root/frequency"
       title: Frequency
@@ -229,3 +253,9 @@ spec:
               examples:
               - 10s
               pattern: "^.*$"
+
+versions:
+  - before: 2.10.0
+    patch:
+      - op: remove
+        path: "/properties/dest/properties/aliases"
