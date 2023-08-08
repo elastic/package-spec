@@ -122,8 +122,8 @@ spec:
             - name
             additionalProperties: false
             properties:
-              name:
-                "$id": "#root/dest/aliases/name"
+              alias:
+                "$id": "#root/dest/aliases/alias"
                 title: Name of the alias
                 type: string
                 description: The name of the alias
