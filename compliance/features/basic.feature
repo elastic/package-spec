@@ -1,4 +1,4 @@
-Feature: Minimal packages
+Feature: Basic package types support
   Basic tests with minimal packages
 
   @1.0.0

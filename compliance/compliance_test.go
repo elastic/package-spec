@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"encoding/json"
 	"errors"
@@ -150,10 +151,36 @@ func thereIsAnIndexTemplateWithPattern(indexTemplateName, pattern string) error 
 	return nil
 }
 
+func thereIsATransform(transformID string) error {
+	es, err := NewElasticsearchClient()
+	if err != nil {
+		return err
+	}
+
+	resp, err := es.client.Transform.GetTransform().
+		TransformId(transformID).
+		Do(context.TODO())
+	if err != nil {
+		return fmt.Errorf("failed to get transform %q: %w", transformID, err)
+	}
+	if resp.Count == 0 {
+		return fmt.Errorf("transform %q not found", transformID)
+	}
+
+	return nil
+}
+
+func thereIsATransformAlias(transformAliasName string) error {
+	// TODO: How to test this?
+	return godog.ErrPending
+}
+
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^index template "([^"]*)" has a field "([^"]*)" with "([^"]*)"$`, indexTemplateHasAFieldWith)
 	ctx.Step(`^the "([^"]*)" package is installed$`, thePackageIsInstalled)
 	ctx.Step(`^a policy is created with "([^"]*)" package$`, aPolicyIsCreatedWithPackage)
 	ctx.Step(`^a policy is created with "([^"]*)" package, "([^"]*)" template, "([^"]*)" input, "([^"]*)" input type and dataset "([^"]*)"$`, aPolicyIsCreatedWithPackageInputAndDataset)
 	ctx.Step(`^there is an index template "([^"]*)" with pattern "([^"]*)"$`, thereIsAnIndexTemplateWithPattern)
+	ctx.Step(`^there is a transform "([^"]*)"$`, thereIsATransform)
+	ctx.Step(`^there is a transform alias "([^"]*)"$`, thereIsATransformAlias)
 }

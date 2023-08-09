@@ -1,5 +1,5 @@
 #!/bin/bash
-  
+
 # Exit immediately on failure, or if an undefined variable is used.
 set -eu
 
@@ -14,7 +14,7 @@ cat <<EOF
           provider: "gcp"
 EOF
 }
-  
+
 # Begin the pipeline.yml file.
 cat <<EOF
 steps:
