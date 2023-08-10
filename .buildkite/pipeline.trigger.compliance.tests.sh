@@ -10,6 +10,8 @@ function compliance_test() {
 cat <<EOF
       - label: "Elastic Stack ${stack_version} compliance with Spec ${spec_version}"
         command: ".buildkite/scripts/run-installer-compliance.sh ${stack_version} ${spec_version}"
+        artifact_paths:
+          - compliance/report-*.xml
         agents:
           provider: "gcp"
 EOF
@@ -26,3 +28,17 @@ EOF
 # Generate each test we want to do.
 compliance_test 8.10.0-SNAPSHOT 2.10.0
 compliance_test 8.9.0 2.7.0
+
+# Annotate junit results.
+cat <<EOF
+      - wait: ~
+        continue_on_failure: true
+      - label: ":junit: Annotate compliance test results"
+        plugins:
+          - junit-annotate#v2.4.1:
+              artifacts: "compliance/report-*.xml"
+              context: "compliance"
+              always-annotate: true
+        agents:
+          provider: "gcp"
+EOF

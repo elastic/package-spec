@@ -30,10 +30,15 @@ func TestSpecCompliance(t *testing.T) {
 	}
 	checkFeaturesVersions(t, featuresFS, paths)
 
+	junitFileName := os.Getenv("TEST_SPEC_JUNIT")
+	if junitFileName == "" {
+		junitFileName = "report.xml"
+	}
+
 	suite := godog.TestSuite{
 		ScenarioInitializer: InitializeScenario,
 		Options: &godog.Options{
-			Format:   "pretty,junit:report.xml",
+			Format:   fmt.Sprintf("pretty,junit:%s", junitFileName),
 			Paths:    paths,
 			Tags:     versionsToTest(t),
 			FS:       featuresFS,

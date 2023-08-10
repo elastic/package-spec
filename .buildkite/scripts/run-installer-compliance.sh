@@ -38,4 +38,4 @@ echo "--- Start local Elastic Stack $STACK_VERSION with elastic-package"
 start_stack $STACK_VERSION
 
 echo "--- Check compliance with Package Spec $SPEC_VERSION"
-TEST_SPEC_VERSION=$SPEC_VERSION make -C compliance test
+TEST_SPEC_VERSION=$SPEC_VERSION TEST_SPEC_JUNIT=report-$STACK_VERSION-$SPEC_VERSION.xml make -C compliance test
