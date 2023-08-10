@@ -2,16 +2,14 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 2.11.0-next
-  changes:
-  - description: Add owner.type field to indicate package support level
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/568
 - version: 2.10.1-next
   changes:
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/576
+  - description: Add owner.type field to indicate package support level
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/568
 - version: 2.10.0
   changes:
   - description: Packages can define required stack capabilities
