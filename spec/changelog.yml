@@ -7,7 +7,12 @@
   - description: Add owner.type field to indicate package support level
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/568
-- version: 2.10.0-next
+- version: 2.10.1-next
+  changes:
+  - description: Prepare for next version
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/576
+- version: 2.10.0
   changes:
   - description: Packages can define required stack capabilities
     type: enhancement
@@ -24,6 +29,9 @@
   - description: Add support for log files in deploy terraform spec
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/571
+  - description: Add aliases to transform spec
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/574
 - version: 2.9.0
   changes:
   - description: Update minimum kibana version required for runtime fields
