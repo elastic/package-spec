@@ -43,6 +43,7 @@ policy_templates:
             - http://127.0.0.1
 owner:
   github: elastic/foobar
+  type: elastic
 screenshots:
   - src: /img/kibana-system.png
     title: kibana system
