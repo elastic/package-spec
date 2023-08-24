@@ -627,6 +627,12 @@ func TestValidateRoutingRules(t *testing.T) {
 		"bad_routing_rules_wrong_spec": []string{
 			`item [routing_rules.yml] is not allowed in folder [../../../../test/packages/bad_routing_rules_wrong_spec/data_stream/rules]`,
 		},
+		"bad_routing_rules_missing_if": []string{
+			`file "../../../../test/packages/bad_routing_rules_missing_if/data_stream/rules/routing_rules.yml" is invalid: field 0.rules.0: if is required`,
+		},
+		"bad_routing_rules_missing_target_dataset": []string{
+			`file "../../../../test/packages/bad_routing_rules_missing_target_dataset/data_stream/rules/routing_rules.yml" is invalid: field 0.rules.0: target_dataset is required`,
+		},
 	}
 
 	for pkgName, expectedErrorMessages := range tests {
