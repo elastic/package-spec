@@ -10,6 +10,9 @@
   - description: Add owner.type field to indicate package support level
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/568
+  - description: Make namespace parameter optional in routing_rules.yml
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/578
 - version: 2.10.0
   changes:
   - description: Packages can define required stack capabilities
