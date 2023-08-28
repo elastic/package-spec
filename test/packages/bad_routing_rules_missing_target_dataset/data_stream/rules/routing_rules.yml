@@ -1,0 +1,6 @@
+- source_dataset: routing_rules
+  rules: # Route error logs to `routing_rules.error` when they're sourced from an error logfile
+    - if: "ctx?.file?.path?.contains('/var/log/routing_rules/error')"
+      namespace:
+        - "{{labels.data_stream.namespace}}"
+        - default

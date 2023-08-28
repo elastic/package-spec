@@ -1,0 +1,5 @@
+# "Local" routing rules are included under this current dataset, not a special case
+- source_dataset: routing_rules
+  rules: # Route error logs to `routing_rules.error` when they're sourced from an error logfile
+  - target_dataset: routing_rules.error
+
