@@ -8,7 +8,7 @@ function fixCRLF {
     git reset --quiet --hard
 }
 function withGolang($version) {
-    Write-Host "-- Install golang --"
+    Write-Host "-- Install golang $version --"
     choco install -y golang --version $version
     $env:ChocolateyInstall = Convert-Path "$((Get-Command choco).Path)\..\.."
     Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
