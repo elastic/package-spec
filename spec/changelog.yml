@@ -10,9 +10,6 @@
   - description: Add owner.type field to indicate package support level
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/568
-  - description: Remove Kibana version requirement for saved object tags file
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/577
   - description: Make namespace parameter optional in routing_rules.yml
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/578

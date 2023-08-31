@@ -455,6 +455,9 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 		"bad_runtime_kibana_version": []string{
 			"conditions.kibana.version must be ^8.10.0 or greater to include runtime fields",
 		},
+		"bad_saved_object_tags_kibana_version": []string{
+			"conditions.kibana.version must be ^8.10.0 or greater to include saved object tags file: kibana/tags.yml",
+		},
 	}
 
 	for pkgName, expectedErrorMessages := range tests {
