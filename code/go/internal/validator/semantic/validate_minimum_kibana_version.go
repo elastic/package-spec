@@ -6,6 +6,7 @@ package semantic
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 
 	"github.com/Masterminds/semver/v3"
@@ -14,6 +15,7 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
+	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
 )
 
 // ValidateMinimumKibanaVersion ensures the minimum kibana version for a given package is the expected one
@@ -113,7 +115,13 @@ func validateMinimumKibanaVersionSavedObjectTags(fsys fspath.FS, packageType str
 		return nil
 	}
 
-	return fmt.Errorf("conditions.kibana.version must be ^%s or greater to include saved object tags file: %s", minimumKibanaVersion, manifestPath)
+	warningsAsErrors := common.IsDefinedWarningsAsErrors()
+	err = fmt.Errorf("conditions.kibana.version must be ^%s or greater to include saved object tags file: %s", minimumKibanaVersion, manifestPath)
+	if !warningsAsErrors {
+		log.Printf("Warning: %v\n", err)
+		return nil
+	}
+	return err
 }
 
 func readManifest(fsys fspath.FS) (*pkgpath.File, error) {
