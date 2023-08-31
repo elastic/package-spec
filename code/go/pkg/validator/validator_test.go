@@ -455,9 +455,6 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 		"bad_runtime_kibana_version": []string{
 			"conditions.kibana.version must be ^8.10.0 or greater to include runtime fields",
 		},
-		"bad_saved_object_tags_kibana_version": []string{
-			"conditions.kibana.version must be ^8.10.0 or greater to include saved object tags file: kibana/tags.yml",
-		},
 	}
 
 	for pkgName, expectedErrorMessages := range tests {
@@ -496,6 +493,9 @@ func TestValidateWarnings(t *testing.T) {
 		"good_v2": []string{},
 		"visualizations_by_reference": []string{
 			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens)",
+		},
+		"bad_saved_object_tags_kibana_version": []string{
+			"conditions.kibana.version must be ^8.10.0 or greater to include saved object tags file: kibana/tags.yml",
 		},
 	}
 	if err := common.EnableWarningsAsErrors(); err != nil {

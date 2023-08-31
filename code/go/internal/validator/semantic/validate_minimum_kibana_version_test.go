@@ -14,7 +14,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
 )
 
 func TestValidateKibanaVersionGreaterThan(t *testing.T) {
@@ -211,10 +210,6 @@ func TestValidateMinimumKibanaVersionSavedObjectsTags(t *testing.T) {
 			"^7.17.0",
 			nil,
 		},
-	}
-
-	if err := common.EnableWarningsAsErrors(); err != nil {
-		t.Fatal(err)
 	}
 
 	for _, test := range tests {

@@ -46,9 +46,15 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) ve.ValidationErrors {
 		errs.Append(ve.ValidationErrors{err})
 	}
 
+	warningsAsErrors := common.IsDefinedWarningsAsErrors()
 	err = validateMinimumKibanaVersionSavedObjectTags(fsys, pkg.Type, *pkg.Version, kibanaVersionCondition)
 	if err != nil {
-		errs.Append(ve.ValidationErrors{err})
+		err = fmt.Errorf("Warning: %v", err)
+		if warningsAsErrors {
+			errs.Append(ve.ValidationErrors{err})
+		} else {
+			log.Println(err)
+		}
 	}
 
 	if errs != nil {
@@ -115,13 +121,7 @@ func validateMinimumKibanaVersionSavedObjectTags(fsys fspath.FS, packageType str
 		return nil
 	}
 
-	warningsAsErrors := common.IsDefinedWarningsAsErrors()
-	err = fmt.Errorf("conditions.kibana.version must be ^%s or greater to include saved object tags file: %s", minimumKibanaVersion, manifestPath)
-	if !warningsAsErrors {
-		log.Printf("Warning: %v\n", err)
-		return nil
-	}
-	return err
+	return fmt.Errorf("conditions.kibana.version must be ^%s or greater to include saved object tags file: %s", minimumKibanaVersion, manifestPath)
 }
 
 func readManifest(fsys fspath.FS) (*pkgpath.File, error) {
