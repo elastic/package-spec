@@ -163,6 +163,16 @@ spec:
         type: boolean
         default: false
 
+      dimensions:
+        description: >
+          Declare multiple fields as dimensions of a time series.
+          These dimensions are associated with the "time_series_dimensions"
+          mapping parameter. By specifying an array of strings, you can indicate
+          which fields should be treated as dimensions.
+        type: array
+        items:
+          type: string
+
       pattern:
         description: >
           Regular expression pattern matching the allowed values for the field.

@@ -92,3 +92,42 @@ func TestValidateDimensionFields(t *testing.T) {
 		})
 	}
 }
+
+func TestValidateDimensionsFields(t *testing.T) {
+	cases := []struct {
+		title string
+		field field
+		valid bool
+	}{
+		{
+			title: "flattened supported",
+			field: field{
+				Name:       "dimensions",
+				Type:       "flattened",
+				Dimensions: []string{"dimensions.a", "dimensions.b"},
+			},
+			valid: true,
+		},
+		{
+			title: "keyword not supported",
+			field: field{
+				Name:       "dimensions",
+				Type:       "keyword",
+				Dimensions: []string{"dimensions.a", "dimensions.b"},
+			},
+			valid: false,
+		},
+	}
+
+	metadata := fieldFileMetadata{filePath: "fields.yml"}
+	for _, c := range cases {
+		t.Run(c.title, func(t *testing.T) {
+			errs := validateDimensionsField(metadata, c.field)
+			if c.valid {
+				assert.Empty(t, errs)
+			} else {
+				assert.NotEmpty(t, errs)
+			}
+		})
+	}
+}

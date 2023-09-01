@@ -50,3 +50,35 @@ func isAllowedDimensionType(fieldType string) bool {
 
 	return false
 }
+
+// ValidateDimensionsFields verifies if fields that support multiple dimensions are of one of the expected types.
+func ValidateDimensionsFields(fsys fspath.FS) errors.ValidationErrors {
+	return validateFields(fsys, validateDimensionsField)
+}
+
+func validateDimensionsField(metadata fieldFileMetadata, f field) errors.ValidationErrors {
+	if f.External != "" {
+		// TODO: External fields can be used as dimensions, but we cannot resolve
+		// them at this point, so accept them as they are by now.
+		return nil
+	}
+	if len(f.Dimensions) > 0 && !isAllowedDimensionsType(f.Type) {
+		return errors.ValidationErrors{fmt.Errorf(`file "%s" is invalid: field "%s" of type %s can't have dimensions, allowed types that support multiple dimensions: %s`, metadata.fullFilePath, f.Name, f.Type, strings.Join(allowedDimensionsTypes, ", "))}
+	}
+
+	return nil
+}
+
+var allowedDimensionsTypes = []string{
+	"flattened",
+}
+
+func isAllowedDimensionsType(fieldType string) bool {
+	for _, allowedType := range allowedDimensionsTypes {
+		if fieldType == allowedType {
+			return true
+		}
+	}
+
+	return false
+}

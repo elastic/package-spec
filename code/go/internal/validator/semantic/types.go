@@ -92,13 +92,14 @@ func (r *runtimeField) UnmarshalYAML(value *yaml.Node) error {
 }
 
 type field struct {
-	Name       string `yaml:"name"`
-	Type       string `yaml:"type"`
-	Unit       string `yaml:"unit"`
-	DateFormat string `yaml:"date_format"`
-	MetricType string `yaml:"metric_type"`
-	Dimension  bool   `yaml:"dimension"`
-	External   string `yaml:"external"`
+	Name       string   `yaml:"name"`
+	Type       string   `yaml:"type"`
+	Unit       string   `yaml:"unit"`
+	DateFormat string   `yaml:"date_format"`
+	MetricType string   `yaml:"metric_type"`
+	Dimension  bool     `yaml:"dimension"`
+	Dimensions []string `yaml:"dimensions"`
+	External   string   `yaml:"external"`
 
 	Runtime runtimeField `yaml:"runtime"`
 
