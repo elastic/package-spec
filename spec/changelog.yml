@@ -13,6 +13,9 @@
   - description: Make namespace parameter optional in routing_rules.yml
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/578
+  - description: Add support for flattened type dimensions
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/585
 - version: 2.10.0
   changes:
   - description: Packages can define required stack capabilities
