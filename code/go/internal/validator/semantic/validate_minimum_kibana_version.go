@@ -6,6 +6,7 @@ package semantic
 
 import (
 	"fmt"
+	"log"
 	"regexp"
 
 	"github.com/Masterminds/semver/v3"
@@ -14,6 +15,7 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
+	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
 )
 
 // ValidateMinimumKibanaVersion ensures the minimum kibana version for a given package is the expected one
@@ -44,9 +46,15 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) ve.ValidationErrors {
 		errs.Append(ve.ValidationErrors{err})
 	}
 
+	warningsAsErrors := common.IsDefinedWarningsAsErrors()
 	err = validateMinimumKibanaVersionSavedObjectTags(fsys, pkg.Type, *pkg.Version, kibanaVersionCondition)
 	if err != nil {
-		errs.Append(ve.ValidationErrors{err})
+		err = fmt.Errorf("Warning: %v", err)
+		if warningsAsErrors {
+			errs.Append(ve.ValidationErrors{err})
+		} else {
+			log.Println(err)
+		}
 	}
 
 	if errs != nil {
