@@ -200,6 +200,13 @@ func TestValidateFile(t *testing.T) {
 				`field 3: asset_types is required`,
 			},
 		},
+		"bad_ingest_pipeline": {
+			"data_stream/test/elasticsearch/ingest_pipeline/default.yml",
+			[]string{
+				"field processors.1: Additional property reroute is not allowed",
+				"field processors.2.foreach.processor: Additional property paint is not allowed",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
