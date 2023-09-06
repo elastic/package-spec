@@ -36,3 +36,11 @@ spec:
       name: transform
       required: false
       $ref: "./transform/spec.yml"
+
+versions:
+  - before: 3.0.0
+    patch:
+      - op: remove
+        path: "/contents/1/contents/0/$ref" # remove ingest pipeline validation as yaml
+      - op: remove
+        path: "/contents/1/contents/1/$ref" # remove ingest pipeline validation as json

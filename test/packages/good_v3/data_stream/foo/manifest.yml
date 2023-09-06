@@ -1,0 +1,51 @@
+title: Nginx access logs
+type: logs
+streams:
+  - input: logfile
+    vars:
+      - name: stream_password
+        type: password
+        title: Stream Level Secret
+        show_user: true
+        secret: true
+      - name: empty_array
+        type: text
+        title: Empty array
+        multi: true
+        required: false
+        show_user: true
+        default: []
+      - name: paths
+        type: text
+        title: Paths
+        multi: true
+        required: true
+        show_user: true
+        default:
+          - /var/log/nginx/access.log*
+      - name: server_status_path
+        type: text
+        title: Server Status Path
+        multi: false
+        required: true
+        show_user: false
+        default: /server-status
+      - name: my_select
+        type: select
+        title: My Select
+        multi: false
+        required: false
+        show_user: false
+        options:
+          - value: foo
+            text: Foo
+          - value: bar
+            text: Bar
+    title: Nginx access logs
+    description: Collect Nginx access logs
+dataset_is_prefix: true
+elasticsearch.index_template.mappings:
+  a:
+    b: 1
+elasticsearch.index_template.ingest_pipeline.name: foobar
+elasticsearch.privileges.indices: [auto_configure, create_doc, monitor]
