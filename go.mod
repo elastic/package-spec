@@ -10,6 +10,7 @@ require (
 	github.com/elastic/go-licenser v0.4.1
 	github.com/elastic/gojsonschema v1.2.1
 	github.com/evanphx/json-patch/v5 v5.6.0
+	github.com/gopherjs/gopherjs v1.17.2
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901
 	github.com/otiai10/copy v1.12.0
 	github.com/pkg/errors v0.9.1
