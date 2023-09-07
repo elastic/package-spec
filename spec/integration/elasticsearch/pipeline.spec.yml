@@ -1,0 +1,76 @@
+##
+## Describes the specification for an ingest pipeline.
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  definitions:
+    processor:
+      type: object
+      additionalProperties: false
+      properties:
+        append: { type: object }
+        attachment: { type: object }
+        bytes: { type: object }
+        circle: { type: object }
+        community_id: { type: object }
+        convert: { type: object }
+        csv: { type: object }
+        date: { type: object }
+        date_index_name: { type: object }
+        dissect: { type: object }
+        dot_expander: { type: object }
+        drop: { type: object }
+        # enrich: false # Additional support needed.
+        fail: { type: object }
+        fingerprint: { type: object }
+        # geo_grid: false # Support for geo shape fields needed.
+        geoip: { type: object }
+        grok: { type: object }
+        gsub: { type: object }
+        html_strip: { type: object }
+        inference: { type: object }
+        join: { type: object }
+        json: { type: object }
+        kv: { type: object }
+        lowercase: { type: object }
+        network_direction: { type: object }
+        pipeline: { type: object }
+        redact: { type: object }
+        registered_domain: { type: object }
+        remove: { type: object }
+        rename: { type: object }
+        # reroute: false # reroute_rules.yml should be used instead.
+        script: { type: object }
+        set: { type: object }
+        # set_security_user: false # Applicable to packages?
+        sort: { type: object }
+        split: { type: object }
+        trim: { type: object }
+        uppercase: { type: object }
+        urldecode: { type: object }
+        uri_parts: { type: object }
+        user_agent: { type: object }
+
+        foreach:
+          type: object
+          properties:
+            processor:
+              $ref: "#/definitions/processor"
+
+    processors:
+      type: array
+      items:
+        $ref: "#/definitions/processor"
+
+  properties:
+    description:
+      description: Description of the pipeline.
+      type: string
+    processors:
+      description: List of processors that conform the pipeline.
+      $ref: "#/definitions/processors"
+    on_failure:
+      description: List of processors to apply in case of failure.
+      $ref: "#/definitions/processors"

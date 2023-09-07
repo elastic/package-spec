@@ -2,6 +2,11 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
+- version: 3.0.0-next
+  changes:
+  - description: Validate processors used in ingest pipelines
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/586
 - version: 2.10.1-next
   changes:
   - description: Prepare for next version
