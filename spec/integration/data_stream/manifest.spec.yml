@@ -159,9 +159,125 @@ spec:
         settings:
           description: Settings section of index template
           type: object
+          additionalProperties: false
+          properties:
+            analysis:
+              type: object
+              additionalProperties: false
+              properties:
+                analyzer:
+                  description: Definition of custom analyzer.
+                  type: object
+                  additionalProperties:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      type:
+                        description: Type of analyzer
+                        type: string
+                        enum:
+                          - pattern
+                      pattern:
+                        type: string
+            index:
+              type: object
+              additionalProperties: false
+              properties:
+                codec:
+                  description: >
+                    Type of compression to use. The default is to use LZ4, `best_compression` uses DEFLATE,
+                    with higher compression but lower ingestion performance.
+                  type: string
+                  enum:
+                    - default
+                    - best_compression
+                mapping:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    dimension_fields:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        limit:
+                          description: Limit on the number of dimension fields on this data stream.
+                          type: integer
+                sort:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    field:
+                      description: Fields used to sort the document in the Lucene segments.
+                      oneOf:
+                        - type: string
+                        - type: array
+                          items:
+                            type: string
+                    order:
+                      description: The sort order to use for each field.
+                      oneOf:
+                        - type: string
+                          enum:
+                            - asc
+                            - desc
+                        - type: array
+                          items:
+                            type: string
+                            enum:
+                              - asc
+                              - desc
         mappings:
           description: Mappings section of index template
           type: object
+          additionalProperties: false
+          properties:
+            dynamic:
+              description: >
+                Control if new fields can be added dynamically. When set to `false`, new fields are not indexed.
+                When set to `strict`, fields must be explicitly added to the mapping. With `runtime`, fields are
+                not indexed, but added as runtime fields. Defaults to `true`, where Elasticsearch tries to index
+                any new field.
+              oneOf:
+                - type: boolean
+                - type: string
+                  enum:
+                    - runtime
+                    - strict
+            dynamic_templates:
+              type: array
+              items:
+                type: object
+                # maxProperties: 1 # No idea why this doesn't work. But this will be also checked by Elasticsearch.
+                additionalProperties:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    # path_match: false # Dynamic mappings with path match can be defined in fields definitions.
+                    match_mapping_type:
+                      oneOf:
+                        - type: boolean
+                        - type: string
+                          enum:
+                          - "null"
+                          - "true"
+                          - "false"
+                          - double
+                          - long
+                          - string
+                          - object
+                          - array
+                    mapping:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        type:
+                          $ref: "./fields/fields.spec.yml#/items/properties/type"
+                        scaling_factor:
+                          $ref: "./fields/fields.spec.yml#/items/properties/scaling_factor"
+                        metrics:
+                          $ref: "./fields/fields.spec.yml#/items/properties/metrics"
+                        ignore_above:
+                          $ref: "./fields/fields.spec.yml#/items/properties/ignore_above"
         ingest_pipeline:
           description: Elasticsearch ingest pipeline settings
           type: object
