@@ -1,0 +1,20 @@
+---
+description: Pipeline for processing sample logs
+processors:
+- set:
+    field: sample_field
+    value: "1"
+- reroute:
+    tag: nginx
+    if: "ctx?.log?.file?.path?.contains('nginx')"
+    dataset: nginx
+- foreach:
+    field: values
+    processor:
+      paint:
+        field: "_ingest._value"
+        color: "pink" 
+on_failure:
+- set:
+    field: error.message
+    value: '{{ _ingest.on_failure_message }}'

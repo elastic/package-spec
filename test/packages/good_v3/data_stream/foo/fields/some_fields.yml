@@ -1,0 +1,88 @@
+- name: source
+  title: Source
+  group: 2
+  type: group
+  fields:
+    - name: geo.city_name
+      level: core
+      type: keyword
+      description: City name.
+      ignore_above: 1024
+    - name: geo.location
+      level: core
+      type: geo_point
+      description: Longitude and latitude.
+    - name: geo.region_iso_code
+      level: core
+      type: keyword
+      description: Region ISO code.
+      ignore_above: 1024
+    - name: geo.region_name
+      level: core
+      type: keyword
+      description: Region name.
+      ignore_above: 1024
+- name: foobar
+  type: text
+  description: A field with a pattern defined
+  pattern: '^[a-zA-Z]$'
+  example: abcd
+- name: aaa
+  type: integer
+  metric_type: gauge
+  example: 42
+- name: vehicle_type
+  type: constant_keyword
+  value: truck
+- name: error.message
+  description: Error message.
+  type: match_only_text
+  example:
+    - "something failed!"
+    - "panic now"
+- name: metric.*_bytes
+  type: long
+- name: a
+  type: nested
+  include_in_parent: true
+- name: a.b
+  type: keyword
+- name: c
+  type: nested
+  include_in_root: true
+- name: c.d
+  type: keyword
+- name: name-with-dash
+  type: keyword
+- name: a/b
+  type: keyword
+- name: a/b.c/d
+  type: keyword
+- name: time-with-format
+  type: date
+  date_format: yyyy-MM-dd
+- name: agg_metric_field
+  type: aggregate_metric_double
+  metrics: ["min", "max", "sum", "value_count"]
+  default_metric: "max"
+- name: runtime_boolean
+  type: boolean
+  runtime: true
+- name: runtime_string
+  type: keyword
+  runtime: |
+    doc['message'].value().doSomething()
+- name: metric.a.*.gauge
+  type: object
+  object_type: integer
+  metric_type: gauge
+- name: metric.b.*.gauge
+  type: integer
+  metric_type: gauge
+- name: metric.c.*.gauge
+  type: aggregate_metric_double
+  metric_type: gauge
+  default_metric: max
+  metrics:
+    - min
+    - max

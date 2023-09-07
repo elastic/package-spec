@@ -22,15 +22,25 @@ spec:
           # TODO Determine if special handling of `---` is required (issue: https://github.com/elastic/package-spec/pull/54)
           contentMediaType: "application/x-yaml; require-document-dashes=true"
           required: false
+          $ref: "./pipeline.spec.yml"
         - description: Supporting ingest pipeline definitions in JSON
           type: file
           sizeLimit: 3MB
           pattern: '^.+\.json$'
           contentMediaType: "application/json"
           required: false
+          $ref: "./pipeline.spec.yml"
     - description: Folder containing Elasticsearch Transforms
       # https://www.elastic.co/guide/en/elasticsearch/reference/current/transforms.html
       type: folder
       name: transform
       required: false
       $ref: "./transform/spec.yml"
+
+versions:
+  - before: 3.0.0
+    patch:
+      - op: remove
+        path: "/contents/1/contents/0/$ref" # remove ingest pipeline validation as yaml
+      - op: remove
+        path: "/contents/1/contents/1/$ref" # remove ingest pipeline validation as json

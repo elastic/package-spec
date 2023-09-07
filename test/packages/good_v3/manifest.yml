@@ -1,0 +1,64 @@
+format_version: 3.0.0
+name: good_v3
+title: Good package
+description: This package is good for format version 3
+version: 1.0.0
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana.version: '^8.10.0'
+  elastic.subscription: 'basic'
+  elastic.capabilities:
+    - observability
+vars:
+  - name: package_password
+    type: password
+    title: Package Level Secret
+    show_user: true
+    secret: true
+policy_templates:
+  - name: apache
+    title: Apache logs and metrics
+    description: Collect logs and metrics from Apache instances
+    inputs:
+      - type: apache/metrics
+        title: Collect metrics from Apache instances
+        description: Collecting Apache status metrics
+        multi: false
+        vars:
+          - name: input_password
+            type: password
+            title: Input Level Secret
+            show_user: true
+            secret: true
+          - name: hosts
+            type: url
+            url_allowed_schemes: ['http', 'https']
+            title: Hosts
+            multi: true
+            required: true
+            show_user: true
+            default:
+            - http://127.0.0.1
+owner:
+  github: elastic/foobar
+  type: elastic
+screenshots:
+  - src: /img/kibana-system.png
+    title: kibana system
+    size: 1220x852
+    type: image/png
+  - src: /img/metricbeat_system_dashboard.png
+    title: metricbeat system dashboard
+    size: 2097x1933
+    type: image/png
+icons:
+  - src: /img/system.svg
+    title: system
+    size: 1000x1000
+    type: image/svg+xml
+# /main is a specific action underneath the monitor privilege. Declaring
+# "monitor/main" limits the provided privilege, "monitor", to only the "main"
+# action.
+elasticsearch.privileges.cluster: [monitor/main]
