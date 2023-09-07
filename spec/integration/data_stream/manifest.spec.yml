@@ -276,6 +276,8 @@ spec:
                           $ref: "./fields/fields.spec.yml#/items/properties/scaling_factor"
                         metrics:
                           $ref: "./fields/fields.spec.yml#/items/properties/metrics"
+                        default_metric:
+                          $ref: "./fields/fields.spec.yml#/items/properties/default_metric"
                         ignore_above:
                           $ref: "./fields/fields.spec.yml#/items/properties/ignore_above"
         ingest_pipeline:
