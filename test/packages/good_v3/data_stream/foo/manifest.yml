@@ -45,7 +45,6 @@ streams:
     description: Collect Nginx access logs
 dataset_is_prefix: true
 elasticsearch.index_template.mappings:
-  a:
-    b: 1
+  dynamic: strict
 elasticsearch.index_template.ingest_pipeline.name: foobar
 elasticsearch.privileges.indices: [auto_configure, create_doc, monitor]

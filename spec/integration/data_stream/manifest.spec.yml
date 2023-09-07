@@ -231,6 +231,11 @@ spec:
           type: object
           additionalProperties: false
           properties:
+            date_detection:
+              description: >
+                If true, new string fields will be checked to see if their contents match with `dynamic_date_formats`.
+                If they do, the field is dynamically added with type `date`. Set to false to disable this feature.
+              type: boolean
             dynamic:
               description: >
                 Control if new fields can be added dynamically. When set to `false`, new fields are not indexed.
@@ -243,6 +248,16 @@ spec:
                   enum:
                     - runtime
                     - strict
+            dynamic_date_formats:
+              # Added to support `date_detection`, but usually `date_detection` is only used to disable it.
+              description: Custom date formats to use for date detection.
+              type: array
+              items:
+                type: string
+                examples:
+                  - ["strict_date_optional_time","yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"] # This is the default if not set.
+                  - ["MM/dd/yyyy"]
+
             dynamic_templates:
               type: array
               items:
@@ -440,6 +455,17 @@ spec:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.0.0
+    patch:
+      # Stricter validation of elasticsearch settings and mappings.
+      - op: remove
+        path: /definitions/elasticsearch_index_template/properties/settings/additionalProperties
+      - op: remove
+        path: /definitions/elasticsearch_index_template/properties/settings/properties
+      - op: remove
+        path: /definitions/elasticsearch_index_template/properties/mappings/additionalProperties
+      - op: remove
+        path: /definitions/elasticsearch_index_template/properties/mappings/properties
   - before: 2.9.0
     patch:
       - op: remove
