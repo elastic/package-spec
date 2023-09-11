@@ -8,7 +8,7 @@ dest:
   index: metrics-endpoint.metadata_current_default
 latest:
   unique_key:
-  - elastic.agent.id
+    - elastic.agent.id
   sort: "@timestamp"
 description: Latest Endpoint metadata document per host
 _meta:
