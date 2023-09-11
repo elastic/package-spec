@@ -9,8 +9,10 @@ type: integration
 categories:
   - custom
 conditions:
-  kibana.version: "^8.9.1"
-  elastic.subscription: "basic"
+  kibana:
+    version: "^8.9.1"
+  elastic:
+    subscription: "basic"
 screenshots:
   - src: /img/sample-screenshot.png
     title: Sample screenshot
