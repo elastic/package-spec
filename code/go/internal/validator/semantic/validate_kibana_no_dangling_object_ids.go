@@ -78,7 +78,7 @@ func ValidateKibanaNoDanglingObjectIDs(fsys fspath.FS) errors.ValidationErrors {
 			found = true
 		}
 		if !found {
-			errs = append(errs, fmt.Errorf("dangling object found in file [%s]: %s (%s)", reference.filePath, reference.objectID, reference.objectType))
+			errs = append(errs, fmt.Errorf("file \"%s\" is invalid: dangling reference found: %s (%s)", reference.filePath, reference.objectID, reference.objectType))
 		}
 	}
 
