@@ -39,7 +39,6 @@ func (i *itemSchemaSpec) resolve(target semver.Version) (map[string]interface{},
 	dec.UseNumber()
 
 	var resolved map[string]interface{}
-	err = json.Unmarshal(spec, &resolved)
 	err = dec.Decode(&resolved)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal resolved spec: %w", err)
