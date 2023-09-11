@@ -5,6 +5,7 @@
 package yamlschema
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 
@@ -32,8 +33,13 @@ func (i *itemSchemaSpec) resolve(target semver.Version) (map[string]interface{},
 		return nil, fmt.Errorf("failed to apply patch: %w", err)
 	}
 
+	// Doesn't seem to be needed to use a decoder with UseNumber here, but it doesn't do
+	// any harm, and gojsonschema expects the use of `json.Number`.
+	dec := json.NewDecoder(bytes.NewReader(spec))
+	dec.UseNumber()
+
 	var resolved map[string]interface{}
-	err = json.Unmarshal(spec, &resolved)
+	err = dec.Decode(&resolved)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal resolved spec: %w", err)
 	}

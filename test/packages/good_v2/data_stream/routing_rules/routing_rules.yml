@@ -31,3 +31,9 @@
     namespace:
       - "{{labels.data_stream.namespace}}"
       - default
+
+# Route syslog entries without given namespace
+- source_dataset: syslog
+  rules:
+    - target_dataset: routing_rules
+      if: "ctx?.tags?.contains('routing_rules')"

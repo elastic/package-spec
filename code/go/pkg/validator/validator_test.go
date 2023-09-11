@@ -30,6 +30,7 @@ func TestValidateFile(t *testing.T) {
 	}{
 		"good":                               {},
 		"good_v2":                            {},
+		"good_v3":                            {},
 		"good_input":                         {},
 		"deploy_custom_agent":                {},
 		"deploy_custom_agent_multi_services": {},
@@ -80,6 +81,12 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				"field owner.github: Does not match pattern '^(([a-zA-Z0-9-]+)|([a-zA-Z0-9-]+\\/[a-zA-Z0-9-]+))$'",
+			},
+		},
+		"bad_owner_type": {
+			"manifest.yml",
+			[]string{
+				`field owner.type: owner.type must be one of the following: "elastic", "partner", "community"`,
 			},
 		},
 		"missing_version": {
@@ -192,6 +199,13 @@ func TestValidateFile(t *testing.T) {
 				`field 1.asset_ids.1: Invalid type. Expected: string, given: integer`,
 				`field 2: text is required`,
 				`field 3: asset_types is required`,
+			},
+		},
+		"bad_ingest_pipeline": {
+			"data_stream/test/elasticsearch/ingest_pipeline/default.yml",
+			[]string{
+				"field processors.1: Additional property reroute is not allowed",
+				"field processors.2.foreach.processor: Additional property paint is not allowed",
 			},
 		},
 	}
@@ -449,9 +463,6 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 		"bad_runtime_kibana_version": []string{
 			"conditions.kibana.version must be ^8.10.0 or greater to include runtime fields",
 		},
-		"bad_saved_object_tags_kibana_version": []string{
-			"conditions.kibana.version must be ^8.10.0 or greater to include saved object tags file: kibana/tags.yml",
-		},
 	}
 
 	for pkgName, expectedErrorMessages := range tests {
@@ -490,6 +501,9 @@ func TestValidateWarnings(t *testing.T) {
 		"good_v2": []string{},
 		"visualizations_by_reference": []string{
 			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens)",
+		},
+		"bad_saved_object_tags_kibana_version": []string{
+			"conditions.kibana.version must be ^8.10.0 or greater to include saved object tags file: kibana/tags.yml",
 		},
 	}
 	if err := common.EnableWarningsAsErrors(); err != nil {
@@ -620,6 +634,12 @@ func TestValidateRoutingRules(t *testing.T) {
 		},
 		"bad_routing_rules_wrong_spec": []string{
 			`item [routing_rules.yml] is not allowed in folder [../../../../test/packages/bad_routing_rules_wrong_spec/data_stream/rules]`,
+		},
+		"bad_routing_rules_missing_if": []string{
+			`file "../../../../test/packages/bad_routing_rules_missing_if/data_stream/rules/routing_rules.yml" is invalid: field 0.rules.0: if is required`,
+		},
+		"bad_routing_rules_missing_target_dataset": []string{
+			`file "../../../../test/packages/bad_routing_rules_missing_target_dataset/data_stream/rules/routing_rules.yml" is invalid: field 0.rules.0: target_dataset is required`,
 		},
 	}
 
