@@ -262,7 +262,7 @@ spec:
               type: array
               items:
                 type: object
-                # maxProperties: 1 # No idea why this doesn't work. But this will be also checked by Elasticsearch.
+                maxProperties: 1
                 additionalProperties:
                   type: object
                   additionalProperties: false

@@ -5,7 +5,10 @@
 package yamlschema
 
 import (
-	"io"
+	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"io/fs"
 	"net/url"
 	"path"
@@ -13,7 +16,7 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/elastic/gojsonschema"
-	"github.com/pkg/errors"
+
 	"github.com/xeipuuv/gojsonreference"
 	"gopkg.in/yaml.v3"
 )
@@ -35,28 +38,21 @@ func NewReferenceLoaderFileSystem(source string, fs fs.FS, version semver.Versio
 	}
 }
 
-func (l *yamlReferenceLoader) JsonSource() interface{} { // golint:ignore
+func (l *yamlReferenceLoader) JsonSource() any { // golint:ignore
 	return l.source
 }
 
-func (l *yamlReferenceLoader) LoadJSON() (interface{}, error) {
+func (l *yamlReferenceLoader) LoadJSON() (any, error) {
 	parsed, err := url.Parse(l.source)
 	if err != nil {
-		return nil, errors.Wrapf(err, "parsing source failed (source: %s)", l.source)
+		return nil, fmt.Errorf("parsing source failed (source: %s): %w", l.source, err)
 	}
 	resourcePath := strings.TrimPrefix(parsed.Path, "/")
 
-	itemSchemaFile, err := l.fs.Open(resourcePath)
+	itemSchemaData, err := fs.ReadFile(l.fs, resourcePath)
 	if err != nil {
-		return nil, errors.Wrapf(err, "opening schema file failed (path: %s)", resourcePath)
+		return nil, fmt.Errorf("reading schema file failed: %w", err)
 	}
-	defer itemSchemaFile.Close()
-
-	itemSchemaData, err := io.ReadAll(itemSchemaFile)
-	if err != nil {
-		return nil, errors.Wrap(err, "reading schema file failed")
-	}
-
 	if len(itemSchemaData) == 0 {
 		return nil, errors.New("schema file is empty")
 	}
@@ -64,10 +60,32 @@ func (l *yamlReferenceLoader) LoadJSON() (interface{}, error) {
 	var schema itemSchemaSpec
 	err = yaml.Unmarshal(itemSchemaData, &schema)
 	if err != nil {
-		return nil, errors.Wrapf(err, "schema unmarshalling failed (path: %s)", l.source)
+		return nil, fmt.Errorf("schema unmarshalling failed (path: %s): %w", l.source, err)
+	}
+
+	// fixJSONNumbers ensures that the numbers in the resulting spec are of type `json.Number`, that is
+	// what the gojsonschema library expects. Without this, gojsonschema complains about some integer types
+	// not being integers.
+	// TODO: This shouldn't probably be needed, we could try to fix gojsonschema to accept other integers, or
+	// look for a YAML parser that can be customized to use `json.Number`.
+	schema.Spec, err = fixJSONNumbers(schema.Spec)
+	if err != nil {
+		return nil, fmt.Errorf("fixing numbers in parsed schema failed (path %s): %w", l.source, err)
 	}
 
 	return schema.resolve(l.version)
+}
+
+// fixJSONNumbers converts number types to `json.Number` by converting the struct to JSON and decoding it again.
+func fixJSONNumbers[T any](v T) (result T, err error) {
+	d, err := json.Marshal(v)
+	if err != nil {
+		return result, err
+	}
+
+	dec := json.NewDecoder(bytes.NewReader(d))
+	dec.UseNumber()
+	return result, dec.Decode(&result)
 }
 
 func (l *yamlReferenceLoader) JsonReference() (gojsonreference.JsonReference, error) {
