@@ -1,7 +1,7 @@
 source:
   index:
-  - metrics-endpoint.metadata_current_default*
-  - ".fleet-agents*"
+    - metrics-endpoint.metadata_current_default*
+    - ".fleet-agents*"
 dest:
   index: ".metrics-endpoint.metadata_united_default"
 frequency: 1s
@@ -16,9 +16,7 @@ pivot:
         init_script: state.docs = []
         map_script: state.docs.add(new HashMap(params['_source']))
         combine_script: return state.docs
-        reduce_script: def ret = new HashMap(); for (s in states) { for (d in s) {
-          if (d.containsKey('Endpoint')) { ret.endpoint = d } else { ret.agent = d
-          } }} return ret
+        reduce_script: def ret = new HashMap(); for (s in states) { for (d in s) { if (d.containsKey('Endpoint')) { ret.endpoint = d } else { ret.agent = d } }} return ret
   group_by:
     agent.id:
       terms:
