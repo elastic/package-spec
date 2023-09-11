@@ -7,6 +7,9 @@
   - description: Validate processors used in ingest pipelines
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/586
+  - description: Stricter validation of index template settings in manifests
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/587
   - description: Add validation rule to ensure there are no dangling object IDs
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/589

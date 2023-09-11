@@ -9,6 +9,7 @@ spec:
     processor:
       type: object
       additionalProperties: false
+      maxProperties: 1
       properties:
         append: { type: object }
         attachment: { type: object }

@@ -159,9 +159,172 @@ spec:
         settings:
           description: Settings section of index template
           type: object
+          additionalProperties: false
+          properties:
+            analysis:
+              type: object
+              additionalProperties: false
+              properties:
+                analyzer:
+                  description: Definition of custom analyzer.
+                  type: object
+                  additionalProperties:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      type:
+                        description: Type of analyzer
+                        type: string
+                        enum:
+                          - pattern
+                      pattern:
+                        type: string
+            index:
+              type: object
+              additionalProperties: false
+              properties:
+                codec:
+                  description: >
+                    Type of compression to use. The default is to use LZ4, `best_compression` uses DEFLATE,
+                    with higher compression but lower ingestion performance.
+                  type: string
+                  enum:
+                    - default
+                    - best_compression
+                mapping:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    dimension_fields:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        limit:
+                          description: Limit on the number of dimension fields on this data stream.
+                          type: integer
+                sort:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    field:
+                      description: Fields used to sort the document in the Lucene segments.
+                      oneOf:
+                        - type: string
+                        - type: array
+                          items:
+                            type: string
+                    order:
+                      description: The sort order to use for each field.
+                      oneOf:
+                        - type: string
+                          enum:
+                            - asc
+                            - desc
+                        - type: array
+                          items:
+                            type: string
+                            enum:
+                              - asc
+                              - desc
         mappings:
           description: Mappings section of index template
           type: object
+          additionalProperties: false
+          properties:
+            date_detection:
+              description: >
+                If true, new string fields will be checked to see if their contents match with `dynamic_date_formats`.
+                If they do, the field is dynamically added with type `date`. Set to false to disable this feature.
+              type: boolean
+            dynamic:
+              description: >
+                Control if new fields can be added dynamically. When set to `false`, new fields are not indexed.
+                When set to `strict`, fields must be explicitly added to the mapping. With `runtime`, fields are
+                not indexed, but added as runtime fields. Defaults to `true`, where Elasticsearch tries to index
+                any new field.
+              oneOf:
+                - type: boolean
+                - type: string
+                  enum:
+                    - runtime
+                    - strict
+            dynamic_date_formats:
+              # Added to support `date_detection`, but usually `date_detection` is only used to disable it.
+              description: Custom date formats to use for date detection.
+              type: array
+              items:
+                type: string
+                examples:
+                  - ["strict_date_optional_time","yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"] # This is the default if not set.
+                  - ["MM/dd/yyyy"]
+
+            dynamic_templates:
+              type: array
+              items:
+                type: object
+                maxProperties: 1
+                additionalProperties:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    # path_match: false # Dynamic mappings with path match can be defined in fields definitions.
+                    match_mapping_type:
+                      oneOf:
+                        - type: boolean
+                        - type: string
+                          enum:
+                          - "null"
+                          - "true"
+                          - "false"
+                          - double
+                          - long
+                          - string
+                          - object
+                          - array
+                    mapping:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        type:
+                          $ref: "./fields/fields.spec.yml#/items/properties/type"
+                        scaling_factor:
+                          $ref: "./fields/fields.spec.yml#/items/properties/scaling_factor"
+                        metrics:
+                          $ref: "./fields/fields.spec.yml#/items/properties/metrics"
+                        default_metric:
+                          $ref: "./fields/fields.spec.yml#/items/properties/default_metric"
+                        ignore_above:
+                          $ref: "./fields/fields.spec.yml#/items/properties/ignore_above"
+                patternProperties:
+                  # Exception for fields imported by elastic-package when import_mappings is used.
+                  # TODO: Allow this only on built packages.
+                  "^_embedded_ecs":
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      path_match:
+                        type: string
+                      path_unmatch:
+                        type: string
+                      match:
+                        type: string
+                      match_mapping_type:
+                        $ref: "#/definitions/elasticsearch_index_template/properties/mappings/properties/dynamic_templates/items/additionalProperties/properties/match_mapping_type"
+                      mapping:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          type:
+                             $ref: "./fields/fields.spec.yml#/items/properties/type"
+                          scaling_factor:
+                            $ref: "./fields/fields.spec.yml#/items/properties/scaling_factor"
+                          ignore_malformed:
+                            $ref: "./fields/fields.spec.yml#/items/properties/ignore_malformed"
+                          fields:
+                            type: object
+                            minProperties: 1
+                            additionalProperties:
+                              $ref: "#/definitions/elasticsearch_index_template/properties/mappings/properties/dynamic_templates/items/patternProperties/^_embedded_ecs/properties/mapping"
         ingest_pipeline:
           description: Elasticsearch ingest pipeline settings
           type: object
@@ -322,6 +485,17 @@ spec:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.0.0
+    patch:
+      # Stricter validation of elasticsearch settings and mappings.
+      - op: remove
+        path: /definitions/elasticsearch_index_template/properties/settings/additionalProperties
+      - op: remove
+        path: /definitions/elasticsearch_index_template/properties/settings/properties
+      - op: remove
+        path: /definitions/elasticsearch_index_template/properties/mappings/additionalProperties
+      - op: remove
+        path: /definitions/elasticsearch_index_template/properties/mappings/properties
   - before: 2.9.0
     patch:
       - op: remove
