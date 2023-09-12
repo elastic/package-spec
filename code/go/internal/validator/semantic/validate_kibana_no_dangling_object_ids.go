@@ -8,11 +8,12 @@ import (
 	"fmt"
 	"path"
 
+	"golang.org/x/exp/slices"
+
 	"github.com/elastic/package-spec/v2/code/go/internal/errors"
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
-	"golang.org/x/exp/slices"
 )
 
 type objectReference struct {
