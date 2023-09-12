@@ -13,6 +13,9 @@
   - description: Disallow dotted fields
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/591
+  - description: Add validation rule to ensure there are no dangling object IDs
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/589
 - version: 2.10.1-next
   changes:
   - description: Prepare for next version
