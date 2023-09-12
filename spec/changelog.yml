@@ -30,6 +30,9 @@
   - description: Make namespace parameter optional in routing_rules.yml
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/578
+  - description: Update Go runtime to 1.21.1
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/593
 - version: 2.10.0
   changes:
   - description: Packages can define required stack capabilities
