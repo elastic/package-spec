@@ -20,6 +20,8 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
 )
 
+var semver3_0_0 = semver.MustParse("3.0.0")
+
 type FileSchemaLoader struct{}
 
 func NewFileSchemaLoader() *FileSchemaLoader {
@@ -43,7 +45,7 @@ type FileSchema struct {
 var formatCheckersMutex sync.Mutex
 
 func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
-	data, err := loadItemSchema(fsys, filePath, s.options.ContentType, &s.options.SpecVersion)
+	data, err := loadItemSchema(fsys, filePath, s.options.ContentType, s.options.SpecVersion)
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}
@@ -73,13 +75,13 @@ func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
 	return nil // item content is valid according to the loaded schema
 }
 
-func loadItemSchema(fsys fs.FS, path string, contentType *spectypes.ContentType, specVersion *semver.Version) ([]byte, error) {
+func loadItemSchema(fsys fs.FS, path string, contentType *spectypes.ContentType, specVersion semver.Version) ([]byte, error) {
 	data, err := fs.ReadFile(fsys, path)
 	if err != nil {
 		return nil, ve.ValidationErrors{fmt.Errorf("reading item file failed: %w", err)}
 	}
 	if contentType != nil && contentType.MediaType == "application/x-yaml" {
-		return convertYAMLToJSON(data, specVersion.LessThan(semver.MustParse("3.0.0")))
+		return convertYAMLToJSON(data, specVersion.LessThan(semver3_0_0))
 	}
 	return data, nil
 }
