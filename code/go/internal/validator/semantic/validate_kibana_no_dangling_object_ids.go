@@ -154,10 +154,7 @@ func filterReferences(val interface{}, exceptions []string) ([]reference, error)
 
 	var references []reference
 	for _, reference := range allReferences {
-		exceptionFound := slices.ContainsFunc(exceptions, func(elem string) bool {
-			return reference.Type == elem
-		})
-		if exceptionFound {
+		if slices.Contains(exceptions, reference.Type) {
 			continue
 		}
 		references = append(references, reference)
