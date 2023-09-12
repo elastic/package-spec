@@ -7,10 +7,12 @@ type: integration
 source:
   license: "Apache-2.0"
 conditions:
-  kibana.version: '^8.10.0'
-  elastic.subscription: 'basic'
-  elastic.capabilities:
-    - observability
+  kibana:
+    version: '^8.10.0'
+  elastic:
+    subscription: 'basic'
+    capabilities:
+      - observability
 vars:
   - name: package_password
     type: password
@@ -61,4 +63,6 @@ icons:
 # /main is a specific action underneath the monitor privilege. Declaring
 # "monitor/main" limits the provided privilege, "monitor", to only the "main"
 # action.
-elasticsearch.privileges.cluster: [monitor/main]
+elasticsearch:
+  privileges:
+    cluster: [monitor/main]

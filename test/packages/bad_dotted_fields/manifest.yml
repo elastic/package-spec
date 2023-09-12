@@ -1,18 +1,16 @@
 format_version: 3.0.0
-name: bad_ingest_pipeline
-title: "Package with bad ingest pipelines"
-version: 1.0.0
+name: bad_dotted_fields
+title: "Bad Dotted Fields"
+version: 0.0.1
 source:
   license: "Elastic-2.0"
-description: "This is a package with bad ingest pipelines"
+description: "This package contains fields with dots."
 type: integration
 categories:
   - custom
 conditions:
-  kibana:
-    version: "^8.9.1"
-  elastic:
-    subscription: "basic"
+  kibana.version: "^8.9.1"
+  elastic.subscription: "basic"
 screenshots:
   - src: /img/sample-screenshot.png
     title: Sample screenshot
