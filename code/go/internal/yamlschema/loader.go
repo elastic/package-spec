@@ -11,6 +11,7 @@ import (
 	"path"
 	"sync"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/elastic/gojsonschema"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
@@ -18,6 +19,8 @@ import (
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
 )
+
+var semver3_0_0 = semver.MustParse("3.0.0")
 
 type FileSchemaLoader struct{}
 
@@ -42,7 +45,7 @@ type FileSchema struct {
 var formatCheckersMutex sync.Mutex
 
 func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
-	data, err := loadItemSchema(fsys, filePath, s.options.ContentType)
+	data, err := loadItemSchema(fsys, filePath, s.options.ContentType, s.options.SpecVersion)
 	if err != nil {
 		return ve.ValidationErrors{err}
 	}
@@ -72,24 +75,26 @@ func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
 	return nil // item content is valid according to the loaded schema
 }
 
-func loadItemSchema(fsys fs.FS, path string, contentType *spectypes.ContentType) ([]byte, error) {
+func loadItemSchema(fsys fs.FS, path string, contentType *spectypes.ContentType, specVersion semver.Version) ([]byte, error) {
 	data, err := fs.ReadFile(fsys, path)
 	if err != nil {
-		return nil, ve.ValidationErrors{errors.Wrap(err, "reading item file failed")}
+		return nil, ve.ValidationErrors{fmt.Errorf("reading item file failed: %w", err)}
 	}
 	if contentType != nil && contentType.MediaType == "application/x-yaml" {
-		return convertYAMLToJSON(data)
+		return convertYAMLToJSON(data, specVersion.LessThan(semver3_0_0))
 	}
 	return data, nil
 }
 
-func convertYAMLToJSON(data []byte) ([]byte, error) {
+func convertYAMLToJSON(data []byte, expandKeys bool) ([]byte, error) {
 	var c interface{}
 	err := yaml.Unmarshal(data, &c)
 	if err != nil {
 		return nil, errors.Wrapf(err, "unmarshalling YAML file failed")
 	}
-	c = expandItemKey(c)
+	if expandKeys {
+		c = expandItemKey(c)
+	}
 
 	data, err = json.Marshal(&c)
 	if err != nil {

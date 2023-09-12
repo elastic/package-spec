@@ -208,6 +208,13 @@ func TestValidateFile(t *testing.T) {
 				"field processors.2.foreach.processor: Additional property paint is not allowed",
 			},
 		},
+		"bad_dotted_fields": {
+			"manifest.yml",
+			[]string{
+				"field conditions: Additional property elastic.subscription is not allowed",
+				"field conditions: Additional property kibana.version is not allowed",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
