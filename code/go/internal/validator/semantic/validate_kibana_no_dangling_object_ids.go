@@ -12,6 +12,7 @@ import (
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
+	"golang.org/x/exp/slices"
 )
 
 type objectReference struct {
@@ -66,17 +67,15 @@ func ValidateKibanaNoDanglingObjectIDs(fsys fspath.FS) errors.ValidationErrors {
 
 	for _, reference := range referencedIDs {
 		// look for installed IDs
-		found := false
-		for _, installed := range installedIDs {
-			if reference.objectID != installed.objectID {
-				continue
+		found := slices.ContainsFunc(installedIDs, func(elem objectReference) bool {
+			if reference.objectID != elem.objectID {
+				return false
 			}
-			if reference.objectType != installed.objectType {
-				continue
+			if reference.objectType != elem.objectType {
+				return false
 			}
-
-			found = true
-		}
+			return true
+		})
 		if !found {
 			errs = append(errs, fmt.Errorf("file \"%s\" is invalid: dangling reference found: %s (%s)", reference.filePath, reference.objectID, reference.objectType))
 		}
@@ -155,13 +154,9 @@ func filterReferences(val interface{}, exceptions []string) ([]reference, error)
 
 	var references []reference
 	for _, reference := range allReferences {
-		exceptionFound := false
-		for _, exception := range exceptions {
-			if reference.Type == exception {
-				exceptionFound = true
-				break
-			}
-		}
+		exceptionFound := slices.ContainsFunc(exceptions, func(elem string) bool {
+			return reference.Type == elem
+		})
 		if exceptionFound {
 			continue
 		}
