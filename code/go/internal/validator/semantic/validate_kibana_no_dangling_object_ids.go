@@ -7,8 +7,7 @@ package semantic
 import (
 	"fmt"
 	"path"
-
-	"golang.org/x/exp/slices"
+	"slices"
 
 	"github.com/elastic/package-spec/v2/code/go/internal/errors"
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
