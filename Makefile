@@ -1,11 +1,11 @@
 .PHONY: test
 
 # Updates the spec in language libraries
-update: code/*
+update: code/* compliance
 	@$(foreach lang,$^,make -C $(lang) update;)
 
 # Checks that language libraries have latest specs
-check: code/*
+check: code/* compliance
 	@$(foreach lang,$^,make -C $(lang) check;)
 
 # Tests the language libraries' code

@@ -3,6 +3,7 @@
 env:
   SETUP_GVM_VERSION: 'v0.5.1' # https://github.com/andrewkroh/gvm/issues/44#issuecomment-1013231151
   SETUP_MAGE_VERSION: "latest"
+  DOCKER_COMPOSE_VERSION: "v2.17.2"
   GO_LINUX_AGENT_IMAGE: "golang:${GO_VERSION}"
   GO_WINDOWS_AGENT_IMAGE: "family/ci-windows-2022"
 
@@ -37,6 +38,9 @@ steps:
         artifact_paths:
           - "*.xml"
 
+      - label: ":pipeline: Trigger Compliance tests"
+        command: ".buildkite/pipeline.trigger.compliance.tests.sh | buildkite-agent pipeline upload"
+
       - label: ":junit: Junit annotate"
         plugins:
           - junit-annotate#v2.4.1:
@@ -49,3 +53,4 @@ steps:
             allow_failure: true
           - step: "windows-test"
             allow_failure: true
+
