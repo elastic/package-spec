@@ -1,6 +1,6 @@
 module github.com/elastic/package-spec/v2
 
-go 1.20
+go 1.21.0
 
 require (
 	github.com/Masterminds/semver/v3 v3.2.1
@@ -9,7 +9,7 @@ require (
 	github.com/creasty/defaults v1.7.0
 	github.com/elastic/go-licenser v0.4.1
 	github.com/elastic/gojsonschema v1.2.1
-	github.com/evanphx/json-patch/v5 v5.6.0
+	github.com/evanphx/json-patch/v5 v5.7.0
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901
 	github.com/otiai10/copy v1.12.0
 	github.com/pkg/errors v0.9.1
@@ -32,10 +32,10 @@ require (
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
-	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
-	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect
-	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
+	golang.org/x/mod v0.12.0 // indirect
+	golang.org/x/sync v0.3.0 // indirect
+	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/term v0.0.0-20220526004731-065cf7ba2467 // indirect
-	golang.org/x/tools v0.1.11 // indirect
+	golang.org/x/tools v0.13.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 )

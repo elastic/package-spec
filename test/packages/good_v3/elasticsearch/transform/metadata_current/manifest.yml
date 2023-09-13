@@ -2,12 +2,13 @@ destination_index_template:
   settings:
     index:
       codec: best_compression
-      sort.field:
-        - "@timestamp"
-        - agent.id
-      sort.order:
-        - desc
-        - asc
+      sort:
+        field:
+          - "@timestamp"
+          - agent.id
+        order:
+          - desc
+          - asc
   mappings:
     dynamic: true
     dynamic_templates:

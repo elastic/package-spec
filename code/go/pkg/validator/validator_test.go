@@ -208,6 +208,19 @@ func TestValidateFile(t *testing.T) {
 				"field processors.2.foreach.processor: Additional property paint is not allowed",
 			},
 		},
+		"bad_dotted_fields": {
+			"manifest.yml",
+			[]string{
+				"field conditions: Additional property elastic.subscription is not allowed",
+				"field conditions: Additional property kibana.version is not allowed",
+			},
+		},
+		"bad_dangling_object_ids": {
+			"kibana/dashboard/bad_dangling_object_ids-82273ffe-6acc-4f2f-bbee-c1004abba63d.json",
+			[]string{
+				`dangling reference found: bad_dangling_object_ids-8287a5d5-1576-4f3a-83c4-444e9058439c (search)`,
+			},
+		},
 	}
 
 	for pkgName, test := range tests {

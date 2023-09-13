@@ -10,11 +10,19 @@
   - description: Stricter validation of index template settings in manifests
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/587
-- version: 2.10.1-next
+  - description: Disallow dotted fields
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/591
+  - description: Add validation rule to ensure there are no dangling object IDs
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/589
+- version: 2.11.1-next
   changes:
   - description: Prepare for next version
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/576
+    link: https://github.com/elastic/package-spec/pull/595
+- version: 2.11.0
+  changes:
   - description: Add owner.type field to indicate package support level
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/568
@@ -24,6 +32,9 @@
   - description: Make namespace parameter optional in routing_rules.yml
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/578
+  - description: Update Go runtime to 1.21.1
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/593
 - version: 2.10.0
   changes:
   - description: Packages can define required stack capabilities
