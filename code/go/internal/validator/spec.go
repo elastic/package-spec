@@ -5,12 +5,13 @@
 package validator
 
 import (
+	"errors"
+	"fmt"
 	"io/fs"
 	"log"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
-	"github.com/pkg/errors"
 
 	spec "github.com/elastic/package-spec/v2"
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
@@ -35,7 +36,7 @@ type validationRules []validationRule
 func NewSpec(version semver.Version) (*Spec, error) {
 	specVersion, err := spec.CheckVersion(version)
 	if err != nil {
-		return nil, errors.Wrapf(err, "could not load specification for version [%s]", version.String())
+		return nil, fmt.Errorf("could not load specification for version [%s]: %w", version.String(), err)
 	}
 	if specVersion.Prerelease() != "" {
 		log.Printf("Warning: package using an unreleased version of the spec (%s)", specVersion)
@@ -55,7 +56,7 @@ func (s Spec) ValidatePackage(pkg packages.Package) ve.ValidationErrors {
 
 	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkg.Type)
 	if err != nil {
-		errs = append(errs, errors.Wrap(err, "could not read root folder spec file"))
+		errs = append(errs, fmt.Errorf("could not read root folder spec file: %w", err))
 		return errs
 	}
 

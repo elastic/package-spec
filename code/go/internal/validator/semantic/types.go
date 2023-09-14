@@ -6,13 +6,13 @@ package semantic
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
 	"path"
 	"strconv"
 
-	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
@@ -116,14 +116,14 @@ type validateFunc func(fileMetadata fieldFileMetadata, f field) ve.ValidationErr
 func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
 	fieldsFilesMetadata, err := listFieldsFiles(fsys)
 	if err != nil {
-		return ve.ValidationErrors{errors.Wrap(err, "can't list fields files")}
+		return ve.ValidationErrors{fmt.Errorf("can't list fields files: %w", err)}
 	}
 
 	var vErrs ve.ValidationErrors
 	for _, metadata := range fieldsFilesMetadata {
 		unmarshaled, err := unmarshalFields(fsys, metadata.filePath)
 		if err != nil {
-			vErrs = append(vErrs, errors.Wrapf(err, `file "%s" is invalid: can't unmarshal fields`, metadata.filePath))
+			vErrs = append(vErrs, fmt.Errorf(`file "%s" is invalid: can't unmarshal fields: %w`, metadata.filePath, err))
 		}
 
 		errs := validateNestedFields("", metadata, unmarshaled, validate)
@@ -207,7 +207,7 @@ func readFieldsFolder(fsys fspath.FS, fieldsDir string) ([]string, error) {
 		return []string{}, nil
 	}
 	if err != nil {
-		return nil, errors.Wrapf(err, "can't list fields directory (path: %s)", fsys.Path(fieldsDir))
+		return nil, fmt.Errorf("can't list fields directory (path: %s): %w", fsys.Path(fieldsDir), err)
 	}
 
 	for _, f := range fs {
@@ -219,13 +219,13 @@ func readFieldsFolder(fsys fspath.FS, fieldsDir string) ([]string, error) {
 func unmarshalFields(fsys fspath.FS, fieldsPath string) (fields, error) {
 	content, err := fs.ReadFile(fsys, fieldsPath)
 	if err != nil {
-		return nil, errors.Wrapf(err, "can't read file (path: %s)", fieldsPath)
+		return nil, fmt.Errorf("can't read file (path: %s): %w", fieldsPath, err)
 	}
 
 	var f fields
 	err = yaml.Unmarshal(content, &f)
 	if err != nil {
-		return nil, errors.Wrapf(err, "yaml.Unmarshal failed (path: %s)", fieldsPath)
+		return nil, fmt.Errorf("yaml.Unmarshal failed (path: %s): %w", fieldsPath, err)
 	}
 	return f, nil
 }
@@ -236,7 +236,7 @@ func listDataStreams(fsys fspath.FS) ([]string, error) {
 		return nil, nil
 	}
 	if err != nil {
-		return nil, errors.Wrap(err, "can't list data streams directory")
+		return nil, fmt.Errorf("can't list data streams directory: %w", err)
 	}
 
 	list := make([]string, len(dataStreams))

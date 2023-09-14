@@ -5,10 +5,9 @@
 package semantic
 
 import (
+	"errors"
 	"fmt"
 	"strings"
-
-	"github.com/pkg/errors"
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
@@ -44,7 +43,7 @@ func readManifestVersion(fsys fspath.FS) (string, error) {
 	manifestPath := "manifest.yml"
 	f, err := pkgpath.Files(fsys, manifestPath)
 	if err != nil {
-		return "", errors.Wrap(err, "can't locate manifest file")
+		return "", fmt.Errorf("can't locate manifest file: %w", err)
 	}
 
 	if len(f) != 1 {
@@ -53,7 +52,7 @@ func readManifestVersion(fsys fspath.FS) (string, error) {
 
 	val, err := f[0].Values("$.version")
 	if err != nil {
-		return "", errors.Wrap(err, "can't read manifest version")
+		return "", fmt.Errorf("can't read manifest version: %w", err)
 	}
 
 	sVal, ok := val.(string)
@@ -71,7 +70,7 @@ func readChangelog(fsys fspath.FS, jsonpath string) ([]string, error) {
 	changelogPath := "changelog.yml"
 	f, err := pkgpath.Files(fsys, changelogPath)
 	if err != nil {
-		return nil, errors.Wrap(err, "can't locate changelog file")
+		return nil, fmt.Errorf("can't locate changelog file: %w", err)
 	}
 
 	if len(f) != 1 {
@@ -80,12 +79,12 @@ func readChangelog(fsys fspath.FS, jsonpath string) ([]string, error) {
 
 	vals, err := f[0].Values(jsonpath)
 	if err != nil {
-		return nil, errors.Wrap(err, "can't changelog entries")
+		return nil, fmt.Errorf("can't changelog entries: %w", err)
 	}
 
 	versions, err := toStringSlice(vals)
 	if err != nil {
-		return nil, errors.Wrap(err, "can't convert slice entries")
+		return nil, fmt.Errorf("can't convert slice entries: %w", err)
 	}
 	return versions, nil
 }

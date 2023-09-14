@@ -9,8 +9,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/pkg/errors"
-
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
@@ -26,7 +24,7 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) ve.ValidationErrors {
 	filePaths := path.Join("kibana", "*", "*.json")
 	objectFiles, err := pkgpath.Files(fsys, filePaths)
 	if err != nil {
-		errs = append(errs, errors.Wrap(err, "error finding Kibana object files"))
+		errs = append(errs, fmt.Errorf("error finding Kibana object files: %w", err))
 		return errs
 	}
 
@@ -35,7 +33,7 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) ve.ValidationErrors {
 
 		objectID, err := objectFile.Values("$.id")
 		if err != nil {
-			errs = append(errs, errors.Wrapf(err, "unable to get Kibana object ID in file [%s]", fsys.Path(filePath)))
+			errs = append(errs, fmt.Errorf("unable to get Kibana object ID in file [%s]: %w", fsys.Path(filePath), err))
 			continue
 		}
 
@@ -43,19 +41,19 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) ve.ValidationErrors {
 		if path.Base(path.Dir(filePath)) == "security_rule" {
 			ruleID, err := objectFile.Values("$.attributes.rule_id")
 			if err != nil {
-				errs = append(errs, errors.Wrapf(err, "unable to get rule ID in file [%s]", fsys.Path(filePath)))
+				errs = append(errs, fmt.Errorf("unable to get rule ID in file [%s]: %w", fsys.Path(filePath), err))
 				continue
 			}
 
 			objectIDValue, ok := objectID.(string)
 			if !ok {
-				errs = append(errs, errors.Wrap(err, "expect object ID to be a string"))
+				errs = append(errs, fmt.Errorf("expect object ID to be a string: %w", err))
 				continue
 			}
 
 			ruleIDValue, ok := ruleID.(string)
 			if !ok {
-				errs = append(errs, errors.Wrap(err, "expect rule ID to be a string"))
+				errs = append(errs, fmt.Errorf("expect rule ID to be a string: %w", err))
 				continue
 			}
 

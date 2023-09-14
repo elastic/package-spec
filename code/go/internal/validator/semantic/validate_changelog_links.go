@@ -5,13 +5,12 @@
 package semantic
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"path"
 	"strconv"
 	"strings"
-
-	"github.com/pkg/errors"
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"

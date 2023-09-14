@@ -5,13 +5,14 @@
 package packages
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
 	"path"
 
 	"github.com/Masterminds/semver/v3"
-	"github.com/pkg/errors"
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -40,7 +41,7 @@ func (p *Package) Path(names ...string) string {
 func NewPackage(pkgRootPath string) (*Package, error) {
 	info, err := os.Stat(pkgRootPath)
 	if os.IsNotExist(err) {
-		return nil, errors.Wrapf(err, "no package found at path [%v]", pkgRootPath)
+		return nil, fmt.Errorf("no package found at path [%v]: %w", pkgRootPath, err)
 	}
 
 	if !info.IsDir() {
@@ -56,7 +57,7 @@ func NewPackageFromFS(location string, fsys fs.FS) (*Package, error) {
 	pkgManifestPath := "manifest.yml"
 	_, err := fs.Stat(fsys, pkgManifestPath)
 	if os.IsNotExist(err) {
-		return nil, errors.Wrapf(err, "no package manifest file found at path [%v]", pkgManifestPath)
+		return nil, fmt.Errorf("no package manifest file found at path [%v]: %w", pkgManifestPath, err)
 	}
 
 	data, err := fs.ReadFile(fsys, pkgManifestPath)
@@ -71,7 +72,7 @@ func NewPackageFromFS(location string, fsys fs.FS) (*Package, error) {
 		SpecVersion string `yaml:"format_version"`
 	}
 	if err := yaml.Unmarshal(data, &manifest); err != nil {
-		return nil, errors.Wrapf(err, "could not parse package manifest file [%v]", pkgManifestPath)
+		return nil, fmt.Errorf("could not parse package manifest file [%v]: %w", pkgManifestPath, err)
 	}
 
 	if manifest.Type == "" {
@@ -84,12 +85,12 @@ func NewPackageFromFS(location string, fsys fs.FS) (*Package, error) {
 
 	packageVersion, err := semver.NewVersion(manifest.Version)
 	if err != nil {
-		return nil, errors.Wrapf(err, "could not read package version from package manifest file [%v]", pkgManifestPath)
+		return nil, fmt.Errorf("could not read package version from package manifest file [%v]: %w", pkgManifestPath, err)
 	}
 
 	specVersion, err := semver.NewVersion(manifest.SpecVersion)
 	if err != nil {
-		return nil, errors.Wrapf(err, "could not read specification version from package manifest file [%v]", manifest.SpecVersion)
+		return nil, fmt.Errorf("could not read specification version from package manifest file [%v]: %w", manifest.SpecVersion, err)
 	}
 
 	// Instantiate Package object and return it

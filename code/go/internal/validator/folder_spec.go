@@ -12,8 +12,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/pkg/errors"
-
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
@@ -45,14 +43,14 @@ func (v *validator) Validate() ve.ValidationErrors {
 	var errs ve.ValidationErrors
 	files, err := fs.ReadDir(v.pkg, v.folderPath)
 	if err != nil {
-		errs = append(errs, errors.Wrapf(err, "could not read folder [%s]", v.pkg.Path(v.folderPath)))
+		errs = append(errs, fmt.Errorf("could not read folder [%s]: %w", v.pkg.Path(v.folderPath), err))
 		return errs
 	}
 
 	// This is not taking into account if the folder is for development. Enforce
 	// this limit in all cases to avoid having to read too many files.
 	if contentsLimit := v.spec.MaxTotalContents(); contentsLimit > 0 && len(files) > contentsLimit {
-		errs = append(errs, errors.Errorf("folder [%s] exceeds the limit of %d files", v.pkg.Path(v.folderPath), contentsLimit))
+		errs = append(errs, fmt.Errorf("folder [%s] exceeds the limit of %d files", v.pkg.Path(v.folderPath), contentsLimit))
 		return errs
 	}
 
@@ -61,16 +59,17 @@ func (v *validator) Validate() ve.ValidationErrors {
 	case "", "ga": // do nothing
 	case "beta":
 		if v.pkg.Version.Major() > 0 && v.pkg.Version.Prerelease() == "" {
-			errs = append(errs, errors.Errorf("spec for [%s] defines beta features which can't be enabled for packages with a stable semantic version", v.pkg.Path(v.folderPath)))
+			errs = append(errs, fmt.Errorf("spec for [%s] defines beta features which can't be enabled for packages with a stable semantic version", v.pkg.Path(v.folderPath)))
 		} else {
+			message := fmt.Sprintf("Warning: package with non-stable semantic version and active beta features (enabled in [%s]) can't be released as stable version.", v.pkg.Path(v.folderPath))
 			if common.IsDefinedWarningsAsErrors() {
-				errs = append(errs, errors.Errorf("Warning: package with non-stable semantic version and active beta features (enabled in [%s]) can't be released as stable version.", v.pkg.Path(v.folderPath)))
+				errs = append(errs, fmt.Errorf(message))
 			} else {
-				log.Printf("Warning: package with non-stable semantic version and active beta features (enabled in [%s]) can't be released as stable version.", v.pkg.Path(v.folderPath))
+				log.Printf(message)
 			}
 		}
 	default:
-		errs = append(errs, errors.Errorf("unsupport release level, supported values: beta, ga"))
+		errs = append(errs, fmt.Errorf("unsupport release level, supported values: beta, ga"))
 	}
 
 	for _, file := range files {
@@ -126,12 +125,12 @@ func (v *validator) Validate() ve.ValidationErrors {
 			itemPath := path.Join(v.folderPath, file.Name())
 			itemValidationErrs := validateFile(itemSpec, v.pkg, itemPath)
 			for _, ive := range itemValidationErrs {
-				errs = append(errs, errors.Wrapf(ive, "file \"%s\" is invalid", v.pkg.Path(itemPath)))
+				errs = append(errs, fmt.Errorf("file \"%s\" is invalid: %w", v.pkg.Path(itemPath), ive))
 			}
 
 			info, err := fs.Stat(v.pkg, itemPath)
 			if err != nil {
-				errs = append(errs, errors.Wrapf(err, "failed to obtain file size for \"%s\"", v.pkg.Path(itemPath)))
+				errs = append(errs, fmt.Errorf("failed to obtain file size for \"%s\": %w", v.pkg.Path(itemPath), err))
 			} else {
 				v.totalContents++
 				v.totalSize += spectypes.FileSize(info.Size())
@@ -140,7 +139,7 @@ func (v *validator) Validate() ve.ValidationErrors {
 	}
 
 	if sizeLimit := v.spec.MaxTotalSize(); sizeLimit > 0 && v.totalSize > sizeLimit {
-		errs = append(errs, errors.Errorf("folder [%s] exceeds the total size limit of %s", v.pkg.Path(v.folderPath), sizeLimit))
+		errs = append(errs, fmt.Errorf("folder [%s] exceeds the total size limit of %s", v.pkg.Path(v.folderPath), sizeLimit))
 	}
 
 	// validate that required items in spec are all accounted for
@@ -176,14 +175,14 @@ func (v *validator) findItemSpec(folderItemName string) (spectypes.ItemSpec, err
 		if itemSpec.Pattern() != "" {
 			isMatch, err := regexp.MatchString(strings.ReplaceAll(itemSpec.Pattern(), "{PACKAGE_NAME}", v.pkg.Name), folderItemName)
 			if err != nil {
-				return nil, errors.Wrap(err, "invalid folder item spec pattern")
+				return nil, fmt.Errorf("invalid folder item spec pattern: %w", err)
 			}
 			if isMatch {
 				var isForbidden bool
 				for _, forbidden := range itemSpec.ForbiddenPatterns() {
 					isForbidden, err = regexp.MatchString(forbidden, folderItemName)
 					if err != nil {
-						return nil, errors.Wrap(err, "invalid forbidden pattern for folder item")
+						return nil, fmt.Errorf("invalid forbidden pattern for folder item: %w", err)
 					}
 
 					if isForbidden {
