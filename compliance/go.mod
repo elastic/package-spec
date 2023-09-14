@@ -4,7 +4,7 @@ go 1.21.0
 
 require (
 	github.com/Masterminds/semver/v3 v3.2.1
-	github.com/cucumber/godog v0.12.7-0.20230607093746-72db47c51993
+	github.com/cucumber/godog v0.13.0
 	github.com/cucumber/messages/go/v21 v21.0.1
 	github.com/elastic/elastic-package v0.85.0
 	github.com/elastic/go-elasticsearch/v8 v8.10.0
