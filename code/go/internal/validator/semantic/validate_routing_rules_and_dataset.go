@@ -21,7 +21,7 @@ import (
 func ValidateRoutingRulesAndDataset(fsys fspath.FS) ve.ValidationErrors {
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return ve.ValidationErrors{ve.NewStructuredError(err, "data_stream", "", ve.Critical)}
 	}
 
 	var errs ve.ValidationErrors
@@ -32,7 +32,13 @@ func ValidateRoutingRulesAndDataset(fsys fspath.FS) ve.ValidationErrors {
 		}
 		err = validateDatasetInDataStream(fsys, dataStream)
 		if err != nil {
-			errs.Append(ve.ValidationErrors{fmt.Errorf("routing rules defined in data stream %q but dataset field is missing: %w", dataStream, err)})
+			vError := ve.NewStructuredError(
+				fmt.Errorf("routing rules defined in data stream %q but dataset field is missing: %w", dataStream, err),
+				routingRulesPath(dataStream),
+				"",
+				ve.Critical,
+			)
+			errs.Append(ve.ValidationErrors{vError})
 		}
 	}
 	return errs
@@ -59,8 +65,12 @@ func validateDatasetInDataStream(fsys fspath.FS, dataStream string) error {
 	return nil
 }
 
+func routingRulesPath(dataStream string) string {
+	return path.Join("data_stream", dataStream, "routing_rules.yml")
+}
+
 func anyRoutingRulesInDataStream(fsys fspath.FS, dataStream string) (bool, error) {
-	routingRulesPath := path.Join("data_stream", dataStream, "routing_rules.yml")
+	routingRulesPath := routingRulesPath(dataStream)
 	f, err := pkgpath.Files(fsys, routingRulesPath)
 	if err != nil {
 		return false, nil

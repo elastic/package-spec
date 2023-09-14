@@ -18,11 +18,23 @@ func ValidateFieldGroups(fsys fspath.FS) errors.ValidationErrors {
 
 func validateFieldUnit(metadata fieldFileMetadata, f field) errors.ValidationErrors {
 	if f.Type == "group" && f.Unit != "" {
-		return errors.ValidationErrors{fmt.Errorf(`file "%s" is invalid: field "%s" can't have unit property'`, metadata.fullFilePath, f.Name)}
+		vError := errors.NewStructuredError(
+			fmt.Errorf(`file "%s" is invalid: field "%s" can't have unit property'`, metadata.fullFilePath, f.Name),
+			metadata.filePath,
+			"",
+			errors.Critical,
+		)
+		return errors.ValidationErrors{vError}
 	}
 
 	if f.Type == "group" && f.MetricType != "" {
-		return errors.ValidationErrors{fmt.Errorf(`file "%s" is invalid: field "%s" can't have metric type property'`, metadata.fullFilePath, f.Name)}
+		vError := errors.NewStructuredError(
+			fmt.Errorf(`file "%s" is invalid: field "%s" can't have metric type property'`, metadata.fullFilePath, f.Name),
+			metadata.filePath,
+			"",
+			errors.Critical,
+		)
+		return errors.ValidationErrors{vError}
 	}
 
 	return nil

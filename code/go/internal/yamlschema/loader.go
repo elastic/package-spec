@@ -12,6 +12,7 @@ import (
 	"sync"
 
 	"github.com/Masterminds/semver/v3"
+
 	"github.com/elastic/gojsonschema"
 
 	"gopkg.in/yaml.v3"
@@ -47,7 +48,8 @@ var formatCheckersMutex sync.Mutex
 func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
 	data, err := loadItemSchema(fsys, filePath, s.options.ContentType, s.options.SpecVersion)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		vError := ve.NewStructuredError(err, filePath, "", ve.Critical)
+		return ve.ValidationErrors{vError}
 	}
 
 	formatCheckersMutex.Lock()
@@ -61,13 +63,19 @@ func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
 	loadDataStreamNameFormatChecker(fsys, path.Dir(filePath))
 	result, err := s.schema.Validate(gojsonschema.NewBytesLoader(data))
 	if err != nil {
-		return ve.ValidationErrors{err}
+		vError := ve.NewStructuredError(err, filePath, "", ve.Critical)
+		return ve.ValidationErrors{vError}
 	}
 
 	if !result.Valid() {
 		var errs ve.ValidationErrors
 		for _, re := range result.Errors() {
-			errs = append(errs, fmt.Errorf("field %s: %s", re.Field(), adjustErrorDescription(re.Description())))
+			vError := ve.NewStructuredError(
+				fmt.Errorf("field %s: %s", re.Field(), adjustErrorDescription(re.Description())),
+				filePath,
+				"",
+				ve.Critical)
+			errs = append(errs, vError)
 		}
 		return errs
 	}
@@ -78,7 +86,7 @@ func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
 func loadItemSchema(fsys fs.FS, path string, contentType *spectypes.ContentType, specVersion semver.Version) ([]byte, error) {
 	data, err := fs.ReadFile(fsys, path)
 	if err != nil {
-		return nil, ve.ValidationErrors{fmt.Errorf("reading item file failed: %w", err)}
+		return nil, fmt.Errorf("reading item file failed: %w", err)
 	}
 	if contentType != nil && contentType.MediaType == "application/x-yaml" {
 		return convertYAMLToJSON(data, specVersion.LessThan(semver3_0_0))

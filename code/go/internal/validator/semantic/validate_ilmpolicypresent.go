@@ -21,14 +21,28 @@ import (
 func ValidateILMPolicyPresent(fsys fspath.FS) ve.ValidationErrors {
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		vError := ve.NewStructuredError(
+			err,
+			"",
+			"",
+			ve.Critical,
+		)
+		return ve.ValidationErrors{vError}
 	}
 
 	var errs ve.ValidationErrors
 	for _, dataStream := range dataStreams {
 		err = validateILMPolicyInDataStream(fsys, dataStream)
 		if err != nil {
-			errs = append(errs, err)
+			// FIXME
+			manifestPath := path.Join("data_stream", dataStream, "manifest.yml")
+			vError := ve.NewStructuredError(
+				err,
+				manifestPath,
+				"",
+				ve.Critical,
+			)
+			errs = append(errs, vError)
 		}
 	}
 	return errs

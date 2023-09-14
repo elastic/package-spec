@@ -34,7 +34,13 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) ve.ValidationErrors {
 	filePaths := path.Join("kibana", "dashboard", "*.json")
 	objectFiles, err := pkgpath.Files(fsys, filePaths)
 	if err != nil {
-		errs = append(errs, fmt.Errorf("error finding Kibana Dashboard files: %w", err))
+		vError := ve.NewStructuredError(
+			fmt.Errorf("error finding Kibana Dashboard files: %w", err),
+			"kibana/dashboar/*.json",
+			"",
+			ve.Critical,
+		)
+		errs = append(errs, vError)
 		return errs
 	}
 
@@ -49,7 +55,13 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) ve.ValidationErrors {
 
 		references, err := anyReference(objectReferences)
 		if err != nil {
-			errs = append(errs, fmt.Errorf("error getting references in file: %s: %w", fsys.Path(filePath), err))
+			vError := ve.NewStructuredError(
+				fmt.Errorf("error getting references in file: %s: %w", fsys.Path(filePath), err),
+				filePath,
+				"",
+				ve.Critical,
+			)
+			errs = append(errs, vError)
 		}
 		if len(references) > 0 {
 			s := fmt.Sprintf("%s (%s)", references[0].ID, references[0].Type)
@@ -59,11 +71,16 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) ve.ValidationErrors {
 
 			message := fmt.Sprintf("Warning: references found in dashboard %s: %s", filePath, s)
 			if warningsAsErrors {
-				errs = append(errs, errors.New(message))
+				vError := ve.NewStructuredError(
+					fmt.Errorf(message),
+					filePath,
+					"",
+					ve.Critical,
+				)
+				errs = append(errs, vError)
 			} else {
 				log.Printf(message)
 			}
-
 		}
 	}
 

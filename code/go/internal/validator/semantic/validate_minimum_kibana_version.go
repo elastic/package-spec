@@ -22,28 +22,58 @@ import (
 func ValidateMinimumKibanaVersion(fsys fspath.FS) ve.ValidationErrors {
 	pkg, err := packages.NewPackageFromFS(fsys.Path(), fsys)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		vError := ve.NewStructuredError(
+			err,
+			"",
+			"",
+			ve.Critical,
+		)
+		return ve.ValidationErrors{vError}
 	}
 
 	manifest, err := readManifest(fsys)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		vError := ve.NewStructuredError(
+			err,
+			"manifest.yml",
+			"",
+			ve.Critical,
+		)
+		return ve.ValidationErrors{vError}
 	}
 
 	kibanaVersionCondition, err := getKibanaVersionCondition(*manifest)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		vError := ve.NewStructuredError(
+			err,
+			"manifest.yml",
+			"",
+			ve.Critical,
+		)
+		return ve.ValidationErrors{vError}
 	}
 
 	var errs ve.ValidationErrors
 	err = validateMinimumKibanaVersionInputPackages(pkg.Type, *pkg.Version, kibanaVersionCondition)
 	if err != nil {
-		errs.Append(ve.ValidationErrors{err})
+		vError := ve.NewStructuredError(
+			err,
+			"manifest.yml",
+			"",
+			ve.Critical,
+		)
+		errs.Append(ve.ValidationErrors{vError})
 	}
 
 	err = validateMinimumKibanaVersionRuntimeFields(fsys, *pkg.Version, kibanaVersionCondition)
 	if err != nil {
-		errs.Append(ve.ValidationErrors{err})
+		vError := ve.NewStructuredError(
+			err,
+			"manifest.yml",
+			"",
+			ve.Critical,
+		)
+		errs.Append(ve.ValidationErrors{vError})
 	}
 
 	warningsAsErrors := common.IsDefinedWarningsAsErrors()
@@ -51,7 +81,13 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) ve.ValidationErrors {
 	if err != nil {
 		err = fmt.Errorf("Warning: %v", err)
 		if warningsAsErrors {
-			errs.Append(ve.ValidationErrors{err})
+			vError := ve.NewStructuredError(
+				err,
+				"manifest.yml",
+				"",
+				ve.Critical,
+			)
+			errs.Append(ve.ValidationErrors{vError})
 		} else {
 			log.Println(err)
 		}
@@ -187,7 +223,12 @@ func kibanaVersionConditionIsGreaterThanOrEqualTo(kibanaVersionCondition, minimu
 
 func validateNoRuntimeFields(metadata fieldFileMetadata, f field) ve.ValidationErrors {
 	if f.Runtime.isEnabled() {
-		return ve.ValidationErrors{fmt.Errorf("%v file contains a field %s with runtime key defined (%s)", metadata.fullFilePath, f.Name, f.Runtime)}
+		vError := ve.NewStructuredError(
+			fmt.Errorf("%v file contains a field %s with runtime key defined (%s)", metadata.fullFilePath, f.Name, f.Runtime),
+			metadata.filePath,
+			"",
+			ve.Critical)
+		return ve.ValidationErrors{vError}
 	}
 	return nil
 }

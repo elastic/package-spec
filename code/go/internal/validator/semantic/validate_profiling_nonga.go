@@ -10,9 +10,10 @@ import (
 	"path"
 
 	"github.com/Masterminds/semver/v3"
+	"gopkg.in/yaml.v3"
+
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
-	"gopkg.in/yaml.v3"
 )
 
 // ValidateProfilingNonGA validates that the profiling data type is not used in GA packages,
@@ -20,12 +21,14 @@ import (
 func ValidateProfilingNonGA(fsys fspath.FS) ve.ValidationErrors {
 	manifestVersion, err := readManifestVersion(fsys)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		vError := ve.NewStructuredError(err, "manifest.yml", "", ve.Critical)
+		return ve.ValidationErrors{vError}
 	}
 
 	semVer, err := semver.NewVersion(manifestVersion)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		vError := ve.NewStructuredError(err, "manifest.yml", "", ve.Critical)
+		return ve.ValidationErrors{vError}
 	}
 
 	if semVer.Major() == 0 || semVer.Prerelease() != "" {
@@ -34,7 +37,8 @@ func ValidateProfilingNonGA(fsys fspath.FS) ve.ValidationErrors {
 
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		vError := ve.NewStructuredError(err, "data_stream", "", ve.Critical)
+		return ve.ValidationErrors{vError}
 	}
 
 	var errs ve.ValidationErrors
@@ -47,11 +51,15 @@ func ValidateProfilingNonGA(fsys fspath.FS) ve.ValidationErrors {
 	return errs
 }
 
-func validateProfilingTypeNotUsed(fsys fspath.FS, dataStream string) error {
+func validateProfilingTypeNotUsed(fsys fspath.FS, dataStream string) ve.ValidationError {
 	manifestPath := path.Join("data_stream", dataStream, "manifest.yml")
 	d, err := fs.ReadFile(fsys, manifestPath)
 	if err != nil {
-		return fmt.Errorf("failed to read data stream manifest in \"%s\": %w", fsys.Path(manifestPath), err)
+		return ve.NewStructuredError(
+			fmt.Errorf("failed to read data stream manifest in \"%s\": %w", fsys.Path(manifestPath), err),
+			manifestPath,
+			"",
+			ve.Critical)
 	}
 
 	var manifest struct {
@@ -59,11 +67,19 @@ func validateProfilingTypeNotUsed(fsys fspath.FS, dataStream string) error {
 	}
 	err = yaml.Unmarshal(d, &manifest)
 	if err != nil {
-		return fmt.Errorf("failed to parse data stream manifest in \"%s\": %w", fsys.Path(manifestPath), err)
+		return ve.NewStructuredError(
+			fmt.Errorf("failed to parse data stream manifest in \"%s\": %w", fsys.Path(manifestPath), err),
+			manifestPath,
+			"",
+			ve.Critical)
 	}
 
 	if manifest.Type == "profiling" {
-		return fmt.Errorf("file \"%s\" is invalid: profiling data type cannot be used in GA packages", fsys.Path(manifestPath))
+		return ve.NewStructuredError(
+			fmt.Errorf("file \"%s\" is invalid: profiling data type cannot be used in GA packages", fsys.Path(manifestPath)),
+			manifestPath,
+			"",
+			ve.Critical)
 	}
 
 	return nil

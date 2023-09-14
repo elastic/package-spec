@@ -16,6 +16,8 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 )
 
+const changelogFileName = "changelog.yml"
+
 var errGithubIssue = errors.New("issue number in changelog link should be a positive number")
 
 // ChangelogLinkError records the link and the error
@@ -39,7 +41,8 @@ func (e ChangelogLinkError) Error() string {
 func ValidateChangelogLinks(fsys fspath.FS) ve.ValidationErrors {
 	changelogLinks, err := readChangelogLinks(fsys)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		vError := ve.NewStructuredError(err, changelogFileName, "", ve.Critical)
+		return ve.ValidationErrors{vError}
 	}
 	return ensureLinksAreValid(changelogLinks)
 }
@@ -64,15 +67,15 @@ func ensureLinksAreValid(links []string) ve.ValidationErrors {
 	for _, link := range links {
 		linkURL, err := url.Parse(link)
 		if err != nil {
-			errs.Append(ve.ValidationErrors{
-				fmt.Errorf("invalid URL %v", err),
-			})
+			vError := ve.NewStructuredError(fmt.Errorf("invalid URL %v", err), changelogFileName, "", ve.Critical)
+			errs.Append(ve.ValidationErrors{vError})
 			continue
 		}
 		for _, vl := range validateLinks {
 			if strings.Contains(linkURL.Host, vl.domain) {
 				if err = vl.validateLink(linkURL); err != nil {
-					errs.Append(ve.ValidationErrors{err})
+					vError := ve.NewStructuredError(err, changelogFileName, "", ve.Critical)
+					errs.Append(ve.ValidationErrors{vError})
 				}
 			}
 		}

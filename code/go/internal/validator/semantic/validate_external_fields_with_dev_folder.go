@@ -19,7 +19,13 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
 	buildFilePathDefined := true
 	f, err := pkgpath.Files(fsys, buildPath)
 	if err != nil {
-		return ve.ValidationErrors{fmt.Errorf("not able to read _dev/build/build.yml: %w", err)}
+		vError := ve.NewStructuredError(
+			fmt.Errorf("not able to read _dev/build/build.yml: %w", err),
+			buildPath,
+			"",
+			ve.Critical,
+		)
+		return ve.ValidationErrors{vError}
 	}
 
 	if len(f) != 1 {
@@ -30,7 +36,9 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
 	if buildFilePathDefined {
 		dependencies, err := readDevBuildDependenciesKeys(f[0])
 		if err != nil {
-			return ve.ValidationErrors{err}
+			// TODO
+			vError := ve.NewStructuredError(err, buildPath, "", ve.Critical)
+			return ve.ValidationErrors{vError}
 		}
 		for _, dep := range dependencies {
 			mapDependencies[dep] = struct{}{}
@@ -43,11 +51,24 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
 		}
 
 		if !buildFilePathDefined {
-			return ve.ValidationErrors{fmt.Errorf("file \"%s\" is invalid: field %s with external key defined (%q) but no _dev/build/build.yml found", metadata.fullFilePath, f.Name, f.External)}
+			vError := ve.NewStructuredError(
+				fmt.Errorf("file \"%s\" is invalid: field %s with external key defined (%q) but no _dev/build/build.yml found", metadata.fullFilePath, f.Name, f.External),
+				metadata.filePath,
+				"",
+				ve.Critical,
+			)
+			return ve.ValidationErrors{vError}
 		}
 
 		if _, ok := mapDependencies[f.External]; !ok {
-			return ve.ValidationErrors{fmt.Errorf("file \"%s\" is invalid: field %s with external key defined (%q) but no definition found for it (_dev/build/build.yml)", metadata.fullFilePath, f.Name, f.External)}
+			// TODO
+			vError := ve.NewStructuredError(
+				fmt.Errorf("file \"%s\" is invalid: field %s with external key defined (%q) but no definition found for it (_dev/build/build.yml)", metadata.fullFilePath, f.Name, f.External),
+				metadata.filePath,
+				"",
+				ve.Critical,
+			)
+			return ve.ValidationErrors{vError}
 		}
 		return nil
 	}

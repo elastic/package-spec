@@ -18,7 +18,13 @@ func ValidateDateFields(fsys fspath.FS) errors.ValidationErrors {
 
 func validateDateField(metadata fieldFileMetadata, f field) errors.ValidationErrors {
 	if f.Type != "date" && f.DateFormat != "" {
-		return errors.ValidationErrors{fmt.Errorf(`file "%s" is invalid: field "%s" of type %s can't set date_format. date_format is allowed for date field type only`, metadata.fullFilePath, f.Name, f.Type)}
+		vError := errors.NewStructuredError(
+			fmt.Errorf(`file "%s" is invalid: field "%s" of type %s can't set date_format. date_format is allowed for date field type only`, metadata.fullFilePath, f.Name, f.Type),
+			metadata.filePath,
+			"",
+			errors.Critical,
+		)
+		return errors.ValidationErrors{vError}
 	}
 
 	return nil
