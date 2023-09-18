@@ -89,6 +89,12 @@ func TestValidateFile(t *testing.T) {
 				`field owner.type: owner.type must be one of the following: "elastic", "partner", "community"`,
 			},
 		},
+		"bad_owner_type_missing": {
+			"manifest.yml",
+			[]string{
+				`field owner: type is required`,
+			},
+		},
 		"missing_version": {
 			"manifest.yml",
 			[]string{

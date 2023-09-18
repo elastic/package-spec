@@ -249,7 +249,6 @@ spec:
             involvement from Elastic. The 'community' value indicates the package
             is built and maintained by non-Elastic community members.
           type: string
-          default: community
           enum:
             - elastic
             - partner
@@ -258,6 +257,7 @@ spec:
             - community
       required:
         - github
+        - type
   properties:
     format_version:
       description: The version of the package specification format used by this package.
