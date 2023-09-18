@@ -249,6 +249,7 @@ spec:
             involvement from Elastic. The 'community' value indicates the package
             is built and maintained by non-Elastic community members.
           type: string
+          default: community
           enum:
             - elastic
             - partner
