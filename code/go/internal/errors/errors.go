@@ -73,6 +73,38 @@ func NewDanglingObjectIDError(objectID, objectType, filePath string) *DanglingOb
 	}
 }
 
+// JsonSchemaError validation error for dangling object IDs
+type JsonSchemaError struct {
+	field       string
+	description string
+	filePath    string
+}
+
+func (e *JsonSchemaError) Error() string {
+	return fmt.Sprintf("field %s: %s", e.field, e.description)
+}
+
+func (e *JsonSchemaError) File() string {
+	return e.filePath
+}
+
+func (e *JsonSchemaError) Code() string {
+	return "JsonSchemaError"
+}
+
+func (e *JsonSchemaError) Severity() int {
+	return Critical
+}
+
+// NewJsonSchemaError creates a new validation error for JSON schema issues
+func NewJsonSchemaError(filePath, field, description string) *JsonSchemaError {
+	return &JsonSchemaError{
+		field:       field,
+		description: description,
+		filePath:    filePath,
+	}
+}
+
 // NewStructuredError creates a generic validation error
 func NewStructuredError(err error, filePath, code string, level int) *StructuredError {
 	return &StructuredError{
