@@ -56,7 +56,13 @@ func (s Spec) ValidatePackage(pkg packages.Package) ve.ValidationErrors {
 
 	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkg.Type)
 	if err != nil {
-		errs = append(errs, fmt.Errorf("could not read root folder spec file: %w", err))
+		vError := ve.NewStructuredError(
+			fmt.Errorf("could not read root folder spec file: %w", err),
+			"/",
+			"",
+			ve.Critical,
+		)
+		errs = append(errs, vError)
 		return errs
 	}
 
@@ -98,7 +104,14 @@ func processErrors(errs ve.ValidationErrors) ve.ValidationErrors {
 	for _, e := range errs {
 		for _, msg := range msgTransforms {
 			if strings.Contains(e.Error(), msg.original) {
-				processedErrs = append(processedErrs, errors.New(strings.Replace(e.Error(), msg.original, msg.new, 1)))
+				// FIXME: same error should be created
+				vError := ve.NewStructuredError(
+					errors.New(strings.Replace(e.Error(), msg.original, msg.new, 1)),
+					"",
+					"",
+					ve.Critical,
+				)
+				processedErrs = append(processedErrs, vError)
 				continue
 			}
 			if substringInSlice(e.Error(), redundant) {
