@@ -20,11 +20,13 @@ type ValidationError interface {
 	Code() string
 }
 
+// ValidationPathError is the interface that validation errors related to paths must implement.
 type ValidationPathError interface {
 	// File returns the file path where the error was raised.
 	File() string
 }
 
+// StructuredError generic validation error
 type StructuredError struct {
 	err      error
 	filePath string
@@ -32,12 +34,14 @@ type StructuredError struct {
 	severity int
 }
 
+// Constant values to assign a severity to each validation error
 const (
 	Info     int = iota
 	Medium       = iota
 	Critical     = iota
 )
 
+// DanglingObjectIDError validation error for dangling object IDs
 type DanglingObjectIDError struct {
 	objectID   string
 	objectType string
@@ -60,6 +64,7 @@ func (e *DanglingObjectIDError) Severity() int {
 	return Critical
 }
 
+// NewDanglingObjectIDError creates a new validation error for dangling object IDs
 func NewDanglingObjectIDError(objectID, objectType, filePath string) *DanglingObjectIDError {
 	return &DanglingObjectIDError{
 		objectID:   objectID,
@@ -68,6 +73,7 @@ func NewDanglingObjectIDError(objectID, objectType, filePath string) *DanglingOb
 	}
 }
 
+// NewStructuredError creates a generic validation error
 func NewStructuredError(err error, filePath, code string, level int) *StructuredError {
 	return &StructuredError{
 		err:      err,
