@@ -7,7 +7,6 @@ package errors
 import (
 	"testing"
 
-	"github.com/elastic/package-spec/v2/code/go/pkg/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -19,7 +18,7 @@ func (TestError) Severity() int   { return 99 }
 func (TestError) File() string    { return "file/path" }
 
 func TestValidationErrorsMultiple(t *testing.T) {
-	ve := errors.ValidationErrors{}
+	ve := ValidationErrors{}
 	ve = append(ve, TestError("error 1"))
 	ve = append(ve, TestError("error 2"))
 
@@ -30,7 +29,7 @@ func TestValidationErrorsMultiple(t *testing.T) {
 }
 
 func TestValidationErrorsSingle(t *testing.T) {
-	ve := errors.ValidationErrors{}
+	ve := ValidationErrors{}
 	ve = append(ve, TestError("error 1"))
 
 	require.Len(t, ve, 1)
@@ -39,7 +38,7 @@ func TestValidationErrorsSingle(t *testing.T) {
 }
 
 func TestValidationErrorsNone(t *testing.T) {
-	ve := errors.ValidationErrors{}
+	ve := ValidationErrors{}
 
 	require.Len(t, ve, 0)
 	require.Contains(t, ve.Error(), "found 0 validation errors")

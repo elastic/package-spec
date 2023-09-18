@@ -9,14 +9,15 @@ import (
 
 	"github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateFieldGroups verifies if field groups don't have units and metric types defined.
-func ValidateFieldGroups(fsys fspath.FS) errors.ValidationErrors {
+func ValidateFieldGroups(fsys fspath.FS) pve.ValidationErrors {
 	return validateFields(fsys, validateFieldUnit)
 }
 
-func validateFieldUnit(metadata fieldFileMetadata, f field) errors.ValidationErrors {
+func validateFieldUnit(metadata fieldFileMetadata, f field) pve.ValidationErrors {
 	if f.Type == "group" && f.Unit != "" {
 		vError := errors.NewStructuredError(
 			fmt.Errorf(`file "%s" is invalid: field "%s" can't have unit property'`, metadata.fullFilePath, f.Name),
@@ -24,7 +25,7 @@ func validateFieldUnit(metadata fieldFileMetadata, f field) errors.ValidationErr
 			"",
 			errors.Critical,
 		)
-		return errors.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 
 	if f.Type == "group" && f.MetricType != "" {
@@ -34,7 +35,7 @@ func validateFieldUnit(metadata fieldFileMetadata, f field) errors.ValidationErr
 			"",
 			errors.Critical,
 		)
-		return errors.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 
 	return nil

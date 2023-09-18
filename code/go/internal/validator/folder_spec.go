@@ -16,6 +16,7 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 type validator struct {
@@ -39,9 +40,9 @@ func newValidatorForPath(spec spectypes.ItemSpec, pkg *packages.Package, folderP
 	}
 }
 
-func (v *validator) Validate() ve.ValidationErrors {
-	var errs ve.ValidationErrors
-	var vError ve.ValidationError
+func (v *validator) Validate() pve.ValidationErrors {
+	var errs pve.ValidationErrors
+	var vError pve.ValidationError
 	files, err := fs.ReadDir(v.pkg, v.folderPath)
 	if err != nil {
 		vError = ve.NewStructuredError(

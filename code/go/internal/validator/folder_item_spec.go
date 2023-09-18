@@ -11,6 +11,7 @@ import (
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 func matchingFileExists(spec spectypes.ItemSpec, files []fs.DirEntry) (bool, error) {
@@ -35,22 +36,22 @@ func matchingFileExists(spec spectypes.ItemSpec, files []fs.DirEntry) (bool, err
 	return false, nil
 }
 
-func validateFile(spec spectypes.ItemSpec, fsys fs.FS, itemPath string) ve.ValidationErrors {
+func validateFile(spec spectypes.ItemSpec, fsys fs.FS, itemPath string) pve.ValidationErrors {
 	err := validateMaxSize(fsys, itemPath, spec)
 	if err != nil {
 		vError := ve.NewStructuredError(err, itemPath, "", ve.Critical)
-		return ve.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 	if mediaType := spec.ContentMediaType(); mediaType != nil {
 		err := validateContentType(fsys, itemPath, *mediaType)
 		if err != nil {
 			vError := ve.NewStructuredError(err, itemPath, "", ve.Critical)
-			return ve.ValidationErrors{vError}
+			return pve.ValidationErrors{vError}
 		}
 		err = validateContentTypeSize(fsys, itemPath, *mediaType, spec)
 		if err != nil {
 			vError := ve.NewStructuredError(err, itemPath, "", ve.Critical)
-			return ve.ValidationErrors{vError}
+			return pve.ValidationErrors{vError}
 		}
 	}
 

@@ -10,14 +10,15 @@ import (
 
 	"github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateDimensionFields verifies if dimension fields are of one of the expected types.
-func ValidateDimensionFields(fsys fspath.FS) errors.ValidationErrors {
+func ValidateDimensionFields(fsys fspath.FS) pve.ValidationErrors {
 	return validateFields(fsys, validateDimensionField)
 }
 
-func validateDimensionField(metadata fieldFileMetadata, f field) errors.ValidationErrors {
+func validateDimensionField(metadata fieldFileMetadata, f field) pve.ValidationErrors {
 	if f.External != "" {
 		// TODO: External fields can be used as dimensions, but we cannot resolve
 		// them at this point, so accept them as they are by now.
@@ -30,7 +31,7 @@ func validateDimensionField(metadata fieldFileMetadata, f field) errors.Validati
 			"",
 			errors.Critical,
 		)
-		return errors.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 
 	return nil

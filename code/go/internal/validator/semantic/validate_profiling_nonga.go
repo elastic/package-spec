@@ -14,21 +14,22 @@ import (
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateProfilingNonGA validates that the profiling data type is not used in GA packages,
 // as this data type is in technical preview and can be eventually removed.
-func ValidateProfilingNonGA(fsys fspath.FS) ve.ValidationErrors {
+func ValidateProfilingNonGA(fsys fspath.FS) pve.ValidationErrors {
 	manifestVersion, err := readManifestVersion(fsys)
 	if err != nil {
 		vError := ve.NewStructuredError(err, "manifest.yml", "", ve.Critical)
-		return ve.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 
 	semVer, err := semver.NewVersion(manifestVersion)
 	if err != nil {
 		vError := ve.NewStructuredError(err, "manifest.yml", "", ve.Critical)
-		return ve.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 
 	if semVer.Major() == 0 || semVer.Prerelease() != "" {
@@ -38,10 +39,10 @@ func ValidateProfilingNonGA(fsys fspath.FS) ve.ValidationErrors {
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
 		vError := ve.NewStructuredError(err, "data_stream", "", ve.Critical)
-		return ve.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 
-	var errs ve.ValidationErrors
+	var errs pve.ValidationErrors
 	for _, dataStream := range dataStreams {
 		err := validateProfilingTypeNotUsed(fsys, dataStream)
 		if err != nil {
@@ -51,7 +52,7 @@ func ValidateProfilingNonGA(fsys fspath.FS) ve.ValidationErrors {
 	return errs
 }
 
-func validateProfilingTypeNotUsed(fsys fspath.FS, dataStream string) ve.ValidationError {
+func validateProfilingTypeNotUsed(fsys fspath.FS, dataStream string) pve.ValidationError {
 	manifestPath := path.Join("data_stream", dataStream, "manifest.yml")
 	d, err := fs.ReadFile(fsys, manifestPath)
 	if err != nil {

@@ -12,11 +12,12 @@ import (
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateVersionIntegrity returns validation errors if the version defined in manifest isn't referenced in the latest
 // entry of the changelog file.
-func ValidateVersionIntegrity(fsys fspath.FS) ve.ValidationErrors {
+func ValidateVersionIntegrity(fsys fspath.FS) pve.ValidationErrors {
 	manifestVersion, err := readManifestVersion(fsys)
 	if err != nil {
 		vError := ve.NewStructuredError(
@@ -24,7 +25,7 @@ func ValidateVersionIntegrity(fsys fspath.FS) ve.ValidationErrors {
 			"manifest.yml",
 			"",
 			ve.Critical)
-		return ve.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 
 	changelogVersions, err := readChangelogVersions(fsys)
@@ -34,7 +35,7 @@ func ValidateVersionIntegrity(fsys fspath.FS) ve.ValidationErrors {
 			"changelog.yml",
 			"",
 			ve.Critical)
-		return ve.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 
 	err = ensureUniqueVersions(changelogVersions)
@@ -44,7 +45,7 @@ func ValidateVersionIntegrity(fsys fspath.FS) ve.ValidationErrors {
 			"changelog.yml",
 			"",
 			ve.Critical)
-		return ve.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 
 	err = ensureManifestVersionHasChangelogEntry(manifestVersion, changelogVersions)
@@ -54,7 +55,7 @@ func ValidateVersionIntegrity(fsys fspath.FS) ve.ValidationErrors {
 			"manifest.yml",
 			"",
 			ve.Critical)
-		return ve.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 	return nil
 }

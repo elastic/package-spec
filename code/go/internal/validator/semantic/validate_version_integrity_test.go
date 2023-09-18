@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 func TestValidateGithubLink(t *testing.T) {
@@ -59,7 +60,7 @@ func TestEnsureLinksAreValid(t *testing.T) {
 	var tests = []struct {
 		name   string
 		links  []string
-		errors ve.ValidationErrors
+		errors pve.ValidationErrors
 	}{
 		{
 			"AllValidLinks",
@@ -76,7 +77,7 @@ func TestEnsureLinksAreValid(t *testing.T) {
 				"https://github.com/elastic/integrations/pull/abcd",
 				"https://github.com/elastic/integrations/pull",
 			},
-			ve.ValidationErrors{
+			pve.ValidationErrors{
 				vError,
 				vError,
 			},
@@ -87,7 +88,7 @@ func TestEnsureLinksAreValid(t *testing.T) {
 				"https://github.com/elastic/integrations/pull/1234",
 				"https://github.com/elastic/integrations/pull",
 			},
-			ve.ValidationErrors{
+			pve.ValidationErrors{
 				vError,
 			},
 		},

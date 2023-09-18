@@ -19,6 +19,7 @@ import (
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 var semver3_0_0 = semver.MustParse("3.0.0")
@@ -45,11 +46,11 @@ type FileSchema struct {
 
 var formatCheckersMutex sync.Mutex
 
-func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
+func (s *FileSchema) Validate(fsys fs.FS, filePath string) pve.ValidationErrors {
 	data, err := loadItemSchema(fsys, filePath, s.options.ContentType, s.options.SpecVersion)
 	if err != nil {
 		vError := ve.NewStructuredError(err, filePath, "", ve.Critical)
-		return ve.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 
 	formatCheckersMutex.Lock()
@@ -64,11 +65,11 @@ func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
 	result, err := s.schema.Validate(gojsonschema.NewBytesLoader(data))
 	if err != nil {
 		vError := ve.NewStructuredError(err, filePath, "", ve.Critical)
-		return ve.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 
 	if !result.Valid() {
-		var errs ve.ValidationErrors
+		var errs pve.ValidationErrors
 		for _, re := range result.Errors() {
 			vError := ve.NewJsonSchemaError(
 				filePath,

@@ -14,11 +14,12 @@ import (
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateILMPolicyPresent produces an error if the indicated ILM policy
 // is not defined in the data stream.
-func ValidateILMPolicyPresent(fsys fspath.FS) ve.ValidationErrors {
+func ValidateILMPolicyPresent(fsys fspath.FS) pve.ValidationErrors {
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
 		vError := ve.NewStructuredError(
@@ -27,10 +28,10 @@ func ValidateILMPolicyPresent(fsys fspath.FS) ve.ValidationErrors {
 			"",
 			ve.Critical,
 		)
-		return ve.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 
-	var errs ve.ValidationErrors
+	var errs pve.ValidationErrors
 	for _, dataStream := range dataStreams {
 		err = validateILMPolicyInDataStream(fsys, dataStream)
 		if err != nil {

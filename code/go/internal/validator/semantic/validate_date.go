@@ -7,8 +7,9 @@ package semantic
 import (
 	"fmt"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/errors"
+	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateDateFields verifies if date fields are of one of the expected types.
@@ -18,11 +19,11 @@ func ValidateDateFields(fsys fspath.FS) errors.ValidationErrors {
 
 func validateDateField(metadata fieldFileMetadata, f field) errors.ValidationErrors {
 	if f.Type != "date" && f.DateFormat != "" {
-		vError := errors.NewStructuredError(
+		vError := ve.NewStructuredError(
 			fmt.Errorf(`file "%s" is invalid: field "%s" of type %s can't set date_format. date_format is allowed for date field type only`, metadata.fullFilePath, f.Name, f.Type),
 			metadata.filePath,
 			"",
-			errors.Critical,
+			ve.Critical,
 		)
 		return errors.ValidationErrors{vError}
 	}

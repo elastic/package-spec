@@ -12,14 +12,15 @@ import (
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateKibanaObjectIDs returns validation errors if there are any Kibana
 // object files that define IDs not matching the file's name. That is, it returns
 // validation errors if a Kibana object file, foo.json, in the package defines
 // an object ID other than foo inside it.
-func ValidateKibanaObjectIDs(fsys fspath.FS) ve.ValidationErrors {
-	var errs ve.ValidationErrors
+func ValidateKibanaObjectIDs(fsys fspath.FS) pve.ValidationErrors {
+	var errs pve.ValidationErrors
 
 	filePaths := path.Join("kibana", "*", "*.json")
 	objectFiles, err := pkgpath.Files(fsys, filePaths)

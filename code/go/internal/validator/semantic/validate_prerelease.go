@@ -13,6 +13,7 @@ import (
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 var (
@@ -32,17 +33,17 @@ var (
 )
 
 // ValidatePrerelease validates additional restrictions on the prerelease tags.
-func ValidatePrerelease(fsys fspath.FS) ve.ValidationErrors {
+func ValidatePrerelease(fsys fspath.FS) pve.ValidationErrors {
 	manifestVersion, err := readManifestVersion(fsys)
 	if err != nil {
 		vError := ve.NewStructuredError(err, "manifest.yml", "", ve.Critical)
-		return ve.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 
 	err = validatePrerelease(manifestVersion)
 	if err != nil {
 		vError := ve.NewStructuredError(err, "manifest.yml", "", ve.Critical)
-		return ve.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 
 	return nil

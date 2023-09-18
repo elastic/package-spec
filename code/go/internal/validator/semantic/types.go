@@ -17,6 +17,7 @@ import (
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 const dataStreamDir = "data_stream"
@@ -111,13 +112,13 @@ type fieldFileMetadata struct {
 	fullFilePath string
 }
 
-type validateFunc func(fileMetadata fieldFileMetadata, f field) ve.ValidationErrors
+type validateFunc func(fileMetadata fieldFileMetadata, f field) pve.ValidationErrors
 
-func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
+func validateFields(fsys fspath.FS, validate validateFunc) pve.ValidationErrors {
 	fieldsFilesMetadata, err := listFieldsFiles(fsys)
 	if err != nil {
 
-		return ve.ValidationErrors{
+		return pve.ValidationErrors{
 			ve.NewStructuredError(
 				fmt.Errorf("can't list fields files: %w", err),
 				"",
@@ -127,7 +128,7 @@ func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
 		}
 	}
 
-	var vErrs ve.ValidationErrors
+	var vErrs pve.ValidationErrors
 	for _, metadata := range fieldsFilesMetadata {
 		unmarshaled, err := unmarshalFields(fsys, metadata.filePath)
 		if err != nil {
@@ -148,8 +149,8 @@ func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
 	return vErrs
 }
 
-func validateNestedFields(parent string, metadata fieldFileMetadata, fields fields, validate validateFunc) ve.ValidationErrors {
-	var result ve.ValidationErrors
+func validateNestedFields(parent string, metadata fieldFileMetadata, fields fields, validate validateFunc) pve.ValidationErrors {
+	var result pve.ValidationErrors
 	for _, field := range fields {
 		if len(parent) > 0 {
 			field.Name = parent + "." + field.Name

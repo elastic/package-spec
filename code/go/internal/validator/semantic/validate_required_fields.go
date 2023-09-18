@@ -9,11 +9,12 @@ import (
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateRequiredFields validates that required fields are present and have the expected
 // types.
-func ValidateRequiredFields(fsys fspath.FS) ve.ValidationErrors {
+func ValidateRequiredFields(fsys fspath.FS) pve.ValidationErrors {
 	requiredFields := map[string]string{
 		"data_stream.type":      "constant_keyword",
 		"data_stream.dataset":   "constant_keyword",
@@ -50,11 +51,11 @@ func (e notFoundRequiredField) Error() string {
 	return message
 }
 
-func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve.ValidationErrors {
+func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) pve.ValidationErrors {
 	// map datastream/package -> field name -> found
 	foundFields := make(map[string]map[string]struct{})
 
-	checkField := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
+	checkField := func(metadata fieldFileMetadata, f field) pve.ValidationErrors {
 		if _, ok := foundFields[metadata.dataStream]; !ok {
 			foundFields[metadata.dataStream] = make(map[string]struct{})
 		}
@@ -70,7 +71,7 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve
 		// the definition.
 		// More info in https://github.com/elastic/elastic-package/issues/749
 		if f.External == "" && f.Type != expectedType {
-			return ve.ValidationErrors{
+			return pve.ValidationErrors{
 				ve.NewStructuredError(
 					unexpectedTypeRequiredField{
 						field:        f.Name,

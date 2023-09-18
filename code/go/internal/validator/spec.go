@@ -20,6 +20,7 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/v2/code/go/internal/validator/semantic"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // Spec represents a package specification
@@ -28,7 +29,7 @@ type Spec struct {
 	fs      fs.FS
 }
 
-type validationRule func(pkg fspath.FS) ve.ValidationErrors
+type validationRule func(pkg fspath.FS) pve.ValidationErrors
 
 type validationRules []validationRule
 
@@ -51,8 +52,8 @@ func NewSpec(version semver.Version) (*Spec, error) {
 }
 
 // ValidatePackage validates the given Package against the Spec
-func (s Spec) ValidatePackage(pkg packages.Package) ve.ValidationErrors {
-	var errs ve.ValidationErrors
+func (s Spec) ValidatePackage(pkg packages.Package) pve.ValidationErrors {
+	var errs pve.ValidationErrors
 
 	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkg.Type)
 	if err != nil {
@@ -85,9 +86,9 @@ func substringInSlice(str string, list []string) bool {
 	return false
 }
 
-func processErrors(errs ve.ValidationErrors) ve.ValidationErrors {
+func processErrors(errs pve.ValidationErrors) pve.ValidationErrors {
 	// Rename unclear error messages and filter out redundant errors
-	var processedErrs ve.ValidationErrors
+	var processedErrs pve.ValidationErrors
 	msgTransforms := []struct {
 		original string
 		new      string
@@ -178,8 +179,8 @@ func stringSliceContains(elems []string, v string) bool {
 	return false
 }
 
-func (vr validationRules) validate(fsys fspath.FS) ve.ValidationErrors {
-	var errs ve.ValidationErrors
+func (vr validationRules) validate(fsys fspath.FS) pve.ValidationErrors {
+	var errs pve.ValidationErrors
 	for _, validationRule := range vr {
 		err := validationRule(fsys)
 		errs.Append(err)

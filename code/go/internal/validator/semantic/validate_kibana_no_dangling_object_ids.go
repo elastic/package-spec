@@ -12,6 +12,7 @@ import (
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 type objectReference struct {
@@ -29,8 +30,8 @@ var exceptionAssets = []string{
 // returns validation errors if a Kibana object file in the package references another
 // Kibana object with ID i, but no Kibana object file for object ID i is found in the
 // package.
-func ValidateKibanaNoDanglingObjectIDs(fsys fspath.FS) ve.ValidationErrors {
-	var errs ve.ValidationErrors
+func ValidateKibanaNoDanglingObjectIDs(fsys fspath.FS) pve.ValidationErrors {
+	var errs pve.ValidationErrors
 
 	installedIDs := []objectReference{}
 	referencedIDs := []objectReference{}

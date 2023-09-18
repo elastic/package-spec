@@ -11,14 +11,15 @@ import (
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateUniqueFields verifies that any field is defined only once on each data stream.
-func ValidateUniqueFields(fsys fspath.FS) ve.ValidationErrors {
+func ValidateUniqueFields(fsys fspath.FS) pve.ValidationErrors {
 	// data_stream -> field -> files
 	fields := make(map[string]map[string][]string)
 
-	countField := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
+	countField := func(metadata fieldFileMetadata, f field) pve.ValidationErrors {
 		if len(f.Fields) > 0 {
 			// Don't count groups
 			return nil
@@ -38,7 +39,7 @@ func ValidateUniqueFields(fsys fspath.FS) ve.ValidationErrors {
 		return err
 	}
 
-	var errs ve.ValidationErrors
+	var errs pve.ValidationErrors
 	for id, defs := range fields {
 		for field, files := range defs {
 			if len(files) > 1 {

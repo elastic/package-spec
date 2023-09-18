@@ -10,10 +10,11 @@ import (
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateExternalFieldsWithDevFolder verifies there is no field with external key if there is no _dev/build/build.yml definition
-func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
+func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) pve.ValidationErrors {
 
 	const buildPath = "_dev/build/build.yml"
 	buildFilePathDefined := true
@@ -25,7 +26,7 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
 			"",
 			ve.Critical,
 		)
-		return ve.ValidationErrors{vError}
+		return pve.ValidationErrors{vError}
 	}
 
 	if len(f) != 1 {
@@ -38,14 +39,14 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
 		if err != nil {
 			// TODO
 			vError := ve.NewStructuredError(err, buildPath, "", ve.Critical)
-			return ve.ValidationErrors{vError}
+			return pve.ValidationErrors{vError}
 		}
 		for _, dep := range dependencies {
 			mapDependencies[dep] = struct{}{}
 		}
 	}
 
-	validateFunc := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
+	validateFunc := func(metadata fieldFileMetadata, f field) pve.ValidationErrors {
 		if f.External == "" {
 			return nil
 		}
@@ -57,7 +58,7 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
 				"",
 				ve.Critical,
 			)
-			return ve.ValidationErrors{vError}
+			return pve.ValidationErrors{vError}
 		}
 
 		if _, ok := mapDependencies[f.External]; !ok {
@@ -68,7 +69,7 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
 				"",
 				ve.Critical,
 			)
-			return ve.ValidationErrors{vError}
+			return pve.ValidationErrors{vError}
 		}
 		return nil
 	}

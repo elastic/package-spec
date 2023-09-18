@@ -14,17 +14,18 @@ import (
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateRoutingRulesAndDataset returns validation errors if there are routing rules defined in any dataStream
 // but that dataStream does not defines "dataset" field.
-func ValidateRoutingRulesAndDataset(fsys fspath.FS) ve.ValidationErrors {
+func ValidateRoutingRulesAndDataset(fsys fspath.FS) pve.ValidationErrors {
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
-		return ve.ValidationErrors{ve.NewStructuredError(err, "data_stream", "", ve.Critical)}
+		return pve.ValidationErrors{ve.NewStructuredError(err, "data_stream", "", ve.Critical)}
 	}
 
-	var errs ve.ValidationErrors
+	var errs pve.ValidationErrors
 	for _, dataStream := range dataStreams {
 		anyRoutingRules, err := anyRoutingRulesInDataStream(fsys, dataStream)
 		if !anyRoutingRules {
@@ -38,7 +39,7 @@ func ValidateRoutingRulesAndDataset(fsys fspath.FS) ve.ValidationErrors {
 				"",
 				ve.Critical,
 			)
-			errs.Append(ve.ValidationErrors{vError})
+			errs.Append(pve.ValidationErrors{vError})
 		}
 	}
 	return errs
