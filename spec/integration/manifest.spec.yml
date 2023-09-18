@@ -411,6 +411,12 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.0.0
+    patch:
+      - op: replace
+        path: "/definitions/owner/required"
+        value:
+          - github
   - before: 2.11.0
     patch:
       - op: replace
