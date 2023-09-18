@@ -14,7 +14,7 @@ import (
 
 	"github.com/PaesslerAG/jsonpath"
 	"github.com/joeshaw/multierror"
-	"github.com/pkg/errors"
+
 	"gopkg.in/yaml.v3"
 
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
@@ -63,17 +63,17 @@ func (f File) Values(path string) (interface{}, error) {
 
 	contents, err := fs.ReadFile(f.fsys, f.path)
 	if err != nil {
-		return nil, errors.Wrap(err, "reading file content failed")
+		return nil, fmt.Errorf("reading file content failed: %w", err)
 	}
 
 	var v interface{}
 	if fileExt == "yaml" || fileExt == "yml" {
 		if err := yaml.Unmarshal(contents, &v); err != nil {
-			return nil, errors.Wrapf(err, "unmarshalling YAML file failed (path: %s)", f.fsys.Path(fileName))
+			return nil, fmt.Errorf("unmarshalling YAML file failed (path: %s): %w", f.fsys.Path(fileName), err)
 		}
 	} else if fileExt == "json" {
 		if err := json.Unmarshal(contents, &v); err != nil {
-			return nil, errors.Wrapf(err, "unmarshalling JSON file failed (path: %s)", f.fsys.Path(fileName))
+			return nil, fmt.Errorf("unmarshalling JSON file failed (path: %s): %w", f.fsys.Path(fileName), err)
 		}
 	}
 

@@ -6,10 +6,9 @@ package validator
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io/fs"
-
-	"github.com/pkg/errors"
 
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
 )
@@ -72,7 +71,7 @@ func validateContentTypeSize(fsys fs.FS, path string, contentType spectypes.Cont
 		sizeLimit = limits.MaxConfigurationSize()
 	}
 	if sizeLimit > 0 && size > sizeLimit {
-		return errors.Errorf("file size (%s) is bigger than expected (%s)", size, sizeLimit)
+		return fmt.Errorf("file size (%s) is bigger than expected (%s)", size, sizeLimit)
 	}
 	return nil
 }
@@ -88,7 +87,7 @@ func validateMaxSize(fsys fs.FS, path string, limits spectypes.LimitsSpec) error
 	}
 	size := spectypes.FileSize(info.Size())
 	if size > limits.MaxFileSize() {
-		return errors.Errorf("file size (%s) is bigger than expected (%s)", size, limits.MaxFileSize())
+		return fmt.Errorf("file size (%s) is bigger than expected (%s)", size, limits.MaxFileSize())
 	}
 	return nil
 }

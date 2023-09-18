@@ -5,10 +5,9 @@
 package validator
 
 import (
+	"fmt"
 	"io/fs"
 	"regexp"
-
-	"github.com/pkg/errors"
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
@@ -25,7 +24,7 @@ func matchingFileExists(spec spectypes.ItemSpec, files []fs.DirEntry) (bool, err
 		for _, file := range files {
 			isMatch, err := regexp.MatchString(spec.Pattern(), file.Name())
 			if err != nil {
-				return false, errors.Wrap(err, "invalid folder item spec pattern")
+				return false, fmt.Errorf("invalid folder item spec pattern: %w", err)
 			}
 			if isMatch {
 				return spec.IsDir() == file.IsDir(), nil

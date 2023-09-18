@@ -13,7 +13,7 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/elastic/gojsonschema"
-	"github.com/pkg/errors"
+
 	"gopkg.in/yaml.v3"
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
@@ -90,7 +90,7 @@ func convertYAMLToJSON(data []byte, expandKeys bool) ([]byte, error) {
 	var c interface{}
 	err := yaml.Unmarshal(data, &c)
 	if err != nil {
-		return nil, errors.Wrapf(err, "unmarshalling YAML file failed")
+		return nil, fmt.Errorf("unmarshalling YAML file failed: %w", err)
 	}
 	if expandKeys {
 		c = expandItemKey(c)
@@ -98,7 +98,7 @@ func convertYAMLToJSON(data []byte, expandKeys bool) ([]byte, error) {
 
 	data, err = json.Marshal(&c)
 	if err != nil {
-		return nil, errors.Wrapf(err, "converting YAML to JSON failed")
+		return nil, fmt.Errorf("converting YAML to JSON failed: %w", err)
 	}
 	return data, nil
 }
@@ -124,7 +124,7 @@ func expandItemKey(c interface{}) interface{} {
 			ex := expandItemKey(v)
 			_, err := expanded.Put(k, ex)
 			if err != nil {
-				panic(errors.Wrapf(err, "unexpected error while setting key value (key: %s)", k))
+				panic(fmt.Errorf("unexpected error while setting key value (key: %s): %w", k, err))
 			}
 		}
 		return expanded

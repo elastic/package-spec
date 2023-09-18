@@ -12,7 +12,6 @@ require (
 	github.com/evanphx/json-patch/v5 v5.7.0
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901
 	github.com/otiai10/copy v1.12.0
-	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.4
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
@@ -31,6 +30,7 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
+	github.com/pkg/errors v0.8.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
 	golang.org/x/mod v0.12.0 // indirect

@@ -5,10 +5,9 @@
 package semantic
 
 import (
+	"fmt"
 	"sort"
 	"strings"
-
-	"github.com/pkg/errors"
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
@@ -45,7 +44,7 @@ func ValidateUniqueFields(fsys fspath.FS) ve.ValidationErrors {
 			if len(files) > 1 {
 				sort.Strings(files)
 				errs = append(errs,
-					errors.Errorf("field %q is defined multiple times for data stream %q, found in: %s",
+					fmt.Errorf("field %q is defined multiple times for data stream %q, found in: %s",
 						field, id, strings.Join(files, ", ")))
 			}
 		}
