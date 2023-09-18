@@ -16,11 +16,11 @@
   - description: Add validation rule to ensure there are no dangling object IDs
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/589
-- version: 2.11.1-next
+- version: 2.12.0-next
   changes:
-  - description: Prepare for next version
+  - description: Add flag to manifests to indicate if a package or data stream requires root privileges
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/595
+    link: https://github.com/elastic/package-spec/pull/605
 - version: 2.11.0
   changes:
   - description: Add owner.type field to indicate package support level

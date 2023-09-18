@@ -1,4 +1,4 @@
-format_version: 2.10.0
+format_version: 2.12.0
 name: good_input
 title: good_input
 description: >-
@@ -88,6 +88,9 @@ screenshots:
     type: "image/png"
 owner:
   github: elastic/integrations
+agent:
+  privileges:
+    root: true
 elasticsearch:
   index_template:
     mappings:
