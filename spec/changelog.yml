@@ -18,7 +18,7 @@
     link: https://github.com/elastic/package-spec/pull/589
   - description: Require owner.type field
     type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/1
+    link: https://github.com/elastic/package-spec/pull/604
 - version: 2.11.1-next
   changes:
   - description: Prepare for next version
