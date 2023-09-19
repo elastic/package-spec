@@ -435,6 +435,8 @@ spec:
         - title
         - description
         - input
+    agent:
+      $ref: "../../integration/manifest.spec.yml#/definitions/agent"
     elasticsearch:
       description: Elasticsearch asset definitions
       type: object
@@ -496,6 +498,10 @@ versions:
         path: /definitions/elasticsearch_index_template/properties/mappings/additionalProperties
       - op: remove
         path: /definitions/elasticsearch_index_template/properties/mappings/properties
+  - before: 2.12.0
+    patch:
+      - op: remove
+        path: /properties/agent
   - before: 2.9.0
     patch:
       - op: remove

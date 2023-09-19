@@ -60,6 +60,9 @@ icons:
     title: system
     size: 1000x1000
     type: image/svg+xml
+agent:
+  privileges:
+    root: true
 # /main is a specific action underneath the monitor privilege. Declaring
 # "monitor/main" limits the provided privilege, "monitor", to only the "main"
 # action.
