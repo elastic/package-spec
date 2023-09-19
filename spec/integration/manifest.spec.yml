@@ -270,6 +270,7 @@ spec:
             - community
       required:
         - github
+        - type
   properties:
     format_version:
       description: The version of the package specification format used by this package.
@@ -425,6 +426,12 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.0.0
+    patch:
+      - op: replace
+        path: "/definitions/owner/required"
+        value:
+          - github
   - before: 2.12.0
     patch:
       - op: remove

@@ -1,18 +1,18 @@
 format_version: 3.0.0
-name: bad_ingest_pipeline
-title: "Package with bad ingest pipelines"
-version: 1.0.0
+name: bad_owner_type
+title: "Bad Owner Type Missing"
+version: 0.0.1
 source:
-  license: "Elastic-2.0"
-description: "This is a package with bad ingest pipelines"
+  license: "Apache-2.0"
+description: "This is a new package."
 type: integration
 categories:
   - custom
 conditions:
   kibana:
-    version: "^8.9.1"
+    version: '^8.10.0'
   elastic:
-    subscription: "basic"
+    subscription: 'basic'
 screenshots:
   - src: /img/sample-screenshot.png
     title: Sample screenshot
@@ -32,5 +32,4 @@ policy_templates:
         title: Collect sample logs from instances
         description: Collecting sample logs
 owner:
-  github: elastic/integrations
-  type: elastic
+  github: elastic/integrations-developer-experience
