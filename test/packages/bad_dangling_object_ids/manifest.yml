@@ -33,3 +33,4 @@ policy_templates:
         description: Collecting sample logs
 owner:
   github: elastic/integrations
+  type: elastic
