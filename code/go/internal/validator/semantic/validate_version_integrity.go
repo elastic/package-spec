@@ -24,7 +24,7 @@ func ValidateVersionIntegrity(fsys fspath.FS) pve.ValidationErrors {
 			err,
 			"manifest.yml",
 			"",
-			ve.Critical)
+			pve.Critical)
 		return pve.ValidationErrors{vError}
 	}
 
@@ -34,7 +34,7 @@ func ValidateVersionIntegrity(fsys fspath.FS) pve.ValidationErrors {
 			err,
 			"changelog.yml",
 			"",
-			ve.Critical)
+			pve.Critical)
 		return pve.ValidationErrors{vError}
 	}
 
@@ -44,7 +44,7 @@ func ValidateVersionIntegrity(fsys fspath.FS) pve.ValidationErrors {
 			err,
 			"changelog.yml",
 			"",
-			ve.Critical)
+			pve.Critical)
 		return pve.ValidationErrors{vError}
 	}
 
@@ -54,7 +54,7 @@ func ValidateVersionIntegrity(fsys fspath.FS) pve.ValidationErrors {
 			err,
 			"manifest.yml",
 			"",
-			ve.Critical)
+			pve.Critical)
 		return pve.ValidationErrors{vError}
 	}
 	return nil

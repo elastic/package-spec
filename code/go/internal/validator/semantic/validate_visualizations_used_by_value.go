@@ -37,9 +37,9 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) pve.ValidationErrors {
 	if err != nil {
 		vError := ve.NewStructuredError(
 			fmt.Errorf("error finding Kibana Dashboard files: %w", err),
-			"kibana/dashboar/*.json",
+			"kibana/dashboard/*.json",
 			"",
-			ve.Critical,
+			pve.Critical,
 		)
 		errs = append(errs, vError)
 		return errs
@@ -60,7 +60,7 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) pve.ValidationErrors {
 				fmt.Errorf("error getting references in file: %s: %w", fsys.Path(filePath), err),
 				filePath,
 				"",
-				ve.Critical,
+				pve.Critical,
 			)
 			errs = append(errs, vError)
 		}
@@ -76,7 +76,7 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) pve.ValidationErrors {
 					fmt.Errorf(message),
 					filePath,
 					"",
-					ve.Critical,
+					pve.Critical,
 				)
 				errs = append(errs, vError)
 			} else {

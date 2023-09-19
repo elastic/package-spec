@@ -26,7 +26,7 @@ func ValidateILMPolicyPresent(fsys fspath.FS) pve.ValidationErrors {
 			err,
 			"",
 			"",
-			ve.Critical,
+			pve.Critical,
 		)
 		return pve.ValidationErrors{vError}
 	}
@@ -41,7 +41,7 @@ func ValidateILMPolicyPresent(fsys fspath.FS) pve.ValidationErrors {
 				err,
 				manifestPath,
 				"",
-				ve.Critical,
+				pve.Critical,
 			)
 			errs = append(errs, vError)
 		}

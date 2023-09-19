@@ -54,7 +54,7 @@ func TestEnsureLinksAreValid(t *testing.T) {
 		errGithubIssue,
 		"changelog.yml",
 		"",
-		ve.Critical,
+		pve.Critical,
 	)
 
 	var tests = []struct {

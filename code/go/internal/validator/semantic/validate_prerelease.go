@@ -36,13 +36,13 @@ var (
 func ValidatePrerelease(fsys fspath.FS) pve.ValidationErrors {
 	manifestVersion, err := readManifestVersion(fsys)
 	if err != nil {
-		vError := ve.NewStructuredError(err, "manifest.yml", "", ve.Critical)
+		vError := ve.NewStructuredError(err, "manifest.yml", "", pve.Critical)
 		return pve.ValidationErrors{vError}
 	}
 
 	err = validatePrerelease(manifestVersion)
 	if err != nil {
-		vError := ve.NewStructuredError(err, "manifest.yml", "", ve.Critical)
+		vError := ve.NewStructuredError(err, "manifest.yml", "", pve.Critical)
 		return pve.ValidationErrors{vError}
 	}
 

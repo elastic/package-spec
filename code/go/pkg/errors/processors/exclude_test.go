@@ -1,3 +1,7 @@
+// Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
+// or more contributor license agreements. Licensed under the Elastic License;
+// you may not use this file except in compliance with the Elastic License.
+
 package processors
 
 import (
@@ -5,7 +9,7 @@ import (
 	"testing"
 
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
-	"github.com/elastic/package-spec/v2/code/go/pkg/errors"
+	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -41,9 +45,9 @@ func TestExclude(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
 			p := NewExclude(c.pattern)
-			var issues errors.ValidationErrors
+			var issues pve.ValidationErrors
 			for _, e := range c.errors {
-				issues = append(issues, ve.NewStructuredError(fmt.Errorf(e), "", "", ve.Critical))
+				issues = append(issues, ve.NewStructuredError(fmt.Errorf(e), "", "", pve.Critical))
 			}
 
 			processedIssues, err := p.Process(issues)
@@ -59,7 +63,6 @@ func TestExclude(t *testing.T) {
 				processedTexts = append(processedTexts, i.Error())
 			}
 			assert.Equal(t, c.expected, processedTexts)
-
 		})
 	}
 }

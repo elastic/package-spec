@@ -27,7 +27,7 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) pve.ValidationErrors {
 			err,
 			"",
 			"",
-			ve.Critical,
+			pve.Critical,
 		)
 		return pve.ValidationErrors{vError}
 	}
@@ -38,7 +38,7 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) pve.ValidationErrors {
 			err,
 			"manifest.yml",
 			"",
-			ve.Critical,
+			pve.Critical,
 		)
 		return pve.ValidationErrors{vError}
 	}
@@ -49,7 +49,7 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) pve.ValidationErrors {
 			err,
 			"manifest.yml",
 			"",
-			ve.Critical,
+			pve.Critical,
 		)
 		return pve.ValidationErrors{vError}
 	}
@@ -61,7 +61,7 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) pve.ValidationErrors {
 			err,
 			"manifest.yml",
 			"",
-			ve.Critical,
+			pve.Critical,
 		)
 		errs.Append(pve.ValidationErrors{vError})
 	}
@@ -72,7 +72,7 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) pve.ValidationErrors {
 			err,
 			"manifest.yml",
 			"",
-			ve.Critical,
+			pve.Critical,
 		)
 		errs.Append(pve.ValidationErrors{vError})
 	}
@@ -86,7 +86,7 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) pve.ValidationErrors {
 				err,
 				"manifest.yml",
 				"",
-				ve.Critical,
+				pve.Critical,
 			)
 			errs.Append(pve.ValidationErrors{vError})
 		} else {
@@ -228,7 +228,7 @@ func validateNoRuntimeFields(metadata fieldFileMetadata, f field) pve.Validation
 			fmt.Errorf("%v file contains a field %s with runtime key defined (%s)", metadata.fullFilePath, f.Name, f.Runtime),
 			metadata.filePath,
 			"",
-			ve.Critical)
+			pve.Critical)
 		return pve.ValidationErrors{vError}
 	}
 	return nil

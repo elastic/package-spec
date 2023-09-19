@@ -49,7 +49,7 @@ var formatCheckersMutex sync.Mutex
 func (s *FileSchema) Validate(fsys fs.FS, filePath string) pve.ValidationErrors {
 	data, err := loadItemSchema(fsys, filePath, s.options.ContentType, s.options.SpecVersion)
 	if err != nil {
-		vError := ve.NewStructuredError(err, filePath, "", ve.Critical)
+		vError := ve.NewStructuredError(err, filePath, "", pve.Critical)
 		return pve.ValidationErrors{vError}
 	}
 
@@ -64,7 +64,7 @@ func (s *FileSchema) Validate(fsys fs.FS, filePath string) pve.ValidationErrors 
 	loadDataStreamNameFormatChecker(fsys, path.Dir(filePath))
 	result, err := s.schema.Validate(gojsonschema.NewBytesLoader(data))
 	if err != nil {
-		vError := ve.NewStructuredError(err, filePath, "", ve.Critical)
+		vError := ve.NewStructuredError(err, filePath, "", pve.Critical)
 		return pve.ValidationErrors{vError}
 	}
 

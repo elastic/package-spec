@@ -48,7 +48,7 @@ func ValidateUniqueFields(fsys fspath.FS) pve.ValidationErrors {
 					fmt.Errorf("field %q is defined multiple times for data stream %q, found in: %s", field, id, strings.Join(files, ", ")),
 					strings.Join(files, ", "),
 					"",
-					ve.Critical,
+					pve.Critical,
 				)
 				errs = append(errs, vError)
 			}

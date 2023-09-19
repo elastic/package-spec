@@ -123,7 +123,7 @@ func validateFields(fsys fspath.FS, validate validateFunc) pve.ValidationErrors 
 				fmt.Errorf("can't list fields files: %w", err),
 				"",
 				"",
-				ve.Critical,
+				pve.Critical,
 			),
 		}
 	}
@@ -136,7 +136,7 @@ func validateFields(fsys fspath.FS, validate validateFunc) pve.ValidationErrors 
 				fmt.Errorf(`file "%s" is invalid: can't unmarshal fields: %w`, metadata.filePath, err),
 				metadata.filePath,
 				"",
-				ve.Critical,
+				pve.Critical,
 			)
 			vErrs = append(vErrs, vError)
 		}

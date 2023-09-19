@@ -44,7 +44,7 @@ func validateFieldsLimits(fsys fspath.FS, limit int) pve.ValidationErrors {
 				fmt.Errorf("data stream %s has more than %d fields (%d)", id, limit, count),
 				fmt.Sprintf("data_stream/%s/fields/*", id),
 				"",
-				ve.Critical,
+				pve.Critical,
 			)
 			errs = append(errs, vError)
 		}

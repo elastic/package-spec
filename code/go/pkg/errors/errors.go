@@ -1,3 +1,7 @@
+// Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
+// or more contributor license agreements. Licensed under the Elastic License;
+// you may not use this file except in compliance with the Elastic License.
+
 package errors
 
 import (
@@ -25,11 +29,11 @@ type ValidationPathError interface {
 type ValidationErrors []ValidationError
 
 // Filter filters the validation errors using the function given as a parameter.
-func (ve ValidationErrors) Filter(filter func(elem *ValidationError) bool) ValidationErrors {
+func (ve ValidationErrors) Filter(filter func(elem ValidationError) bool) ValidationErrors {
 	var errs ValidationErrors
 
 	for _, item := range ve {
-		if filter(&item) {
+		if filter(item) {
 			errs = append(errs, item)
 		}
 	}
@@ -65,3 +69,10 @@ func (ve *ValidationErrors) Append(moreErrs ValidationErrors) {
 
 	*ve = errs
 }
+
+// Constant values to assign a severity to each validation error
+const (
+	Info     int = iota
+	Warning      = iota
+	Critical     = iota
+)

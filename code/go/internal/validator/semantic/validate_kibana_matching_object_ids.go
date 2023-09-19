@@ -29,7 +29,7 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) pve.ValidationErrors {
 			fmt.Errorf("error finding Kibana object files: %w", err),
 			"kibana", // FIXME other file path name?
 			"",
-			ve.Critical,
+			pve.Critical,
 		)
 		errs = append(errs, vError)
 		return errs
@@ -44,7 +44,7 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) pve.ValidationErrors {
 				fmt.Errorf("unable to get Kibana object ID in file [%s]: %w", fsys.Path(filePath), err),
 				filePath,
 				"",
-				ve.Critical,
+				pve.Critical,
 			)
 			errs = append(errs, vError)
 			continue
@@ -58,7 +58,7 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) pve.ValidationErrors {
 					fmt.Errorf("unable to get rule ID in file [%s]: %w", fsys.Path(filePath), err),
 					filePath,
 					"",
-					ve.Critical,
+					pve.Critical,
 				)
 				errs = append(errs, vError)
 				continue
@@ -70,7 +70,7 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) pve.ValidationErrors {
 					fmt.Errorf("expect object ID to be a string: %w", err),
 					filePath,
 					"",
-					ve.Critical,
+					pve.Critical,
 				)
 				errs = append(errs, vError)
 				continue
@@ -82,7 +82,7 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) pve.ValidationErrors {
 					fmt.Errorf("expect rule ID to be a string: %w", err),
 					filePath,
 					"",
-					ve.Critical,
+					pve.Critical,
 				)
 				errs = append(errs, vError)
 				continue
@@ -93,7 +93,7 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) pve.ValidationErrors {
 					fmt.Errorf("kibana object ID [%s] should start with rule ID [%s]", objectIDValue, ruleIDValue),
 					filePath,
 					"",
-					ve.Critical,
+					pve.Critical,
 				)
 				errs = append(errs, vError)
 				continue
@@ -109,7 +109,7 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) pve.ValidationErrors {
 				fmt.Errorf("kibana object file [%s] defines non-matching ID [%s]", fsys.Path(filePath), objectID),
 				filePath,
 				"",
-				ve.Critical,
+				pve.Critical,
 			)
 			errs = append(errs, vError)
 		}

@@ -24,7 +24,7 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) pve.ValidationErrors {
 			fmt.Errorf("not able to read _dev/build/build.yml: %w", err),
 			buildPath,
 			"",
-			ve.Critical,
+			pve.Critical,
 		)
 		return pve.ValidationErrors{vError}
 	}
@@ -38,7 +38,7 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) pve.ValidationErrors {
 		dependencies, err := readDevBuildDependenciesKeys(f[0])
 		if err != nil {
 			// TODO
-			vError := ve.NewStructuredError(err, buildPath, "", ve.Critical)
+			vError := ve.NewStructuredError(err, buildPath, "", pve.Critical)
 			return pve.ValidationErrors{vError}
 		}
 		for _, dep := range dependencies {
@@ -56,7 +56,7 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) pve.ValidationErrors {
 				fmt.Errorf("file \"%s\" is invalid: field %s with external key defined (%q) but no _dev/build/build.yml found", metadata.fullFilePath, f.Name, f.External),
 				metadata.filePath,
 				"",
-				ve.Critical,
+				pve.Critical,
 			)
 			return pve.ValidationErrors{vError}
 		}
@@ -67,7 +67,7 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) pve.ValidationErrors {
 				fmt.Errorf("file \"%s\" is invalid: field %s with external key defined (%q) but no definition found for it (_dev/build/build.yml)", metadata.fullFilePath, f.Name, f.External),
 				metadata.filePath,
 				"",
-				ve.Critical,
+				pve.Critical,
 			)
 			return pve.ValidationErrors{vError}
 		}

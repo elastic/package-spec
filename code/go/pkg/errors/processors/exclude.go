@@ -1,3 +1,7 @@
+// Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
+// or more contributor license agreements. Licensed under the Elastic License;
+// you may not use this file except in compliance with the Elastic License.
+
 package processors
 
 import (
@@ -30,7 +34,8 @@ func (p Exclude) Process(issues errors.ValidationErrors) (errors.ValidationError
 		return issues, nil
 	}
 
-	return issues.Filter(func(i *errors.ValidationError) bool {
-		return !p.pattern.MatchString((*i).Error())
+	return issues.Filter(func(i errors.ValidationError) bool {
+		// if pathError, ok := i.(errors.ValidationPathError); ok
+		return !p.pattern.MatchString(i.Error())
 	}), nil
 }

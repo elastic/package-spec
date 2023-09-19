@@ -49,7 +49,7 @@ func (v *validator) Validate() pve.ValidationErrors {
 			fmt.Errorf("could not read folder [%s]: %w", v.pkg.Path(v.folderPath), err),
 			v.folderPath,
 			"",
-			ve.Critical,
+			pve.Critical,
 		)
 		errs = append(errs, vError)
 		return errs
@@ -62,7 +62,7 @@ func (v *validator) Validate() pve.ValidationErrors {
 			fmt.Errorf("folder [%s] exceeds the limit of %d files", v.pkg.Path(v.folderPath), contentsLimit),
 			v.folderPath,
 			"",
-			ve.Critical,
+			pve.Critical,
 		)
 		errs = append(errs, vError)
 		return errs
@@ -77,7 +77,7 @@ func (v *validator) Validate() pve.ValidationErrors {
 				fmt.Errorf("spec for [%s] defines beta features which can't be enabled for packages with a stable semantic version", v.pkg.Path(v.folderPath)),
 				v.folderPath,
 				"",
-				ve.Critical,
+				pve.Critical,
 			)
 			errs = append(errs, vError)
 		} else {
@@ -87,7 +87,7 @@ func (v *validator) Validate() pve.ValidationErrors {
 					fmt.Errorf(message),
 					v.folderPath,
 					"",
-					ve.Critical,
+					pve.Critical,
 				)
 				errs = append(errs, vError)
 			} else {
@@ -99,7 +99,7 @@ func (v *validator) Validate() pve.ValidationErrors {
 			fmt.Errorf("unsupport release level, supported values: beta, ga"),
 			v.folderPath,
 			"",
-			ve.Critical,
+			pve.Critical,
 		)
 		errs = append(errs, vError)
 	}
@@ -108,7 +108,7 @@ func (v *validator) Validate() pve.ValidationErrors {
 		fileName := file.Name()
 		itemSpec, err := v.findItemSpec(fileName)
 		if err != nil {
-			vError = ve.NewStructuredError(err, path.Join(v.folderPath, fileName), "", ve.Critical)
+			vError = ve.NewStructuredError(err, path.Join(v.folderPath, fileName), "", pve.Critical)
 			errs = append(errs, vError)
 			continue
 		}
@@ -121,7 +121,7 @@ func (v *validator) Validate() pve.ValidationErrors {
 						fmt.Errorf(`file "%s" is invalid: directory name inside package %s contains -: %s`, v.pkg.Path(v.folderPath, fileName), v.pkg.Name, fileName),
 						path.Join(v.folderPath, fileName),
 						"",
-						ve.Critical,
+						pve.Critical,
 					)
 					errs = append(errs, vError)
 				}
@@ -135,7 +135,7 @@ func (v *validator) Validate() pve.ValidationErrors {
 				fmt.Errorf("item [%s] is not allowed in folder [%s]", fileName, v.pkg.Path(v.folderPath)),
 				path.Join(v.folderPath, fileName),
 				"",
-				ve.Critical,
+				pve.Critical,
 			)
 			errs = append(errs, vError)
 			continue
@@ -147,7 +147,7 @@ func (v *validator) Validate() pve.ValidationErrors {
 					fmt.Errorf("[%s] is a folder but is expected to be a file", fileName),
 					path.Join(v.folderPath, fileName),
 					"",
-					ve.Critical,
+					pve.Critical,
 				)
 				errs = append(errs, vError)
 				continue
@@ -171,7 +171,7 @@ func (v *validator) Validate() pve.ValidationErrors {
 					fmt.Errorf("[%s] is a file but is expected to be a folder", v.pkg.Path(fileName)),
 					path.Join(v.folderPath, fileName),
 					"",
-					ve.Critical,
+					pve.Critical,
 				)
 				errs = append(errs, vError)
 				continue
@@ -184,7 +184,7 @@ func (v *validator) Validate() pve.ValidationErrors {
 					fmt.Errorf("file \"%s\" is invalid: %w", v.pkg.Path(itemPath), ive),
 					itemPath,
 					"",
-					ve.Critical,
+					pve.Critical,
 				)
 				errs = append(errs, vError)
 			}
@@ -195,7 +195,7 @@ func (v *validator) Validate() pve.ValidationErrors {
 					fmt.Errorf("failed to obtain file size for \"%s\": %w", v.pkg.Path(itemPath), err),
 					itemPath,
 					"",
-					ve.Critical,
+					pve.Critical,
 				)
 				errs = append(errs, vError)
 			} else {
@@ -210,7 +210,7 @@ func (v *validator) Validate() pve.ValidationErrors {
 			fmt.Errorf("folder [%s] exceeds the total size limit of %s", v.pkg.Path(v.folderPath), sizeLimit),
 			v.folderPath,
 			"",
-			ve.Critical,
+			pve.Critical,
 		)
 		errs = append(errs, vError)
 	}
@@ -223,7 +223,7 @@ func (v *validator) Validate() pve.ValidationErrors {
 
 		fileFound, err := matchingFileExists(itemSpec, files)
 		if err != nil {
-			vError = ve.NewStructuredError(err, v.folderPath, "", ve.Critical)
+			vError = ve.NewStructuredError(err, v.folderPath, "", pve.Critical)
 			errs = append(errs, vError)
 			continue
 		}
@@ -234,14 +234,14 @@ func (v *validator) Validate() pve.ValidationErrors {
 					fmt.Errorf("expecting to find [%s] %s in folder [%s]", itemSpec.Name(), itemSpec.Type(), v.pkg.Path(v.folderPath)),
 					v.folderPath,
 					"",
-					ve.Critical,
+					pve.Critical,
 				)
 			} else if itemSpec.Pattern() != "" {
 				vError = ve.NewStructuredError(
 					fmt.Errorf("expecting to find %s matching pattern [%s] in folder [%s]", itemSpec.Type(), itemSpec.Pattern(), v.pkg.Path(v.folderPath)),
 					v.folderPath,
 					"",
-					ve.Critical,
+					pve.Critical,
 				)
 			}
 			errs = append(errs, vError)

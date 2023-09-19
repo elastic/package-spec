@@ -61,7 +61,7 @@ func (s Spec) ValidatePackage(pkg packages.Package) pve.ValidationErrors {
 			fmt.Errorf("could not read root folder spec file: %w", err),
 			"/",
 			"",
-			ve.Critical,
+			pve.Critical,
 		)
 		errs = append(errs, vError)
 		return errs
@@ -110,7 +110,7 @@ func processErrors(errs pve.ValidationErrors) pve.ValidationErrors {
 					errors.New(strings.Replace(e.Error(), msg.original, msg.new, 1)),
 					"",
 					"",
-					ve.Critical,
+					pve.Critical,
 				)
 				processedErrs = append(processedErrs, vError)
 				continue

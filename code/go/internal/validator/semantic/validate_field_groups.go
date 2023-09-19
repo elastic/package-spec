@@ -23,7 +23,7 @@ func validateFieldUnit(metadata fieldFileMetadata, f field) pve.ValidationErrors
 			fmt.Errorf(`file "%s" is invalid: field "%s" can't have unit property'`, metadata.fullFilePath, f.Name),
 			metadata.filePath,
 			"",
-			errors.Critical,
+			pve.Critical,
 		)
 		return pve.ValidationErrors{vError}
 	}
@@ -33,7 +33,7 @@ func validateFieldUnit(metadata fieldFileMetadata, f field) pve.ValidationErrors
 			fmt.Errorf(`file "%s" is invalid: field "%s" can't have metric type property'`, metadata.fullFilePath, f.Name),
 			metadata.filePath,
 			"",
-			errors.Critical,
+			pve.Critical,
 		)
 		return pve.ValidationErrors{vError}
 	}

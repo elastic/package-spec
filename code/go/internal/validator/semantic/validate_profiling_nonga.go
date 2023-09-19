@@ -22,13 +22,13 @@ import (
 func ValidateProfilingNonGA(fsys fspath.FS) pve.ValidationErrors {
 	manifestVersion, err := readManifestVersion(fsys)
 	if err != nil {
-		vError := ve.NewStructuredError(err, "manifest.yml", "", ve.Critical)
+		vError := ve.NewStructuredError(err, "manifest.yml", "", pve.Critical)
 		return pve.ValidationErrors{vError}
 	}
 
 	semVer, err := semver.NewVersion(manifestVersion)
 	if err != nil {
-		vError := ve.NewStructuredError(err, "manifest.yml", "", ve.Critical)
+		vError := ve.NewStructuredError(err, "manifest.yml", "", pve.Critical)
 		return pve.ValidationErrors{vError}
 	}
 
@@ -38,7 +38,7 @@ func ValidateProfilingNonGA(fsys fspath.FS) pve.ValidationErrors {
 
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
-		vError := ve.NewStructuredError(err, "data_stream", "", ve.Critical)
+		vError := ve.NewStructuredError(err, "data_stream", "", pve.Critical)
 		return pve.ValidationErrors{vError}
 	}
 
@@ -60,7 +60,7 @@ func validateProfilingTypeNotUsed(fsys fspath.FS, dataStream string) pve.Validat
 			fmt.Errorf("failed to read data stream manifest in \"%s\": %w", fsys.Path(manifestPath), err),
 			manifestPath,
 			"",
-			ve.Critical)
+			pve.Critical)
 	}
 
 	var manifest struct {
@@ -72,7 +72,7 @@ func validateProfilingTypeNotUsed(fsys fspath.FS, dataStream string) pve.Validat
 			fmt.Errorf("failed to parse data stream manifest in \"%s\": %w", fsys.Path(manifestPath), err),
 			manifestPath,
 			"",
-			ve.Critical)
+			pve.Critical)
 	}
 
 	if manifest.Type == "profiling" {
@@ -80,7 +80,7 @@ func validateProfilingTypeNotUsed(fsys fspath.FS, dataStream string) pve.Validat
 			fmt.Errorf("file \"%s\" is invalid: profiling data type cannot be used in GA packages", fsys.Path(manifestPath)),
 			manifestPath,
 			"",
-			ve.Critical)
+			pve.Critical)
 	}
 
 	return nil

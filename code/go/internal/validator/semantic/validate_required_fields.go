@@ -82,7 +82,7 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) pv
 					},
 					metadata.filePath,
 					"",
-					ve.Critical,
+					pve.Critical,
 				),
 			}
 		}
@@ -105,7 +105,7 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) pv
 						},
 						dataStream, // FIXME what path to be used here?
 						"",
-						ve.Critical,
+						pve.Critical,
 					),
 				)
 			}

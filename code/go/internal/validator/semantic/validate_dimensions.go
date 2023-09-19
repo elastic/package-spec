@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/errors"
+	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
@@ -25,11 +25,11 @@ func validateDimensionField(metadata fieldFileMetadata, f field) pve.ValidationE
 		return nil
 	}
 	if f.Dimension && !isAllowedDimensionType(f.Type) {
-		vError := errors.NewStructuredError(
+		vError := ve.NewStructuredError(
 			fmt.Errorf(`file "%s" is invalid: field "%s" of type %s can't be a dimension, allowed types for dimensions: %s`, metadata.fullFilePath, f.Name, f.Type, strings.Join(allowedDimensionTypes, ", ")),
 			metadata.filePath,
 			"",
-			errors.Critical,
+			pve.Critical,
 		)
 		return pve.ValidationErrors{vError}
 	}

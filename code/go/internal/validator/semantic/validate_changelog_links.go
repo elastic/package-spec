@@ -42,7 +42,7 @@ func (e ChangelogLinkError) Error() string {
 func ValidateChangelogLinks(fsys fspath.FS) pve.ValidationErrors {
 	changelogLinks, err := readChangelogLinks(fsys)
 	if err != nil {
-		vError := ve.NewStructuredError(err, changelogFileName, "", ve.Critical)
+		vError := ve.NewStructuredError(err, changelogFileName, "", pve.Critical)
 		return pve.ValidationErrors{vError}
 	}
 	return ensureLinksAreValid(changelogLinks)
@@ -68,14 +68,14 @@ func ensureLinksAreValid(links []string) pve.ValidationErrors {
 	for _, link := range links {
 		linkURL, err := url.Parse(link)
 		if err != nil {
-			vError := ve.NewStructuredError(fmt.Errorf("invalid URL %v", err), changelogFileName, "", ve.Critical)
+			vError := ve.NewStructuredError(fmt.Errorf("invalid URL %v", err), changelogFileName, "", pve.Critical)
 			errs.Append(pve.ValidationErrors{vError})
 			continue
 		}
 		for _, vl := range validateLinks {
 			if strings.Contains(linkURL.Host, vl.domain) {
 				if err = vl.validateLink(linkURL); err != nil {
-					vError := ve.NewStructuredError(err, changelogFileName, "", ve.Critical)
+					vError := ve.NewStructuredError(err, changelogFileName, "", pve.Critical)
 					errs.Append(pve.ValidationErrors{vError})
 				}
 			}

@@ -43,7 +43,7 @@ func ValidateKibanaNoDanglingObjectIDs(fsys fspath.FS) pve.ValidationErrors {
 			fmt.Errorf("error finding Kibana object files: %w", err),
 			"kibana", // FIXME other file path name?
 			"",
-			ve.Critical,
+			pve.Critical,
 		)
 		errs = append(errs, vError)
 		return errs
@@ -57,7 +57,7 @@ func ValidateKibanaNoDanglingObjectIDs(fsys fspath.FS) pve.ValidationErrors {
 				fmt.Errorf("unable to create reference from file [%s]: %w", fsys.Path(filePath), err),
 				filePath,
 				"",
-				ve.Critical,
+				pve.Critical,
 			)
 			errs = append(errs, vError)
 		}
@@ -70,7 +70,7 @@ func ValidateKibanaNoDanglingObjectIDs(fsys fspath.FS) pve.ValidationErrors {
 				fmt.Errorf("unable to create referenced objects from file [%s]: %w", fsys.Path(filePath), err),
 				filePath,
 				"",
-				ve.Critical,
+				pve.Critical,
 			)
 			errs = append(errs, vError)
 			continue
