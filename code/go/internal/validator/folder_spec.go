@@ -87,7 +87,7 @@ func (v *validator) Validate() pve.ValidationErrors {
 					fmt.Errorf(message),
 					v.folderPath,
 					"",
-					pve.Critical,
+					pve.Warning,
 				)
 				errs = append(errs, vError)
 			} else {

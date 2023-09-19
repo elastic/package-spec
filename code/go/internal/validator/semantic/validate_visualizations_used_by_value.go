@@ -76,7 +76,7 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) pve.ValidationErrors {
 					fmt.Errorf(message),
 					filePath,
 					"",
-					pve.Critical,
+					pve.Warning,
 				)
 				errs = append(errs, vError)
 			} else {

@@ -86,7 +86,7 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) pve.ValidationErrors {
 				err,
 				"manifest.yml",
 				"",
-				pve.Critical,
+				pve.Warning,
 			)
 			errs.Append(pve.ValidationErrors{vError})
 		} else {
