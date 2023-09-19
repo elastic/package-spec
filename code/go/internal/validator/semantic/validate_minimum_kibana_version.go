@@ -80,7 +80,7 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) pve.ValidationErrors {
 	warningsAsErrors := common.IsDefinedWarningsAsErrors()
 	err = validateMinimumKibanaVersionSavedObjectTags(fsys, pkg.Type, *pkg.Version, kibanaVersionCondition)
 	if err != nil {
-		err = fmt.Errorf("Warning: %v", err)
+		err = fmt.Errorf("Warning: %v", err) //lint:ignore ST1005 added warning message header
 		if warningsAsErrors {
 			vError := ve.NewStructuredError(
 				err,

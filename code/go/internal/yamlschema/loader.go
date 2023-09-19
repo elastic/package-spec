@@ -71,7 +71,7 @@ func (s *FileSchema) Validate(fsys fs.FS, filePath string) pve.ValidationErrors 
 	if !result.Valid() {
 		var errs pve.ValidationErrors
 		for _, re := range result.Errors() {
-			vError := ve.NewJsonSchemaError(
+			vError := ve.NewJSONSchemaError(
 				filePath,
 				re.Field(),
 				adjustErrorDescription(re.Description()),

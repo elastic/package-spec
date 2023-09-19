@@ -28,6 +28,16 @@ func ValidateRoutingRulesAndDataset(fsys fspath.FS) pve.ValidationErrors {
 	var errs pve.ValidationErrors
 	for _, dataStream := range dataStreams {
 		anyRoutingRules, err := anyRoutingRulesInDataStream(fsys, dataStream)
+		if err != nil {
+			vError := ve.NewStructuredError(
+				err,
+				routingRulesPath(dataStream),
+				"",
+				pve.Critical,
+			)
+			errs.Append(pve.ValidationErrors{vError})
+			continue
+		}
 		if !anyRoutingRules {
 			continue
 		}

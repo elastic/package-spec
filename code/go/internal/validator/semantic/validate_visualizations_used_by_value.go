@@ -80,7 +80,7 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) pve.ValidationErrors {
 				)
 				errs = append(errs, vError)
 			} else {
-				log.Printf(message)
+				log.Print(message)
 			}
 		}
 	}

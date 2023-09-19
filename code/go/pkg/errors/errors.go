@@ -26,6 +26,7 @@ type ValidationPathError interface {
 	File() string
 }
 
+// ValidationErrors is an error that contains an iterable collection of validation error messages.
 type ValidationErrors []ValidationError
 
 // Filter filters the validation errors using the function given as a parameter.

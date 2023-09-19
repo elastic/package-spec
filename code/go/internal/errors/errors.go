@@ -31,18 +31,22 @@ type DanglingObjectIDError struct {
 	filePath   string
 }
 
+// Error returns the message error
 func (e *DanglingObjectIDError) Error() string {
 	return fmt.Sprintf("file \"%s\" is invalid: dangling reference found: %s (%s)", e.filePath, e.objectID, e.objectType)
 }
 
+// File returns the file path where the was raised
 func (e *DanglingObjectIDError) File() string {
 	return e.filePath
 }
 
+// Code returns a unique code assigned to this error
 func (e *DanglingObjectIDError) Code() string {
 	return "DanglingObjectIDError"
 }
 
+// Severity returns the severity level assigned to this error
 func (e *DanglingObjectIDError) Severity() int {
 	return pve.Critical
 }
@@ -56,32 +60,36 @@ func NewDanglingObjectIDError(objectID, objectType, filePath string) *DanglingOb
 	}
 }
 
-// JsonSchemaError validation error for dangling object IDs
-type JsonSchemaError struct {
+// JSONSchemaError validation error for dangling object IDs
+type JSONSchemaError struct {
 	field       string
 	description string
 	filePath    string
 }
 
-func (e *JsonSchemaError) Error() string {
+// Error returns the message error
+func (e *JSONSchemaError) Error() string {
 	return fmt.Sprintf("field %s: %s", e.field, e.description)
 }
 
-func (e *JsonSchemaError) File() string {
+// File returns the file path where the was raised
+func (e *JSONSchemaError) File() string {
 	return e.filePath
 }
 
-func (e *JsonSchemaError) Code() string {
+// Code returns a unique code assigned to this error
+func (e *JSONSchemaError) Code() string {
 	return "JsonSchemaError"
 }
 
-func (e *JsonSchemaError) Severity() int {
+// Severity returns the severity level assigned to this error
+func (e *JSONSchemaError) Severity() int {
 	return pve.Critical
 }
 
-// NewJsonSchemaError creates a new validation error for JSON schema issues
-func NewJsonSchemaError(filePath, field, description string) *JsonSchemaError {
-	return &JsonSchemaError{
+// NewJSONSchemaError creates a new validation error for JSON schema issues
+func NewJSONSchemaError(filePath, field, description string) *JSONSchemaError {
+	return &JSONSchemaError{
 		field:       field,
 		description: description,
 		filePath:    filePath,
@@ -98,18 +106,22 @@ func NewStructuredError(err error, filePath, code string, level int) *Structured
 	}
 }
 
+// Error returns the message error
 func (e *StructuredError) Error() string {
 	return e.err.Error()
 }
 
+// Code returns a unique code assigned to this error
 func (e *StructuredError) Code() string {
 	return e.code
 }
 
+// Severity returns the severity level assigned to this error
 func (e *StructuredError) Severity() int {
 	return e.severity
 }
 
+// File returns the file path where the was raised
 func (e *StructuredError) File() string {
 	return e.filePath
 }
