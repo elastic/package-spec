@@ -7,10 +7,11 @@ package semantic
 import (
 	"testing"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
 )
 
 func TestCheckDashboardHasFilter(t *testing.T) {
