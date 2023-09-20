@@ -25,7 +25,7 @@ func TestCheckDashboardHasFilter(t *testing.T) {
 		},
 		{
 			dashboard: "testdata/dashboards/nats-with-query.json",
-			valid:     true,
+			valid:     false,
 		},
 		{
 			dashboard: "testdata/dashboards/tomcat-with-filter.json",

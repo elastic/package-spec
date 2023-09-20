@@ -54,7 +54,10 @@ func checkDashboardHasFilter(file pkgpath.File) error {
 		return fmt.Errorf("unable to decode search definition: %w", err)
 	}
 
-	if len(search.Filter) == 0 && len(search.Query.Query) == 0 {
+	if len(search.Filter) == 0 {
+		if len(search.Query.Query) > 0 {
+			return errors.New("saved query found, but no filter")
+		}
 		return errors.New("no filter found")
 	}
 
