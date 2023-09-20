@@ -2,7 +2,7 @@
 // or more contributor license agreements. Licensed under the Elastic License;
 // you may not use this file except in compliance with the Elastic License.
 
-package linter
+package processors
 
 import (
 	"fmt"
@@ -25,20 +25,18 @@ func createStructuredError(message string) errors.ValidationError {
 	)
 }
 
-func TestRunner(t *testing.T) {
+func TestFilter(t *testing.T) {
 	cases := []struct {
 		title          string
-		config         ConfigRunner
+		config         ConfigFilter
 		errors         errors.ValidationErrors
 		expectedErrors errors.ValidationErrors
 	}{
 		{
 			title: "test one exclude pattern",
-			config: ConfigRunner{
-				Issues: []Processors{
-					Processors{
-						ExcludePatterns: []string{"exclude"},
-					},
+			config: ConfigFilter{
+				Issues: Processors{
+					ExcludePatterns: []string{"exclude"},
 				},
 			},
 			errors: []errors.ValidationError{
@@ -51,14 +49,9 @@ func TestRunner(t *testing.T) {
 		},
 		{
 			title: "several exclude pattern",
-			config: ConfigRunner{
-				Issues: []Processors{
-					Processors{
-						ExcludePatterns: []string{"exclude"},
-					},
-					Processors{
-						ExcludePatterns: []string{"bar$"},
-					},
+			config: ConfigFilter{
+				Issues: Processors{
+					ExcludePatterns: []string{"exclude", "bar$"},
 				},
 			},
 			errors: []errors.ValidationError{
@@ -76,7 +69,7 @@ func TestRunner(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
-			runner, err := NewRunner(c.config)
+			runner, err := NewFilter(c.config)
 			require.NoError(t, err)
 
 			filteredErrors, err := runner.Run(c.errors)
@@ -93,6 +86,29 @@ func TestRunner(t *testing.T) {
 					"unexpected error: \"%s\"", e.Error(),
 				)
 			}
+		})
+	}
+}
+
+func TestLoadConfigFilter(t *testing.T) {
+	cases := []struct {
+		title                   string
+		configPath              string
+		expectedExcludePatterns int
+	}{
+		{
+			title:                   "test exclude config",
+			configPath:              "testdata/issues.config.yml",
+			expectedExcludePatterns: 2,
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.title, func(t *testing.T) {
+			config, err := LoadConfigFilter(c.configPath)
+			require.NoError(t, err)
+
+			assert.Equal(t, len(config.Issues.ExcludePatterns), c.expectedExcludePatterns)
 		})
 	}
 }
