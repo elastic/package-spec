@@ -33,6 +33,15 @@
                 "version": "7.5.2"
             }
         ],
+        "kibanaSavedObjectMeta": {
+            "searchSourceJSON": {
+                "filter": [],
+                "query": {
+                    "language": "kuery",
+                    "query": "data_stream.dataset: \"bad_dangling_object_ids.*\""
+                }
+            }
+        },
         "timeRestore": false,
         "title": "Dashboard  by References",
         "version": 1

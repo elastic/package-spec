@@ -135,6 +135,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateKibanaObjectIDs, types: []string{"integration"}},
 		{fn: semantic.ValidateRoutingRulesAndDataset, types: []string{"integration"}, since: semver.MustParse("2.9.0")},
 		{fn: semantic.ValidateKibanaNoDanglingObjectIDs, since: semver.MustParse("3.0.0")},
+		{fn: semantic.ValidateKibanaFilterPresent, since: semver.MustParse("3.0.0")},
 	}
 
 	var validationRules validationRules
