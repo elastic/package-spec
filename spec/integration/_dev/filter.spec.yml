@@ -1,0 +1,37 @@
+##
+## Describes the specification for the integration package's main manifest.yml file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  properties:
+    issues:
+      description: "" # TODO
+      type: object
+      additionalProperties: false
+      properties:
+        exclude:
+          description: "" # TODO
+          type: array
+          items:
+            type: string
+        exclude-rules:
+          description: "" # TODO
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              path:
+                description: File path
+                type: string
+                examples:
+                  - path/to/file.go
+                  - data_stream/a/fields/fields.yml
+              text:
+                description: Text to exclude
+                type: string
+                examples:
+                  - field .* is invalid
+
