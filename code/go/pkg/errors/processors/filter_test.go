@@ -59,8 +59,7 @@ func TestFilter(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
-			runner, err := NewFilter(c.config)
-			require.NoError(t, err)
+			runner := NewFilter(&c.config)
 
 			filteredErrors, err := runner.Run(c.errors)
 			require.NoError(t, err)

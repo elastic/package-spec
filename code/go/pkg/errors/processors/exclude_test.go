@@ -40,6 +40,12 @@ func TestExclude(t *testing.T) {
 			errors:   []string{"exclude", "1", "", "exclud", "notexclude"},
 			expected: []string{},
 		},
+		{
+			title:    "containing a substring pattern",
+			pattern:  "excl",
+			errors:   []string{"exclude", "1", "", "exclud", "notexclude"},
+			expected: []string{"1", "", "exclude"},
+		},
 	}
 
 	for _, c := range cases {

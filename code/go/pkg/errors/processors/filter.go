@@ -6,6 +6,7 @@ package processors
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -23,6 +24,7 @@ func (r *Filter) Run(errors errors.ValidationErrors) (errors.ValidationErrors, e
 	newErrors := errors
 	var err error
 	for _, p := range r.processors {
+		log.Printf("Running processor: %s", p.Name())
 		newErrors, err = p.Process(newErrors)
 		if err != nil {
 			return errors, err
@@ -61,7 +63,7 @@ func LoadConfigFilter(configPath string) (*ConfigFilter, error) {
 }
 
 // NewFilter creates a new filter given a configuration
-func NewFilter(config ConfigFilter) (*Filter, error) {
+func NewFilter(config *ConfigFilter) *Filter {
 	var filters []Processor
 	for _, pattern := range config.Issues.ExcludePatterns {
 		exclude := NewExclude(pattern)
@@ -72,5 +74,5 @@ func NewFilter(config ConfigFilter) (*Filter, error) {
 		processors: filters,
 	}
 
-	return &runner, nil
+	return &runner
 }

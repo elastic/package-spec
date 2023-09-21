@@ -5,6 +5,7 @@
 package processors
 
 import (
+	"log"
 	"regexp"
 
 	"github.com/elastic/package-spec/v2/code/go/pkg/errors"
@@ -39,7 +40,7 @@ func (p Exclude) Process(issues errors.ValidationErrors) (errors.ValidationError
 	}
 
 	errs, _ := issues.Filter(func(i error) bool {
-		// if pathError, ok := i.(errors.ValidationPathError); ok
+		log.Printf("Checking Error %s with pattern %s", i.Error(), p.pattern.String())
 		return !p.pattern.MatchString(i.Error())
 	})
 	return errs, nil
