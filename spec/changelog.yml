@@ -19,6 +19,9 @@
   - description: Require owner.type field
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/604
+  - description: Require filter in dashboards to limit scope of queries
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/607
 - version: 2.12.0-next
   changes:
   - description: Add flag to manifests to indicate if a package or data stream requires root privileges

@@ -1,4 +1,39 @@
 {
-    "id": "good_v3-dashboard-abc-1",
-    "type": "dashboard"
+   "id": "good_v3-dashboard-abc-1",
+   "type": "dashboard",
+   "attributes": {
+     "description": "",
+     "hits": 0,
+     "kibanaSavedObjectMeta": {
+         "searchSourceJSON": {
+             "filter": [
+                 {
+                     "$state": {
+                         "store": "appState"
+                     },
+                     "meta": {
+                         "alias": null,
+                         "disabled": false,
+                         "indexRefName": "kibanaSavedObjectMeta.searchSourceJSON.filter[0].meta.index",
+                         "key": "data_stream.dataset",
+                         "negate": false,
+                         "params": {
+                             "query": "good_v3.foo"
+                         },
+                         "type": "phrase"
+                     },
+                     "query": {
+                         "match_phrase": {
+                             "data_stream.dataset": "good_v3.foo"
+                         }
+                     }
+                 }
+             ],
+             "query": {
+                 "language": "kuery",
+                 "query": ""
+             }
+         }
+     }
+  }
 }

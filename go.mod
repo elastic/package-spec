@@ -11,6 +11,7 @@ require (
 	github.com/elastic/gojsonschema v1.2.1
 	github.com/evanphx/json-patch/v5 v5.7.0
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901
+	github.com/mitchellh/mapstructure v1.5.0
 	github.com/otiai10/copy v1.12.0
 	github.com/stretchr/testify v1.8.4
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415
