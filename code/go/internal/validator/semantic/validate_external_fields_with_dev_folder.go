@@ -7,9 +7,9 @@ package semantic
 import (
 	"fmt"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
+	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateExternalFieldsWithDevFolder verifies there is no field with external key if there is no _dev/build/build.yml definition

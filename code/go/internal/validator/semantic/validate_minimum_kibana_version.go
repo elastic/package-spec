@@ -11,11 +11,11 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
+	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateMinimumKibanaVersion ensures the minimum kibana version for a given package is the expected one

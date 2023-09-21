@@ -12,6 +12,21 @@ import (
 // ValidationErrors is an error that contains an iterable collection of validation error messages.
 type ValidationErrors []error
 
+// Filter filters the validation errors using the function given as a parameter.
+func (ve ValidationErrors) Filter(filter func(elem error) bool) (ValidationErrors, ValidationErrors) {
+	var errs ValidationErrors
+	var filtered ValidationErrors
+
+	for _, item := range ve {
+		if filter(item) {
+			errs = append(errs, item)
+		} else {
+			filtered = append(filtered, item)
+		}
+	}
+	return errs, filtered
+}
+
 func (ve ValidationErrors) Error() string {
 	if len(ve) == 0 {
 		return "found 0 validation errors"

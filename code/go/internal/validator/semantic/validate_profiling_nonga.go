@@ -10,9 +10,10 @@ import (
 	"path"
 
 	"github.com/Masterminds/semver/v3"
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
-	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"gopkg.in/yaml.v3"
+
+	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateProfilingNonGA validates that the profiling data type is not used in GA packages,

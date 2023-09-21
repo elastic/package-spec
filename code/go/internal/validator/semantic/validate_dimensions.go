@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateDimensionFields verifies if dimension fields are of one of the expected types.

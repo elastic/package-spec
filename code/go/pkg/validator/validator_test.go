@@ -12,8 +12,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
+	"github.com/elastic/package-spec/v2/code/go/pkg/errors"
 
 	cp "github.com/otiai10/copy"
 	"github.com/stretchr/testify/assert"

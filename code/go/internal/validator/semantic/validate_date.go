@@ -7,8 +7,8 @@ package semantic
 import (
 	"fmt"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateDateFields verifies if date fields are of one of the expected types.

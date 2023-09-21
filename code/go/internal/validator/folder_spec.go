@@ -12,10 +12,10 @@ import (
 	"regexp"
 	"strings"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
+	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 type validator struct {

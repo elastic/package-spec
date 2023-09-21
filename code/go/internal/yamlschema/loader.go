@@ -12,12 +12,13 @@ import (
 	"sync"
 
 	"github.com/Masterminds/semver/v3"
+
 	"github.com/elastic/gojsonschema"
 
 	"gopkg.in/yaml.v3"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
+	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 var semver3_0_0 = semver.MustParse("3.0.0")

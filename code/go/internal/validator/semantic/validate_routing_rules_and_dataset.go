@@ -11,9 +11,9 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
+	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // ValidateRoutingRulesAndDataset returns validation errors if there are routing rules defined in any dataStream

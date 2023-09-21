@@ -14,12 +14,12 @@ import (
 	"github.com/Masterminds/semver/v3"
 
 	spec "github.com/elastic/package-spec/v2"
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/loader"
 	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/v2/code/go/internal/validator/semantic"
+	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 // Spec represents a package specification

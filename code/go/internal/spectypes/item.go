@@ -7,7 +7,7 @@ package spectypes
 import (
 	"io/fs"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
+	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
 const (
