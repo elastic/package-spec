@@ -17,34 +17,39 @@ import (
 func TestExclude(t *testing.T) {
 
 	cases := []struct {
-		title    string
-		pattern  string
-		errors   []string
-		expected []string
+		title            string
+		pattern          string
+		errors           []string
+		expected         []string
+		expectedFiltered []string
 	}{
 		{
-			title:    "using pattern",
-			pattern:  "^exclude$",
-			errors:   []string{"exclude", "1", "", "exclud", "notexclude"},
-			expected: []string{"1", "", "exclud", "notexclude"},
+			title:            "using pattern",
+			pattern:          "^exclude$",
+			errors:           []string{"exclude", "1", "", "exclud", "notexclude"},
+			expected:         []string{"1", "", "exclud", "notexclude"},
+			expectedFiltered: []string{"exclude"},
 		},
 		{
-			title:    "empty pattern",
-			pattern:  "",
-			errors:   []string{"exclude", "1", "", "exclud", "notexclude"},
-			expected: []string{"exclude", "1", "", "exclud", "notexclude"},
+			title:            "empty pattern",
+			pattern:          "",
+			errors:           []string{"exclude", "1", "", "exclud", "notexclude"},
+			expected:         []string{"exclude", "1", "", "exclud", "notexclude"},
+			expectedFiltered: nil,
 		},
 		{
-			title:    "exclude all pattern",
-			pattern:  ".*",
-			errors:   []string{"exclude", "1", "", "exclud", "notexclude"},
-			expected: []string{},
+			title:            "exclude all pattern",
+			pattern:          ".*",
+			errors:           []string{"exclude", "1", "", "exclud", "notexclude"},
+			expected:         []string{},
+			expectedFiltered: []string{"exclude", "1", "", "exclud", "notexclude"},
 		},
 		{
-			title:    "containing a substring pattern",
-			pattern:  "excl",
-			errors:   []string{"exclude", "1", "", "exclud", "notexclude"},
-			expected: []string{"1", "", "exclude"},
+			title:            "containing a substring pattern",
+			pattern:          "excl",
+			errors:           []string{"exclude", "1", "", "exclud", "notexclude"},
+			expected:         []string{"1", ""},
+			expectedFiltered: []string{"exclude", "exclud", "notexclude"},
 		},
 	}
 
@@ -56,15 +61,19 @@ func TestExclude(t *testing.T) {
 				issues = append(issues, fmt.Errorf(e))
 			}
 
-			processedIssues, err := p.Process(issues)
+			processedIssues, filteredIssues, err := p.Process(issues)
 			require.NoError(t, err)
 
 			assert.Len(t, processedIssues, len(c.expected))
+			assert.Len(t, filteredIssues, len(c.expectedFiltered))
 
-			if len(c.expected) == 0 {
-				return
-			}
 			var processedTexts []string
+			for _, i := range filteredIssues {
+				processedTexts = append(processedTexts, i.Error())
+			}
+			assert.Equal(t, c.expectedFiltered, processedTexts)
+
+			processedTexts = []string{}
 			for _, i := range processedIssues {
 				processedTexts = append(processedTexts, i.Error())
 			}

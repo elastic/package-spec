@@ -17,10 +17,11 @@ import (
 
 func TestFilter(t *testing.T) {
 	cases := []struct {
-		title          string
-		config         ConfigFilter
-		errors         errors.ValidationErrors
-		expectedErrors errors.ValidationErrors
+		title                  string
+		config                 ConfigFilter
+		errors                 errors.ValidationErrors
+		expectedErrors         errors.ValidationErrors
+		expectedFilteredErrors errors.ValidationErrors
 	}{
 		{
 			title: "test one exclude pattern",
@@ -35,6 +36,9 @@ func TestFilter(t *testing.T) {
 			},
 			expectedErrors: errors.ValidationErrors{
 				fmt.Errorf("other error"),
+			},
+			expectedFilteredErrors: errors.ValidationErrors{
+				fmt.Errorf("exclude error"),
 			},
 		},
 		{
@@ -54,6 +58,10 @@ func TestFilter(t *testing.T) {
 				fmt.Errorf("other error"),
 				fmt.Errorf("foo bar foo"),
 			},
+			expectedFilteredErrors: errors.ValidationErrors{
+				fmt.Errorf("exclude error"),
+				fmt.Errorf("foo bar"),
+			},
 		},
 	}
 
@@ -61,18 +69,28 @@ func TestFilter(t *testing.T) {
 		t.Run(c.title, func(t *testing.T) {
 			runner := NewFilter(&c.config)
 
-			filteredErrors, err := runner.Run(c.errors)
+			finalErrors, filteredErrors, err := runner.Run(c.errors)
 			require.NoError(t, err)
 
-			assert.Len(t, filteredErrors, len(c.expectedErrors))
-			assert.NotEqual(t, c.errors, filteredErrors)
-			for _, e := range filteredErrors {
+			assert.Len(t, finalErrors, len(c.expectedErrors))
+			assert.Len(t, filteredErrors, len(c.expectedFilteredErrors))
+
+			for _, e := range finalErrors {
 				assert.True(
 					t,
 					slices.ContainsFunc(c.expectedErrors, func(elem error) bool {
 						return elem.Error() == e.Error()
 					}),
 					"unexpected error: \"%s\"", e.Error(),
+				)
+			}
+			for _, e := range filteredErrors {
+				assert.True(
+					t,
+					slices.ContainsFunc(c.expectedFilteredErrors, func(elem error) bool {
+						return elem.Error() == e.Error()
+					}),
+					"unexpected filtered error: \"%s\"", e.Error(),
 				)
 			}
 		})

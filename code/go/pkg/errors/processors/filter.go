@@ -6,7 +6,6 @@ package processors
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -20,17 +19,20 @@ type Filter struct {
 }
 
 // Run runs all the processors over all the validation errors and return the filtered ones
-func (r *Filter) Run(errors errors.ValidationErrors) (errors.ValidationErrors, error) {
-	newErrors := errors
-	var err error
+func (r *Filter) Run(allErrors errors.ValidationErrors) (errors.ValidationErrors, errors.ValidationErrors, error) {
+	newErrors := allErrors
+	var allFiltered errors.ValidationErrors
+
 	for _, p := range r.processors {
-		log.Printf("Running processor: %s", p.Name())
-		newErrors, err = p.Process(newErrors)
+		var filtered errors.ValidationErrors
+		var err error
+		newErrors, filtered, err = p.Process(newErrors)
 		if err != nil {
-			return errors, err
+			return allErrors, nil, err
 		}
+		allFiltered.Append(filtered)
 	}
-	return newErrors, nil
+	return newErrors, allFiltered, nil
 }
 
 // AddProcessors allows to add custom processors to the runner

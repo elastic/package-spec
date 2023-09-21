@@ -5,7 +5,6 @@
 package processors
 
 import (
-	"log"
 	"regexp"
 
 	"github.com/elastic/package-spec/v2/code/go/pkg/errors"
@@ -34,14 +33,13 @@ func (p Exclude) Name() string {
 }
 
 // Process returns a new list of validation errors filtered.
-func (p Exclude) Process(issues errors.ValidationErrors) (errors.ValidationErrors, error) {
+func (p Exclude) Process(issues errors.ValidationErrors) (errors.ValidationErrors, errors.ValidationErrors, error) {
 	if p.pattern == nil {
-		return issues, nil
+		return issues, nil, nil
 	}
 
-	errs, _ := issues.Filter(func(i error) bool {
-		log.Printf("Checking Error %s with pattern %s", i.Error(), p.pattern.String())
+	errs, filtered := issues.Filter(func(i error) bool {
 		return !p.pattern.MatchString(i.Error())
 	})
-	return errs, nil
+	return errs, filtered, nil
 }
