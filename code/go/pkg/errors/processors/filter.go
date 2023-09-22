@@ -6,7 +6,7 @@ package processors
 
 import (
 	"fmt"
-	"os"
+	"io/fs"
 
 	"gopkg.in/yaml.v3"
 
@@ -51,8 +51,9 @@ type Processors struct {
 }
 
 // LoadConfigFilter reads the config file and returns a ConfigFilter struct
-func LoadConfigFilter(configPath string) (*ConfigFilter, error) {
-	yamlFile, err := os.ReadFile(configPath)
+func LoadConfigFilter(fsys fs.FS, configPath string) (*ConfigFilter, error) {
+	// yamlFile, err := os.ReadFile(configPath)
+	yamlFile, err := fs.ReadFile(fsys, configPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config file %s: %w", configPath, err)
 	}

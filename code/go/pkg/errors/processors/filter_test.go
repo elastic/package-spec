@@ -6,6 +6,7 @@ package processors
 
 import (
 	"fmt"
+	"os"
 	"slices"
 	"testing"
 
@@ -112,7 +113,8 @@ func TestLoadConfigFilter(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
-			config, err := LoadConfigFilter(c.configPath)
+			fsys := os.DirFS(".")
+			config, err := LoadConfigFilter(fsys, c.configPath)
 			require.NoError(t, err)
 
 			assert.Equal(t, len(config.Issues.ExcludePatterns), c.expectedExcludePatterns)
