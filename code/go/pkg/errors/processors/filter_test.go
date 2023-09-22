@@ -39,7 +39,7 @@ func TestFilter(t *testing.T) {
 		{
 			title: "using codes",
 			config: ConfigFilter{
-				Issues: Processors{
+				Errors: Processors{
 					ExcludeChecks: []string{"CODE01", "CODE03"},
 				},
 			},
@@ -61,7 +61,7 @@ func TestFilter(t *testing.T) {
 		{
 			title: "using unassigned code",
 			config: ConfigFilter{
-				Issues: Processors{
+				Errors: Processors{
 					ExcludeChecks: []string{""},
 				},
 			},
@@ -121,7 +121,7 @@ func TestLoadConfigFilter(t *testing.T) {
 	}{
 		{
 			title:                   "test exclude config",
-			configPath:              "testdata/issues.config.yml",
+			configPath:              "testdata/errors.config.yml",
 			expectedExcludePatterns: 2,
 		},
 	}
@@ -132,7 +132,7 @@ func TestLoadConfigFilter(t *testing.T) {
 			config, err := LoadConfigFilter(fsys, c.configPath)
 			require.NoError(t, err)
 
-			assert.Equal(t, len(config.Issues.ExcludePatterns), c.expectedExcludePatterns)
+			assert.Equal(t, len(config.Errors.ExcludeChecks), c.expectedExcludePatterns)
 		})
 	}
 }

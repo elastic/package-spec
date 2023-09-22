@@ -17,9 +17,3 @@ spec:
       name: deploy
       required: false
       $ref: "./deploy/spec.yml"
-    - description: Lint config file
-      type: file
-      contentMediaType: "application/x-yaml"
-      name: "filter.yml"
-      required: false
-      $ref: "./filter.spec.yml"

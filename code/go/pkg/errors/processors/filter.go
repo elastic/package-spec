@@ -42,13 +42,12 @@ func (r *Filter) AddProcessors(items []Processor) {
 
 // ConfigFilter represents the linter configuration file
 type ConfigFilter struct {
-	Issues Processors `yaml:"issues"`
+	Errors Processors `yaml:"errors"`
 }
 
 // Processors represents the list of processors in the configuration file
 type Processors struct {
-	ExcludePatterns []string `yaml:"exclude"`
-	ExcludeChecks   []string `yaml:"exclude_checks"`
+	ExcludeChecks []string `yaml:"exclude_checks"`
 }
 
 // LoadConfigFilter reads the config file and returns a ConfigFilter struct
@@ -69,7 +68,7 @@ func LoadConfigFilter(fsys fs.FS, configPath string) (*ConfigFilter, error) {
 // NewFilter creates a new filter given a configuration
 func NewFilter(config *ConfigFilter) *Filter {
 	var filters []Processor
-	for _, code := range config.Issues.ExcludeChecks {
+	for _, code := range config.Errors.ExcludeChecks {
 		exclude := NewExcludeCheck(code)
 		filters = append(filters, *exclude)
 	}
