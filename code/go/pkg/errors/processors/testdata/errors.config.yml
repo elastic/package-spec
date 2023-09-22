@@ -1,4 +1,4 @@
-issues:
+errors:
   exclude:
     - "exclude$"
     - "^foo$"

@@ -63,6 +63,12 @@ spec:
     name: "lifecycle.yml"
     required: false
     $ref: "../integration/data_stream/lifecycle.spec.yml"
+  - description: Errors configuration file
+    type: file
+    contentMediaType: "application/x-yaml"
+    name: "errors.conf.yml"
+    required: false
+    $ref: "../integration/errors.conf.spec.yml"
 
 versions:
   - before: 2.10.0

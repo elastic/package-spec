@@ -6,7 +6,7 @@ spec:
   type: object
   additionalProperties: false
   properties:
-    issues:
+    errors:
       description: "Rules to manage the errors"
       type: object
       additionalProperties: false

@@ -66,3 +66,9 @@ spec:
     name: elasticsearch
     required: false
     $ref: "./elasticsearch/spec.yml"
+  - description: Errors configuration file
+    type: file
+    contentMediaType: "application/x-yaml"
+    name: "errors.conf.yml"
+    required: false
+    $ref: "./errors.conf.spec.yml"
