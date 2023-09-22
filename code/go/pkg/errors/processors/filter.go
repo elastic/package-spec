@@ -69,11 +69,6 @@ func LoadConfigFilter(fsys fs.FS, configPath string) (*ConfigFilter, error) {
 // NewFilter creates a new filter given a configuration
 func NewFilter(config *ConfigFilter) *Filter {
 	var filters []Processor
-	for _, pattern := range config.Issues.ExcludePatterns {
-		exclude := NewExclude(pattern)
-		filters = append(filters, *exclude)
-	}
-
 	for _, code := range config.Issues.ExcludeChecks {
 		exclude := NewExcludeCheck(code)
 		filters = append(filters, *exclude)

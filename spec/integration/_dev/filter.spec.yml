@@ -7,17 +7,12 @@ spec:
   additionalProperties: false
   properties:
     issues:
-      description: "" # TODO
+      description: "Rules to manage the errors"
       type: object
       additionalProperties: false
       properties:
-        exclude:
-          description: "" # TODO
-          type: array
-          items:
-            type: string
         exclude_checks:
-          description: "" # TODO
+          description: "List of codes that will be skipped"
           type: array
           items:
             type: string

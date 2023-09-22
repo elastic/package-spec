@@ -37,42 +37,6 @@ func TestFilter(t *testing.T) {
 		expectedFilteredErrors ve.ValidationErrors
 	}{
 		{
-			title: "test one exclude pattern",
-			config: ConfigFilter{
-				Issues: Processors{
-					ExcludePatterns: []string{"exclude"},
-				},
-			},
-			errors: ve.ValidationErrors{
-				createValidationError("exclude error", ""),
-				createValidationError("other error", ""),
-			},
-			expectedErrors:         ve.ValidationErrors{createValidationError("other error", "")},
-			expectedFilteredErrors: ve.ValidationErrors{createValidationError("exclude error", "")},
-		},
-		{
-			title: "several exclude pattern",
-			config: ConfigFilter{
-				Issues: Processors{
-					ExcludePatterns: []string{"exclude", "bar$"},
-				},
-			},
-			errors: ve.ValidationErrors{
-				createValidationError("exclude error", ""),
-				createValidationError("other error", ""),
-				createValidationError("foo bar", ""),
-				createValidationError("foo bar foo", ""),
-			},
-			expectedErrors: ve.ValidationErrors{
-				createValidationError("other error", ""),
-				createValidationError("foo bar foo", ""),
-			},
-			expectedFilteredErrors: ve.ValidationErrors{
-				createValidationError("exclude error", ""),
-				createValidationError("foo bar", ""),
-			},
-		},
-		/*{
 			title: "using codes",
 			config: ConfigFilter{
 				Issues: Processors{
@@ -93,7 +57,28 @@ func TestFilter(t *testing.T) {
 				createValidationError("other error", "CODE01"),
 				createValidationError("foo bar foo", "CODE03"),
 			},
-		},*/
+		},
+		{
+			title: "using unassigned code",
+			config: ConfigFilter{
+				Issues: Processors{
+					ExcludeChecks: []string{""},
+				},
+			},
+			errors: ve.ValidationErrors{
+				createValidationError("exclude error", "CODE00"),
+				createValidationError("other error", "CODE01"),
+				createValidationError("foo bar", "CODE02"),
+				createValidationError("foo bar foo", "CODE03"),
+			},
+			expectedErrors: ve.ValidationErrors{
+				createValidationError("exclude error", "CODE00"),
+				createValidationError("other error", "CODE01"),
+				createValidationError("foo bar", "CODE02"),
+				createValidationError("foo bar foo", "CODE03"),
+			},
+			expectedFilteredErrors: nil,
+		},
 	}
 
 	for _, c := range cases {
