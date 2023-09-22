@@ -8,30 +8,34 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
-// Exclude is a processor to filter errors according to their messages.
+// ExcludeCheck is a processor to filter errors according to their messages.
 type ExcludeCheck struct {
 	code string
 }
 
-// NewExclude creates a new Exclude processor.
+// NewExcludeCheck creates a new ExcludeCheck processor.
 func NewExcludeCheck(code string) *ExcludeCheck {
 	return &ExcludeCheck{
 		code: code,
 	}
 }
 
-// Name returns the name of this Exclude processor.
+// Name returns the name of this ExcludeCheck processor.
 func (p ExcludeCheck) Name() string {
 	return "exclude-checks"
 }
 
 // Process returns a new list of validation errors filtered.
 func (p ExcludeCheck) Process(issues errors.ValidationErrors) (errors.ValidationErrors, errors.ValidationErrors, error) {
-	if p.code == "" {
+	if p.code == errors.UnassignedCode {
 		return issues, nil, nil
 	}
 
-	errs, filtered := issues.Filter(func(i errors.ValidationError) bool {
+	errs, filtered := issues.Collect(func(i errors.ValidationError) bool {
+		if i.Code() == errors.UnassignedCode {
+			// errors with TODO_code cannot be skipped
+			return true
+		}
 		return p.code != i.Code()
 	})
 	return errs, filtered, nil

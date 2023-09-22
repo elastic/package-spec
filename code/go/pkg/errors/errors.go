@@ -17,18 +17,14 @@ type ValidationError interface {
 	Code() string
 }
 
-const TODO_code = ""
-
-// TODO no error using this interface yet
 // ValidationPathError is the interface that validation errors related to paths must implement.
-type ValidationPathError interface {
+type ValidationPathError interface { // TODO no validation error using this interface yet
 	// File returns the file path where the error was raised.
 	File() string
 }
 
-// TODO no error using this interface yet
 // ValidationSeverityError is the interface that validation errors related to severities must implement.
-type ValidationSeverityError interface {
+type ValidationSeverityError interface { // TODO no validation error using this interface yet
 	// File returns the file path where the error was raised.
 	Severity() string
 }
@@ -36,13 +32,13 @@ type ValidationSeverityError interface {
 // ValidationErrors is an error that contains an iterable collection of validation error messages.
 type ValidationErrors []ValidationError
 
-// Filter filters the validation errors using the function given as a parameter.
-func (ve ValidationErrors) Filter(filter func(elem ValidationError) bool) (ValidationErrors, ValidationErrors) {
+// Collect filters the validation errors using the function given as a parameter.
+func (ve ValidationErrors) Collect(collect func(elem ValidationError) bool) (ValidationErrors, ValidationErrors) {
 	var errs ValidationErrors
 	var filtered ValidationErrors
 
 	for _, item := range ve {
-		if filter(item) {
+		if collect(item) {
 			errs = append(errs, item)
 		} else {
 			filtered = append(filtered, item)

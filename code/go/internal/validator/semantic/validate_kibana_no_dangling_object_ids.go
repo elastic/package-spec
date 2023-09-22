@@ -11,7 +11,6 @@ import (
 
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
-	"github.com/elastic/package-spec/v2/code/go/pkg/errors"
 	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
@@ -30,7 +29,7 @@ var exceptionAssets = []string{
 // returns validation errors if a Kibana object file in the package references another
 // Kibana object with ID i, but no Kibana object file for object ID i is found in the
 // package.
-func ValidateKibanaNoDanglingObjectIDs(fsys fspath.FS) errors.ValidationErrors {
+func ValidateKibanaNoDanglingObjectIDs(fsys fspath.FS) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 
 	installedIDs := []objectReference{}
@@ -39,7 +38,7 @@ func ValidateKibanaNoDanglingObjectIDs(fsys fspath.FS) errors.ValidationErrors {
 	filePaths := path.Join("kibana", "*", "*.json")
 	objectFiles, err := pkgpath.Files(fsys, filePaths)
 	if err != nil {
-		errs = append(errs, ve.NewStructuredError(fmt.Errorf("error finding Kibana object files: %w", err), ve.TODO_code))
+		errs = append(errs, ve.NewStructuredError(fmt.Errorf("error finding Kibana object files: %w", err), ve.UnassignedCode))
 		return errs
 	}
 	for _, objectFile := range objectFiles {
@@ -47,14 +46,14 @@ func ValidateKibanaNoDanglingObjectIDs(fsys fspath.FS) errors.ValidationErrors {
 
 		currentReference, err := getCurrentObjectReference(objectFile, fsys.Path(filePath))
 		if err != nil {
-			errs = append(errs, ve.NewStructuredError(fmt.Errorf("unable to create reference from file [%s]: %w", fsys.Path(filePath), err), ve.TODO_code))
+			errs = append(errs, ve.NewStructuredError(fmt.Errorf("unable to create reference from file [%s]: %w", fsys.Path(filePath), err), ve.UnassignedCode))
 		}
 
 		installedIDs = append(installedIDs, currentReference)
 
 		referencedObjects, err := getReferencesListFromCurrentObject(objectFile, fsys.Path(filePath))
 		if err != nil {
-			errs = append(errs, ve.NewStructuredError(fmt.Errorf("unable to create referenced objects from file [%s]: %w", fsys.Path(filePath), err), ve.TODO_code))
+			errs = append(errs, ve.NewStructuredError(fmt.Errorf("unable to create referenced objects from file [%s]: %w", fsys.Path(filePath), err), ve.UnassignedCode))
 			continue
 		}
 
@@ -77,7 +76,7 @@ func ValidateKibanaNoDanglingObjectIDs(fsys fspath.FS) errors.ValidationErrors {
 			return true
 		})
 		if !found {
-			errs = append(errs, ve.NewStructuredError(fmt.Errorf("file \"%s\" is invalid: dangling reference found: %s (%s)", reference.filePath, reference.objectID, reference.objectType), ve.TODO_code))
+			errs = append(errs, ve.NewStructuredError(fmt.Errorf("file \"%s\" is invalid: dangling reference found: %s (%s)", reference.filePath, reference.objectID, reference.objectType), ve.UnassignedCode))
 		}
 	}
 

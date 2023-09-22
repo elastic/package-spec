@@ -79,7 +79,7 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve
 						fullPath:     metadata.fullFilePath,
 						expectedType: expectedType,
 					},
-					ve.TODO_code,
+					ve.UnassignedCode,
 				),
 			}
 		}
@@ -100,7 +100,7 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve
 							expectedType: requiredType,
 							dataStream:   dataStream,
 						},
-						ve.TODO_code,
+						ve.UnassignedCode,
 					),
 				)
 			}

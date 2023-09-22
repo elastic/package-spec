@@ -39,7 +39,7 @@ func (e ChangelogLinkError) Error() string {
 func ValidateChangelogLinks(fsys fspath.FS) ve.ValidationErrors {
 	changelogLinks, err := readChangelogLinks(fsys)
 	if err != nil {
-		return ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)}
+		return ve.ValidationErrors{ve.NewStructuredError(err, ve.UnassignedCode)}
 	}
 	return ensureLinksAreValid(changelogLinks)
 }
@@ -65,14 +65,14 @@ func ensureLinksAreValid(links []string) ve.ValidationErrors {
 		linkURL, err := url.Parse(link)
 		if err != nil {
 			errs.Append(ve.ValidationErrors{
-				ve.NewStructuredError(fmt.Errorf("invalid URL %v", err), ve.CodeChangelogLinksInvalid), // TODO_code
+				ve.NewStructuredError(fmt.Errorf("invalid URL %v", err), ve.UnassignedCode),
 			})
 			continue
 		}
 		for _, vl := range validateLinks {
 			if strings.Contains(linkURL.Host, vl.domain) {
 				if err = vl.validateLink(linkURL); err != nil {
-					errs.Append(ve.ValidationErrors{ve.NewStructuredError(err, ve.CodeChangelogLinksInvalid)}) // TODO_code
+					errs.Append(ve.ValidationErrors{ve.NewStructuredError(err, ve.UnassignedCode)}) // TODO_code
 				}
 			}
 		}

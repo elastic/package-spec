@@ -58,7 +58,7 @@ func TestExclude(t *testing.T) {
 			p := NewExclude(c.pattern)
 			var issues pve.ValidationErrors
 			for _, e := range c.errors {
-				issues = append(issues, pve.NewStructuredError(errors.New(e), pve.TODO_code))
+				issues = append(issues, pve.NewStructuredError(errors.New(e), pve.UnassignedCode))
 			}
 
 			processedIssues, filteredIssues, err := p.Process(issues)

@@ -39,7 +39,7 @@ func validateFieldsLimits(fsys fspath.FS, limit int) ve.ValidationErrors {
 	var errs ve.ValidationErrors
 	for id, count := range counts {
 		if count > limit {
-			errs = append(errs, ve.NewStructuredError(fmt.Errorf("data stream %s has more than %d fields (%d)", id, limit, count), ve.TODO_code))
+			errs = append(errs, ve.NewStructuredError(fmt.Errorf("data stream %s has more than %d fields (%d)", id, limit, count), ve.UnassignedCode))
 		}
 	}
 	return errs

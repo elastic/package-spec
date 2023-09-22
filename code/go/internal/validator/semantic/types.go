@@ -117,7 +117,7 @@ func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
 	fieldsFilesMetadata, err := listFieldsFiles(fsys)
 	if err != nil {
 		return ve.ValidationErrors{
-			ve.NewStructuredError(fmt.Errorf("can't list fields files: %w", err), ve.TODO_code),
+			ve.NewStructuredError(fmt.Errorf("can't list fields files: %w", err), ve.UnassignedCode),
 		}
 	}
 
@@ -125,7 +125,7 @@ func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
 	for _, metadata := range fieldsFilesMetadata {
 		unmarshaled, err := unmarshalFields(fsys, metadata.filePath)
 		if err != nil {
-			anError := ve.NewStructuredError(fmt.Errorf(`file "%s" is invalid: can't unmarshal fields: %w`, metadata.filePath, err), ve.TODO_code)
+			anError := ve.NewStructuredError(fmt.Errorf(`file "%s" is invalid: can't unmarshal fields: %w`, metadata.filePath, err), ve.UnassignedCode)
 			vErrs = append(vErrs, anError)
 		}
 

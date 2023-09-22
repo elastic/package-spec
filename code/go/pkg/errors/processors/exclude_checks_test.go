@@ -30,6 +30,13 @@ func TestExcludeChecks(t *testing.T) {
 			expected:         []string{"OTHER", "", "42", "NOCODE01"},
 			expectedFiltered: []string{"CODE01"},
 		},
+		{
+			title:            "using empty string TODO_code",
+			code:             "",
+			codes:            []string{"CODE01", "OTHER", "", "42", ""},
+			expected:         []string{"CODE01", "OTHER", "", "42", ""},
+			expectedFiltered: nil,
+		},
 	}
 
 	for _, c := range cases {

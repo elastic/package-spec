@@ -38,7 +38,7 @@ func (p Exclude) Process(issues errors.ValidationErrors) (errors.ValidationError
 		return issues, nil, nil
 	}
 
-	errs, filtered := issues.Filter(func(i errors.ValidationError) bool {
+	errs, filtered := issues.Collect(func(i errors.ValidationError) bool {
 		return !p.pattern.MatchString(i.Error())
 	})
 	return errs, filtered, nil

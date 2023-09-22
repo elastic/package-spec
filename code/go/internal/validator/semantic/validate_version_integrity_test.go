@@ -49,7 +49,7 @@ func TestValidateGithubLink(t *testing.T) {
 }
 
 func TestEnsureLinksAreValid(t *testing.T) {
-	var githubError = ve.NewStructuredError(errGithubIssue, ve.TODO_code)
+	var githubError = ve.NewStructuredError(errGithubIssue, ve.UnassignedCode)
 
 	var tests = []struct {
 		name   string

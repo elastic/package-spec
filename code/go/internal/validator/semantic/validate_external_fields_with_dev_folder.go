@@ -20,7 +20,7 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
 	f, err := pkgpath.Files(fsys, buildPath)
 	if err != nil {
 		return ve.ValidationErrors{
-			ve.NewStructuredError(fmt.Errorf("not able to read _dev/build/build.yml: %w", err), ve.TODO_code),
+			ve.NewStructuredError(fmt.Errorf("not able to read _dev/build/build.yml: %w", err), ve.UnassignedCode),
 		}
 	}
 
@@ -32,7 +32,7 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
 	if buildFilePathDefined {
 		dependencies, err := readDevBuildDependenciesKeys(f[0])
 		if err != nil {
-			return ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)}
+			return ve.ValidationErrors{ve.NewStructuredError(err, ve.UnassignedCode)}
 		}
 		for _, dep := range dependencies {
 			mapDependencies[dep] = struct{}{}
@@ -46,12 +46,12 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
 
 		if !buildFilePathDefined {
 			err := fmt.Errorf("file \"%s\" is invalid: field %s with external key defined (%q) but no _dev/build/build.yml found", metadata.fullFilePath, f.Name, f.External)
-			return ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)}
+			return ve.ValidationErrors{ve.NewStructuredError(err, ve.UnassignedCode)}
 		}
 
 		if _, ok := mapDependencies[f.External]; !ok {
 			err := fmt.Errorf("file \"%s\" is invalid: field %s with external key defined (%q) but no definition found for it (_dev/build/build.yml)", metadata.fullFilePath, f.Name, f.External)
-			return ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)}
+			return ve.ValidationErrors{ve.NewStructuredError(err, ve.UnassignedCode)}
 		}
 		return nil
 	}

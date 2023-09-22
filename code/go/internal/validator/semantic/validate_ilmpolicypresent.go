@@ -21,14 +21,14 @@ import (
 func ValidateILMPolicyPresent(fsys fspath.FS) ve.ValidationErrors {
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
-		return ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)}
+		return ve.ValidationErrors{ve.NewStructuredError(err, ve.UnassignedCode)}
 	}
 
 	var errs ve.ValidationErrors
 	for _, dataStream := range dataStreams {
 		err = validateILMPolicyInDataStream(fsys, dataStream)
 		if err != nil {
-			errs = append(errs, ve.NewStructuredError(err, ve.TODO_code))
+			errs = append(errs, ve.NewStructuredError(err, ve.UnassignedCode))
 		}
 	}
 	return errs
