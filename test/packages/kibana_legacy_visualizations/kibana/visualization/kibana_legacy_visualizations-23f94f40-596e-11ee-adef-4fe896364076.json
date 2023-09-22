@@ -1,0 +1,83 @@
+{
+    "attributes": {
+        "description": "",
+        "kibanaSavedObjectMeta": {
+            "searchSourceJSON": {
+                "filter": [],
+                "query": {
+                    "language": "kuery",
+                    "query": ""
+                }
+            }
+        },
+        "title": "TSVB Markdown",
+        "uiStateJSON": {},
+        "version": 1,
+        "visState": {
+            "aggs": [],
+            "params": {
+                "axis_formatter": "number",
+                "axis_position": "left",
+                "axis_scale": "normal",
+                "drop_last_bucket": 0,
+                "id": "269c9bd6-6d39-43ee-a736-ca2d3bc8c86d",
+                "index_pattern_ref_name": "metrics_0_index_pattern",
+                "interval": "",
+                "markdown": "# Hai {{ count.last.raw }}",
+                "max_lines_legend": 1,
+                "series": [
+                    {
+                        "axis_position": "right",
+                        "chart_type": "line",
+                        "color": "#68BC00",
+                        "fill": 0.5,
+                        "formatter": "default",
+                        "id": "a9130cea-528c-40ce-b67d-d5a1d650a9f3",
+                        "line_width": 1,
+                        "metrics": [
+                            {
+                                "id": "1e09d941-507c-4621-8431-69582d7f1f52",
+                                "type": "count"
+                            }
+                        ],
+                        "override_index_pattern": 0,
+                        "palette": {
+                            "name": "default",
+                            "type": "palette"
+                        },
+                        "point_size": 1,
+                        "separate_axis": 0,
+                        "series_drop_last_bucket": 0,
+                        "split_mode": "everything",
+                        "stacked": "none",
+                        "time_range_mode": "entire_time_range"
+                    }
+                ],
+                "show_grid": 1,
+                "show_legend": 1,
+                "time_field": "",
+                "time_range_mode": "entire_time_range",
+                "tooltip_mode": "show_all",
+                "truncate_legend": 1,
+                "type": "markdown",
+                "use_kibana_indexes": true
+            },
+            "title": "TSVB Markdown",
+            "type": "metrics"
+        }
+    },
+    "coreMigrationVersion": "8.7.1",
+    "created_at": "2023-09-22T17:33:27.988Z",
+    "id": "kibana_legacy_visualizations-23f94f40-596e-11ee-adef-4fe896364076",
+    "migrationVersion": {
+        "visualization": "8.5.0"
+    },
+    "references": [
+        {
+            "id": "logs-*",
+            "name": "metrics_0_index_pattern",
+            "type": "index-pattern"
+        }
+    ],
+    "type": "visualization"
+}

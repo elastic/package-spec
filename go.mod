@@ -18,6 +18,7 @@ require (
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
 	gopkg.in/yaml.v3 v3.0.1
 	gotest.tools/gotestsum v1.11.0
+	github.com/elastic/kbncontent v0.0.0
 )
 
 require (
@@ -42,3 +43,5 @@ require (
 	golang.org/x/tools v0.13.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 )
+
+replace github.com/elastic/kbncontent v0.0.0 => ../kbncontent

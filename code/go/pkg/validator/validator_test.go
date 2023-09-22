@@ -227,6 +227,7 @@ func TestValidateFile(t *testing.T) {
 				`dangling reference found: bad_dangling_object_ids-8287a5d5-1576-4f3a-83c4-444e9058439c (search)`,
 			},
 		},
+		"kibana_legacy_visualizations": {},
 	}
 
 	for pkgName, test := range tests {

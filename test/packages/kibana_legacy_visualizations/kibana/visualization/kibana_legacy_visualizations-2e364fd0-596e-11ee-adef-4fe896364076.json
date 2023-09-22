@@ -1,0 +1,76 @@
+{
+    "attributes": {
+        "description": "",
+        "kibanaSavedObjectMeta": {
+            "searchSourceJSON": {
+                "filter": [],
+                "indexRefName": "kibanaSavedObjectMeta.searchSourceJSON.index",
+                "query": {
+                    "language": "kuery",
+                    "query": ""
+                }
+            }
+        },
+        "title": "Aggs-based tag cloud",
+        "uiStateJSON": {},
+        "version": 1,
+        "visState": {
+            "aggs": [
+                {
+                    "enabled": true,
+                    "id": "1",
+                    "params": {
+                        "emptyAsNull": false
+                    },
+                    "schema": "metric",
+                    "type": "count"
+                },
+                {
+                    "enabled": true,
+                    "id": "2",
+                    "params": {
+                        "excludeIsRegex": true,
+                        "field": "host.ip",
+                        "includeIsRegex": true,
+                        "missingBucket": false,
+                        "missingBucketLabel": "Missing",
+                        "order": "desc",
+                        "orderBy": "1",
+                        "otherBucket": false,
+                        "otherBucketLabel": "Other",
+                        "size": 5
+                    },
+                    "schema": "segment",
+                    "type": "terms"
+                }
+            ],
+            "params": {
+                "maxFontSize": 72,
+                "minFontSize": 18,
+                "orientation": "single",
+                "palette": {
+                    "name": "default",
+                    "type": "palette"
+                },
+                "scale": "linear",
+                "showLabel": true
+            },
+            "title": "Aggs-based tag cloud",
+            "type": "tagcloud"
+        }
+    },
+    "coreMigrationVersion": "8.7.1",
+    "created_at": "2023-09-22T17:33:45.165Z",
+    "id": "kibana_legacy_visualizations-2e364fd0-596e-11ee-adef-4fe896364076",
+    "migrationVersion": {
+        "visualization": "8.5.0"
+    },
+    "references": [
+        {
+            "id": "logs-*",
+            "name": "kibanaSavedObjectMeta.searchSourceJSON.index",
+            "type": "index-pattern"
+        }
+    ],
+    "type": "visualization"
+}
