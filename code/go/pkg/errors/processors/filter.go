@@ -48,6 +48,7 @@ type ConfigFilter struct {
 // Processors represents the list of processors in the configuration file
 type Processors struct {
 	ExcludePatterns []string `yaml:"exclude"`
+	ExcludeChecks   []string `yaml:"exclude_checks"`
 }
 
 // LoadConfigFilter reads the config file and returns a ConfigFilter struct
@@ -70,6 +71,11 @@ func NewFilter(config *ConfigFilter) *Filter {
 	var filters []Processor
 	for _, pattern := range config.Issues.ExcludePatterns {
 		exclude := NewExclude(pattern)
+		filters = append(filters, *exclude)
+	}
+
+	for _, code := range config.Issues.ExcludeChecks {
+		exclude := NewExcludeCheck(code)
 		filters = append(filters, *exclude)
 	}
 

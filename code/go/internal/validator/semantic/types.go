@@ -116,14 +116,17 @@ type validateFunc func(fileMetadata fieldFileMetadata, f field) ve.ValidationErr
 func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
 	fieldsFilesMetadata, err := listFieldsFiles(fsys)
 	if err != nil {
-		return ve.ValidationErrors{fmt.Errorf("can't list fields files: %w", err)}
+		return ve.ValidationErrors{
+			ve.NewStructuredError(fmt.Errorf("can't list fields files: %w", err), ve.TODO_code),
+		}
 	}
 
 	var vErrs ve.ValidationErrors
 	for _, metadata := range fieldsFilesMetadata {
 		unmarshaled, err := unmarshalFields(fsys, metadata.filePath)
 		if err != nil {
-			vErrs = append(vErrs, fmt.Errorf(`file "%s" is invalid: can't unmarshal fields: %w`, metadata.filePath, err))
+			anError := ve.NewStructuredError(fmt.Errorf(`file "%s" is invalid: can't unmarshal fields: %w`, metadata.filePath, err), ve.TODO_code)
+			vErrs = append(vErrs, anError)
 		}
 
 		errs := validateNestedFields("", metadata, unmarshaled, validate)

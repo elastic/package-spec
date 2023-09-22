@@ -44,11 +44,12 @@ func ValidateUniqueFields(fsys fspath.FS) ve.ValidationErrors {
 			if len(files) > 1 {
 				sort.Strings(files)
 				errs = append(errs,
-					fmt.Errorf("field %q is defined multiple times for data stream %q, found in: %s",
-						field, id, strings.Join(files, ", ")))
+					ve.NewStructuredError(
+						fmt.Errorf("field %q is defined multiple times for data stream %q, found in: %s", field, id, strings.Join(files, ", ")),
+						ve.TODO_code),
+				)
 			}
 		}
-
 	}
 	return errs
 }

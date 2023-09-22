@@ -38,16 +38,16 @@ func matchingFileExists(spec spectypes.ItemSpec, files []fs.DirEntry) (bool, err
 func validateFile(spec spectypes.ItemSpec, fsys fs.FS, itemPath string) ve.ValidationErrors {
 	err := validateMaxSize(fsys, itemPath, spec)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)}
 	}
 	if mediaType := spec.ContentMediaType(); mediaType != nil {
 		err := validateContentType(fsys, itemPath, *mediaType)
 		if err != nil {
-			return ve.ValidationErrors{err}
+			return ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)}
 		}
 		err = validateContentTypeSize(fsys, itemPath, *mediaType, spec)
 		if err != nil {
-			return ve.ValidationErrors{err}
+			return ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)}
 		}
 	}
 

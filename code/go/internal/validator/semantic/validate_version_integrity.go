@@ -19,22 +19,22 @@ import (
 func ValidateVersionIntegrity(fsys fspath.FS) ve.ValidationErrors {
 	manifestVersion, err := readManifestVersion(fsys)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)}
 	}
 
 	changelogVersions, err := readChangelogVersions(fsys)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)}
 	}
 
 	err = ensureUniqueVersions(changelogVersions)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)}
 	}
 
 	err = ensureManifestVersionHasChangelogEntry(manifestVersion, changelogVersions)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)}
 	}
 	return nil
 }

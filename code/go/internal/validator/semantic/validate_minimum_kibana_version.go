@@ -22,28 +22,28 @@ import (
 func ValidateMinimumKibanaVersion(fsys fspath.FS) ve.ValidationErrors {
 	pkg, err := packages.NewPackageFromFS(fsys.Path(), fsys)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)}
 	}
 
 	manifest, err := readManifest(fsys)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)}
 	}
 
 	kibanaVersionCondition, err := getKibanaVersionCondition(*manifest)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)}
 	}
 
 	var errs ve.ValidationErrors
 	err = validateMinimumKibanaVersionInputPackages(pkg.Type, *pkg.Version, kibanaVersionCondition)
 	if err != nil {
-		errs.Append(ve.ValidationErrors{err})
+		errs.Append(ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)})
 	}
 
 	err = validateMinimumKibanaVersionRuntimeFields(fsys, *pkg.Version, kibanaVersionCondition)
 	if err != nil {
-		errs.Append(ve.ValidationErrors{err})
+		errs.Append(ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)})
 	}
 
 	warningsAsErrors := common.IsDefinedWarningsAsErrors()
@@ -51,7 +51,7 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) ve.ValidationErrors {
 	if err != nil {
 		err = fmt.Errorf("Warning: %v", err)
 		if warningsAsErrors {
-			errs.Append(ve.ValidationErrors{err})
+			errs.Append(ve.ValidationErrors{ve.NewStructuredError(err, ve.TODO_code)})
 		} else {
 			log.Println(err)
 		}
@@ -187,7 +187,12 @@ func kibanaVersionConditionIsGreaterThanOrEqualTo(kibanaVersionCondition, minimu
 
 func validateNoRuntimeFields(metadata fieldFileMetadata, f field) ve.ValidationErrors {
 	if f.Runtime.isEnabled() {
-		return ve.ValidationErrors{fmt.Errorf("%v file contains a field %s with runtime key defined (%s)", metadata.fullFilePath, f.Name, f.Runtime)}
+		return ve.ValidationErrors{
+			ve.NewStructuredError(
+				fmt.Errorf("%v file contains a field %s with runtime key defined (%s)", metadata.fullFilePath, f.Name, f.Runtime),
+				ve.TODO_code,
+			),
+		}
 	}
 	return nil
 }

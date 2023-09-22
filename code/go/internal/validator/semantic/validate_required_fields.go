@@ -71,13 +71,16 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve
 		// More info in https://github.com/elastic/elastic-package/issues/749
 		if f.External == "" && f.Type != expectedType {
 			return ve.ValidationErrors{
-				unexpectedTypeRequiredField{
-					field:        f.Name,
-					foundType:    f.Type,
-					dataStream:   metadata.dataStream,
-					fullPath:     metadata.fullFilePath,
-					expectedType: expectedType,
-				},
+				ve.NewStructuredError(
+					unexpectedTypeRequiredField{
+						field:        f.Name,
+						foundType:    f.Type,
+						dataStream:   metadata.dataStream,
+						fullPath:     metadata.fullFilePath,
+						expectedType: expectedType,
+					},
+					ve.TODO_code,
+				),
 			}
 		}
 
@@ -91,11 +94,14 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve
 		for requiredName, requiredType := range requiredFields {
 			if _, found := dataStreamFields[requiredName]; !found {
 				errs = append(errs,
-					notFoundRequiredField{
-						field:        requiredName,
-						expectedType: requiredType,
-						dataStream:   dataStream,
-					},
+					ve.NewStructuredError(
+						notFoundRequiredField{
+							field:        requiredName,
+							expectedType: requiredType,
+							dataStream:   dataStream,
+						},
+						ve.TODO_code,
+					),
 				)
 			}
 		}

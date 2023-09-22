@@ -49,6 +49,7 @@ func TestValidateGithubLink(t *testing.T) {
 }
 
 func TestEnsureLinksAreValid(t *testing.T) {
+	var githubError = ve.NewStructuredError(errGithubIssue, ve.TODO_code)
 
 	var tests = []struct {
 		name   string
@@ -71,8 +72,8 @@ func TestEnsureLinksAreValid(t *testing.T) {
 				"https://github.com/elastic/integrations/pull",
 			},
 			ve.ValidationErrors{
-				errGithubIssue,
-				errGithubIssue,
+				githubError,
+				githubError,
 			},
 		},
 		{
@@ -82,7 +83,7 @@ func TestEnsureLinksAreValid(t *testing.T) {
 				"https://github.com/elastic/integrations/pull",
 			},
 			ve.ValidationErrors{
-				errGithubIssue,
+				githubError,
 			},
 		},
 		{

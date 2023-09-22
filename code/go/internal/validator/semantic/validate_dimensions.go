@@ -24,7 +24,8 @@ func validateDimensionField(metadata fieldFileMetadata, f field) errors.Validati
 		return nil
 	}
 	if f.Dimension && !isAllowedDimensionType(f.Type) {
-		return errors.ValidationErrors{fmt.Errorf(`file "%s" is invalid: field "%s" of type %s can't be a dimension, allowed types for dimensions: %s`, metadata.fullFilePath, f.Name, f.Type, strings.Join(allowedDimensionTypes, ", "))}
+		err := fmt.Errorf(`file "%s" is invalid: field "%s" of type %s can't be a dimension, allowed types for dimensions: %s`, metadata.fullFilePath, f.Name, f.Type, strings.Join(allowedDimensionTypes, ", "))
+		return errors.ValidationErrors{errors.NewStructuredError(err, errors.TODO_code)}
 	}
 
 	return nil

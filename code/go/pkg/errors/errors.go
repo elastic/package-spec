@@ -9,11 +9,35 @@ import (
 	"strings"
 )
 
+// ValidationError is the interface that every validation error must implement.
+type ValidationError interface {
+	error
+
+	// Code returns a unique identifier of this error.
+	Code() string
+}
+
+const TODO_code = ""
+
+// TODO no error using this interface yet
+// ValidationPathError is the interface that validation errors related to paths must implement.
+type ValidationPathError interface {
+	// File returns the file path where the error was raised.
+	File() string
+}
+
+// TODO no error using this interface yet
+// ValidationSeverityError is the interface that validation errors related to severities must implement.
+type ValidationSeverityError interface {
+	// File returns the file path where the error was raised.
+	Severity() string
+}
+
 // ValidationErrors is an error that contains an iterable collection of validation error messages.
-type ValidationErrors []error
+type ValidationErrors []ValidationError
 
 // Filter filters the validation errors using the function given as a parameter.
-func (ve ValidationErrors) Filter(filter func(elem error) bool) (ValidationErrors, ValidationErrors) {
+func (ve ValidationErrors) Filter(filter func(elem ValidationError) bool) (ValidationErrors, ValidationErrors) {
 	var errs ValidationErrors
 	var filtered ValidationErrors
 
