@@ -35,10 +35,14 @@ func ValidateKibanaFilterPresent(fsys fspath.FS) ve.ValidationErrors {
 	for _, file := range dashboardFiles {
 		err = checkDashboardHasFilter(file)
 		if err != nil {
+			code := ve.CodeKibanaDashboardWithoutFilter
+			if errors.Is(err, errDashboardWithFilterAndNoQuery) {
+				code = ve.CodeKibanaDashboardWithQueryButNoFilter
+			}
 			errs = append(errs,
 				ve.NewStructuredError(
 					fmt.Errorf("file \"%s\" is invalid: expected filter in dashboard: %w", fsys.Path(file.Path()), err),
-					ve.UnassignedCode),
+					code),
 			)
 		}
 	}
