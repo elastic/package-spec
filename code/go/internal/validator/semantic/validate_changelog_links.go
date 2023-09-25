@@ -72,7 +72,7 @@ func ensureLinksAreValid(links []string) ve.ValidationErrors {
 		for _, vl := range validateLinks {
 			if strings.Contains(linkURL.Host, vl.domain) {
 				if err = vl.validateLink(linkURL); err != nil {
-					errs.Append(ve.ValidationErrors{ve.NewStructuredError(err, ve.UnassignedCode)}) // TODO_code
+					errs.Append(ve.ValidationErrors{ve.NewStructuredError(err, ve.UnassignedCode)})
 				}
 			}
 		}

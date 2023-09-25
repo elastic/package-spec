@@ -46,14 +46,20 @@ func ValidateKibanaNoDanglingObjectIDs(fsys fspath.FS) ve.ValidationErrors {
 
 		currentReference, err := getCurrentObjectReference(objectFile, fsys.Path(filePath))
 		if err != nil {
-			errs = append(errs, ve.NewStructuredError(fmt.Errorf("unable to create reference from file [%s]: %w", fsys.Path(filePath), err), ve.UnassignedCode))
+			errs = append(errs,
+				ve.NewStructuredError(
+					fmt.Errorf("unable to create reference from file [%s]: %w", fsys.Path(filePath), err),
+					ve.UnassignedCode))
 		}
 
 		installedIDs = append(installedIDs, currentReference)
 
 		referencedObjects, err := getReferencesListFromCurrentObject(objectFile, fsys.Path(filePath))
 		if err != nil {
-			errs = append(errs, ve.NewStructuredError(fmt.Errorf("unable to create referenced objects from file [%s]: %w", fsys.Path(filePath), err), ve.UnassignedCode))
+			errs = append(errs,
+				ve.NewStructuredError(
+					fmt.Errorf("unable to create referenced objects from file [%s]: %w", fsys.Path(filePath), err),
+					ve.UnassignedCode))
 			continue
 		}
 
@@ -76,7 +82,10 @@ func ValidateKibanaNoDanglingObjectIDs(fsys fspath.FS) ve.ValidationErrors {
 			return true
 		})
 		if !found {
-			errs = append(errs, ve.NewStructuredError(fmt.Errorf("file \"%s\" is invalid: dangling reference found: %s (%s)", reference.filePath, reference.objectID, reference.objectType), ve.UnassignedCode))
+			errs = append(errs,
+				ve.NewStructuredError(
+					fmt.Errorf("file \"%s\" is invalid: dangling reference found: %s (%s)", reference.filePath, reference.objectID, reference.objectType),
+					ve.CodeKibanaDanglingObjectsIDs))
 		}
 	}
 

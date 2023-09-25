@@ -7,7 +7,7 @@ package errors
 // Constants to be used for the structured errors
 const (
 	UnassignedCode                          = ""
-	CodeChangelogLinksInvalid               = "SVR00001"
-	CodeKibanaDashboardWithQueryButNoFilter = "SVR00002"
-	CodeKibanaDashboardWithoutFilter        = "SVR00003"
+	CodeKibanaDashboardWithQueryButNoFilter = "SVR00001"
+	CodeKibanaDashboardWithoutFilter        = "SVR00002"
+	CodeKibanaDanglingObjectsIDs            = "SVR00003"
 )
