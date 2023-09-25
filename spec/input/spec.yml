@@ -66,9 +66,9 @@ spec:
   - description: Errors configuration file
     type: file
     contentMediaType: "application/x-yaml"
-    name: "errors.conf.yml"
+    name: "errors.yml"
     required: false
-    $ref: "../integration/errors.conf.spec.yml"
+    $ref: "../integration/errors.spec.yml"
 
 versions:
   - before: 2.10.0
