@@ -24,7 +24,7 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) ve.ValidationErrors {
 	// Note: this does not include Lens, Maps, or Discover. That's okay for this rule because none of those are legacy
 	visFilePaths := path.Join("kibana", "visualization", "*.json")
 	visFiles, _ := pkgpath.Files(fsys, visFilePaths)
-	pkgByRefVisualizations := make(map[string]kbncontent.VisDesc)
+	pkgByRefVisualizations := make(map[string]kbncontent.VisualizationDescriptor)
 
 	for _, file := range visFiles {
 		if visJSON, err := file.Values("$"); err == nil {
@@ -46,7 +46,7 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) ve.ValidationErrors {
 		panelsJSON, _ := file.Values("$.attributes.panelsJSON")
 		visualizations, _ := kbncontent.DescribeByValueDashboardPanels(panelsJSON)
 
-		var byRefVisualizations []kbncontent.VisDesc
+		var byRefVisualizations []kbncontent.VisualizationDescriptor
 		ids, _ := kbncontent.GetByReferencePanelIDs(dashboardJSON)
 		for _, id := range ids {
 			if vis, ok := pkgByRefVisualizations[id]; ok {
@@ -56,7 +56,7 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) ve.ValidationErrors {
 
 		visualizations = append(visualizations, byRefVisualizations...)
 
-		var legacyVisualizations []kbncontent.VisDesc
+		var legacyVisualizations []kbncontent.VisualizationDescriptor
 		for _, desc := range visualizations {
 			if desc.IsLegacy {
 				legacyVisualizations = append(legacyVisualizations, desc)
