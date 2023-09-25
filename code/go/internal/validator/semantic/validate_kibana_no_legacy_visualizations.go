@@ -66,14 +66,14 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) ve.ValidationErrors {
 		if len(legacyVisualizations) > 0 {
 			dashboardTitle, _ := kbncontent.GetDashboardTitle(dashboardJSON)
 			var buf strings.Builder
-			fmt.Fprint(&buf, "your package contains legacy visualizations:\n\n")
+			fmt.Fprintf(&buf, "Dashboard \"%s\" contains legacy visualizations:\n\n", dashboardTitle)
 
 			tableWriter := tabwriter.NewWriter(&buf, 0, 0, 1, ' ', tabwriter.Debug)
-			fmt.Fprintln(tableWriter, "\tDashboard title\tVisualization title\tVisualization editor\tVisualization type\t")
-			fmt.Fprintln(tableWriter, "\t\t\t\t\t")
+			fmt.Fprintln(tableWriter, "\tTitle\tEditor\tType\t")
+			fmt.Fprintln(tableWriter, "\t\t\t\t")
 
 			for _, vis := range legacyVisualizations {
-				fmt.Fprintf(tableWriter, "\t\"%s\"\t\"%s\"\t%s\t%s\t\n", dashboardTitle, vis.Title, vis.Editor, vis.SemanticType)
+				fmt.Fprintf(tableWriter, "\t\"%s\"\t%s\t%s\t\n", vis.Title, vis.Editor, vis.SemanticType)
 			}
 			tableWriter.Flush()
 
