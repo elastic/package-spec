@@ -79,6 +79,21 @@ func TestFilter(t *testing.T) {
 			},
 			expectedFilteredErrors: nil,
 		},
+		{
+			title: "filter all errors",
+			config: ConfigFilter{
+				Errors: Processors{
+					ExcludeChecks: []string{"CODE00"},
+				},
+			},
+			errors: ve.ValidationErrors{
+				createValidationError("exclude error", "CODE00"),
+			},
+			expectedErrors: nil,
+			expectedFilteredErrors: ve.ValidationErrors{
+				createValidationError("exclude error", "CODE00"),
+			},
+		},
 	}
 
 	for _, c := range cases {
@@ -88,6 +103,12 @@ func TestFilter(t *testing.T) {
 			finalErrors, filteredErrors, err := runner.Run(c.errors)
 			require.NoError(t, err)
 
+			if c.expectedErrors == nil {
+				assert.Nil(t, finalErrors)
+			}
+			if c.expectedFilteredErrors == nil {
+				assert.Nil(t, filteredErrors)
+			}
 			assert.Len(t, finalErrors, len(c.expectedErrors))
 			assert.Len(t, filteredErrors, len(c.expectedFilteredErrors))
 
