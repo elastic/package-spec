@@ -35,13 +35,13 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) ve.ValidationErrors {
 		var buf strings.Builder
 		fmt.Fprint(&buf, "your package contains legacy visualizations:\n\n")
 		tableWriter := tabwriter.NewWriter(&buf, 0, 0, 1, ' ', tabwriter.Debug)
-		fmt.Fprintln(tableWriter, "\tVisualization title\tVisualization type\tDashboard title\t")
-		fmt.Fprintln(tableWriter, "\t\t\t\t")
+		fmt.Fprintln(tableWriter, "\tDashboard title\tVisualization title\tVisualization editor\tVisualization type\t")
+		fmt.Fprintln(tableWriter, "\t\t\t\t\t")
 		hasLegacy := false
 		for _, vis := range visualizations {
 			if vis.IsLegacy {
 				hasLegacy = true
-				fmt.Fprintf(tableWriter, "\t\"%s\"\t\"%s\"\t%s\t\n", vis.Title, vis.SemanticType, dashboardTitle)
+				fmt.Fprintf(tableWriter, "\t\"%s\"\t\"%s\"\t%s\t%s\t\n", dashboardTitle, vis.Title, vis.Editor, vis.SemanticType)
 			}
 		}
 		tableWriter.Flush()
