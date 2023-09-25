@@ -109,26 +109,35 @@ func TestFilter(t *testing.T) {
 			if c.expectedFilteredErrors == nil {
 				assert.Nil(t, filteredErrors)
 			}
-			assert.Len(t, finalErrors, len(c.expectedErrors))
-			assert.Len(t, filteredErrors, len(c.expectedFilteredErrors))
 
-			for _, e := range finalErrors {
-				assert.True(
-					t,
-					slices.ContainsFunc(c.expectedErrors, func(elem ve.ValidationError) bool {
-						return elem.Error() == e.Error() && elem.Code() == e.Code()
-					}),
-					"unexpected error: \"%s\" (%s)", e.Error(), e.Code(),
-				)
+			if c.expectedErrors != nil {
+				veFinalErrors, ok := finalErrors.(ve.ValidationErrors)
+				require.True(t, ok)
+				assert.Len(t, veFinalErrors, len(c.expectedErrors))
+				for _, e := range veFinalErrors {
+					assert.True(
+						t,
+						slices.ContainsFunc(c.expectedErrors, func(elem ve.ValidationError) bool {
+							return elem.Error() == e.Error() && elem.Code() == e.Code()
+						}),
+						"unexpected error: \"%s\" (%s)", e.Error(), e.Code(),
+					)
+				}
 			}
-			for _, e := range filteredErrors {
-				assert.True(
-					t,
-					slices.ContainsFunc(c.expectedFilteredErrors, func(elem ve.ValidationError) bool {
-						return elem.Error() == e.Error()
-					}),
-					"unexpected filtered error: \"%s\"", e.Error(),
-				)
+
+			if c.expectedFilteredErrors != nil {
+				veFilteredErrors, ok := filteredErrors.(ve.ValidationErrors)
+				require.True(t, ok)
+				assert.Len(t, veFilteredErrors, len(c.expectedFilteredErrors))
+				for _, e := range veFilteredErrors {
+					assert.True(
+						t,
+						slices.ContainsFunc(c.expectedFilteredErrors, func(elem ve.ValidationError) bool {
+							return elem.Error() == e.Error()
+						}),
+						"unexpected filtered error: \"%s\"", e.Error(),
+					)
+				}
 			}
 		})
 	}

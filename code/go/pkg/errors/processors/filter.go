@@ -19,7 +19,7 @@ type Filter struct {
 }
 
 // Run runs all the processors over all the validation errors and return the filtered ones
-func (r *Filter) Run(allErrors errors.ValidationErrors) (errors.ValidationErrors, errors.ValidationErrors, error) {
+func (r *Filter) Run(allErrors errors.ValidationErrors) (error, error, error) {
 	newErrors := allErrors
 	var allFiltered errors.ValidationErrors
 
@@ -32,7 +32,15 @@ func (r *Filter) Run(allErrors errors.ValidationErrors) (errors.ValidationErrors
 		}
 		allFiltered.Append(filtered)
 	}
-	return newErrors, allFiltered, nil
+
+	return nilOrValidationErrors(newErrors), nilOrValidationErrors(allFiltered), nil
+}
+
+func nilOrValidationErrors(errs errors.ValidationErrors) error {
+	if len(errs) == 0 {
+		return nil
+	}
+	return errs
 }
 
 // AddProcessors allows to add custom processors to the runner
