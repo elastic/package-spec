@@ -43,8 +43,7 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) ve.ValidationErrors {
 
 	for _, file := range dashboardFiles {
 		dashboardJSON, _ := file.Values("$")
-		panelsJSON, _ := file.Values("$.attributes.panelsJSON")
-		visualizations, _ := kbncontent.DescribeByValueDashboardPanels(panelsJSON)
+		visualizations, _ := kbncontent.DescribeByValueDashboardPanels(dashboardJSON)
 
 		var byRefVisualizations []kbncontent.VisualizationDescriptor
 		ids, _ := kbncontent.GetByReferencePanelIDs(dashboardJSON)
@@ -58,7 +57,7 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) ve.ValidationErrors {
 
 		var legacyVisualizations []kbncontent.VisualizationDescriptor
 		for _, desc := range visualizations {
-			if desc.IsLegacy {
+			if desc.IsLegacy() {
 				legacyVisualizations = append(legacyVisualizations, desc)
 			}
 		}
@@ -73,7 +72,7 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) ve.ValidationErrors {
 			fmt.Fprintln(tableWriter, "\t\t\t\t")
 
 			for _, vis := range legacyVisualizations {
-				fmt.Fprintf(tableWriter, "\t\"%s\"\t%s\t%s\t\n", vis.Title, vis.Editor, vis.SemanticType)
+				fmt.Fprintf(tableWriter, "\t\"%s\"\t%s\t%s\t\n", vis.Title(), vis.Editor(), vis.SemanticType())
 			}
 			tableWriter.Flush()
 
