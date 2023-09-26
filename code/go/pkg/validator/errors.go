@@ -9,4 +9,4 @@ import (
 )
 
 // ValidationErrors is an Error that contains a iterable collection of validation error messages.
-type ValidationErrors errors.ValidationErrors
+type ValidationErrors = errors.ValidationErrors
