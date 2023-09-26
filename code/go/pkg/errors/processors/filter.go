@@ -24,13 +24,12 @@ func (r *Filter) Run(allErrors errors.ValidationErrors) (error, error, error) {
 	var allFiltered errors.ValidationErrors
 
 	for _, p := range r.processors {
-		var filtered errors.ValidationErrors
-		var err error
-		newErrors, filtered, err = p.Process(newErrors)
+		result, err := p.Process(newErrors)
 		if err != nil {
 			return allErrors, nil, err
 		}
-		allFiltered.Append(filtered)
+		newErrors = result.Processed
+		allFiltered.Append(result.Removed)
 	}
 
 	return nilOrValidationErrors(newErrors), nilOrValidationErrors(allFiltered), nil

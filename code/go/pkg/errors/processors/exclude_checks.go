@@ -26,9 +26,9 @@ func (p ExcludeCheck) Name() string {
 }
 
 // Process returns a new list of validation errors filtered.
-func (p ExcludeCheck) Process(issues errors.ValidationErrors) (errors.ValidationErrors, errors.ValidationErrors, error) {
+func (p ExcludeCheck) Process(issues errors.ValidationErrors) (ProcessResult, error) {
 	if p.code == errors.UnassignedCode {
-		return issues, nil, nil
+		return ProcessResult{Processed: issues, Removed: nil}, nil
 	}
 
 	errs, filtered := issues.Collect(func(i errors.ValidationError) bool {
@@ -38,5 +38,5 @@ func (p ExcludeCheck) Process(issues errors.ValidationErrors) (errors.Validation
 		}
 		return p.code != i.Code()
 	})
-	return errs, filtered, nil
+	return ProcessResult{Processed: errs, Removed: filtered}, nil
 }

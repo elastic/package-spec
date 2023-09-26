@@ -6,8 +6,14 @@ package processors
 
 import "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 
-// Processor is the interface for every lint processor.
+// Processor is the interface for every processor.
 type Processor interface {
-	Process(errors.ValidationErrors) (errors.ValidationErrors, errors.ValidationErrors, error)
+	Process(errors.ValidationErrors) (ProcessResult, error)
 	Name() string
+}
+
+// ProcessResult represents the errors that have been processed and removed
+type ProcessResult struct {
+	Processed errors.ValidationErrors
+	Removed   errors.ValidationErrors
 }

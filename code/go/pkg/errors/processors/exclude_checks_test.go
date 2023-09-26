@@ -49,20 +49,20 @@ func TestExcludeChecks(t *testing.T) {
 				)
 			}
 
-			processedIssues, filteredIssues, err := p.Process(issues)
+			result, err := p.Process(issues)
 			require.NoError(t, err)
 
-			assert.Len(t, processedIssues, len(c.expected))
-			assert.Len(t, filteredIssues, len(c.expectedFiltered))
+			assert.Len(t, result.Processed, len(c.expected))
+			assert.Len(t, result.Removed, len(c.expectedFiltered))
 
 			var processedTexts []string
-			for _, i := range filteredIssues {
+			for _, i := range result.Removed {
 				processedTexts = append(processedTexts, i.Code())
 			}
 			assert.Equal(t, c.expectedFiltered, processedTexts)
 
 			processedTexts = []string{}
-			for _, i := range processedIssues {
+			for _, i := range result.Processed {
 				processedTexts = append(processedTexts, i.Code())
 			}
 			assert.Equal(t, c.expected, processedTexts)
