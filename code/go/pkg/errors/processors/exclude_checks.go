@@ -33,7 +33,7 @@ func (p ExcludeCheck) Process(issues errors.ValidationErrors) (errors.Validation
 
 	errs, filtered := issues.Collect(func(i errors.ValidationError) bool {
 		if i.Code() == errors.UnassignedCode {
-			// errors with TODO_code cannot be skipped
+			// Errors without assigned code cannot be skipped
 			return true
 		}
 		return p.code != i.Code()
