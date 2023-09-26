@@ -9,8 +9,8 @@ import (
 	"sort"
 	"strings"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
-	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	ve "github.com/tommyers-elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/tommyers-elastic/package-spec/v2/code/go/internal/fspath"
 )
 
 // ValidateUniqueFields verifies that any field is defined only once on each data stream.

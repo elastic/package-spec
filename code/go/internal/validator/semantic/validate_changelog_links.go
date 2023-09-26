@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"strings"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
-	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	ve "github.com/tommyers-elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/tommyers-elastic/package-spec/v2/code/go/internal/fspath"
 )
 
 var errGithubIssue = errors.New("issue number in changelog link should be a positive number")

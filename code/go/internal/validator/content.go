@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"io/fs"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
+	"github.com/tommyers-elastic/package-spec/v2/code/go/internal/spectypes"
 )
 
 func validateContentType(fsys fs.FS, path string, contentType spectypes.ContentType) error {

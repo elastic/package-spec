@@ -17,7 +17,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
+	"github.com/tommyers-elastic/package-spec/v2/code/go/internal/spectypes"
 )
 
 func TestLimitsValidation(t *testing.T) {

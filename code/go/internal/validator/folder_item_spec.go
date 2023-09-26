@@ -9,8 +9,8 @@ import (
 	"io/fs"
 	"regexp"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
-	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
+	ve "github.com/tommyers-elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/tommyers-elastic/package-spec/v2/code/go/internal/spectypes"
 )
 
 func matchingFileExists(spec spectypes.ItemSpec, files []fs.DirEntry) (bool, error) {

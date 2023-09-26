@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/tommyers-elastic/package-spec/v2/code/go/internal/fspath"
 )
 
 func TestValidateKibanaVersionGreaterThan(t *testing.T) {

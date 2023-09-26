@@ -12,8 +12,8 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
-	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	ve "github.com/tommyers-elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/tommyers-elastic/package-spec/v2/code/go/internal/fspath"
 )
 
 // ValidateILMPolicyPresent produces an error if the indicated ILM policy

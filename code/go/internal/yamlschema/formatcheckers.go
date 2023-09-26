@@ -10,7 +10,7 @@ import (
 
 	"github.com/elastic/gojsonschema"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
+	"github.com/tommyers-elastic/package-spec/v2/code/go/internal/spectypes"
 )
 
 const (
