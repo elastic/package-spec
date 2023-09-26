@@ -63,12 +63,12 @@ spec:
     name: "lifecycle.yml"
     required: false
     $ref: "../integration/data_stream/lifecycle.spec.yml"
-  - description: Errors configuration file
+  - description: Configuration file to process the results returned from the package validation. This file is just for package validation and it should be ignored when installing or using the package.
     type: file
     contentMediaType: "application/x-yaml"
-    name: "errors.yml"
+    name: "validation.yml"
     required: false
-    $ref: "../integration/errors.spec.yml"
+    $ref: "../integration/validation.spec.yml"
 
 versions:
   - before: 2.10.0
