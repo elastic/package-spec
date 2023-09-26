@@ -32,3 +32,8 @@ func (e *StructuredError) Error() string {
 func (e *StructuredError) Code() string {
 	return e.code
 }
+
+// Unwrap returns the wrapped error
+func (e *StructuredError) Unwrap() error {
+	return e.err
+}
