@@ -24,9 +24,9 @@
     link: https://github.com/elastic/package-spec/pull/607
 - version: 2.12.1-next
   changes:
-  - description: Prepare for next version
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/612
+  - description: Fix validation of filters in built dashboards
+    type: bugfix
+    link: https://github.com/elastic/package-spec/pull/613
 - version: 2.12.0
   changes:
   - description: Add flag to manifests to indicate if a package or data stream requires root privileges

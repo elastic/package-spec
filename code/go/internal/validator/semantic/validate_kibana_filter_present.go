@@ -5,6 +5,7 @@
 package semantic
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"path"
@@ -49,9 +50,21 @@ func checkDashboardHasFilter(file pkgpath.File) error {
 			Query string `mapstructure:"query"`
 		} `mapstructure:"query"`
 	}
-	err = mapstructure.Decode(searchJSON, &search)
-	if err != nil {
-		return fmt.Errorf("unable to decode search definition: %w", err)
+	switch searchJSON := searchJSON.(type) {
+	case map[string]any:
+		// Dashboard is decoded, as in source packages.
+		err = mapstructure.Decode(searchJSON, &search)
+		if err != nil {
+			return fmt.Errorf("unable to decode search definition: %w", err)
+		}
+	case string:
+		// Dashboard is encoded, as in built packages.
+		err = json.Unmarshal([]byte(searchJSON), &search)
+		if err != nil {
+			return fmt.Errorf("unable to decode embedded search definition: %w", err)
+		}
+	default:
+		return fmt.Errorf("unexpected type for search source JSON: %T", searchJSON)
 	}
 
 	if len(search.Filter) == 0 {
