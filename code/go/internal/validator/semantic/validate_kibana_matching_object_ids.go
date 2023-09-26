@@ -5,7 +5,6 @@
 package semantic
 
 import (
-	"fmt"
 	"path"
 	"strings"
 
@@ -24,7 +23,7 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) ve.ValidationErrors {
 	filePaths := path.Join("kibana", "*", "*.json")
 	objectFiles, err := pkgpath.Files(fsys, filePaths)
 	if err != nil {
-		errs = append(errs, ve.NewStructuredError(fmt.Errorf("error finding Kibana object files: %w", err), ve.UnassignedCode))
+		errs = append(errs, ve.NewStructuredErrorf("error finding Kibana object files: %w", err))
 		return errs
 	}
 
@@ -33,7 +32,7 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) ve.ValidationErrors {
 
 		objectID, err := objectFile.Values("$.id")
 		if err != nil {
-			errs = append(errs, ve.NewStructuredError(fmt.Errorf("unable to get Kibana object ID in file [%s]: %w", fsys.Path(filePath), err), ve.UnassignedCode))
+			errs = append(errs, ve.NewStructuredErrorf("unable to get Kibana object ID in file [%s]: %w", fsys.Path(filePath), err))
 			continue
 		}
 
@@ -41,25 +40,25 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) ve.ValidationErrors {
 		if path.Base(path.Dir(filePath)) == "security_rule" {
 			ruleID, err := objectFile.Values("$.attributes.rule_id")
 			if err != nil {
-				errs = append(errs, ve.NewStructuredError(fmt.Errorf("unable to get rule ID in file [%s]: %w", fsys.Path(filePath), err), ve.UnassignedCode))
+				errs = append(errs, ve.NewStructuredErrorf("unable to get rule ID in file [%s]: %w", fsys.Path(filePath), err))
 				continue
 			}
 
 			objectIDValue, ok := objectID.(string)
 			if !ok {
-				errs = append(errs, ve.NewStructuredError(fmt.Errorf("expect object ID to be a string: %w", err), ve.UnassignedCode))
+				errs = append(errs, ve.NewStructuredErrorf("expect object ID to be a string: %w", err))
 				continue
 			}
 
 			ruleIDValue, ok := ruleID.(string)
 			if !ok {
-				errs = append(errs, ve.NewStructuredError(fmt.Errorf("expect rule ID to be a string: %w", err), ve.UnassignedCode))
+				errs = append(errs, ve.NewStructuredErrorf("expect rule ID to be a string: %w", err))
 				continue
 			}
 
 			if !strings.HasPrefix(objectIDValue, ruleIDValue) {
-				err := fmt.Errorf("kibana object ID [%s] should start with rule ID [%s]", objectIDValue, ruleIDValue)
-				errs = append(errs, ve.NewStructuredError(err, ve.UnassignedCode))
+				errs = append(errs,
+					ve.NewStructuredErrorf("kibana object ID [%s] should start with rule ID [%s]", objectIDValue, ruleIDValue))
 				continue
 			}
 		}
@@ -69,8 +68,8 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) ve.ValidationErrors {
 		fileExt := path.Ext(filePath)
 		fileID := strings.Replace(fileName, fileExt, "", -1)
 		if fileID != objectID {
-			err := fmt.Errorf("kibana object file [%s] defines non-matching ID [%s]", fsys.Path(filePath), objectID)
-			errs = append(errs, ve.NewStructuredError(err, ve.UnassignedCode))
+			errs = append(errs,
+				ve.NewStructuredErrorf("kibana object file [%s] defines non-matching ID [%s]", fsys.Path(filePath), objectID))
 		}
 	}
 

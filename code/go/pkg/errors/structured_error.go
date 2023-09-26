@@ -9,7 +9,7 @@ import "fmt"
 // StructuredError generic validation error
 type StructuredError struct {
 	err  error
-	code string // TODO : generate constants and types for each kind of error/code
+	code string
 }
 
 // NewStructuredError creates a generic validation error
@@ -18,6 +18,11 @@ func NewStructuredError(err error, code string) *StructuredError {
 		err:  err,
 		code: code,
 	}
+}
+
+// NewStructuredErrorf creates a generic validation error with unassigned code
+func NewStructuredErrorf(format string, a ...any) *StructuredError {
+	return NewStructuredError(fmt.Errorf(format, a...), UnassignedCode)
 }
 
 // Error returns the message error

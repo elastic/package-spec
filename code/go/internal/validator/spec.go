@@ -56,7 +56,7 @@ func (s Spec) ValidatePackage(pkg packages.Package) ve.ValidationErrors {
 
 	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkg.Type)
 	if err != nil {
-		errs = append(errs, ve.NewStructuredError(fmt.Errorf("could not read root folder spec file: %w", err), ve.UnassignedCode))
+		errs = append(errs, ve.NewStructuredErrorf("could not read root folder spec file: %w", err))
 		return errs
 	}
 

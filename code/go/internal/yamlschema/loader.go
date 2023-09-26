@@ -69,7 +69,7 @@ func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
 		var errs ve.ValidationErrors
 		for _, re := range result.Errors() {
 			errs = append(errs,
-				ve.NewStructuredError(fmt.Errorf("field %s: %s", re.Field(), adjustErrorDescription(re.Description())), ve.UnassignedCode),
+				ve.NewStructuredErrorf("field %s: %s", re.Field(), adjustErrorDescription(re.Description())),
 			)
 		}
 		return errs
@@ -81,7 +81,7 @@ func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
 func loadItemSchema(fsys fs.FS, path string, contentType *spectypes.ContentType, specVersion semver.Version) ([]byte, error) {
 	data, err := fs.ReadFile(fsys, path)
 	if err != nil {
-		return nil, ve.ValidationErrors{ve.NewStructuredError(fmt.Errorf("reading item file failed: %w", err), ve.UnassignedCode)}
+		return nil, ve.ValidationErrors{ve.NewStructuredErrorf("reading item file failed: %w", err)}
 	}
 	if contentType != nil && contentType.MediaType == "application/x-yaml" {
 		return convertYAMLToJSON(data, specVersion.LessThan(semver3_0_0))

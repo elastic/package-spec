@@ -5,7 +5,6 @@
 package semantic
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
@@ -24,8 +23,9 @@ func validateDimensionField(metadata fieldFileMetadata, f field) errors.Validati
 		return nil
 	}
 	if f.Dimension && !isAllowedDimensionType(f.Type) {
-		err := fmt.Errorf(`file "%s" is invalid: field "%s" of type %s can't be a dimension, allowed types for dimensions: %s`, metadata.fullFilePath, f.Name, f.Type, strings.Join(allowedDimensionTypes, ", "))
-		return errors.ValidationErrors{errors.NewStructuredError(err, errors.UnassignedCode)}
+		return errors.ValidationErrors{
+			errors.NewStructuredErrorf(`file "%s" is invalid: field "%s" of type %s can't be a dimension, allowed types for dimensions: %s`, metadata.fullFilePath, f.Name, f.Type, strings.Join(allowedDimensionTypes, ", ")),
+		}
 	}
 
 	return nil

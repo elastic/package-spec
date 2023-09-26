@@ -29,7 +29,7 @@ func ValidateKibanaFilterPresent(fsys fspath.FS) ve.ValidationErrors {
 	filePaths := path.Join("kibana", "dashboard", "*.json")
 	dashboardFiles, err := pkgpath.Files(fsys, filePaths)
 	if err != nil {
-		errs = append(errs, ve.NewStructuredError(fmt.Errorf("error finding Kibana dashboard files: %w", err), ve.UnassignedCode))
+		errs = append(errs, ve.NewStructuredErrorf("error finding Kibana dashboard files: %w", err))
 		return errs
 	}
 	for _, file := range dashboardFiles {

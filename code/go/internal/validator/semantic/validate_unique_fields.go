@@ -5,7 +5,6 @@
 package semantic
 
 import (
-	"fmt"
 	"sort"
 	"strings"
 
@@ -44,9 +43,9 @@ func ValidateUniqueFields(fsys fspath.FS) ve.ValidationErrors {
 			if len(files) > 1 {
 				sort.Strings(files)
 				errs = append(errs,
-					ve.NewStructuredError(
-						fmt.Errorf("field %q is defined multiple times for data stream %q, found in: %s", field, id, strings.Join(files, ", ")),
-						ve.UnassignedCode),
+					ve.NewStructuredErrorf(
+						"field %q is defined multiple times for data stream %q, found in: %s",
+						field, id, strings.Join(files, ", ")),
 				)
 			}
 		}

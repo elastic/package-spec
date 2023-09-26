@@ -19,7 +19,7 @@ import (
 func createValidationErrors(messages []string) ve.ValidationErrors {
 	var allErrors ve.ValidationErrors
 	for _, m := range messages {
-		allErrors = append(allErrors, ve.NewStructuredError(errors.New(m), ve.UnassignedCode))
+		allErrors = append(allErrors, ve.NewStructuredErrorf(m))
 	}
 	return allErrors
 }

@@ -33,9 +33,7 @@ func ValidateRoutingRulesAndDataset(fsys fspath.FS) ve.ValidationErrors {
 		err = validateDatasetInDataStream(fsys, dataStream)
 		if err != nil {
 			errs.Append(ve.ValidationErrors{
-				ve.NewStructuredError(
-					fmt.Errorf("routing rules defined in data stream %q but dataset field is missing: %w", dataStream, err),
-					ve.UnassignedCode),
+				ve.NewStructuredErrorf("routing rules defined in data stream %q but dataset field is missing: %w", dataStream, err),
 			})
 		}
 	}

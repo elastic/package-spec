@@ -16,7 +16,7 @@ import (
 	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
 
-var errGithubIssue = errors.New("issue number in changelog link should be a positive number")
+var errGithubIssue = errors.New("issue number in changelog link should be a positive number") // TODO test validationError structuredError
 
 // ChangelogLinkError records the link and the error
 type ChangelogLinkError struct {
@@ -65,7 +65,7 @@ func ensureLinksAreValid(links []string) ve.ValidationErrors {
 		linkURL, err := url.Parse(link)
 		if err != nil {
 			errs.Append(ve.ValidationErrors{
-				ve.NewStructuredError(fmt.Errorf("invalid URL %v", err), ve.UnassignedCode),
+				ve.NewStructuredErrorf("invalid URL %v", err),
 			})
 			continue
 		}

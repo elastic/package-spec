@@ -5,8 +5,6 @@
 package semantic
 
 import (
-	"fmt"
-
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/pkg/errors"
 )
@@ -19,19 +17,13 @@ func ValidateFieldGroups(fsys fspath.FS) errors.ValidationErrors {
 func validateFieldUnit(metadata fieldFileMetadata, f field) errors.ValidationErrors {
 	if f.Type == "group" && f.Unit != "" {
 		return errors.ValidationErrors{
-			errors.NewStructuredError(
-				fmt.Errorf(`file "%s" is invalid: field "%s" can't have unit property'`, metadata.fullFilePath, f.Name),
-				errors.UnassignedCode,
-			),
+			errors.NewStructuredErrorf(`file "%s" is invalid: field "%s" can't have unit property'`, metadata.fullFilePath, f.Name),
 		}
 	}
 
 	if f.Type == "group" && f.MetricType != "" {
 		return errors.ValidationErrors{
-			errors.NewStructuredError(
-				fmt.Errorf(`file "%s" is invalid: field "%s" can't have metric type property'`, metadata.fullFilePath, f.Name),
-				errors.UnassignedCode,
-			),
+			errors.NewStructuredErrorf(`file "%s" is invalid: field "%s" can't have metric type property'`, metadata.fullFilePath, f.Name),
 		}
 	}
 
