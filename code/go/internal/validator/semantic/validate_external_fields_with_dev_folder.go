@@ -9,18 +9,18 @@ import (
 
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
-	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 // ValidateExternalFieldsWithDevFolder verifies there is no field with external key if there is no _dev/build/build.yml definition
-func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
+func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) specerrors.ValidationErrors {
 
 	const buildPath = "_dev/build/build.yml"
 	buildFilePathDefined := true
 	f, err := pkgpath.Files(fsys, buildPath)
 	if err != nil {
-		return ve.ValidationErrors{
-			ve.NewStructuredErrorf("not able to read _dev/build/build.yml: %w", err),
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredErrorf("not able to read _dev/build/build.yml: %w", err),
 		}
 	}
 
@@ -32,29 +32,29 @@ func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) ve.ValidationErrors {
 	if buildFilePathDefined {
 		dependencies, err := readDevBuildDependenciesKeys(f[0])
 		if err != nil {
-			return ve.ValidationErrors{ve.NewStructuredError(err, ve.UnassignedCode)}
+			return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 		}
 		for _, dep := range dependencies {
 			mapDependencies[dep] = struct{}{}
 		}
 	}
 
-	validateFunc := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
+	validateFunc := func(metadata fieldFileMetadata, f field) specerrors.ValidationErrors {
 		if f.External == "" {
 			return nil
 		}
 
 		if !buildFilePathDefined {
-			return ve.ValidationErrors{
-				ve.NewStructuredErrorf(
+			return specerrors.ValidationErrors{
+				specerrors.NewStructuredErrorf(
 					"file \"%s\" is invalid: field %s with external key defined (%q) but no _dev/build/build.yml found",
 					metadata.fullFilePath, f.Name, f.External),
 			}
 		}
 
 		if _, ok := mapDependencies[f.External]; !ok {
-			return ve.ValidationErrors{
-				ve.NewStructuredErrorf(
+			return specerrors.ValidationErrors{
+				specerrors.NewStructuredErrorf(
 					"file \"%s\" is invalid: field %s with external key defined (%q) but no definition found for it (_dev/build/build.yml)",
 					metadata.fullFilePath, f.Name, f.External),
 			}

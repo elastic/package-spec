@@ -10,7 +10,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v2/code/go/pkg/errors"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 // Filter represents the collection of processors to be applied over validation errors
@@ -19,9 +19,9 @@ type Filter struct {
 }
 
 // Run runs all the processors over all the validation errors and return the filtered ones
-func (r *Filter) Run(allErrors errors.ValidationErrors) (error, error, error) {
+func (r *Filter) Run(allErrors specerrors.ValidationErrors) (error, error, error) {
 	newErrors := allErrors
-	var allFiltered errors.ValidationErrors
+	var allFiltered specerrors.ValidationErrors
 
 	for _, p := range r.processors {
 		result, err := p.Process(newErrors)
@@ -35,7 +35,7 @@ func (r *Filter) Run(allErrors errors.ValidationErrors) (error, error, error) {
 	return nilOrValidationErrors(newErrors), nilOrValidationErrors(allFiltered), nil
 }
 
-func nilOrValidationErrors(errs errors.ValidationErrors) error {
+func nilOrValidationErrors(errs specerrors.ValidationErrors) error {
 	if len(errs) == 0 {
 		return nil
 	}

@@ -7,7 +7,7 @@ package spectypes
 import (
 	"io/fs"
 
-	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 const (
@@ -79,5 +79,5 @@ type ItemSpec interface {
 	Type() string
 
 	// ValidateSchema validates if the indicated file complies with the schema of the item.
-	ValidateSchema(fsys fs.FS, itemPath string) ve.ValidationErrors
+	ValidateSchema(fsys fs.FS, itemPath string) specerrors.ValidationErrors
 }

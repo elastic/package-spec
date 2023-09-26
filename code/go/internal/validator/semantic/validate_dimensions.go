@@ -8,23 +8,25 @@ import (
 	"strings"
 
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v2/code/go/pkg/errors"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 // ValidateDimensionFields verifies if dimension fields are of one of the expected types.
-func ValidateDimensionFields(fsys fspath.FS) errors.ValidationErrors {
+func ValidateDimensionFields(fsys fspath.FS) specerrors.ValidationErrors {
 	return validateFields(fsys, validateDimensionField)
 }
 
-func validateDimensionField(metadata fieldFileMetadata, f field) errors.ValidationErrors {
+func validateDimensionField(metadata fieldFileMetadata, f field) specerrors.ValidationErrors {
 	if f.External != "" {
 		// TODO: External fields can be used as dimensions, but we cannot resolve
 		// them at this point, so accept them as they are by now.
 		return nil
 	}
 	if f.Dimension && !isAllowedDimensionType(f.Type) {
-		return errors.ValidationErrors{
-			errors.NewStructuredErrorf(`file "%s" is invalid: field "%s" of type %s can't be a dimension, allowed types for dimensions: %s`, metadata.fullFilePath, f.Name, f.Type, strings.Join(allowedDimensionTypes, ", ")),
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredErrorf(
+				`file "%s" is invalid: field "%s" of type %s can't be a dimension, allowed types for dimensions: %s`,
+				metadata.fullFilePath, f.Name, f.Type, strings.Join(allowedDimensionTypes, ", ")),
 		}
 	}
 

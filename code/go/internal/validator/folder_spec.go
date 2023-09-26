@@ -15,7 +15,7 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
-	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 type validator struct {
@@ -39,12 +39,12 @@ func newValidatorForPath(spec spectypes.ItemSpec, pkg *packages.Package, folderP
 	}
 }
 
-func (v *validator) Validate() ve.ValidationErrors {
-	var errs ve.ValidationErrors
+func (v *validator) Validate() specerrors.ValidationErrors {
+	var errs specerrors.ValidationErrors
 	files, err := fs.ReadDir(v.pkg, v.folderPath)
 	if err != nil {
 		errs = append(errs,
-			ve.NewStructuredErrorf("could not read folder [%s]: %w", v.pkg.Path(v.folderPath), err),
+			specerrors.NewStructuredErrorf("could not read folder [%s]: %w", v.pkg.Path(v.folderPath), err),
 		)
 		return errs
 	}
@@ -53,7 +53,7 @@ func (v *validator) Validate() ve.ValidationErrors {
 	// this limit in all cases to avoid having to read too many files.
 	if contentsLimit := v.spec.MaxTotalContents(); contentsLimit > 0 && len(files) > contentsLimit {
 		errs = append(errs,
-			ve.NewStructuredErrorf("folder [%s] exceeds the limit of %d files", v.pkg.Path(v.folderPath), contentsLimit),
+			specerrors.NewStructuredErrorf("folder [%s] exceeds the limit of %d files", v.pkg.Path(v.folderPath), contentsLimit),
 		)
 		return errs
 	}
@@ -64,25 +64,25 @@ func (v *validator) Validate() ve.ValidationErrors {
 	case "beta":
 		if v.pkg.Version.Major() > 0 && v.pkg.Version.Prerelease() == "" {
 			errs = append(errs,
-				ve.NewStructuredErrorf("spec for [%s] defines beta features which can't be enabled for packages with a stable semantic version", v.pkg.Path(v.folderPath)),
+				specerrors.NewStructuredErrorf("spec for [%s] defines beta features which can't be enabled for packages with a stable semantic version", v.pkg.Path(v.folderPath)),
 			)
 		} else {
 			message := fmt.Sprintf("Warning: package with non-stable semantic version and active beta features (enabled in [%s]) can't be released as stable version.", v.pkg.Path(v.folderPath))
 			if common.IsDefinedWarningsAsErrors() {
-				errs = append(errs, ve.NewStructuredErrorf(message))
+				errs = append(errs, specerrors.NewStructuredErrorf(message))
 			} else {
 				log.Printf(message)
 			}
 		}
 	default:
-		errs = append(errs, ve.NewStructuredErrorf("unsupport release level, supported values: beta, ga"))
+		errs = append(errs, specerrors.NewStructuredErrorf("unsupport release level, supported values: beta, ga"))
 	}
 
 	for _, file := range files {
 		fileName := file.Name()
 		itemSpec, err := v.findItemSpec(fileName)
 		if err != nil {
-			errs = append(errs, ve.NewStructuredError(err, ve.UnassignedCode))
+			errs = append(errs, specerrors.NewStructuredError(err, specerrors.UnassignedCode))
 			continue
 		}
 
@@ -91,7 +91,7 @@ func (v *validator) Validate() ve.ValidationErrors {
 			if file.IsDir() {
 				if !v.spec.DevelopmentFolder() && strings.Contains(fileName, "-") {
 					errs = append(errs,
-						ve.NewStructuredErrorf(
+						specerrors.NewStructuredErrorf(
 							`file "%s" is invalid: directory name inside package %s contains -: %s`,
 							v.pkg.Path(v.folderPath, fileName), v.pkg.Name, fileName),
 					)
@@ -103,7 +103,7 @@ func (v *validator) Validate() ve.ValidationErrors {
 		if itemSpec == nil && !v.spec.AdditionalContents() {
 			// No spec found for current folder item and we do not allow additional contents in folder.
 			errs = append(errs,
-				ve.NewStructuredErrorf("item [%s] is not allowed in folder [%s]", fileName, v.pkg.Path(v.folderPath)),
+				specerrors.NewStructuredErrorf("item [%s] is not allowed in folder [%s]", fileName, v.pkg.Path(v.folderPath)),
 			)
 			continue
 		}
@@ -111,7 +111,7 @@ func (v *validator) Validate() ve.ValidationErrors {
 		if file.IsDir() {
 			if !itemSpec.IsDir() {
 				errs = append(errs,
-					ve.NewStructuredErrorf("[%s] is a folder but is expected to be a file", fileName),
+					specerrors.NewStructuredErrorf("[%s] is a folder but is expected to be a file", fileName),
 				)
 				continue
 			}
@@ -131,7 +131,7 @@ func (v *validator) Validate() ve.ValidationErrors {
 		} else {
 			if itemSpec.IsDir() {
 				errs = append(errs,
-					ve.NewStructuredErrorf("[%s] is a file but is expected to be a folder", v.pkg.Path(fileName)),
+					specerrors.NewStructuredErrorf("[%s] is a file but is expected to be a folder", v.pkg.Path(fileName)),
 				)
 				continue
 			}
@@ -140,14 +140,14 @@ func (v *validator) Validate() ve.ValidationErrors {
 			itemValidationErrs := validateFile(itemSpec, v.pkg, itemPath)
 			for _, ive := range itemValidationErrs {
 				errs = append(errs,
-					ve.NewStructuredErrorf("file \"%s\" is invalid: %w", v.pkg.Path(itemPath), ive),
+					specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", v.pkg.Path(itemPath), ive),
 				)
 			}
 
 			info, err := fs.Stat(v.pkg, itemPath)
 			if err != nil {
 				errs = append(errs,
-					ve.NewStructuredErrorf("failed to obtain file size for \"%s\": %w", v.pkg.Path(itemPath), err),
+					specerrors.NewStructuredErrorf("failed to obtain file size for \"%s\": %w", v.pkg.Path(itemPath), err),
 				)
 			} else {
 				v.totalContents++
@@ -158,7 +158,7 @@ func (v *validator) Validate() ve.ValidationErrors {
 
 	if sizeLimit := v.spec.MaxTotalSize(); sizeLimit > 0 && v.totalSize > sizeLimit {
 		errs = append(errs,
-			ve.NewStructuredErrorf("folder [%s] exceeds the total size limit of %s", v.pkg.Path(v.folderPath), sizeLimit),
+			specerrors.NewStructuredErrorf("folder [%s] exceeds the total size limit of %s", v.pkg.Path(v.folderPath), sizeLimit),
 		)
 	}
 
@@ -170,7 +170,7 @@ func (v *validator) Validate() ve.ValidationErrors {
 
 		fileFound, err := matchingFileExists(itemSpec, files)
 		if err != nil {
-			errs = append(errs, ve.NewStructuredError(err, ve.UnassignedCode))
+			errs = append(errs, specerrors.NewStructuredError(err, specerrors.UnassignedCode))
 			continue
 		}
 
@@ -181,7 +181,7 @@ func (v *validator) Validate() ve.ValidationErrors {
 			} else if itemSpec.Pattern() != "" {
 				err = fmt.Errorf("expecting to find %s matching pattern [%s] in folder [%s]", itemSpec.Type(), itemSpec.Pattern(), v.pkg.Path(v.folderPath))
 			}
-			errs = append(errs, ve.NewStructuredError(err, ve.UnassignedCode))
+			errs = append(errs, specerrors.NewStructuredError(err, specerrors.UnassignedCode))
 		}
 	}
 	return errs

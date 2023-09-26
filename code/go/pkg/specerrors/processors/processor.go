@@ -4,16 +4,16 @@
 
 package processors
 
-import "github.com/elastic/package-spec/v2/code/go/pkg/errors"
+import "github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 
 // Processor is the interface for every processor.
 type Processor interface {
-	Process(errors.ValidationErrors) (ProcessResult, error)
+	Process(specerrors.ValidationErrors) (ProcessResult, error)
 	Name() string
 }
 
 // ProcessResult represents the errors that have been processed and removed
 type ProcessResult struct {
-	Processed errors.ValidationErrors
-	Removed   errors.ValidationErrors
+	Processed specerrors.ValidationErrors
+	Removed   specerrors.ValidationErrors
 }

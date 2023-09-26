@@ -13,22 +13,22 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
-	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 // ValidateILMPolicyPresent produces an error if the indicated ILM policy
 // is not defined in the data stream.
-func ValidateILMPolicyPresent(fsys fspath.FS) ve.ValidationErrors {
+func ValidateILMPolicyPresent(fsys fspath.FS) specerrors.ValidationErrors {
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
-		return ve.ValidationErrors{ve.NewStructuredError(err, ve.UnassignedCode)}
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
-	var errs ve.ValidationErrors
+	var errs specerrors.ValidationErrors
 	for _, dataStream := range dataStreams {
 		err = validateILMPolicyInDataStream(fsys, dataStream)
 		if err != nil {
-			errs = append(errs, ve.NewStructuredError(err, ve.UnassignedCode))
+			errs = append(errs, specerrors.NewStructuredError(err, specerrors.UnassignedCode))
 		}
 	}
 	return errs

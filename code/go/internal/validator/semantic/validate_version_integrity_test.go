@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 func TestValidateGithubLink(t *testing.T) {
@@ -49,12 +49,12 @@ func TestValidateGithubLink(t *testing.T) {
 }
 
 func TestEnsureLinksAreValid(t *testing.T) {
-	var githubError = ve.NewStructuredError(errGithubIssue, ve.UnassignedCode)
+	var githubError = specerrors.NewStructuredError(errGithubIssue, specerrors.UnassignedCode)
 
 	var tests = []struct {
 		name   string
 		links  []string
-		errors ve.ValidationErrors
+		errors specerrors.ValidationErrors
 	}{
 		{
 			"AllValidLinks",
@@ -71,7 +71,7 @@ func TestEnsureLinksAreValid(t *testing.T) {
 				"https://github.com/elastic/integrations/pull/abcd",
 				"https://github.com/elastic/integrations/pull",
 			},
-			ve.ValidationErrors{
+			specerrors.ValidationErrors{
 				githubError,
 				githubError,
 			},
@@ -82,7 +82,7 @@ func TestEnsureLinksAreValid(t *testing.T) {
 				"https://github.com/elastic/integrations/pull/1234",
 				"https://github.com/elastic/integrations/pull",
 			},
-			ve.ValidationErrors{
+			specerrors.ValidationErrors{
 				githubError,
 			},
 		},

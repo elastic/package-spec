@@ -12,12 +12,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
-	"github.com/elastic/package-spec/v2/code/go/pkg/errors"
-
 	cp "github.com/otiai10/copy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 func TestValidateFile(t *testing.T) {
@@ -239,7 +239,7 @@ func TestValidateFile(t *testing.T) {
 				require.NoError(t, errs)
 			} else {
 				require.Error(t, errs)
-				vErrs, ok := errs.(errors.ValidationErrors)
+				vErrs, ok := errs.(specerrors.ValidationErrors)
 				if ok {
 					require.Len(t, errs, len(test.expectedErrContains))
 					var errMessages []string
@@ -324,7 +324,7 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 
 			errs := ValidateFromPath(pkgRootPath)
 			require.Error(t, errs)
-			vErrs, ok := errs.(errors.ValidationErrors)
+			vErrs, ok := errs.(specerrors.ValidationErrors)
 			require.True(t, ok)
 
 			var errMessages []string
@@ -362,7 +362,7 @@ func TestValidateBadRuleIDs(t *testing.T) {
 		t.Run(pkgName, func(t *testing.T) {
 			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			require.Error(t, errs)
-			vErrs, ok := errs.(errors.ValidationErrors)
+			vErrs, ok := errs.(specerrors.ValidationErrors)
 			require.True(t, ok)
 
 			var errMessages []string
@@ -398,7 +398,7 @@ func TestValidateMissingRequiredFields(t *testing.T) {
 			}
 			assert.Error(t, err)
 
-			errs, ok := err.(errors.ValidationErrors)
+			errs, ok := err.(specerrors.ValidationErrors)
 			require.True(t, ok)
 			assert.Len(t, errs, len(expectedErrors))
 
@@ -428,7 +428,7 @@ func TestValidateVersionIntegrity(t *testing.T) {
 		t.Run(pkgName, func(t *testing.T) {
 			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			require.Error(t, errs)
-			vErrs, ok := errs.(errors.ValidationErrors)
+			vErrs, ok := errs.(specerrors.ValidationErrors)
 			require.True(t, ok)
 
 			var errMessages []string
@@ -450,7 +450,7 @@ func TestValidateDuplicatedFields(t *testing.T) {
 		t.Run(pkgName, func(t *testing.T) {
 			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			require.Error(t, errs)
-			vErrs, ok := errs.(errors.ValidationErrors)
+			vErrs, ok := errs.(specerrors.ValidationErrors)
 			require.True(t, ok)
 
 			assert.Len(t, vErrs, 1)
@@ -493,7 +493,7 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 			}
 			assert.Error(t, err)
 
-			errs, ok := err.(errors.ValidationErrors)
+			errs, ok := err.(specerrors.ValidationErrors)
 			require.True(t, ok)
 			assert.Len(t, errs, len(expectedErrorMessages))
 
@@ -540,7 +540,7 @@ func TestValidateWarnings(t *testing.T) {
 				require.NoError(t, errs)
 			} else {
 				require.Error(t, errs)
-				vErrs, ok := errs.(errors.ValidationErrors)
+				vErrs, ok := errs.(specerrors.ValidationErrors)
 				if ok {
 					require.Len(t, errs, len(expectedWarnContains))
 					var warnMessages []string
@@ -624,7 +624,7 @@ func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
 				require.NoError(t, errs)
 			} else {
 				require.Error(t, errs)
-				vErrs, ok := errs.(errors.ValidationErrors)
+				vErrs, ok := errs.(specerrors.ValidationErrors)
 				if ok {
 					require.Len(t, errs, len(test.expectedErrContains))
 					var errMessages []string
@@ -671,7 +671,7 @@ func TestValidateRoutingRules(t *testing.T) {
 			}
 			assert.Error(t, err)
 
-			errs, ok := err.(errors.ValidationErrors)
+			errs, ok := err.(specerrors.ValidationErrors)
 			require.True(t, ok)
 			assert.Len(t, errs, len(expectedErrorMessages))
 
@@ -688,7 +688,7 @@ func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map
 
 	errs := ValidateFromPath(pkgRootPath)
 	require.Error(t, errs)
-	vErrs, ok := errs.(errors.ValidationErrors)
+	vErrs, ok := errs.(specerrors.ValidationErrors)
 	require.True(t, ok)
 
 	var errMessages []string

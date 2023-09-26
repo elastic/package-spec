@@ -9,13 +9,13 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 
-	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 // FileSchema defines the expected schema for a file.
 type FileSchema interface {
 	// Validate checks if the file in the given path complies with the schema.
-	Validate(fs fs.FS, path string) ve.ValidationErrors
+	Validate(fs fs.FS, path string) specerrors.ValidationErrors
 }
 
 // FileSchemaLoader loads schemas for files.

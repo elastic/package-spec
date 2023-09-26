@@ -13,7 +13,7 @@ import (
 
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
-	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 var (
@@ -23,24 +23,24 @@ var (
 
 // ValidateKibanaFilterPresent checks that all the dashboards included in a package
 // contain a filter, so only data related to its datasets is queried.
-func ValidateKibanaFilterPresent(fsys fspath.FS) ve.ValidationErrors {
-	var errs ve.ValidationErrors
+func ValidateKibanaFilterPresent(fsys fspath.FS) specerrors.ValidationErrors {
+	var errs specerrors.ValidationErrors
 
 	filePaths := path.Join("kibana", "dashboard", "*.json")
 	dashboardFiles, err := pkgpath.Files(fsys, filePaths)
 	if err != nil {
-		errs = append(errs, ve.NewStructuredErrorf("error finding Kibana dashboard files: %w", err))
+		errs = append(errs, specerrors.NewStructuredErrorf("error finding Kibana dashboard files: %w", err))
 		return errs
 	}
 	for _, file := range dashboardFiles {
 		err = checkDashboardHasFilter(file)
 		if err != nil {
-			code := ve.CodeKibanaDashboardWithoutFilter
+			code := specerrors.CodeKibanaDashboardWithoutFilter
 			if errors.Is(err, errDashboardWithFilterAndNoQuery) {
-				code = ve.CodeKibanaDashboardWithQueryButNoFilter
+				code = specerrors.CodeKibanaDashboardWithQueryButNoFilter
 			}
 			errs = append(errs,
-				ve.NewStructuredError(
+				specerrors.NewStructuredError(
 					fmt.Errorf("file \"%s\" is invalid: expected filter in dashboard: %w", fsys.Path(file.Path()), err),
 					code),
 			)

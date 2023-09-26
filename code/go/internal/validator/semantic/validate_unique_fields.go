@@ -9,15 +9,15 @@ import (
 	"strings"
 
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
-	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 // ValidateUniqueFields verifies that any field is defined only once on each data stream.
-func ValidateUniqueFields(fsys fspath.FS) ve.ValidationErrors {
+func ValidateUniqueFields(fsys fspath.FS) specerrors.ValidationErrors {
 	// data_stream -> field -> files
 	fields := make(map[string]map[string][]string)
 
-	countField := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
+	countField := func(metadata fieldFileMetadata, f field) specerrors.ValidationErrors {
 		if len(f.Fields) > 0 {
 			// Don't count groups
 			return nil
@@ -37,13 +37,13 @@ func ValidateUniqueFields(fsys fspath.FS) ve.ValidationErrors {
 		return err
 	}
 
-	var errs ve.ValidationErrors
+	var errs specerrors.ValidationErrors
 	for id, defs := range fields {
 		for field, files := range defs {
 			if len(files) > 1 {
 				sort.Strings(files)
 				errs = append(errs,
-					ve.NewStructuredErrorf(
+					specerrors.NewStructuredErrorf(
 						"field %q is defined multiple times for data stream %q, found in: %s",
 						field, id, strings.Join(files, ", ")),
 				)

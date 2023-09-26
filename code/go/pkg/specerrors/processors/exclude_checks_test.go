@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	pve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 func TestExcludeChecks(t *testing.T) {
@@ -42,10 +42,10 @@ func TestExcludeChecks(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
 			p := NewExcludeCheck(c.code)
-			var issues pve.ValidationErrors
+			var issues specerrors.ValidationErrors
 			for i, code := range c.codes {
 				issues = append(issues,
-					pve.NewStructuredError(fmt.Errorf("error %d", i), code),
+					specerrors.NewStructuredError(fmt.Errorf("error %d", i), code),
 				)
 			}
 

@@ -13,7 +13,7 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
-	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 type reference struct {
@@ -27,14 +27,14 @@ type reference struct {
 // That is, it warns if a Kibana dashbaord file, foo.json,
 // defines some visualization using reference (containing an element of
 // "visualization" type inside references key).
-func ValidateVisualizationsUsedByValue(fsys fspath.FS) ve.ValidationErrors {
+func ValidateVisualizationsUsedByValue(fsys fspath.FS) specerrors.ValidationErrors {
 	warningsAsErrors := common.IsDefinedWarningsAsErrors()
-	var errs ve.ValidationErrors
+	var errs specerrors.ValidationErrors
 
 	filePaths := path.Join("kibana", "dashboard", "*.json")
 	objectFiles, err := pkgpath.Files(fsys, filePaths)
 	if err != nil {
-		errs = append(errs, ve.NewStructuredErrorf("error finding Kibana Dashboard files: %w", err))
+		errs = append(errs, specerrors.NewStructuredErrorf("error finding Kibana Dashboard files: %w", err))
 		return errs
 	}
 
@@ -49,7 +49,7 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) ve.ValidationErrors {
 
 		references, err := anyReference(objectReferences)
 		if err != nil {
-			errs = append(errs, ve.NewStructuredErrorf("error getting references in file: %s: %w", fsys.Path(filePath), err))
+			errs = append(errs, specerrors.NewStructuredErrorf("error getting references in file: %s: %w", fsys.Path(filePath), err))
 		}
 		if len(references) > 0 {
 			s := fmt.Sprintf("%s (%s)", references[0].ID, references[0].Type)
@@ -59,7 +59,7 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) ve.ValidationErrors {
 
 			message := fmt.Sprintf("Warning: references found in dashboard %s: %s", filePath, s)
 			if warningsAsErrors {
-				errs = append(errs, ve.NewStructuredErrorf(message))
+				errs = append(errs, specerrors.NewStructuredErrorf(message))
 			} else {
 				log.Printf(message)
 			}

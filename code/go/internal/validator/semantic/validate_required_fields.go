@@ -8,12 +8,12 @@ import (
 	"fmt"
 
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
-	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 // ValidateRequiredFields validates that required fields are present and have the expected
 // types.
-func ValidateRequiredFields(fsys fspath.FS) ve.ValidationErrors {
+func ValidateRequiredFields(fsys fspath.FS) specerrors.ValidationErrors {
 	requiredFields := map[string]string{
 		"data_stream.type":      "constant_keyword",
 		"data_stream.dataset":   "constant_keyword",
@@ -50,11 +50,11 @@ func (e notFoundRequiredField) Error() string {
 	return message
 }
 
-func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve.ValidationErrors {
+func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) specerrors.ValidationErrors {
 	// map datastream/package -> field name -> found
 	foundFields := make(map[string]map[string]struct{})
 
-	checkField := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
+	checkField := func(metadata fieldFileMetadata, f field) specerrors.ValidationErrors {
 		if _, ok := foundFields[metadata.dataStream]; !ok {
 			foundFields[metadata.dataStream] = make(map[string]struct{})
 		}
@@ -70,8 +70,8 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve
 		// the definition.
 		// More info in https://github.com/elastic/elastic-package/issues/749
 		if f.External == "" && f.Type != expectedType {
-			return ve.ValidationErrors{
-				ve.NewStructuredError(
+			return specerrors.ValidationErrors{
+				specerrors.NewStructuredError(
 					unexpectedTypeRequiredField{
 						field:        f.Name,
 						foundType:    f.Type,
@@ -79,7 +79,7 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve
 						fullPath:     metadata.fullFilePath,
 						expectedType: expectedType,
 					},
-					ve.UnassignedCode,
+					specerrors.UnassignedCode,
 				),
 			}
 		}
@@ -94,13 +94,13 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) ve
 		for requiredName, requiredType := range requiredFields {
 			if _, found := dataStreamFields[requiredName]; !found {
 				errs = append(errs,
-					ve.NewStructuredError(
+					specerrors.NewStructuredError(
 						notFoundRequiredField{
 							field:        requiredName,
 							expectedType: requiredType,
 							dataStream:   dataStream,
 						},
-						ve.UnassignedCode,
+						specerrors.UnassignedCode,
 					),
 				)
 			}

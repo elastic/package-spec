@@ -13,18 +13,18 @@ import (
 
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
-	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 // ValidateRoutingRulesAndDataset returns validation errors if there are routing rules defined in any dataStream
 // but that dataStream does not defines "dataset" field.
-func ValidateRoutingRulesAndDataset(fsys fspath.FS) ve.ValidationErrors {
+func ValidateRoutingRulesAndDataset(fsys fspath.FS) specerrors.ValidationErrors {
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
-		return ve.ValidationErrors{ve.NewStructuredError(err, ve.UnassignedCode)}
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
-	var errs ve.ValidationErrors
+	var errs specerrors.ValidationErrors
 	for _, dataStream := range dataStreams {
 		anyRoutingRules, err := anyRoutingRulesInDataStream(fsys, dataStream)
 		if !anyRoutingRules {
@@ -32,8 +32,8 @@ func ValidateRoutingRulesAndDataset(fsys fspath.FS) ve.ValidationErrors {
 		}
 		err = validateDatasetInDataStream(fsys, dataStream)
 		if err != nil {
-			errs.Append(ve.ValidationErrors{
-				ve.NewStructuredErrorf("routing rules defined in data stream %q but dataset field is missing: %w", dataStream, err),
+			errs.Append(specerrors.ValidationErrors{
+				specerrors.NewStructuredErrorf("routing rules defined in data stream %q but dataset field is missing: %w", dataStream, err),
 			})
 		}
 	}

@@ -13,20 +13,20 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
-	ve "github.com/elastic/package-spec/v2/code/go/pkg/errors"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 // ValidateProfilingNonGA validates that the profiling data type is not used in GA packages,
 // as this data type is in technical preview and can be eventually removed.
-func ValidateProfilingNonGA(fsys fspath.FS) ve.ValidationErrors {
+func ValidateProfilingNonGA(fsys fspath.FS) specerrors.ValidationErrors {
 	manifestVersion, err := readManifestVersion(fsys)
 	if err != nil {
-		return ve.ValidationErrors{ve.NewStructuredError(err, ve.UnassignedCode)}
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
 	semVer, err := semver.NewVersion(manifestVersion)
 	if err != nil {
-		return ve.ValidationErrors{ve.NewStructuredError(err, ve.UnassignedCode)}
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
 	if semVer.Major() == 0 || semVer.Prerelease() != "" {
@@ -35,14 +35,14 @@ func ValidateProfilingNonGA(fsys fspath.FS) ve.ValidationErrors {
 
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
-		return ve.ValidationErrors{ve.NewStructuredError(err, ve.UnassignedCode)}
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
-	var errs ve.ValidationErrors
+	var errs specerrors.ValidationErrors
 	for _, dataStream := range dataStreams {
 		err := validateProfilingTypeNotUsed(fsys, dataStream)
 		if err != nil {
-			errs = append(errs, ve.NewStructuredError(err, ve.UnassignedCode))
+			errs = append(errs, specerrors.NewStructuredError(err, specerrors.UnassignedCode))
 		}
 	}
 	return errs
