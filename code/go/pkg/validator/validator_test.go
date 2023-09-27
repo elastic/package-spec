@@ -227,7 +227,12 @@ func TestValidateFile(t *testing.T) {
 				`dangling reference found: bad_dangling_object_ids-8287a5d5-1576-4f3a-83c4-444e9058439c (search)`,
 			},
 		},
-		"kibana_legacy_visualizations": {},
+		"kibana_legacy_visualizations": {
+			"kibana/visualization/kibana_legacy_visualizations-1740c760-596e-11ee-adef-4fe896364076.json",
+			[]string{
+				`found legacy visualization "TSVB time series" (timeseries, TSVB)`,
+			},
+		},
 	}
 
 	for pkgName, test := range tests {

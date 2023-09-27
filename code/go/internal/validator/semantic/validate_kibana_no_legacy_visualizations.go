@@ -25,13 +25,27 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) ve.ValidationErrors {
 	// Note: this does not include Lens, Maps, or Discover. That's okay for this rule because none of those are legacy
 	visFilePaths := path.Join("kibana", "visualization", "*.json")
 	visFiles, _ := pkgpath.Files(fsys, visFilePaths)
-	pkgByRefVisualizations := make(map[string]kbncontent.VisualizationDescriptor)
 
 	for _, file := range visFiles {
-		if visJSON, err := file.Values("$"); err == nil {
-			if desc, err := kbncontent.DescribeVisualizationSavedObject(visJSON.(map[string]interface{})); err == nil {
-				pkgByRefVisualizations[strings.TrimSuffix(file.Name(), ".json")] = desc
+		visJSON, err := file.Values("$")
+
+		if err != nil {
+			errs = append(errs, fmt.Errorf("error getting JSON: %w", err))
+			return errs
+		}
+
+
+		desc, err := kbncontent.DescribeVisualizationSavedObject(visJSON.(map[string]interface{}))
+		if err != nil {
+			errs = append(errs, fmt.Errorf("error describing visualization saved object: %w", err))
+		}
+
+		if desc.IsLegacy() {
+			var editor string
+			if result, err := desc.Editor(); err == nil {
+				editor = result
 			}
+			errs = append(errs, fmt.Errorf("file \"%s\" is invalid: found legacy visualization \"%s\" (%s, %s)", fsys.Path(file.Path()), desc.Title(), desc.SemanticType(), editor))
 		}
 	}
 
@@ -43,18 +57,17 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) ve.ValidationErrors {
 	}
 
 	for _, file := range dashboardFiles {
-		dashboardJSON, _ := file.Values("$")
-		visualizations, _ := kbncontent.DescribeByValueDashboardPanels(dashboardJSON)
-
-		var byRefVisualizations []kbncontent.VisualizationDescriptor
-		ids, _ := kbncontent.GetByReferencePanelIDs(dashboardJSON)
-		for _, id := range ids {
-			if vis, ok := pkgByRefVisualizations[id]; ok {
-				byRefVisualizations = append(byRefVisualizations, vis)
-			}
+		dashboardJSON, err := file.Values("$")
+		if err != nil {
+			errs = append(errs, fmt.Errorf("error getting dashboard JSON: %w", err))
+			return errs
 		}
 
-		visualizations = append(visualizations, byRefVisualizations...)
+		visualizations, err := kbncontent.DescribeByValueDashboardPanels(dashboardJSON)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("error describing dashboard panels for %s: %w", fsys.Path(file.Path()), err))
+			return errs
+		}
 
 		var legacyVisualizations []kbncontent.VisualizationDescriptor
 		for _, desc := range visualizations {
@@ -67,6 +80,7 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) ve.ValidationErrors {
 			dashboardTitle, err := kbncontent.GetDashboardTitle(dashboardJSON)
 			if err != nil {
 				errs = append(errs, fmt.Errorf("error fetching dashboard title: %w", err))
+				return errs
 			}
 
 			var buf strings.Builder
