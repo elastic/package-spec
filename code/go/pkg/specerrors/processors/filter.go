@@ -18,8 +18,14 @@ type Filter struct {
 	processors []Processor
 }
 
+// FilterResult represents the errors that have been processed and removed from the filter
+type FilterResult struct {
+	Processed error
+	Removed   error
+}
+
 // Run runs all the processors over all the validation errors and return the filtered ones
-func (r *Filter) Run(allErrors specerrors.ValidationErrors) (error, error, error) {
+func (r *Filter) Run(allErrors specerrors.ValidationErrors) (FilterResult, error) {
 	newErrors := allErrors
 	var allFiltered specerrors.ValidationErrors
 
@@ -32,7 +38,10 @@ func (r *Filter) Run(allErrors specerrors.ValidationErrors) (error, error, error
 		allFiltered.Append(result.Removed)
 	}
 
-	return nilOrValidationErrors(newErrors), nilOrValidationErrors(allFiltered), nil
+	return FilterResult{
+		Processed: nilOrValidationErrors(newErrors),
+		Removed:   nilOrValidationErrors(allFiltered),
+	}, nil
 }
 
 func nilOrValidationErrors(errs specerrors.ValidationErrors) error {
