@@ -24,9 +24,9 @@
     link: https://github.com/elastic/package-spec/pull/607
 - version: 2.12.1-next
   changes:
-  - description: Prepare for next version
+  - description: Allow to define expected values in fields definitions.
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/612
+    link: https://github.com/elastic/package-spec/pull/616
 - version: 2.12.0
   changes:
   - description: Add flag to manifests to indicate if a package or data stream requires root privileges
