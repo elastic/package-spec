@@ -9,6 +9,7 @@ import (
 	"path"
 	"text/tabwriter"
 	"strings"
+	"errors"
 
 	"github.com/elastic/kbncontent"
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
@@ -63,20 +64,28 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) ve.ValidationErrors {
 		}
 
 		if len(legacyVisualizations) > 0 {
-			dashboardTitle, _ := kbncontent.GetDashboardTitle(dashboardJSON)
+			dashboardTitle, err := kbncontent.GetDashboardTitle(dashboardJSON)
+			if err != nil {
+				errs = append(errs, fmt.Errorf("error fetching dashboard title: %w", err))
+			}
+
 			var buf strings.Builder
-			fmt.Fprintf(&buf, "Dashboard \"%s\" contains legacy visualizations:\n\n", dashboardTitle)
+			fmt.Fprintf(&buf, "file \"%s\" is invalid: \"%s\" contains legacy visualizations:\n\n", fsys.Path(file.Path()), dashboardTitle)
 
 			tableWriter := tabwriter.NewWriter(&buf, 0, 0, 1, ' ', tabwriter.Debug)
 			fmt.Fprintln(tableWriter, "\tTitle\tEditor\tType\t")
 			fmt.Fprintln(tableWriter, "\t\t\t\t")
 
 			for _, vis := range legacyVisualizations {
-				fmt.Fprintf(tableWriter, "\t\"%s\"\t%s\t%s\t\n", vis.Title(), vis.Editor(), vis.SemanticType())
+				var editor string
+				if result, err := vis.Editor(); err == nil {
+					editor = result
+				}
+				fmt.Fprintf(tableWriter, "\t\"%s\"\t%s\t%s\t\n", vis.Title(), editor, vis.SemanticType())
 			}
 			tableWriter.Flush()
 
-			errs = append(errs, fmt.Errorf("%s", buf.String()))
+			errs = append(errs, errors.New(buf.String()))
 		}
 	}
 
