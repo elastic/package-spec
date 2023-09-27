@@ -6,6 +6,7 @@ package specerrors
 
 import (
 	"errors"
+	"io/fs"
 	"os"
 	"slices"
 	"testing"
@@ -144,23 +145,35 @@ func TestFilter(t *testing.T) {
 func TestLoadConfigFilter(t *testing.T) {
 	cases := []struct {
 		title                   string
-		configPath              string
+		packagePath             string
 		expectedExcludePatterns int
+		configPathFound         bool
 	}{
 		{
 			title:                   "test exclude config",
-			configPath:              "testdata/errors.config.yml",
+			packagePath:             "testdata/",
 			expectedExcludePatterns: 2,
+			configPathFound:         true,
+		},
+		{
+			title:                   "test exclude config",
+			packagePath:             ".",
+			expectedExcludePatterns: 0,
+			configPathFound:         false,
 		},
 	}
 
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
-			fsys := os.DirFS(".")
-			config, err := LoadConfigFilter(fsys, c.configPath)
-			require.NoError(t, err)
-
-			assert.Equal(t, len(config.Errors.ExcludeChecks), c.expectedExcludePatterns)
+			fsys := os.DirFS(c.packagePath)
+			config, err := LoadConfigFilter(fsys)
+			if c.configPathFound {
+				require.NoError(t, err)
+				assert.Equal(t, len(config.Errors.ExcludeChecks), c.expectedExcludePatterns)
+				return
+			}
+			require.Error(t, err)
+			assert.ErrorIs(t, err, fs.ErrNotExist)
 		})
 	}
 }
