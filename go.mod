@@ -9,7 +9,7 @@ require (
 	github.com/creasty/defaults v1.7.0
 	github.com/elastic/go-licenser v0.4.1
 	github.com/elastic/gojsonschema v1.2.1
-	github.com/elastic/kbncontent v0.0.0
+	github.com/elastic/kbncontent v0.0.0-20230927141331-65da83fb5c8e
 	github.com/evanphx/json-patch/v5 v5.7.0
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901
 	github.com/mitchellh/mapstructure v1.5.0
@@ -44,5 +44,3 @@ require (
 	golang.org/x/tools v0.13.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 )
-
-replace github.com/elastic/kbncontent v0.0.0 => ../kbncontent
