@@ -32,7 +32,7 @@ func (r *Filter) Run(allErrors specerrors.ValidationErrors) (FilterResult, error
 	for _, p := range r.processors {
 		result, err := p.Process(newErrors)
 		if err != nil {
-			return allErrors, nil, err
+			return FilterResult{Processed: allErrors, Removed: nil}, err
 		}
 		newErrors = result.Processed
 		allFiltered.Append(result.Removed)

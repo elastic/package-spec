@@ -100,18 +100,18 @@ func TestFilter(t *testing.T) {
 		t.Run(c.title, func(t *testing.T) {
 			runner := NewFilter(&c.config)
 
-			finalErrors, filteredErrors, err := runner.Run(c.errors)
+			result, err := runner.Run(c.errors)
 			require.NoError(t, err)
 
 			if c.expectedErrors == nil {
-				assert.Nil(t, finalErrors)
+				assert.Nil(t, result.Processed)
 			}
 			if c.expectedFilteredErrors == nil {
-				assert.Nil(t, filteredErrors)
+				assert.Nil(t, result.Removed)
 			}
 
 			if c.expectedErrors != nil {
-				veFinalErrors, ok := finalErrors.(specerrors.ValidationErrors)
+				veFinalErrors, ok := result.Processed.(specerrors.ValidationErrors)
 				require.True(t, ok)
 				assert.Len(t, veFinalErrors, len(c.expectedErrors))
 				for _, e := range veFinalErrors {
@@ -126,7 +126,7 @@ func TestFilter(t *testing.T) {
 			}
 
 			if c.expectedFilteredErrors != nil {
-				veFilteredErrors, ok := filteredErrors.(specerrors.ValidationErrors)
+				veFilteredErrors, ok := result.Removed.(specerrors.ValidationErrors)
 				require.True(t, ok)
 				assert.Len(t, veFilteredErrors, len(c.expectedFilteredErrors))
 				for _, e := range veFilteredErrors {
