@@ -13,6 +13,8 @@ import (
 	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
+const configPath = "validation.yml"
+
 // Filter represents the collection of processors to be applied over validation errors
 type Filter struct {
 	processors []Processor
@@ -67,7 +69,7 @@ type Processors struct {
 }
 
 // LoadConfigFilter reads the config file and returns a ConfigFilter struct
-func LoadConfigFilter(fsys fs.FS, configPath string) (*ConfigFilter, error) {
+func LoadConfigFilter(fsys fs.FS) (*ConfigFilter, error) {
 	yamlFile, err := fs.ReadFile(fsys, configPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read config file %s: %w", configPath, err)
