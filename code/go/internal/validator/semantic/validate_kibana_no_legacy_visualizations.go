@@ -10,12 +10,12 @@ import (
 	"github.com/elastic/kbncontent"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
-	se "github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 // ValidateKibanaNoLegacyVisualizations reports legacy Kibana visualizations in a package.
-func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) se.ValidationErrors {
-	var errs se.ValidationErrors
+func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) specerrors.ValidationErrors {
+	var errs specerrors.ValidationErrors
 
 	// Collect by-reference visualizations for reference later.
 	// Note: this does not include Lens, Maps, or Discover. That's okay for this rule because none of those are legacy
@@ -26,20 +26,20 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) se.ValidationErrors {
 		visJSON, err := file.Values("$")
 
 		if err != nil {
-			errs = append(errs, se.NewStructuredErrorf("error getting JSON: %w", err))
+			errs = append(errs, specerrors.NewStructuredErrorf("error getting JSON: %w", err))
 			continue
 		}
 
 
 		visMap, ok := visJSON.(map[string]interface{})
 		if !ok {
-			errs = append(errs, se.NewStructuredErrorf("JSON of unexpected type %T in file %s", visJSON, file.Name()))
+			errs = append(errs, specerrors.NewStructuredErrorf("JSON of unexpected type %T in file %s", visJSON, file.Name()))
 			continue
 		}
 
 		desc, err := kbncontent.DescribeVisualizationSavedObject(visMap)
 		if err != nil {
-			errs = append(errs, se.NewStructuredErrorf("error describing visualization saved object: %w", err))
+			errs = append(errs, specerrors.NewStructuredErrorf("error describing visualization saved object: %w", err))
 			continue
 		}
 
@@ -48,33 +48,33 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) se.ValidationErrors {
 			if result, err := desc.Editor(); err == nil {
 				editor = result
 			}
-			errs = append(errs, se.NewStructuredErrorf("file \"%s\" is invalid: found legacy visualization \"%s\" (%s, %s)", fsys.Path(file.Path()), desc.Title(), desc.SemanticType(), editor))
+			errs = append(errs, specerrors.NewStructuredErrorf("file \"%s\" is invalid: found legacy visualization \"%s\" (%s, %s)", fsys.Path(file.Path()), desc.Title(), desc.SemanticType(), editor))
 		}
 	}
 
 	dashboardFilePaths := path.Join("kibana", "dashboard", "*.json")
 	dashboardFiles, err := pkgpath.Files(fsys, dashboardFilePaths)
 	if err != nil {
-		errs = append(errs, se.NewStructuredErrorf("error finding Kibana dashboard files: %w", err))
+		errs = append(errs, specerrors.NewStructuredErrorf("error finding Kibana dashboard files: %w", err))
 		return errs
 	}
 
 	for _, file := range dashboardFiles {
 		dashboardJSON, err := file.Values("$")
 		if err != nil {
-			errs = append(errs, se.NewStructuredErrorf("error getting dashboard JSON: %w", err))
+			errs = append(errs, specerrors.NewStructuredErrorf("error getting dashboard JSON: %w", err))
 			continue
 		}
 
 		dashboardTitle, err := kbncontent.GetDashboardTitle(dashboardJSON)
 		if err != nil {
-			errs = append(errs, se.NewStructuredErrorf("error fetching dashboard title: %w", err))
+			errs = append(errs, specerrors.NewStructuredErrorf("error fetching dashboard title: %w", err))
 			continue
 		}
 
 		visualizations, err := kbncontent.DescribeByValueDashboardPanels(dashboardJSON)
 		if err != nil {
-			errs = append(errs, se.NewStructuredErrorf("error describing dashboard panels for %s: %w", fsys.Path(file.Path()), err))
+			errs = append(errs, specerrors.NewStructuredErrorf("error describing dashboard panels for %s: %w", fsys.Path(file.Path()), err))
 			continue
 		}
 
@@ -84,7 +84,7 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) se.ValidationErrors {
 				if result, err := desc.Editor(); err == nil {
 					editor = result
 				}
-				err := se.NewStructuredErrorf("file \"%s\" is invalid: \"%s\" contains legacy visualization: \"%s\" (%s, %s)", fsys.Path(file.Path()), dashboardTitle, desc.Title(), desc.SemanticType(), editor)
+				err := specerrors.NewStructuredErrorf("file \"%s\" is invalid: \"%s\" contains legacy visualization: \"%s\" (%s, %s)", fsys.Path(file.Path()), dashboardTitle, desc.Title(), desc.SemanticType(), editor)
 				errs = append(errs, err)
 			}
 		}
