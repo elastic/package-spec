@@ -27,13 +27,20 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) se.ValidationErrors {
 
 		if err != nil {
 			errs = append(errs, se.NewStructuredErrorf("error getting JSON: %w", err))
-			return errs
+			continue
 		}
 
 
-		desc, err := kbncontent.DescribeVisualizationSavedObject(visJSON.(map[string]interface{}))
+		visMap, ok := visJSON.(map[string]interface{})
+		if !ok {
+			errs = append(errs, se.NewStructuredErrorf("JSON of unexpected type %T in file %s", visJSON, file.Name()))
+			continue
+		}
+
+		desc, err := kbncontent.DescribeVisualizationSavedObject(visMap)
 		if err != nil {
 			errs = append(errs, se.NewStructuredErrorf("error describing visualization saved object: %w", err))
+			continue
 		}
 
 		if desc.IsLegacy() {
@@ -56,19 +63,19 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) se.ValidationErrors {
 		dashboardJSON, err := file.Values("$")
 		if err != nil {
 			errs = append(errs, se.NewStructuredErrorf("error getting dashboard JSON: %w", err))
-			return errs
+			continue
 		}
 
 		dashboardTitle, err := kbncontent.GetDashboardTitle(dashboardJSON)
 		if err != nil {
 			errs = append(errs, se.NewStructuredErrorf("error fetching dashboard title: %w", err))
-			return errs
+			continue
 		}
 
 		visualizations, err := kbncontent.DescribeByValueDashboardPanels(dashboardJSON)
 		if err != nil {
 			errs = append(errs, se.NewStructuredErrorf("error describing dashboard panels for %s: %w", fsys.Path(file.Path()), err))
-			return errs
+			continue
 		}
 
 		for _, desc := range visualizations {
