@@ -10,7 +10,7 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 
-	"github.com/tommyers-elastic/package-spec/v2/code/go/internal/specpatch"
+	"github.com/elastic/package-spec/v2/code/go/internal/specpatch"
 )
 
 type folderSchemaSpec struct {

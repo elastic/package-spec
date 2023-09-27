@@ -8,7 +8,7 @@ import (
 	"io/fs"
 
 	"github.com/Masterminds/semver/v3"
-	ve "github.com/tommyers-elastic/package-spec/v2/code/go/internal/errors"
+	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 )
 
 // FileSchema defines the expected schema for a file.

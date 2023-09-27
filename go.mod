@@ -1,4 +1,4 @@
-module github.com/tommyers-elastic/package-spec/v2
+module github.com/elastic/package-spec/v2
 
 go 1.21.0
 

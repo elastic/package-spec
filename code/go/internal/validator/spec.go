@@ -13,13 +13,13 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 
-	spec "github.com/tommyers-elastic/package-spec/v2"
-	ve "github.com/tommyers-elastic/package-spec/v2/code/go/internal/errors"
-	"github.com/tommyers-elastic/package-spec/v2/code/go/internal/fspath"
-	"github.com/tommyers-elastic/package-spec/v2/code/go/internal/loader"
-	"github.com/tommyers-elastic/package-spec/v2/code/go/internal/packages"
-	"github.com/tommyers-elastic/package-spec/v2/code/go/internal/spectypes"
-	"github.com/tommyers-elastic/package-spec/v2/code/go/internal/validator/semantic"
+	spec "github.com/elastic/package-spec/v2"
+	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/internal/loader"
+	"github.com/elastic/package-spec/v2/code/go/internal/packages"
+	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/v2/code/go/internal/validator/semantic"
 )
 
 // Spec represents a package specification

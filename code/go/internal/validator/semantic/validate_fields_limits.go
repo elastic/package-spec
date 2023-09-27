@@ -7,8 +7,8 @@ package semantic
 import (
 	"fmt"
 
-	ve "github.com/tommyers-elastic/package-spec/v2/code/go/internal/errors"
-	"github.com/tommyers-elastic/package-spec/v2/code/go/internal/fspath"
+	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 )
 
 // ValidateFieldsLimits verifies limits on fields.
