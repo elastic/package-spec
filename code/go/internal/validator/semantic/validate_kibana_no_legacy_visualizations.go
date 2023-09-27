@@ -7,9 +7,6 @@ package semantic
 import (
 	"fmt"
 	"path"
-	"text/tabwriter"
-	"strings"
-	"errors"
 
 	"github.com/elastic/kbncontent"
 	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
@@ -63,43 +60,27 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) ve.ValidationErrors {
 			return errs
 		}
 
+		dashboardTitle, err := kbncontent.GetDashboardTitle(dashboardJSON)
+		if err != nil {
+			errs = append(errs, fmt.Errorf("error fetching dashboard title: %w", err))
+			return errs
+		}
+
 		visualizations, err := kbncontent.DescribeByValueDashboardPanels(dashboardJSON)
 		if err != nil {
 			errs = append(errs, fmt.Errorf("error describing dashboard panels for %s: %w", fsys.Path(file.Path()), err))
 			return errs
 		}
 
-		var legacyVisualizations []kbncontent.VisualizationDescriptor
 		for _, desc := range visualizations {
 			if desc.IsLegacy() {
-				legacyVisualizations = append(legacyVisualizations, desc)
-			}
-		}
-
-		if len(legacyVisualizations) > 0 {
-			dashboardTitle, err := kbncontent.GetDashboardTitle(dashboardJSON)
-			if err != nil {
-				errs = append(errs, fmt.Errorf("error fetching dashboard title: %w", err))
-				return errs
-			}
-
-			var buf strings.Builder
-			fmt.Fprintf(&buf, "file \"%s\" is invalid: \"%s\" contains legacy visualizations:\n\n", fsys.Path(file.Path()), dashboardTitle)
-
-			tableWriter := tabwriter.NewWriter(&buf, 0, 0, 1, ' ', tabwriter.Debug)
-			fmt.Fprintln(tableWriter, "\tTitle\tEditor\tType\t")
-			fmt.Fprintln(tableWriter, "\t\t\t\t")
-
-			for _, vis := range legacyVisualizations {
 				var editor string
-				if result, err := vis.Editor(); err == nil {
+				if result, err := desc.Editor(); err == nil {
 					editor = result
 				}
-				fmt.Fprintf(tableWriter, "\t\"%s\"\t%s\t%s\t\n", vis.Title(), editor, vis.SemanticType())
+				err := fmt.Errorf("file \"%s\" is invalid: \"%s\" contains legacy visualization: \"%s\" (%s, %s)", fsys.Path(file.Path()), dashboardTitle, desc.Title(), desc.SemanticType(), editor)
+				errs = append(errs, err)
 			}
-			tableWriter.Flush()
-
-			errs = append(errs, errors.New(buf.String()))
 		}
 	}
 
