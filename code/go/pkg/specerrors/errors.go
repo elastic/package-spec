@@ -33,18 +33,15 @@ type ValidationSeverityError interface { // TODO no validation error using this 
 type ValidationErrors []ValidationError
 
 // Collect filters the validation errors using the function given as a parameter.
-func (ve ValidationErrors) Collect(collect func(elem ValidationError) bool) (ValidationErrors, ValidationErrors) {
-	var errs ValidationErrors
-	var filtered ValidationErrors
-
+func (ve ValidationErrors) Collect(collect func(elem ValidationError) bool) (collected ValidationErrors, excluded ValidationErrors) {
 	for _, item := range ve {
 		if collect(item) {
-			errs = append(errs, item)
+			collected = append(collected, item)
 		} else {
-			filtered = append(filtered, item)
+			excluded = append(excluded, item)
 		}
 	}
-	return errs, filtered
+	return collected, excluded
 }
 
 func (ve ValidationErrors) Error() string {
