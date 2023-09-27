@@ -11,8 +11,8 @@ import (
 
 	"github.com/creasty/defaults"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 const (
@@ -117,7 +117,7 @@ func (s *ItemSpec) Type() string {
 }
 
 // ValidateSchema validates if the indicated file complies with the schema of the item.
-func (s *ItemSpec) ValidateSchema(fsys fs.FS, itemPath string) ve.ValidationErrors {
+func (s *ItemSpec) ValidateSchema(fsys fs.FS, itemPath string) specerrors.ValidationErrors {
 	return s.itemSpec.ValidateSchema(fsys, itemPath)
 }
 
@@ -202,7 +202,7 @@ func (l *SpecLimits) update(o SpecLimits) {
 	}
 }
 
-func (s *folderItemSpec) ValidateSchema(fsys fs.FS, itemPath string) ve.ValidationErrors {
+func (s *folderItemSpec) ValidateSchema(fsys fs.FS, itemPath string) specerrors.ValidationErrors {
 	if s.schema == nil {
 		return nil
 	}

@@ -11,39 +11,39 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 // ValidateMinimumKibanaVersion ensures the minimum kibana version for a given package is the expected one
-func ValidateMinimumKibanaVersion(fsys fspath.FS) ve.ValidationErrors {
+func ValidateMinimumKibanaVersion(fsys fspath.FS) specerrors.ValidationErrors {
 	pkg, err := packages.NewPackageFromFS(fsys.Path(), fsys)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
 	manifest, err := readManifest(fsys)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
 	kibanaVersionCondition, err := getKibanaVersionCondition(*manifest)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
-	var errs ve.ValidationErrors
+	var errs specerrors.ValidationErrors
 	err = validateMinimumKibanaVersionInputPackages(pkg.Type, *pkg.Version, kibanaVersionCondition)
 	if err != nil {
-		errs.Append(ve.ValidationErrors{err})
+		errs.Append(specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)})
 	}
 
 	err = validateMinimumKibanaVersionRuntimeFields(fsys, *pkg.Version, kibanaVersionCondition)
 	if err != nil {
-		errs.Append(ve.ValidationErrors{err})
+		errs.Append(specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)})
 	}
 
 	warningsAsErrors := common.IsDefinedWarningsAsErrors()
@@ -51,7 +51,7 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) ve.ValidationErrors {
 	if err != nil {
 		err = fmt.Errorf("Warning: %v", err)
 		if warningsAsErrors {
-			errs.Append(ve.ValidationErrors{err})
+			errs.Append(specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)})
 		} else {
 			log.Println(err)
 		}
@@ -185,9 +185,11 @@ func kibanaVersionConditionIsGreaterThanOrEqualTo(kibanaVersionCondition, minimu
 	return true
 }
 
-func validateNoRuntimeFields(metadata fieldFileMetadata, f field) ve.ValidationErrors {
+func validateNoRuntimeFields(metadata fieldFileMetadata, f field) specerrors.ValidationErrors {
 	if f.Runtime.isEnabled() {
-		return ve.ValidationErrors{fmt.Errorf("%v file contains a field %s with runtime key defined (%s)", metadata.fullFilePath, f.Name, f.Runtime)}
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredErrorf("%v file contains a field %s with runtime key defined (%s)", metadata.fullFilePath, f.Name, f.Runtime),
+		}
 	}
 	return nil
 }

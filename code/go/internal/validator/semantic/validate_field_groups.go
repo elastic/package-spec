@@ -5,24 +5,26 @@
 package semantic
 
 import (
-	"fmt"
-
-	"github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 // ValidateFieldGroups verifies if field groups don't have units and metric types defined.
-func ValidateFieldGroups(fsys fspath.FS) errors.ValidationErrors {
+func ValidateFieldGroups(fsys fspath.FS) specerrors.ValidationErrors {
 	return validateFields(fsys, validateFieldUnit)
 }
 
-func validateFieldUnit(metadata fieldFileMetadata, f field) errors.ValidationErrors {
+func validateFieldUnit(metadata fieldFileMetadata, f field) specerrors.ValidationErrors {
 	if f.Type == "group" && f.Unit != "" {
-		return errors.ValidationErrors{fmt.Errorf(`file "%s" is invalid: field "%s" can't have unit property'`, metadata.fullFilePath, f.Name)}
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredErrorf(`file "%s" is invalid: field "%s" can't have unit property'`, metadata.fullFilePath, f.Name),
+		}
 	}
 
 	if f.Type == "group" && f.MetricType != "" {
-		return errors.ValidationErrors{fmt.Errorf(`file "%s" is invalid: field "%s" can't have metric type property'`, metadata.fullFilePath, f.Name)}
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredErrorf(`file "%s" is invalid: field "%s" can't have metric type property'`, metadata.fullFilePath, f.Name),
+		}
 	}
 
 	return nil

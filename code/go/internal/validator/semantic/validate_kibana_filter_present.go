@@ -12,26 +12,39 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
+)
+
+var (
+	errDashboardWithFilterAndNoQuery = errors.New("saved query found, but no filter")
+	errDashboardFilterNotFound       = errors.New("no filter found")
 )
 
 // ValidateKibanaFilterPresent checks that all the dashboards included in a package
 // contain a filter, so only data related to its datasets is queried.
-func ValidateKibanaFilterPresent(fsys fspath.FS) ve.ValidationErrors {
-	var errs ve.ValidationErrors
+func ValidateKibanaFilterPresent(fsys fspath.FS) specerrors.ValidationErrors {
+	var errs specerrors.ValidationErrors
 
 	filePaths := path.Join("kibana", "dashboard", "*.json")
 	dashboardFiles, err := pkgpath.Files(fsys, filePaths)
 	if err != nil {
-		errs = append(errs, fmt.Errorf("error finding Kibana dashboard files: %w", err))
+		errs = append(errs, specerrors.NewStructuredErrorf("error finding Kibana dashboard files: %w", err))
 		return errs
 	}
 	for _, file := range dashboardFiles {
 		err = checkDashboardHasFilter(file)
 		if err != nil {
-			errs = append(errs, fmt.Errorf("file \"%s\" is invalid: expected filter in dashboard: %w", fsys.Path(file.Path()), err))
+			code := specerrors.CodeKibanaDashboardWithoutFilter
+			if errors.Is(err, errDashboardWithFilterAndNoQuery) {
+				code = specerrors.CodeKibanaDashboardWithQueryButNoFilter
+			}
+			errs = append(errs,
+				specerrors.NewStructuredError(
+					fmt.Errorf("file \"%s\" is invalid: expected filter in dashboard: %w", fsys.Path(file.Path()), err),
+					code),
+			)
 		}
 	}
 
@@ -69,9 +82,9 @@ func checkDashboardHasFilter(file pkgpath.File) error {
 
 	if len(search.Filter) == 0 {
 		if len(search.Query.Query) > 0 {
-			return errors.New("saved query found, but no filter")
+			return errDashboardWithFilterAndNoQuery
 		}
-		return errors.New("no filter found")
+		return errDashboardFilterNotFound
 	}
 
 	return nil

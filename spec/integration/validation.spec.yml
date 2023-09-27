@@ -1,0 +1,20 @@
+##
+## Describes the specification for the integration package's main manifest.yml file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  properties:
+    errors:
+      description: "Rules to manage the validation results"
+      type: object
+      additionalProperties: false
+      properties:
+        exclude_checks:
+          description: "List of validation codes that will be skipped"
+          type: array
+          items:
+            type: string
+            examples:
+              - SVR00001
