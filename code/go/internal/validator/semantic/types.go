@@ -15,8 +15,8 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 const dataStreamDir = "data_stream"
@@ -111,19 +111,22 @@ type fieldFileMetadata struct {
 	fullFilePath string
 }
 
-type validateFunc func(fileMetadata fieldFileMetadata, f field) ve.ValidationErrors
+type validateFunc func(fileMetadata fieldFileMetadata, f field) specerrors.ValidationErrors
 
-func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
+func validateFields(fsys fspath.FS, validate validateFunc) specerrors.ValidationErrors {
 	fieldsFilesMetadata, err := listFieldsFiles(fsys)
 	if err != nil {
-		return ve.ValidationErrors{fmt.Errorf("can't list fields files: %w", err)}
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredErrorf("can't list fields files: %w", err),
+		}
 	}
 
-	var vErrs ve.ValidationErrors
+	var vErrs specerrors.ValidationErrors
 	for _, metadata := range fieldsFilesMetadata {
 		unmarshaled, err := unmarshalFields(fsys, metadata.filePath)
 		if err != nil {
-			vErrs = append(vErrs, fmt.Errorf(`file "%s" is invalid: can't unmarshal fields: %w`, metadata.filePath, err))
+			anError := specerrors.NewStructuredErrorf(`file "%s" is invalid: can't unmarshal fields: %w`, metadata.filePath, err)
+			vErrs = append(vErrs, anError)
 		}
 
 		errs := validateNestedFields("", metadata, unmarshaled, validate)
@@ -134,8 +137,8 @@ func validateFields(fsys fspath.FS, validate validateFunc) ve.ValidationErrors {
 	return vErrs
 }
 
-func validateNestedFields(parent string, metadata fieldFileMetadata, fields fields, validate validateFunc) ve.ValidationErrors {
-	var result ve.ValidationErrors
+func validateNestedFields(parent string, metadata fieldFileMetadata, fields fields, validate validateFunc) specerrors.ValidationErrors {
+	var result specerrors.ValidationErrors
 	for _, field := range fields {
 		if len(parent) > 0 {
 			field.Name = parent + "." + field.Name

@@ -5,22 +5,20 @@
 package semantic
 
 import (
-	"fmt"
-
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 // ValidateFieldsLimits verifies limits on fields.
-func ValidateFieldsLimits(limit int) func(fspath.FS) ve.ValidationErrors {
-	return func(fsys fspath.FS) ve.ValidationErrors {
+func ValidateFieldsLimits(limit int) func(fspath.FS) specerrors.ValidationErrors {
+	return func(fsys fspath.FS) specerrors.ValidationErrors {
 		return validateFieldsLimits(fsys, limit)
 	}
 }
 
-func validateFieldsLimits(fsys fspath.FS, limit int) ve.ValidationErrors {
+func validateFieldsLimits(fsys fspath.FS, limit int) specerrors.ValidationErrors {
 	counts := make(map[string]int)
-	countField := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
+	countField := func(metadata fieldFileMetadata, f field) specerrors.ValidationErrors {
 		if len(f.Fields) > 0 {
 			// Don't count groups
 			return nil
@@ -36,10 +34,10 @@ func validateFieldsLimits(fsys fspath.FS, limit int) ve.ValidationErrors {
 		return err
 	}
 
-	var errs ve.ValidationErrors
+	var errs specerrors.ValidationErrors
 	for id, count := range counts {
 		if count > limit {
-			errs = append(errs, fmt.Errorf("data stream %s has more than %d fields (%d)", id, limit, count))
+			errs = append(errs, specerrors.NewStructuredErrorf("data stream %s has more than %d fields (%d)", id, limit, count))
 		}
 	}
 	return errs

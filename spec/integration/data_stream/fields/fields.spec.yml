@@ -92,6 +92,12 @@ spec:
         description: Short description of field
         type: string
 
+      expected_values:
+        description: An array of expected values for the field. When defined, these are the only expected values.
+        type: array
+        items:
+          type: string
+
       value:
         description: The value to associate with a constant_keyword field.
         type: string

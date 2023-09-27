@@ -14,12 +14,12 @@ import (
 	"github.com/Masterminds/semver/v3"
 
 	spec "github.com/elastic/package-spec/v2"
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v2/code/go/internal/loader"
 	"github.com/elastic/package-spec/v2/code/go/internal/packages"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/v2/code/go/internal/validator/semantic"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 // Spec represents a package specification
@@ -28,7 +28,7 @@ type Spec struct {
 	fs      fs.FS
 }
 
-type validationRule func(pkg fspath.FS) ve.ValidationErrors
+type validationRule func(pkg fspath.FS) specerrors.ValidationErrors
 
 type validationRules []validationRule
 
@@ -51,12 +51,12 @@ func NewSpec(version semver.Version) (*Spec, error) {
 }
 
 // ValidatePackage validates the given Package against the Spec
-func (s Spec) ValidatePackage(pkg packages.Package) ve.ValidationErrors {
-	var errs ve.ValidationErrors
+func (s Spec) ValidatePackage(pkg packages.Package) specerrors.ValidationErrors {
+	var errs specerrors.ValidationErrors
 
 	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkg.Type)
 	if err != nil {
-		errs = append(errs, fmt.Errorf("could not read root folder spec file: %w", err))
+		errs = append(errs, specerrors.NewStructuredErrorf("could not read root folder spec file: %w", err))
 		return errs
 	}
 
@@ -79,9 +79,9 @@ func substringInSlice(str string, list []string) bool {
 	return false
 }
 
-func processErrors(errs ve.ValidationErrors) ve.ValidationErrors {
+func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors {
 	// Rename unclear error messages and filter out redundant errors
-	var processedErrs ve.ValidationErrors
+	var processedErrs specerrors.ValidationErrors
 	msgTransforms := []struct {
 		original string
 		new      string
@@ -98,7 +98,11 @@ func processErrors(errs ve.ValidationErrors) ve.ValidationErrors {
 	for _, e := range errs {
 		for _, msg := range msgTransforms {
 			if strings.Contains(e.Error(), msg.original) {
-				processedErrs = append(processedErrs, errors.New(strings.Replace(e.Error(), msg.original, msg.new, 1)))
+				processedErrs = append(processedErrs,
+					specerrors.NewStructuredError(
+						errors.New(strings.Replace(e.Error(), msg.original, msg.new, 1)),
+						specerrors.UnassignedCode),
+				)
 				continue
 			}
 			if substringInSlice(e.Error(), redundant) {
@@ -167,8 +171,8 @@ func stringSliceContains(elems []string, v string) bool {
 	return false
 }
 
-func (vr validationRules) validate(fsys fspath.FS) ve.ValidationErrors {
-	var errs ve.ValidationErrors
+func (vr validationRules) validate(fsys fspath.FS) specerrors.ValidationErrors {
+	var errs specerrors.ValidationErrors
 	for _, validationRule := range vr {
 		err := validationRule(fsys)
 		errs.Append(err)

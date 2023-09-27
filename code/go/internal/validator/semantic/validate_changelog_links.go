@@ -12,11 +12,11 @@ import (
 	"strconv"
 	"strings"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
-var errGithubIssue = errors.New("issue number in changelog link should be a positive number")
+var errGithubIssue = errors.New("issue number in changelog link should be a positive number") // TODO test validationError structuredError
 
 // ChangelogLinkError records the link and the error
 type ChangelogLinkError struct {
@@ -36,10 +36,10 @@ func (e ChangelogLinkError) Error() string {
 
 // ValidateChangelogLinks returns validation errors if the link(s) do not have a valid PR github.com link.
 // If the link is not a github.com link this validation is skipped and does not return an error.
-func ValidateChangelogLinks(fsys fspath.FS) ve.ValidationErrors {
+func ValidateChangelogLinks(fsys fspath.FS) specerrors.ValidationErrors {
 	changelogLinks, err := readChangelogLinks(fsys)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 	return ensureLinksAreValid(changelogLinks)
 }
@@ -48,9 +48,9 @@ func readChangelogLinks(fsys fspath.FS) ([]string, error) {
 	return readChangelog(fsys, `$[*].changes[*].link`)
 }
 
-func ensureLinksAreValid(links []string) ve.ValidationErrors {
+func ensureLinksAreValid(links []string) specerrors.ValidationErrors {
 	type validateFn func(link *url.URL) error
-	var errs ve.ValidationErrors
+	var errs specerrors.ValidationErrors
 
 	validateLinks := []struct {
 		domain       string
@@ -64,15 +64,15 @@ func ensureLinksAreValid(links []string) ve.ValidationErrors {
 	for _, link := range links {
 		linkURL, err := url.Parse(link)
 		if err != nil {
-			errs.Append(ve.ValidationErrors{
-				fmt.Errorf("invalid URL %v", err),
+			errs.Append(specerrors.ValidationErrors{
+				specerrors.NewStructuredErrorf("invalid URL %v", err),
 			})
 			continue
 		}
 		for _, vl := range validateLinks {
 			if strings.Contains(linkURL.Host, vl.domain) {
 				if err = vl.validateLink(linkURL); err != nil {
-					errs.Append(ve.ValidationErrors{err})
+					errs.Append(specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)})
 				}
 			}
 		}

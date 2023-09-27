@@ -12,12 +12,13 @@ import (
 	"sync"
 
 	"github.com/Masterminds/semver/v3"
+
 	"github.com/elastic/gojsonschema"
 
 	"gopkg.in/yaml.v3"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
 	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 var semver3_0_0 = semver.MustParse("3.0.0")
@@ -44,10 +45,10 @@ type FileSchema struct {
 
 var formatCheckersMutex sync.Mutex
 
-func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
+func (s *FileSchema) Validate(fsys fs.FS, filePath string) specerrors.ValidationErrors {
 	data, err := loadItemSchema(fsys, filePath, s.options.ContentType, s.options.SpecVersion)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
 	formatCheckersMutex.Lock()
@@ -61,13 +62,15 @@ func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
 	loadDataStreamNameFormatChecker(fsys, path.Dir(filePath))
 	result, err := s.schema.Validate(gojsonschema.NewBytesLoader(data))
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
 	if !result.Valid() {
-		var errs ve.ValidationErrors
+		var errs specerrors.ValidationErrors
 		for _, re := range result.Errors() {
-			errs = append(errs, fmt.Errorf("field %s: %s", re.Field(), adjustErrorDescription(re.Description())))
+			errs = append(errs,
+				specerrors.NewStructuredErrorf("field %s: %s", re.Field(), adjustErrorDescription(re.Description())),
+			)
 		}
 		return errs
 	}
@@ -78,7 +81,7 @@ func (s *FileSchema) Validate(fsys fs.FS, filePath string) ve.ValidationErrors {
 func loadItemSchema(fsys fs.FS, path string, contentType *spectypes.ContentType, specVersion semver.Version) ([]byte, error) {
 	data, err := fs.ReadFile(fsys, path)
 	if err != nil {
-		return nil, ve.ValidationErrors{fmt.Errorf("reading item file failed: %w", err)}
+		return nil, specerrors.ValidationErrors{specerrors.NewStructuredErrorf("reading item file failed: %w", err)}
 	}
 	if contentType != nil && contentType.MediaType == "application/x-yaml" {
 		return convertYAMLToJSON(data, specVersion.LessThan(semver3_0_0))

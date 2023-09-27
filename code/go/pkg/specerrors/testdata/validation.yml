@@ -1,0 +1,4 @@
+errors:
+  exclude_checks:
+    - CODE01
+    - CODE02
