@@ -2,11 +2,7 @@
 // or more contributor license agreements. Licensed under the Elastic License;
 // you may not use this file except in compliance with the Elastic License.
 
-package processors
-
-import (
-	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
-)
+package specerrors
 
 // ExcludeCheck is a processor to filter errors according to their messages.
 type ExcludeCheck struct {
@@ -26,13 +22,13 @@ func (p ExcludeCheck) Name() string {
 }
 
 // Process returns a new list of validation errors filtered.
-func (p ExcludeCheck) Process(issues specerrors.ValidationErrors) (ProcessResult, error) {
-	if p.code == specerrors.UnassignedCode {
+func (p ExcludeCheck) Process(issues ValidationErrors) (ProcessResult, error) {
+	if p.code == UnassignedCode {
 		return ProcessResult{Processed: issues, Removed: nil}, nil
 	}
 
-	errs, filtered := issues.Collect(func(i specerrors.ValidationError) bool {
-		if i.Code() == specerrors.UnassignedCode {
+	errs, filtered := issues.Collect(func(i ValidationError) bool {
+		if i.Code() == UnassignedCode {
 			// Errors without assigned code cannot be skipped
 			return true
 		}

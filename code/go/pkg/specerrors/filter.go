@@ -2,15 +2,13 @@
 // or more contributor license agreements. Licensed under the Elastic License;
 // you may not use this file except in compliance with the Elastic License.
 
-package processors
+package specerrors
 
 import (
 	"fmt"
 	"io/fs"
 
 	"gopkg.in/yaml.v3"
-
-	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 const configPath = "validation.yml"
@@ -27,9 +25,9 @@ type FilterResult struct {
 }
 
 // Run runs all the processors over all the validation errors and return the filtered ones
-func (r *Filter) Run(allErrors specerrors.ValidationErrors) (FilterResult, error) {
+func (r *Filter) Run(allErrors ValidationErrors) (FilterResult, error) {
 	newErrors := allErrors
-	var allFiltered specerrors.ValidationErrors
+	var allFiltered ValidationErrors
 
 	for _, p := range r.processors {
 		result, err := p.Process(newErrors)
@@ -46,7 +44,7 @@ func (r *Filter) Run(allErrors specerrors.ValidationErrors) (FilterResult, error
 	}, nil
 }
 
-func nilOrValidationErrors(errs specerrors.ValidationErrors) error {
+func nilOrValidationErrors(errs ValidationErrors) error {
 	if len(errs) == 0 {
 		return nil
 	}

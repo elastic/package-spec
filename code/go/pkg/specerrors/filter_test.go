@@ -2,7 +2,7 @@
 // or more contributor license agreements. Licensed under the Elastic License;
 // you may not use this file except in compliance with the Elastic License.
 
-package processors
+package specerrors
 
 import (
 	"errors"
@@ -12,29 +12,27 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
-func createValidationErrors(messages []string) specerrors.ValidationErrors {
-	var allErrors specerrors.ValidationErrors
+func createValidationErrors(messages []string) ValidationErrors {
+	var allErrors ValidationErrors
 	for _, m := range messages {
-		allErrors = append(allErrors, specerrors.NewStructuredErrorf(m))
+		allErrors = append(allErrors, NewStructuredErrorf(m))
 	}
 	return allErrors
 }
 
-func createValidationError(message, code string) specerrors.ValidationError {
-	return specerrors.NewStructuredError(errors.New(message), code)
+func createValidationError(message, code string) ValidationError {
+	return NewStructuredError(errors.New(message), code)
 }
 
 func TestFilter(t *testing.T) {
 	cases := []struct {
 		title                  string
 		config                 ConfigFilter
-		errors                 specerrors.ValidationErrors
-		expectedErrors         specerrors.ValidationErrors
-		expectedFilteredErrors specerrors.ValidationErrors
+		errors                 ValidationErrors
+		expectedErrors         ValidationErrors
+		expectedFilteredErrors ValidationErrors
 	}{
 		{
 			title: "using codes",
@@ -43,17 +41,17 @@ func TestFilter(t *testing.T) {
 					ExcludeChecks: []string{"CODE01", "CODE03"},
 				},
 			},
-			errors: specerrors.ValidationErrors{
+			errors: ValidationErrors{
 				createValidationError("exclude error", "CODE00"),
 				createValidationError("other error", "CODE01"),
 				createValidationError("foo bar", "CODE02"),
 				createValidationError("foo bar foo", "CODE03"),
 			},
-			expectedErrors: specerrors.ValidationErrors{
+			expectedErrors: ValidationErrors{
 				createValidationError("exclude error", "CODE00"),
 				createValidationError("foo bar", "CODE02"),
 			},
-			expectedFilteredErrors: specerrors.ValidationErrors{
+			expectedFilteredErrors: ValidationErrors{
 				createValidationError("other error", "CODE01"),
 				createValidationError("foo bar foo", "CODE03"),
 			},
@@ -65,13 +63,13 @@ func TestFilter(t *testing.T) {
 					ExcludeChecks: []string{""},
 				},
 			},
-			errors: specerrors.ValidationErrors{
+			errors: ValidationErrors{
 				createValidationError("exclude error", "CODE00"),
 				createValidationError("other error", "CODE01"),
 				createValidationError("foo bar", "CODE02"),
 				createValidationError("foo bar foo", "CODE03"),
 			},
-			expectedErrors: specerrors.ValidationErrors{
+			expectedErrors: ValidationErrors{
 				createValidationError("exclude error", "CODE00"),
 				createValidationError("other error", "CODE01"),
 				createValidationError("foo bar", "CODE02"),
@@ -86,11 +84,11 @@ func TestFilter(t *testing.T) {
 					ExcludeChecks: []string{"CODE00"},
 				},
 			},
-			errors: specerrors.ValidationErrors{
+			errors: ValidationErrors{
 				createValidationError("exclude error", "CODE00"),
 			},
 			expectedErrors: nil,
-			expectedFilteredErrors: specerrors.ValidationErrors{
+			expectedFilteredErrors: ValidationErrors{
 				createValidationError("exclude error", "CODE00"),
 			},
 		},
@@ -111,13 +109,13 @@ func TestFilter(t *testing.T) {
 			}
 
 			if c.expectedErrors != nil {
-				veFinalErrors, ok := result.Processed.(specerrors.ValidationErrors)
+				veFinalErrors, ok := result.Processed.(ValidationErrors)
 				require.True(t, ok)
 				assert.Len(t, veFinalErrors, len(c.expectedErrors))
 				for _, e := range veFinalErrors {
 					assert.True(
 						t,
-						slices.ContainsFunc(c.expectedErrors, func(elem specerrors.ValidationError) bool {
+						slices.ContainsFunc(c.expectedErrors, func(elem ValidationError) bool {
 							return elem.Error() == e.Error() && elem.Code() == e.Code()
 						}),
 						"unexpected error: \"%s\" (%s)", e.Error(), e.Code(),
@@ -126,13 +124,13 @@ func TestFilter(t *testing.T) {
 			}
 
 			if c.expectedFilteredErrors != nil {
-				veFilteredErrors, ok := result.Removed.(specerrors.ValidationErrors)
+				veFilteredErrors, ok := result.Removed.(ValidationErrors)
 				require.True(t, ok)
 				assert.Len(t, veFilteredErrors, len(c.expectedFilteredErrors))
 				for _, e := range veFilteredErrors {
 					assert.True(
 						t,
-						slices.ContainsFunc(c.expectedFilteredErrors, func(elem specerrors.ValidationError) bool {
+						slices.ContainsFunc(c.expectedFilteredErrors, func(elem ValidationError) bool {
 							return elem.Error() == e.Error()
 						}),
 						"unexpected filtered error: \"%s\"", e.Error(),

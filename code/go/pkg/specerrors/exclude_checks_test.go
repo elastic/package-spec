@@ -2,7 +2,7 @@
 // or more contributor license agreements. Licensed under the Elastic License;
 // you may not use this file except in compliance with the Elastic License.
 
-package processors
+package specerrors
 
 import (
 	"fmt"
@@ -10,8 +10,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
 func TestExcludeChecks(t *testing.T) {
@@ -42,10 +40,10 @@ func TestExcludeChecks(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
 			p := NewExcludeCheck(c.code)
-			var issues specerrors.ValidationErrors
+			var issues ValidationErrors
 			for i, code := range c.codes {
 				issues = append(issues,
-					specerrors.NewStructuredError(fmt.Errorf("error %d", i), code),
+					NewStructuredError(fmt.Errorf("error %d", i), code),
 				)
 			}
 
