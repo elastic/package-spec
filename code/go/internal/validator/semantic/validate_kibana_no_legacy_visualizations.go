@@ -13,7 +13,7 @@ import (
 	se "github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
 )
 
-// Reports legacy Kibana visualizations in a package.
+// ValidateKibanaNoLegacyVisualizations reports legacy Kibana visualizations in a package.
 func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) se.ValidationErrors {
 	var errs se.ValidationErrors
 
