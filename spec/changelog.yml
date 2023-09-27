@@ -4,6 +4,9 @@
 ##
 - version: 3.0.0-next
   changes:
+  - description: Disallow legacy visualizations
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/610
   - description: Validate processors used in ingest pipelines
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/586
