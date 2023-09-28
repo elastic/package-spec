@@ -1,6 +1,6 @@
 env:
   SETUP_GVM_VERSION: 'v0.5.1' # https://github.com/andrewkroh/gvm/issues/44#issuecomment-1013231151
-  GOLANG_VERSION: "1.20.3"
+  GO_LINUX_AGENT_IMAGE: "golang:${GO_VERSION}"
   GH_CLI_VERSION: "2.29.0"
   JQ_VERSION: "1.6"
 
@@ -9,14 +9,14 @@ steps:
     key: check
     command: "make check"
     agents:
-      image: "golang:${GOLANG_VERSION}"
+      image: "${GO_LINUX_AGENT_IMAGE}"
       cpu: "8"
       memory: "4G"
   - label: ":linux: Tests on Linux"
     key: test
     command: "make test-ci"
     agents:
-      image: "golang:${GOLANG_VERSION}"
+      image: "${GO_LINUX_AGENT_IMAGE}"
       cpu: "8"
       memory: "4G"
 
