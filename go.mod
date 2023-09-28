@@ -9,6 +9,7 @@ require (
 	github.com/creasty/defaults v1.7.0
 	github.com/elastic/go-licenser v0.4.1
 	github.com/elastic/gojsonschema v1.2.1
+	github.com/elastic/kbncontent v0.1.0
 	github.com/evanphx/json-patch/v5 v5.7.0
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901
 	github.com/mitchellh/mapstructure v1.5.0
@@ -33,6 +34,7 @@ require (
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/stretchr/objx v0.5.1 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
 	golang.org/x/mod v0.12.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect

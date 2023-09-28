@@ -4,6 +4,7 @@
    "attributes": {
      "description": "",
      "hits": 0,
+     "panelsJSON": "[]",
      "kibanaSavedObjectMeta": {
          "searchSourceJSON": {
              "filter": [

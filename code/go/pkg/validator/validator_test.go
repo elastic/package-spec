@@ -227,6 +227,18 @@ func TestValidateFile(t *testing.T) {
 				`dangling reference found: bad_dangling_object_ids-8287a5d5-1576-4f3a-83c4-444e9058439c (search) (SVR00003)`,
 			},
 		},
+		"kibana_legacy_visualizations": {
+			"kibana/dashboard/kibana_legacy_visualizations-c36e9b90-596c-11ee-adef-4fe896364076.json",
+			[]string{
+				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Legacy input control vis\" (input_control_vis, Aggs-based)",
+				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"TSVB time series\" (timeseries, TSVB)",
+				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"TSVB gauge\" (gauge, TSVB)",
+				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Aggs-based table\" (table, Aggs-based)",
+				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Aggs-based tag cloud\" (tagcloud, Aggs-based)",
+				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"\" (heatmap, Aggs-based)",
+				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Timelion time series\" (timelion, Timelion)",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
