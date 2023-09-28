@@ -25,6 +25,9 @@
   - description: Disallow legacy visualizations
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/610
+  - description: Add code to filter legacy visualizations validation rule
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/618
 - version: 2.12.1-next
   changes:
   - description: Allow to define expected values in fields definitions.
