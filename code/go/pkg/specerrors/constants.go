@@ -10,4 +10,5 @@ const (
 	CodeKibanaDashboardWithQueryButNoFilter = "SVR00001"
 	CodeKibanaDashboardWithoutFilter        = "SVR00002"
 	CodeKibanaDanglingObjectsIDs            = "SVR00003"
+	CodeKibanaLegacyVisualizations          = "SVR00004"
 )

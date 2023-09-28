@@ -5,6 +5,7 @@
 package semantic
 
 import (
+	"fmt"
 	"path"
 
 	"github.com/elastic/kbncontent"
@@ -31,7 +32,6 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) specerrors.ValidationE
 			continue
 		}
 
-
 		visMap, ok := visJSON.(map[string]interface{})
 		if !ok {
 			errs = append(errs, specerrors.NewStructuredErrorf("file \"%s\" is invalid: JSON of unexpected type %T", filePath, visJSON))
@@ -49,7 +49,10 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) specerrors.ValidationE
 			if result, err := desc.Editor(); err == nil {
 				editor = result
 			}
-			errs = append(errs, specerrors.NewStructuredErrorf("file \"%s\" is invalid: found legacy visualization \"%s\" (%s, %s)", filePath, desc.Title(), desc.SemanticType(), editor))
+			errs = append(errs, specerrors.NewStructuredError(
+				fmt.Errorf("file \"%s\" is invalid: found legacy visualization \"%s\" (%s, %s)", filePath, desc.Title(), desc.SemanticType(), editor),
+				specerrors.CodeKibanaLegacyVisualizations),
+			)
 		}
 	}
 
@@ -87,7 +90,9 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) specerrors.ValidationE
 				if result, err := desc.Editor(); err == nil {
 					editor = result
 				}
-				err := specerrors.NewStructuredErrorf("file \"%s\" is invalid: \"%s\" contains legacy visualization: \"%s\" (%s, %s)", filePath, dashboardTitle, desc.Title(), desc.SemanticType(), editor)
+				err := specerrors.NewStructuredError(
+					fmt.Errorf("file \"%s\" is invalid: \"%s\" contains legacy visualization: \"%s\" (%s, %s)", filePath, dashboardTitle, desc.Title(), desc.SemanticType(), editor),
+					specerrors.CodeKibanaLegacyVisualizations)
 				errs = append(errs, err)
 			}
 		}
