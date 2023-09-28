@@ -47,7 +47,7 @@ require (
 	github.com/elastic/go-resource v0.1.1 // indirect
 	github.com/elastic/go-ucfg v0.8.6 // indirect
 	github.com/elastic/gojsonschema v1.2.1 // indirect
-	github.com/elastic/kbncontent v0.1.0 // indirect
+	github.com/elastic/kbncontent v0.1.1 // indirect
 	github.com/emicklei/go-restful/v3 v3.10.1 // indirect
 	github.com/evanphx/json-patch v5.6.0+incompatible // indirect
 	github.com/evanphx/json-patch/v5 v5.7.0 // indirect
