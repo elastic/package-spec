@@ -28,7 +28,7 @@
   - description: Make exception for legacy input controls
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/619
-- version: 2.12.1-next
+- version: 2.13.0
   changes:
   - description: Allow to define expected values in fields definitions.
     type: enhancement
