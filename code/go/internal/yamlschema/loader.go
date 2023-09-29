@@ -17,8 +17,8 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
-	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
+	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 var semver3_0_0 = semver.MustParse("3.0.0")

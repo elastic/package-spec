@@ -16,8 +16,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
-	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
+	"github.com/elastic/package-spec/v3/code/go/internal/validator/common"
+	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 func TestValidateFile(t *testing.T) {

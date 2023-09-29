@@ -11,7 +11,7 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/specpatch"
+	"github.com/elastic/package-spec/v3/code/go/internal/specpatch"
 )
 
 type itemSchemaSpec struct {

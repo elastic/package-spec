@@ -5,7 +5,7 @@
 package validator
 
 import (
-	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
+	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidationErrors is an Error that contains a iterable collection of validation error messages.

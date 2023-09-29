@@ -9,9 +9,9 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/specschema"
-	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
-	"github.com/elastic/package-spec/v2/code/go/internal/yamlschema"
+	"github.com/elastic/package-spec/v3/code/go/internal/specschema"
+	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/v3/code/go/internal/yamlschema"
 )
 
 // LoadSpec loads a package specification for the given version and type.
