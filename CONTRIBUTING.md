@@ -114,7 +114,7 @@ Usually, this process would require the following manual steps:
 3. Go to your clone of the [integrations repository](https://github.com/elastic/integrations), and update go.mod and go.sum with that changeset:
    ```bash
    cd /path/to/integrations/repostiory
-   go mod edit -replace github.com/elastic/package-spec/v2=github.com/<your_github_user>/package-spec/v2@a86c0814e30b6a9dede26889a67e7df1bf827357
+   go mod edit -replace github.com/elastic/package-spec/v3=github.com/<your_github_user>/package-spec/v3@a86c0814e30b6a9dede26889a67e7df1bf827357
    go mod tidy
    ```
 4. Push these changes into a branch and create a Pull Request
