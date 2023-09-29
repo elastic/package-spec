@@ -230,7 +230,6 @@ func TestValidateFile(t *testing.T) {
 		"kibana_legacy_visualizations": {
 			"kibana/dashboard/kibana_legacy_visualizations-c36e9b90-596c-11ee-adef-4fe896364076.json",
 			[]string{
-				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Legacy input control vis\" (input_control_vis, Aggs-based)",
 				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"TSVB time series\" (timeseries, TSVB)",
 				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"TSVB gauge\" (gauge, TSVB)",
 				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Aggs-based table\" (table, Aggs-based)",

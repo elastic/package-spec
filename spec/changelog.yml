@@ -25,6 +25,9 @@
   - description: Disallow legacy visualizations
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/610
+  - description: Make exception for legacy input controls
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/619
 - version: 2.12.1-next
   changes:
   - description: Allow to define expected values in fields definitions.
