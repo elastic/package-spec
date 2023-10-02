@@ -3,3 +3,5 @@
 - name: my_custom_date
   type: keyword
   date_format: yyyy-MM-dd
+- name: object_without_object_type.*
+  type: object
