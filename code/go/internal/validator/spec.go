@@ -24,13 +24,19 @@ import (
 
 // Spec represents a package specification
 type Spec struct {
+	// version is the version requested, what is included in the package, possibly without prerelease tags.
 	version semver.Version
-	fs      fs.FS
+	// specVersion is the version of the spec actually loaded, what can include prerelease tags.
+	specVersion semver.Version
+	// fs contains the filesystem of the spec.
+	fs fs.FS
 }
 
 type validationRule func(pkg fspath.FS) specerrors.ValidationErrors
 
 type validationRules []validationRule
+
+var GASpecCheckVersion = semver.MustParse("3.0.1")
 
 // NewSpec creates a new Spec for the given version
 func NewSpec(version semver.Version) (*Spec, error) {
@@ -38,12 +44,17 @@ func NewSpec(version semver.Version) (*Spec, error) {
 	if err != nil {
 		return nil, fmt.Errorf("could not load specification for version [%s]: %w", version.String(), err)
 	}
-	if specVersion.Prerelease() != "" {
-		log.Printf("Warning: package using an unreleased version of the spec (%s)", specVersion)
+
+	// With more current versions this is reported as a filterable validation error for GA packages.
+	if version.LessThan(GASpecCheckVersion) {
+		if specVersion.Prerelease() != "" {
+			log.Printf("Warning: package using an unreleased version of the spec (%s)", specVersion)
+		}
 	}
 
 	s := Spec{
 		version,
+		*specVersion,
 		spec.FS(),
 	}
 
@@ -58,6 +69,15 @@ func (s Spec) ValidatePackage(pkg packages.Package) specerrors.ValidationErrors 
 	if err != nil {
 		errs = append(errs, specerrors.NewStructuredErrorf("could not read root folder spec file: %w", err))
 		return errs
+	}
+
+	if !s.version.LessThan(GASpecCheckVersion) && pkg.IsGA() {
+		if s.specVersion.Prerelease() != "" {
+			err := specerrors.NewStructuredError(
+				fmt.Errorf("file \"%s\": package with GA version (%s) is using an unreleased version of the spec (%s)", pkg.Path("manifest.yml"), pkg.Version, s.specVersion),
+				specerrors.CodeNonGASpecOnGAPackage)
+			errs = append(errs, err)
+		}
 	}
 
 	// Syntactic validations

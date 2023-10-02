@@ -42,6 +42,7 @@ func TestNoBetaFeatures_Package_GA(t *testing.T) {
 	// given
 	s := Spec{
 		*semver.MustParse("1.0.0"),
+		*semver.MustParse("1.0.0"),
 		fspath.DirFS("testdata/fakespec"),
 	}
 	pkg, err := packages.NewPackage("testdata/packages/features_ga")
@@ -54,6 +55,7 @@ func TestNoBetaFeatures_Package_GA(t *testing.T) {
 func TestBetaFeatures_Package_GA(t *testing.T) {
 	// given
 	s := Spec{
+		*semver.MustParse("1.0.0"),
 		*semver.MustParse("1.0.0"),
 		fspath.DirFS("testdata/fakespec"),
 	}
@@ -129,6 +131,7 @@ func TestFolderSpecInvalid(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
 			s := Spec{
+				c.version,
 				c.version,
 				c.spec,
 			}
