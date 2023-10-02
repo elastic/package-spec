@@ -6,7 +6,12 @@ package specerrors
 
 // Constants to be used for the structured errors
 const (
-	UnassignedCode                          = ""
+	UnassignedCode = ""
+
+	// PSR - Package Spec [General] Rule
+	CodeNonGASpecOnGAPackage = "PSR00001"
+
+	// SVR - Semantic Validation Rules
 	CodeKibanaDashboardWithQueryButNoFilter = "SVR00001"
 	CodeKibanaDashboardWithoutFilter        = "SVR00002"
 	CodeKibanaDanglingObjectsIDs            = "SVR00003"

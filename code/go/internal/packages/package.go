@@ -37,6 +37,17 @@ func (p *Package) Path(names ...string) string {
 	return path.Join(append([]string{p.location}, names...)...)
 }
 
+// IsGA returns true if the package is GA.
+func (p *Package) IsGA() bool {
+	if p.Version.Prerelease() != "" {
+		return false
+	}
+	if p.Version.LessThan(semver.MustParse("1.0.0")) {
+		return false
+	}
+	return true
+}
+
 // NewPackage creates a new Package from a path to the package's root folder
 func NewPackage(pkgRootPath string) (*Package, error) {
 	info, err := os.Stat(pkgRootPath)
