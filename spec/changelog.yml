@@ -28,7 +28,7 @@
   - description: Make exception for legacy input controls
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/619
-  - description: `object_type` is mandatory when `object: type` is used.
+  - description: object_type is mandatory when object type is used
     type: bugfix
     link: https://github.com/elastic/package-spec/pull/628
 - version: 2.13.1-next
