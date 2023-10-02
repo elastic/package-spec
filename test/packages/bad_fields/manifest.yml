@@ -1,4 +1,4 @@
-format_version: 2.7.0
+format_version: 3.0.0
 name: bad_fields
 title: "Bad Fields"
 version: 0.0.1
@@ -9,8 +9,10 @@ type: integration
 categories:
   - custom
 conditions:
-  kibana.version: "^8.4.1"
-  elastic.subscription: "basic"
+  kibana:
+    version: "^8.4.1"
+  elastic:
+    subscription: "basic"
 screenshots:
   - src: /img/sample-screenshot.png
     title: Sample screenshot
@@ -30,4 +32,5 @@ policy_templates:
         title: Collect sample logs from instances
         description: Collecting sample logs
 owner:
+  type: elastic
   github: elastic/ecosystem

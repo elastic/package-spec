@@ -521,11 +521,25 @@ spec:
           required:
             - type
             - object_type
+      - if:
+          properties:
+            type:
+              const: object
+          required:
+            - type
+        then:
+          required:
+            - object_type
+
     required:
     - name
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.0.0
+    patch:
+      - op: remove
+        path: "/items/allOf/6" # removing requirement of object_type when type is object
   - before: 2.10.0
     patch:
       - op: remove
