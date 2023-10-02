@@ -2,7 +2,7 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 3.0.0-next
+- version: 3.0.0-rc1
   changes:
   - description: Validate processors used in ingest pipelines
     type: breaking-change
