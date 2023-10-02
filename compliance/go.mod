@@ -9,7 +9,7 @@ require (
 	github.com/elastic/elastic-package v0.87.1
 	github.com/elastic/go-elasticsearch/v8 v8.10.0
 	github.com/elastic/go-licenser v0.4.1
-	github.com/elastic/package-spec/v2 v2.11.0
+	github.com/elastic/package-spec/v3 v3.0.0-rc1
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
@@ -47,7 +47,7 @@ require (
 	github.com/elastic/go-resource v0.1.1 // indirect
 	github.com/elastic/go-ucfg v0.8.6 // indirect
 	github.com/elastic/gojsonschema v1.2.1 // indirect
-	github.com/elastic/kbncontent v0.1.1 // indirect
+	github.com/elastic/package-spec/v2 v2.11.0 // indirect
 	github.com/emicklei/go-restful/v3 v3.10.1 // indirect
 	github.com/evanphx/json-patch v5.6.0+incompatible // indirect
 	github.com/evanphx/json-patch/v5 v5.7.0 // indirect
@@ -126,7 +126,6 @@ require (
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/cobra v1.7.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/objx v0.5.1 // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/ulikunitz/xz v0.5.11 // indirect
@@ -170,4 +169,4 @@ require (
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
 
-replace github.com/elastic/package-spec/v2 => ../
+replace github.com/elastic/package-spec/v3 => ../
