@@ -46,11 +46,14 @@ spec:
         description: >
           Name of field. Names containing dots are automatically split into
           sub-fields.
+          Names with wildcards generate dynamic mappings.
         type: string
         pattern: '^[\-*_\/@A-Za-z0-9]+(\.[\-*_\/@A-Za-z0-9]+)*$'
 
       type:
-        description: Datatype of field
+        description: >
+          Datatype of field. If the type is set to object, a dynamic mapping is created. In this case, if the name doesn't
+          contain any wildcard, the wildcard is added as the last segment of the path.
         type: string
         enum:
         - aggregate_metric_double
