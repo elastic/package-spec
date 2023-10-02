@@ -28,6 +28,9 @@
   - description: Make exception for legacy input controls
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/619
+  - description: Remove ValidationErrors from validator package
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/625
 - version: 2.13.1-next
   changes:
   - description: Prepare for next version
