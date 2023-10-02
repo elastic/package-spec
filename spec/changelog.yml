@@ -31,6 +31,9 @@
   - description: object_type is mandatory when object type is used
     type: bugfix
     link: https://github.com/elastic/package-spec/pull/628
+  - description: Remove ValidationErrors from validator package
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/625
 - version: 2.13.1-next
   changes:
   - description: Prepare for next version
