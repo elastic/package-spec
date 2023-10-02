@@ -542,7 +542,9 @@ spec:
         then:
           properties:
             type:
-              const: group
+              enum:
+                - group
+                - nested
 
     required:
     - name
