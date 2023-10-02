@@ -46,11 +46,14 @@ spec:
         description: >
           Name of field. Names containing dots are automatically split into
           sub-fields.
+          Names with wildcards generate dynamic mappings.
         type: string
         pattern: '^[\-*_\/@A-Za-z0-9]+(\.[\-*_\/@A-Za-z0-9]+)*$'
 
       type:
-        description: Datatype of field
+        description: >
+          Datatype of field. If the type is set to object, a dynamic mapping is created. In this case, if the name doesn't
+          contain any wildcard, the wildcard is added as the last segment of the path.
         type: string
         enum:
         - aggregate_metric_double
@@ -521,11 +524,25 @@ spec:
           required:
             - type
             - object_type
+      - if:
+          properties:
+            type:
+              const: object
+          required:
+            - type
+        then:
+          required:
+            - object_type
+
     required:
     - name
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.0.0
+    patch:
+      - op: remove
+        path: "/items/allOf/6" # removing requirement of object_type when type is object
   - before: 2.10.0
     patch:
       - op: remove

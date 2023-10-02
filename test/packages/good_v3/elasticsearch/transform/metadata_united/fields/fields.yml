@@ -356,4 +356,5 @@
           type: date
         - name: user_provided_metadata
           type: object
+          object_type: keyword
           enabled: false
