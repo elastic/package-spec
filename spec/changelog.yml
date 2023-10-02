@@ -34,6 +34,9 @@
   - description: Remove ValidationErrors from validator package
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/625
+  - description: Require group type for fields with subobjects
+    type: bugfix
+    link: https://github.com/elastic/package-spec/pull/629
 - version: 2.13.1-next
   changes:
   - description: Prepare for next version

@@ -5,3 +5,10 @@
   date_format: yyyy-MM-dd
 - name: object_without_object_type.*
   type: object
+- name: object_with_subfields
+  description: This field should be of type group, because it contains subfields.
+  type: object
+  object_type: keyword
+  fields:
+    - name: foo
+      type: keyword

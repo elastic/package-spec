@@ -533,6 +533,16 @@ spec:
         then:
           required:
             - object_type
+      - if:
+          properties:
+            fields:
+              minContent: 1
+          required:
+            - fields
+        then:
+          properties:
+            type:
+              const: group
 
     required:
     - name
@@ -542,7 +552,9 @@ versions:
   - before: 3.0.0
     patch:
       - op: remove
-        path: "/items/allOf/6" # removing requirement of object_type when type is object
+        path: "/items/allOf/7" # removing requirement of type group when element has subfields
+      - op: remove
+        path: "/items/allOf/6" # removing requirement of object_type and minimum fields when type is object
   - before: 2.10.0
     patch:
       - op: remove

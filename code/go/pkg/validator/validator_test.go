@@ -137,6 +137,7 @@ func TestValidateFile(t *testing.T) {
 				`field 0.type: 0.type must be one of the following: "aggregate_metric_double", "alias", "histogram", "constant_keyword", "text", "match_only_text", "keyword", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "date", "date_nanos", "boolean", "binary", "integer_range", "float_range", "long_range", "double_range", "date_range", "ip_range", "group", "geo_point", "object", "ip", "nested", "flattened", "wildcard", "version", "unsigned_long"`,
 				`field "my_custom_date" of type keyword can't set date_format. date_format is allowed for date field type only`,
 				`field 2: object_type is required`,
+				`field 3.type: 3.type does not match: "group"`,
 			},
 		},
 		"deploy_custom_agent_invalid_property": {
