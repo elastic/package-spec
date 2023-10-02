@@ -2,7 +2,7 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 3.0.0-rc1
+- version: 3.0.0-next
   changes:
   - description: Validate processors used in ingest pipelines
     type: breaking-change
@@ -28,6 +28,9 @@
   - description: Make exception for legacy input controls
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/619
+  - description: Update import paths for Go code
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/issues/626
 - version: 2.13.0
   changes:
   - description: Allow to define expected values in fields definitions.
