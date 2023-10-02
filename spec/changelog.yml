@@ -34,11 +34,9 @@
   - description: Remove ValidationErrors from validator package
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/625
-- version: 2.13.1-next
-  changes:
-  - description: Prepare for next version
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/623
+  - description: Update import paths for Go code
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/issues/626
 - version: 2.13.0
   changes:
   - description: Allow to define expected values in fields definitions.

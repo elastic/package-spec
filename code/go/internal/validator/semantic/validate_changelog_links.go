@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
+	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 var errGithubIssue = errors.New("issue number in changelog link should be a positive number") // TODO test validationError structuredError
