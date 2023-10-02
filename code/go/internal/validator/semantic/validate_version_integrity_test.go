@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
+	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 func TestValidateGithubLink(t *testing.T) {

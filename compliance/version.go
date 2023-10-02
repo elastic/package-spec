@@ -16,7 +16,7 @@ import (
 	cucumbermessages "github.com/cucumber/messages/go/v21"
 	"github.com/stretchr/testify/require"
 
-	spec "github.com/elastic/package-spec/v2"
+	spec "github.com/elastic/package-spec/v3"
 )
 
 const specVersionEnv = "TEST_SPEC_VERSION"

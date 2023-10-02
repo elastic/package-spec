@@ -9,7 +9,7 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 
-	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
+	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // FileSchema defines the expected schema for a file.

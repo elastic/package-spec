@@ -7,8 +7,8 @@ package semantic
 import (
 	"strings"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v2/code/go/pkg/specerrors"
+	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateDimensionFields verifies if dimension fields are of one of the expected types.
