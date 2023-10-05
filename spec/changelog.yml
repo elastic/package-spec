@@ -7,7 +7,7 @@
   - description: Using non-GA versions of the spec in GA packages produces a filterable validation error instead of a warning.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/627
-- version: 3.0.0-next
+- version: 3.0.0-rc1
   changes:
   - description: Validate processors used in ingest pipelines
     type: breaking-change
