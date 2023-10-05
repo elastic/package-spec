@@ -471,22 +471,25 @@ spec:
             required:
               - object_type
         then:
-          properties:
-            type:
-              enum:
-                - histogram
-                - aggregate_metric_double
-                - long
-                - integer
-                - short
-                - byte
-                - double
-                - float
-                - half_float
-                - scaled_float
-                - unsigned_long
-          required:
-            - type
+          oneOf:
+            - properties:
+                type:
+                  enum:
+                    - histogram
+                    - aggregate_metric_double
+                    - long
+                    - integer
+                    - short
+                    - byte
+                    - double
+                    - float
+                    - half_float
+                    - scaled_float
+                    - unsigned_long
+              required:
+                - type
+            - required:
+                - external
       - if:
           required:
             - object_type
@@ -554,9 +557,9 @@ versions:
   - before: 3.0.0
     patch:
       - op: remove
-        path: "/items/allOf/7" # removing requirement of type group when element has subfields
+        path: "/items/allOf/7" # removing requirement of object_type and minimum fields when type is object
       - op: remove
-        path: "/items/allOf/6" # removing requirement of object_type and minimum fields when type is object
+        path: "/items/allOf/6" # removing requirement of type group when element has subfields
   - before: 2.10.0
     patch:
       - op: remove
