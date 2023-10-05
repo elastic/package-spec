@@ -105,6 +105,7 @@ func TestAnyReference(t *testing.T) {
 				{"12345", "panel_0", "visualization"},
 				{"9000", "panel_1", "lens"},
 				{"4", "panel_2", "map"},
+				{"44", "panel_4", "search"},
 			},
 		},
 		{
