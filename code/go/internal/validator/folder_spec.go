@@ -63,17 +63,17 @@ func (v *validator) Validate() specerrors.ValidationErrors {
 	switch v.spec.Release() {
 	case "", "ga": // do nothing
 	case "beta":
-		if v.pkg.Version.Major() > 0 && v.pkg.Version.Prerelease() == "" {
+		if v.pkg.IsGA() {
 			errs = append(errs,
 				specerrors.NewStructuredErrorf("spec for [%s] defines beta features which can't be enabled for packages with a stable semantic version", v.pkg.Path(v.folderPath)),
 			)
 		} else {
-			message := fmt.Sprintf("Warning: package with non-stable semantic version and active beta features (enabled in [%s]) can't be released as stable version.", v.pkg.Path(v.folderPath))
+			message := fmt.Sprintf("package with non-stable semantic version and active beta features (enabled in [%s]) can't be released as stable version.", v.pkg.Path(v.folderPath))
 			if common.IsDefinedWarningsAsErrors() || v.pkg.SpecVersion.Major() >= 3 {
 				err = errors.New(message)
 				errs = append(errs, specerrors.NewStructuredError(err, specerrors.CodePrereleaseFeatureOnGAPackage))
 			} else {
-				log.Printf(message)
+				log.Print("Warning: ", message)
 			}
 		}
 	default:
