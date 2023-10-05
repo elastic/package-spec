@@ -45,6 +45,9 @@
   - description: Require group or nested types for fields with subobjects
     type: bugfix
     link: https://github.com/elastic/package-spec/pull/629
+  - description: Add search to the dashboard elements that can be used by value
+    type: enhancement
+    link: https://github.com/elastic/package-spec/issues/635
 - version: 2.13.0
   changes:
   - description: Allow to define expected values in fields definitions.
