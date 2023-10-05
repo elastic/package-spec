@@ -51,6 +51,9 @@
   - description: Allow metric_type without type for external fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/637
+  - description: Warnings are reported as errors that can be filtered
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/issues/636
 - version: 2.13.0
   changes:
   - description: Allow to define expected values in fields definitions.

@@ -7,12 +7,10 @@ package semantic
 import (
 	"errors"
 	"fmt"
-	"log"
 	"path"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
-	"github.com/elastic/package-spec/v3/code/go/internal/validator/common"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -28,7 +26,6 @@ type reference struct {
 // defines some visualization using reference (containing an element of
 // "visualization" type inside references key).
 func ValidateVisualizationsUsedByValue(fsys fspath.FS) specerrors.ValidationErrors {
-	warningsAsErrors := common.IsDefinedWarningsAsErrors()
 	var errs specerrors.ValidationErrors
 
 	filePaths := path.Join("kibana", "dashboard", "*.json")
@@ -57,13 +54,8 @@ func ValidateVisualizationsUsedByValue(fsys fspath.FS) specerrors.ValidationErro
 				s = fmt.Sprintf("%s, %s (%s)", s, ref.ID, ref.Type)
 			}
 
-			message := fmt.Sprintf("Warning: references found in dashboard %s: %s", filePath, s)
-			if warningsAsErrors {
-				errs = append(errs, specerrors.NewStructuredErrorf(message))
-			} else {
-				log.Printf(message)
-			}
-
+			err = fmt.Errorf("references found in dashboard %s: %s", filePath, s)
+			errs = append(errs, specerrors.NewStructuredError(err, specerrors.CodeVisualizationByValue))
 		}
 	}
 

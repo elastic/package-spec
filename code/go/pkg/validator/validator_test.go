@@ -242,19 +242,32 @@ func TestValidateFile(t *testing.T) {
 		},
 	}
 
+	filter := specerrors.NewFilter(&specerrors.ConfigFilter{
+		Errors: specerrors.Processors{
+			// TODO: Actually fix the references instead of ignoring the error.
+			ExcludeChecks: []string{"SVR00004"},
+		},
+	})
+
 	for pkgName, test := range tests {
 		t.Run(pkgName, func(t *testing.T) {
 			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 			errPrefix := fmt.Sprintf("file \"%s/%s\" is invalid: ", pkgRootPath, test.invalidPkgFilePath)
 
 			errs := ValidateFromPath(pkgRootPath)
+			if verrs, ok := errs.(specerrors.ValidationErrors); ok {
+				result, err := filter.Run(verrs)
+				require.NoError(t, err)
+				errs = result.Processed
+			}
+
 			if test.expectedErrContains == nil {
 				require.NoError(t, errs)
 			} else {
 				require.Error(t, errs)
 				vErrs, ok := errs.(specerrors.ValidationErrors)
 				if ok {
-					require.Len(t, errs, len(test.expectedErrContains))
+					assert.Len(t, errs, len(test.expectedErrContains))
 					var errMessages []string
 					for _, vErr := range vErrs {
 						errMessages = append(errMessages, vErr.Error())
@@ -532,10 +545,10 @@ func TestValidateWarnings(t *testing.T) {
 		"good":    []string{},
 		"good_v2": []string{},
 		"visualizations_by_reference": []string{
-			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens)",
+			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens) (SVR00004)",
 		},
 		"bad_saved_object_tags_kibana_version": []string{
-			"conditions.kibana.version must be ^8.10.0 or greater to include saved object tags file: kibana/tags.yml",
+			"conditions.kibana.version must be ^8.10.0 or greater to include saved object tags file: kibana/tags.yml (SVR00005)",
 		},
 	}
 	if err := common.EnableWarningsAsErrors(); err != nil {
@@ -545,8 +558,6 @@ func TestValidateWarnings(t *testing.T) {
 
 	for pkgName, expectedWarnContains := range tests {
 		t.Run(pkgName, func(t *testing.T) {
-			warnPrefix := fmt.Sprintf("Warning: ")
-
 			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
 			errs := ValidateFromPath(pkgRootPath)
 			if len(expectedWarnContains) == 0 {
@@ -562,8 +573,7 @@ func TestValidateWarnings(t *testing.T) {
 					}
 
 					for _, expectedWarnMessage := range expectedWarnContains {
-						expectedWarn := warnPrefix + expectedWarnMessage
-						require.Contains(t, warnMessages, expectedWarn)
+						require.Contains(t, warnMessages, expectedWarnMessage)
 					}
 					return
 				}
