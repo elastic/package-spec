@@ -5,6 +5,7 @@
 package validator
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"log"
@@ -68,8 +69,9 @@ func (v *validator) Validate() specerrors.ValidationErrors {
 			)
 		} else {
 			message := fmt.Sprintf("Warning: package with non-stable semantic version and active beta features (enabled in [%s]) can't be released as stable version.", v.pkg.Path(v.folderPath))
-			if common.IsDefinedWarningsAsErrors() {
-				errs = append(errs, specerrors.NewStructuredErrorf(message))
+			if common.IsDefinedWarningsAsErrors() || v.pkg.SpecVersion.Major() >= 3 {
+				err = errors.New(message)
+				errs = append(errs, specerrors.NewStructuredError(err, specerrors.CodePrereleaseFeatureOnGAPackage))
 			} else {
 				log.Printf(message)
 			}

@@ -6,7 +6,6 @@ package semantic
 
 import (
 	"fmt"
-	"log"
 	"regexp"
 
 	"github.com/Masterminds/semver/v3"
@@ -14,7 +13,6 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
 	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
-	"github.com/elastic/package-spec/v3/code/go/internal/validator/common"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -38,23 +36,17 @@ func ValidateMinimumKibanaVersion(fsys fspath.FS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 	err = validateMinimumKibanaVersionInputPackages(pkg.Type, *pkg.Version, kibanaVersionCondition)
 	if err != nil {
-		errs.Append(specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)})
+		errs = append(errs, specerrors.NewStructuredError(err, specerrors.UnassignedCode))
 	}
 
 	err = validateMinimumKibanaVersionRuntimeFields(fsys, *pkg.Version, kibanaVersionCondition)
 	if err != nil {
-		errs.Append(specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)})
+		errs = append(errs, specerrors.NewStructuredError(err, specerrors.UnassignedCode))
 	}
 
-	warningsAsErrors := common.IsDefinedWarningsAsErrors()
 	err = validateMinimumKibanaVersionSavedObjectTags(fsys, pkg.Type, *pkg.Version, kibanaVersionCondition)
 	if err != nil {
-		err = fmt.Errorf("Warning: %v", err)
-		if warningsAsErrors {
-			errs.Append(specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)})
-		} else {
-			log.Println(err)
-		}
+		errs = append(errs, specerrors.NewStructuredError(err, specerrors.CodeMinimumKibanaVersion))
 	}
 
 	if errs != nil {

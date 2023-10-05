@@ -9,10 +9,13 @@ const (
 	UnassignedCode = ""
 
 	// PSR - Package Spec [General] Rule
-	CodeNonGASpecOnGAPackage = "PSR00001"
+	CodeNonGASpecOnGAPackage         = "PSR00001"
+	CodePrereleaseFeatureOnGAPackage = "PSR00002"
 
 	// SVR - Semantic Validation Rules
 	CodeKibanaDashboardWithQueryButNoFilter = "SVR00001"
 	CodeKibanaDashboardWithoutFilter        = "SVR00002"
 	CodeKibanaDanglingObjectsIDs            = "SVR00003"
+	CodeVisualizationByValue                = "SVR00004"
+	CodeMinimumKibanaVersion                = "SVR00005"
 )
