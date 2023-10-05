@@ -6,3 +6,6 @@
   fields:
     - name: category
       external: ecs
+- name: timeseries
+  external: ecs
+  metric_type: gauge

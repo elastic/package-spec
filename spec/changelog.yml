@@ -48,6 +48,9 @@
   - description: Add search to the dashboard elements that can be used by value
     type: enhancement
     link: https://github.com/elastic/package-spec/issues/635
+  - description: Allow metric_type without type for external fields
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/637
   - description: Warnings are reported as errors that can be filtered
     type: breaking-change
     link: https://github.com/elastic/package-spec/issues/636
