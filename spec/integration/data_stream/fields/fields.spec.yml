@@ -471,22 +471,25 @@ spec:
             required:
               - object_type
         then:
-          properties:
-            type:
-              enum:
-                - histogram
-                - aggregate_metric_double
-                - long
-                - integer
-                - short
-                - byte
-                - double
-                - float
-                - half_float
-                - scaled_float
-                - unsigned_long
-          required:
-            - type
+          oneOf:
+            - properties:
+                type:
+                  enum:
+                    - histogram
+                    - aggregate_metric_double
+                    - long
+                    - integer
+                    - short
+                    - byte
+                    - double
+                    - float
+                    - half_float
+                    - scaled_float
+                    - unsigned_long
+              required:
+                - type
+            - required:
+                - external
       - if:
           required:
             - object_type
