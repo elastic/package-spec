@@ -46,6 +46,15 @@ streams:
 dataset_is_prefix: true
 elasticsearch:
   index_template:
+    settings:
+      index:
+        mapping:
+          nested_fields:
+            limit: 80
+          total_fields:
+            limit: 5000
+          dimension_fields:
+            limit: 32
     mappings:
       dynamic: strict
     ingest_pipeline:
