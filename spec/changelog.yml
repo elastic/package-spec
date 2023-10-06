@@ -9,7 +9,7 @@
     link: https://github.com/elastic/package-spec/pull/627
   - description: Remove deprecated `corpora.generator.size` in favour of `corpora.generator.tot_events`
     type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/
+    link: https://github.com/elastic/package-spec/pull/639
 - version: 3.0.0-rc1
   changes:
   - description: Validate processors used in ingest pipelines
