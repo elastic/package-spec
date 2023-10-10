@@ -194,13 +194,13 @@ spec:
                 mapping:
                   type: object
                   additionalProperties: false
-                  properties:
-                    dimension_fields:
+                  patternProperties:
+                    "^(dimension|nested|total)_fields$":
                       type: object
                       additionalProperties: false
                       properties:
                         limit:
-                          description: Limit on the number of dimension fields on this data stream.
+                          description: Limit on the number of fields of this kind on this data stream.
                           type: integer
                 sort:
                   type: object
