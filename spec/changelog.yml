@@ -7,7 +7,7 @@
   - description: Using non-GA versions of the spec in GA packages produces a filterable validation error instead of a warning.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/627
-  - description: Remove deprecated `corpora.generator.size` in favour of `corpora.generator.tot_events`
+  - description: Remove deprecated `corpora.generator.size` in favour of `corpora.generator.total_events`
     type: breaking-change
     link: https://github.com/elastic/package-spec/pull/639
 - version: 3.0.0-rc1

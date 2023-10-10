@@ -6,7 +6,7 @@ data_stream.dataset: test
 data_stream.vars.paths:
   - "{{SERVICE_LOGS_DIR}}/corpus-*"
 warmup_time_period: 10s
-corpora.generator.tot_events: 20000
+corpora.generator.total_events: 20000
 corpora.generator.template.raw: a template
 corpora.generator.config.path: ./tcp-benchmark/config.yml
 corpora.generator.fields.path: ./tcp-benchmark/fields.yml
