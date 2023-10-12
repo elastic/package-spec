@@ -55,6 +55,7 @@ elasticsearch:
             limit: 5000
           dimension_fields:
             limit: 32
+      number_of_shards: 1
     mappings:
       dynamic: strict
     ingest_pipeline:
