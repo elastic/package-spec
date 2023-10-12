@@ -226,6 +226,11 @@ spec:
                             enum:
                               - asc
                               - desc
+            number_of_shards:
+              description: Number of primary shards that the data stream should have.
+              type: integer
+              minimum: 1
+              default: 1
         mappings:
           description: Mappings section of index template
           type: object
