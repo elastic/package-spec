@@ -149,7 +149,7 @@ func thereIsAnIndexTemplateWithPattern(indexTemplateName, pattern string) error 
 		return err
 	}
 
-	if !slices.Contains[string](indexTemplate.IndexPatterns, pattern) {
+	if !slices.Contains(indexTemplate.IndexPatterns, pattern) {
 		return fmt.Errorf("index template %q not found in %s", pattern, indexTemplate.IndexPatterns)
 	}
 
