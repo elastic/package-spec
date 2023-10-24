@@ -58,6 +58,21 @@ elasticsearch:
       number_of_shards: 1
     mappings:
       dynamic: strict
+      dynamic_templates:
+        - histogram:
+            mapping:
+              type: histogram
+        - summary:
+            mapping:
+              type: aggregate_metric_double
+              metrics:
+                - sum
+                - value_count
+              default_metric: value_count
+        - double:
+            mapping:
+              type: double
+              index: false
     ingest_pipeline:
       name: foobar
   privileges:

@@ -7,6 +7,9 @@
   - description: Using non-GA versions of the spec in GA packages produces a filterable validation error instead of a warning
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/627
+  - description: 'Allow to set index: false in dynamic templates defined in data stream manifests'
+    type: enhancement
+    link: https://github.com/elastic/package-spec/issues/650
 - version: 3.0.0
   changes:
   - description: Validate processors used in ingest pipelines

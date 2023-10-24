@@ -300,6 +300,8 @@ spec:
                           $ref: "./fields/fields.spec.yml#/items/properties/default_metric"
                         ignore_above:
                           $ref: "./fields/fields.spec.yml#/items/properties/ignore_above"
+                        index:
+                          $ref: "./fields/fields.spec.yml#/items/properties/index"
                 patternProperties:
                   # Exception for fields imported by elastic-package when import_mappings is used.
                   # TODO: Allow this only on built packages.
