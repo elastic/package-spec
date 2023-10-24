@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.2.1
 	github.com/cucumber/godog v0.13.0
 	github.com/cucumber/messages/go/v21 v21.0.1
-	github.com/elastic/elastic-package v0.90.0
+	github.com/elastic/elastic-package v0.91.0
 	github.com/elastic/go-elasticsearch/v8 v8.10.1
 	github.com/elastic/go-licenser v0.4.1
 	github.com/elastic/package-spec/v3 v3.0.0
@@ -154,11 +154,11 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	helm.sh/helm/v3 v3.13.1 // indirect
-	k8s.io/api v0.28.2 // indirect
+	k8s.io/api v0.28.3 // indirect
 	k8s.io/apiextensions-apiserver v0.28.2 // indirect
-	k8s.io/apimachinery v0.28.2 // indirect
-	k8s.io/cli-runtime v0.28.2 // indirect
-	k8s.io/client-go v0.28.2 // indirect
+	k8s.io/apimachinery v0.28.3 // indirect
+	k8s.io/cli-runtime v0.28.3 // indirect
+	k8s.io/client-go v0.28.3 // indirect
 	k8s.io/component-base v0.28.2 // indirect
 	k8s.io/klog/v2 v2.100.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20230717233707-2695361300d9 // indirect
