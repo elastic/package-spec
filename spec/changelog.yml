@@ -2,7 +2,7 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 3.0.1-next
+- version: 3.0.1
   changes:
   - description: Using non-GA versions of the spec in GA packages produces a filterable validation error instead of a warning
     type: enhancement
