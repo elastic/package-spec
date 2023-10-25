@@ -4,6 +4,9 @@
 ##
 - version: 3.0.1-next
   changes:
+    - description: Fix spec for rally benchmark scenario
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/653
   - description: Using non-GA versions of the spec in GA packages produces a filterable validation error instead of a warning
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/627
