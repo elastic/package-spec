@@ -8,6 +8,9 @@ package specerrors
 const (
 	UnassignedCode = ""
 
+	// JSE - JSON Schema Errors that can be skipped
+	CodePathMatchNotAllowedInManifest = "JSE00001"
+
 	// PSR - Package Spec [General] Rule
 	CodeNonGASpecOnGAPackage         = "PSR00001"
 	CodePrereleaseFeatureOnGAPackage = "PSR00002"

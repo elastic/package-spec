@@ -1,0 +1,36 @@
+format_version: 3.0.0
+name: skip_path_match_in_data_stream
+title: "Package with path_match definitions in data stream"
+version: 1.0.0
+source:
+  license: "Elastic-2.0"
+description: "This is a test package to check that validation of path_match in data stream can be ignored."
+type: integration
+categories:
+  - custom
+conditions:
+  kibana:
+    version: "^8.10.1"
+  elastic:
+    subscription: "basic"
+screenshots:
+  - src: /img/sample-screenshot.png
+    title: Sample screenshot
+    size: 600x600
+    type: image/png
+icons:
+  - src: /img/sample-logo.svg
+    title: Sample logo
+    size: 32x32
+    type: image/svg+xml
+policy_templates:
+  - name: sample
+    title: Sample logs
+    description: Collect sample logs
+    inputs:
+      - type: logfile
+        title: Collect sample logs from instances
+        description: Collecting sample logs
+owner:
+  github: elastic/ecosystem
+  type: elastic

@@ -1,0 +1,3 @@
+errors:
+  exclude_checks:
+    - JSE00001 # Data stream defines a dynamic mapping in manifest that should be defined in field files.

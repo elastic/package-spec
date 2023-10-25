@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"regexp"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
@@ -106,7 +107,19 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 		original string
 		new      string
 	}{
-		{"Must not validate the schema (not)", "Must not be present"},
+		{
+			original: "Must not validate the schema (not)",
+			new:      "Must not be present",
+		},
+	}
+	addErrorCode := []struct {
+		matcher *regexp.Regexp
+		code    string
+	}{
+		{
+			matcher: regexp.MustCompile(`field elasticsearch\.index_template\.mappings\.dynamic_templates\..*: Additional property path_match is not allowed$`),
+			code:    specerrors.CodePathMatchNotAllowedInManifest,
+		},
 	}
 	redundant := []string{
 		"Must validate \"then\" as \"if\" was valid",
@@ -115,21 +128,24 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 		"Must validate at least one schema (anyOf)",
 		"Must validate one and only one schema (oneOf)",
 	}
+
 	for _, e := range errs {
 		for _, msg := range msgTransforms {
 			if strings.Contains(e.Error(), msg.original) {
-				processedErrs = append(processedErrs,
-					specerrors.NewStructuredError(
-						errors.New(strings.Replace(e.Error(), msg.original, msg.new, 1)),
-						specerrors.UnassignedCode),
-				)
-				continue
+				e = specerrors.NewStructuredError(
+					errors.New(strings.Replace(e.Error(), msg.original, msg.new, 1)),
+					specerrors.UnassignedCode)
 			}
-			if substringInSlice(e.Error(), redundant) {
-				continue
-			}
-			processedErrs = append(processedErrs, e)
 		}
+		for _, transform := range addErrorCode {
+			if transform.matcher.MatchString(e.Error()) {
+				e = specerrors.NewStructuredError(e, transform.code)
+			}
+		}
+		if substringInSlice(e.Error(), redundant) {
+			continue
+		}
+		processedErrs = append(processedErrs, e)
 	}
 
 	return processedErrs

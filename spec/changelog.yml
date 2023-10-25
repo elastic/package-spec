@@ -10,6 +10,9 @@
   - description: 'Allow to set index: false in dynamic templates defined in data stream manifests'
     type: enhancement
     link: https://github.com/elastic/package-spec/issues/650
+  - description: Assign error code to definition of dynamic mappings found in data stream manifests
+    type: enhancement
+    link: https://github.com/elastic/package-spec/issues/654
 - version: 3.0.0
   changes:
   - description: Validate processors used in ingest pipelines
