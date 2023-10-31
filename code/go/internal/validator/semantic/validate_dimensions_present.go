@@ -37,7 +37,6 @@ func ValidateDimensionsPresent(fsys fspath.FS) specerrors.ValidationErrors {
 			return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 		}
 		_, hasDimensions := dimensionPresent[dataStream]
-		fmt.Println(dataStream, tsEnabled, hasDimensions)
 		if tsEnabled && !hasDimensions {
 			errs = append(errs, specerrors.NewStructuredErrorf(
 				`file "%s" is invalid: time series mode enabled but no dimensions configured`,
