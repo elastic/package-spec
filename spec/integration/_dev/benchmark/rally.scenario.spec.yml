@@ -3,7 +3,6 @@ spec:
   additionalProperties: false
   required:
     - data_stream
-    - input
     - corpora
   properties:
     package:
