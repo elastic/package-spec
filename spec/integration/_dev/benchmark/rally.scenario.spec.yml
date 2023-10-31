@@ -12,10 +12,6 @@ spec:
       $ref: "./system.scenario.spec.yml#/definitions/description"
     version:
       $ref: "../../manifest.spec.yml#/definitions/version"
-    input:
-      $ref: "./system.scenario.spec.yml#/properties/input"
-    vars:
-      $ref: "./system.scenario.spec.yml#/properties/vars"
     data_stream:
       $ref: "./system.scenario.spec.yml#/definitions/data_stream"
     warmup_time_period:
