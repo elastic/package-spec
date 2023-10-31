@@ -1,15 +1,5 @@
 spec:
   definitions:
-    input:
-      description: The input of the package to benchmark.
-      type: string
-    vars:
-      description: The package level variables.
-      type:
-        - object
-        - "null"
-      additionalProperties: true
-      default: ~
     package:
       description: The package to benchmark.
       type: string
@@ -154,9 +144,15 @@ spec:
     version:
       $ref: "../../manifest.spec.yml#/definitions/version"
     input:
-      $ref: "#/definitions/input"
+      description: The input of the package to benchmark.
+      type: string
     vars:
-      $ref: "#/definitions/vars"
+      description: The package level variables.
+      type:
+        - object
+        - "null"
+      additionalProperties: true
+      default: ~
     data_stream:
       $ref: "#/definitions/data_stream"
     warmup_time_period:
