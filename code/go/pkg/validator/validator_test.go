@@ -240,6 +240,12 @@ func TestValidateFile(t *testing.T) {
 				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Timelion time series\" (timelion, Timelion)",
 			},
 		},
+		"bad_time_series_missing_dimensions": {
+			"data_stream/missing_dimension/manifest.yml",
+			[]string{
+				"time series mode enabled but no dimensions configured",
+			},
+		},
 	}
 
 	filter := specerrors.NewFilter(&specerrors.ConfigFilter{

@@ -1,4 +1,4 @@
-title: "Example data stream for time series"
+title: "Data stream with time series but no dimensions."
 type: metrics
 streams:
   - input: sample/metrics
@@ -9,7 +9,6 @@ streams:
         type: text
         title: Period
         default: 10s
-
 elasticsearch:
   source_mode: synthetic
   index_mode: time_series
