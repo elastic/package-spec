@@ -36,8 +36,24 @@ spec:
         - description: A folder containing resources used by one or more benchmarks.
           type: folder
           pattern: '^[a-z0-9]+-benchmark$'
-          additionalContents: true
+          additionalContents: false
           required: false
+          contents:
+            - description: A file with the config definition for the corpus generator.
+              type: file
+              pattern: '^config.yml$'
+              contentMediaType: "application/x-yaml; require-document-dashes=true"
+              required: false
+            - description: A file with the fields definition for the corpus generator
+              type: file
+              pattern: '^fields.yml$'
+              contentMediaType: "application/x-yaml; require-document-dashes=true"
+              required: false
+            - description: A file with the template for the corpus generator
+              type: file
+              pattern: '^template.ndjson$'
+              contentMediaType: "application/json"
+              required: false
         - description: A rally benchmark scenario.
           type: file
           pattern: '^.+\.yml$'
