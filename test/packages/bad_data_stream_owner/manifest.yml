@@ -1,0 +1,12 @@
+format_version: 3.0.0
+name: bad_data_stream_owner
+title: "Bad Data Stream Owner"
+version: 0.0.1
+description: "This is a new package."
+type: integration
+conditions:
+  kibana:
+    version: "8.10.1"
+owner:
+  github: elastic/obs-owning-team
+  type: elastic

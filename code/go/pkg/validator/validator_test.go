@@ -77,6 +77,12 @@ func TestValidateFile(t *testing.T) {
 				"field policy_templates.2.data_streams.1: data stream doesn't exist",
 			},
 		},
+		"bad_data_stream_owner": {
+			"data_stream/test/manifest.yml",
+			[]string{
+				"field owner.github: Does not match pattern '^(([a-zA-Z0-9-]+)|([a-zA-Z0-9-]+\\/[a-zA-Z0-9-]+))$'",
+			},
+		},
 		"bad_github_owner": {
 			"manifest.yml",
 			[]string{
