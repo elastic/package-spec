@@ -490,6 +490,16 @@ spec:
         dynamic_namespace:
           description: When set to true, agents running this integration are granted data stream privileges for all namespaces of its type
           type: boolean
+    owner:
+      type: object
+      additionalProperties: false
+      properties:
+        github:
+          description: Github team name of the data stream maintainer.
+          type: string
+          pattern: '^(([a-zA-Z0-9-]+)|([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+))$'
+      required:
+        - github
   required:
   - title
 # JSON patches for newer versions should be placed on top

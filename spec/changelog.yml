@@ -13,6 +13,9 @@
   - description: Validate that data streams with time series enabled have configured dimensions
     type: enhancement
     link: https://github.com/elastic/package-spec/issues/655
+  - description: Add data stream level owner field
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/659
 - version: 3.0.0
   changes:
   - description: Validate processors used in ingest pipelines
