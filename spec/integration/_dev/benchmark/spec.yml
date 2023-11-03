@@ -41,17 +41,17 @@ spec:
           contents:
             - description: A file with the config definition for the corpus generator.
               type: file
-              pattern: '^config.yml$'
+              name: 'config.yml'
               contentMediaType: "application/x-yaml"
               required: false
             - description: A file with the fields definition for the corpus generator
               type: file
-              pattern: '^fields.yml$'
+              name: 'fields.yml'
               contentMediaType: "application/x-yaml"
               required: false
             - description: A file with the template for the corpus generator
               type: file
-              pattern: '^template.ndjson$'
+              name: 'template.ndjson'
               contentMediaType: "application/json"
               required: false
         - description: A rally benchmark scenario.
