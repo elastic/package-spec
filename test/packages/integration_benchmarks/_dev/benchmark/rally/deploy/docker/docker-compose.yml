@@ -1,7 +1,0 @@
-version: "2.3"
-services:
-  rally:
-    image: elastic/rally
-    volumes:
-      - ${PATH}:/sample_track:ro
-    command: "race --track-path=/sample_track --test-mode --pipeline=benchmark-only --target-hosts=elasticsearch:9200"

@@ -1,8 +1,14 @@
 ---
-description: Benchmark 20MiB of data ingested
-data_stream.name: test
-warmup_time_period: 10s
-corpora.generator.total_events: 20000
-corpora.generator.template.raw: '{"@timestamp": "2016-12-07T10:04:37.000Z", "message": "a message"}'
-corpora.generator.config.path: ./20mb-track/config.yml
-corpora.generator.fields.path: ./20mb-track/fields.yml
+description: Benchmark 20000 events ingested
+data_stream:
+  name: test
+corpora:
+  generator:
+    total_events: 20000
+    template:
+      type: gotext
+      path: ./20000-benchmark/template.ndjson
+    config:
+      path: ./20000-benchmark/config.yml
+    fields:
+      path: ./20000-benchmark/fields.yml

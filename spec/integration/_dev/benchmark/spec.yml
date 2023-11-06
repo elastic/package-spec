@@ -33,6 +33,27 @@ spec:
           type: folder
           name: deploy
           $ref: "./deploy/spec.yml"
+        - description: A folder containing resources used by one or more benchmarks.
+          type: folder
+          pattern: '^[a-z0-9]+-benchmark$'
+          additionalContents: false
+          required: false
+          contents:
+            - description: A file with the config definition for the corpus generator.
+              type: file
+              name: 'config.yml'
+              contentMediaType: "application/x-yaml"
+              required: false
+            - description: A file with the fields definition for the corpus generator
+              type: file
+              name: 'fields.yml'
+              contentMediaType: "application/x-yaml"
+              required: false
+            - description: A file with the template for the corpus generator
+              type: file
+              name: 'template.ndjson'
+              contentMediaType: "application/json"
+              required: false
         - description: A rally benchmark scenario.
           type: file
           pattern: '^.+\.yml$'

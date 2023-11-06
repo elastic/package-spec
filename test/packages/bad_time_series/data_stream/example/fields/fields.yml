@@ -1,32 +1,32 @@
 - name: example
   type: group
   fields:
-  - name: agent.id
-    type: keyword
-    dimension: true
-  - name: agent.call_count
-    type: long
-    metric_type: counter
-  - name: agent.current_count
-    type: long
-    metric_type: gauge
-  - name: agent.call_duration
-    type: histogram
-    metric_type: gauge
-    dimension: true # This should fail, a histogram cannot be a dimension.
-  - name: no_valid_type
-    type: boolean
-    metric_type: gauge
-  - name: no_type
-    metric_type: gauge
-  - name: field_object_type_double
-    type: double
-    object_type: double
-    metric_type: gauge
-  - name: field_object_type_boolean
-    type: object
-    object_type: boolean
-    metric_type: gauge
-  - name: field_object
-    type: object
-    metric_type: gauge
+    - name: agent.id
+      type: keyword
+      dimension: true
+    - name: agent.call_count
+      type: long
+      metric_type: counter
+    - name: agent.current_count
+      type: long
+      metric_type: gauge
+    - name: agent.call_duration
+      type: histogram
+      metric_type: gauge
+      dimension: true # This should fail, a histogram cannot be a dimension.
+    - name: no_valid_type
+      type: boolean
+      metric_type: gauge
+    - name: no_type
+      metric_type: gauge
+    - name: field_object_type_double
+      type: double
+      object_type: double
+      metric_type: gauge
+    - name: field_object_type_boolean
+      type: object
+      object_type: boolean
+      metric_type: gauge
+    - name: field_object
+      type: object
+      metric_type: gauge
