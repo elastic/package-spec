@@ -2,11 +2,8 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 3.0.1-next
+- version: 3.0.1
   changes:
-  - description: Fix spec for rally benchmark scenario
-    type: bugfix
-    link: https://github.com/elastic/package-spec/pull/653
   - description: Using non-GA versions of the spec in GA packages produces a filterable validation error instead of a warning
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/627
@@ -16,6 +13,9 @@
   - description: Validate that data streams with time series enabled have configured dimensions
     type: enhancement
     link: https://github.com/elastic/package-spec/issues/655
+  - description: Fix spec for rally benchmark scenario
+    type: bugfix
+    link: https://github.com/elastic/package-spec/pull/653
 - version: 3.0.0
   changes:
   - description: Validate processors used in ingest pipelines
