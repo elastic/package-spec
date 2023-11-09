@@ -16,3 +16,7 @@ spec:
     contentMediaType: "application/json"
     pattern: '^*.json$'
     required: false
+  - description: Parquet files to add into terraform resources
+    type: file
+    pattern: '^*.parquet$'
+    required: false
