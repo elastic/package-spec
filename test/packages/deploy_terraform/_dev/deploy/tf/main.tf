@@ -8,3 +8,11 @@ resource "aws_s3_object" "object" {
 resource "aws_s3_bucket" "bucket" {
   bucket = "test-terraform-deploy-bucket"
 }
+
+resource "aws_s3_object" "parquet_object" {
+  bucket = aws_s3_bucket.bucket.id
+  key    = "test_parquet_key"
+  source = "./files/test.gz.parquet"
+
+  depends_on = [aws_sqs_queue.queue]
+}
