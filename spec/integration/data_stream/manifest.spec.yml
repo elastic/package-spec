@@ -153,7 +153,7 @@ spec:
              anyOf:
                - properties:
                    name:
-                     pattern: "(password|api_key|access_key|token)"
+                     pattern: "(access_key|api_key|passphrase|password|secret|token)"
                - properties:
                    type:
                      const: password
