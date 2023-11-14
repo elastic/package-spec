@@ -118,18 +118,15 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 	for _, e := range errs {
 		for _, msg := range msgTransforms {
 			if strings.Contains(e.Error(), msg.original) {
-				processedErrs = append(processedErrs,
-					specerrors.NewStructuredError(
-						errors.New(strings.Replace(e.Error(), msg.original, msg.new, 1)),
-						specerrors.UnassignedCode),
-				)
-				continue
+				e = specerrors.NewStructuredError(
+					errors.New(strings.Replace(e.Error(), msg.original, msg.new, 1)),
+					specerrors.UnassignedCode)
 			}
-			if substringInSlice(e.Error(), redundant) {
-				continue
-			}
-			processedErrs = append(processedErrs, e)
 		}
+		if substringInSlice(e.Error(), redundant) {
+			continue
+		}
+		processedErrs = append(processedErrs, e)
 	}
 
 	return processedErrs

@@ -5,6 +5,7 @@
 package validator
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -248,13 +249,6 @@ func TestValidateFile(t *testing.T) {
 		},
 	}
 
-	filter := specerrors.NewFilter(&specerrors.ConfigFilter{
-		Errors: specerrors.Processors{
-			// TODO: Actually fix the references instead of ignoring the error.
-			ExcludeChecks: []string{"SVR00004"},
-		},
-	})
-
 	for pkgName, test := range tests {
 		t.Run(pkgName, func(t *testing.T) {
 			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
@@ -262,9 +256,13 @@ func TestValidateFile(t *testing.T) {
 
 			errs := ValidateFromPath(pkgRootPath)
 			if verrs, ok := errs.(specerrors.ValidationErrors); ok {
-				result, err := filter.Run(verrs)
-				require.NoError(t, err)
-				errs = result.Processed
+				filterConfig, err := specerrors.LoadConfigFilter(os.DirFS(pkgRootPath))
+				if !errors.Is(err, os.ErrNotExist) {
+					filter := specerrors.NewFilter(filterConfig)
+					result, err := filter.Run(verrs)
+					require.NoError(t, err)
+					errs = result.Processed
+				}
 			}
 
 			if test.expectedErrContains == nil {
