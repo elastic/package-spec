@@ -194,6 +194,13 @@ func TestValidateFile(t *testing.T) {
 				"field vars.0: Additional property secret is not allowed",
 			},
 		},
+		"bad_secret_vars_v3": {
+			"manifest.yml",
+			[]string{
+				"field vars.0: variable identified as possible secret, secret parameter required to be set to true or false",
+				"field vars.1: variable identified as possible secret, secret parameter required to be set to true or false",
+			},
+		},
 		"bad_lifecycle": {
 			"data_stream/test/lifecycle.yml",
 			[]string{

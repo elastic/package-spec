@@ -106,7 +106,14 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 		original string
 		new      string
 	}{
-		{"Must not validate the schema (not)", "Must not be present"},
+		{
+			original: "Must not validate the schema (not)",
+			new:      "Must not be present",
+		},
+		{
+			original: "secret is required",
+			new:      "variable identified as possible secret, secret parameter required to be set to true or false",
+		},
 	}
 	redundant := []string{
 		"Must validate \"then\" as \"if\" was valid",
