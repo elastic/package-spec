@@ -193,6 +193,13 @@ func TestValidateFile(t *testing.T) {
 				"field vars.0: Additional property secret is not allowed",
 			},
 		},
+		"bad_secret_vars_v3": {
+			"manifest.yml",
+			[]string{
+				"field vars.0: variable identified as possible secret, secret parameter required to be set to true or false",
+				"field vars.1: variable identified as possible secret, secret parameter required to be set to true or false",
+			},
+		},
 		"bad_lifecycle": {
 			"data_stream/test/lifecycle.yml",
 			[]string{
@@ -250,8 +257,13 @@ func TestValidateFile(t *testing.T) {
 
 	filter := specerrors.NewFilter(&specerrors.ConfigFilter{
 		Errors: specerrors.Processors{
-			// TODO: Actually fix the references instead of ignoring the error.
-			ExcludeChecks: []string{"SVR00004"},
+			ExcludeChecks: []string{
+				// Allow to test unreleased features in "good" packages.
+				"PSR00001",
+
+				// TODO: Actually fix the references instead of ignoring the error.
+				"SVR00004",
+			},
 		},
 	})
 

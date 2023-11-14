@@ -10,6 +10,9 @@
   - description: Add parquet files in terraform service deployer
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/662
+  - description: Require to define if a variable is a secret if it looks like a secret
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/665
 - version: 3.0.1
   changes:
   - description: Using non-GA versions of the spec in GA packages produces a filterable validation error instead of a warning

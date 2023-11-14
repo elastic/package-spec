@@ -115,39 +115,51 @@ spec:
           default:
             description: Default value(s) for variable
             $ref: "#/definitions/input_variable_value"
-        if:
-          properties:
-            type:
-              const: select
-        then:
-          required:
-            - options
-          properties:
-            options:
-              description: List of options for select type
-              type: array
-              items:
-                type: object
-                additionalProperties: false
-                properties:
-                  value:
-                    type: string
-                    examples:
-                    - node
-                    - cluster
-                  text:
-                    type: string
-                    examples:
-                    - node
-                    - cluster
-                required:
-                - value
-                - text
-              min_items: 1
-        else:
-          not:
-            required:
-              - options
+        allOf:
+         - if:
+             properties:
+               type:
+                 const: select
+           then:
+             required:
+               - options
+             properties:
+               options:
+                 description: List of options for select type
+                 type: array
+                 items:
+                   type: object
+                   additionalProperties: false
+                   properties:
+                     value:
+                       type: string
+                       examples:
+                       - node
+                       - cluster
+                     text:
+                       type: string
+                       examples:
+                       - node
+                       - cluster
+                   required:
+                   - value
+                   - text
+                 min_items: 1
+           else:
+             not:
+               required:
+                 - options
+         - if:
+             anyOf:
+               - properties:
+                   name:
+                     pattern: "(password|api_key|access_key|token)"
+               - properties:
+                   type:
+                     const: password
+           then:
+             required:
+               - secret
         required:
           - name
           - type
@@ -494,6 +506,11 @@ spec:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.0.2
+    patch:
+      # Required secret for variables that look like secrets.
+      - op: remove
+        path: /definitions/vars/items/allOf/1
   - before: 3.0.0
     patch:
       # Stricter validation of elasticsearch settings and mappings.
