@@ -93,10 +93,11 @@ immutable. Further changes must follow the process outlined below in _Changing a
 Consider a proposal to change the specification in some way. The version number
 of the changed specification must be determined as follows:
 
-  * If the proposed change introduces changes in the format of the files that
-    require manual changes in packages, the new version number will be `X.0.0`,
+  * If the proposed change modifies the format of the files in a way that
+    require manual adjustments in packages, the new version number will be `X.0.0`,
     where `X = x + 1`. That is, we bump up the major version.
-    * Exception: When the proposed change is intended to address existing issues
+    There are some exceptions, for changes that could be done in patch versions:
+    * When the proposed change is intended to address existing issues
       in packages like ambiguous mappings or security risks.
     * Exception: When the proposed change affects a feature marked as technical
       preview.
@@ -115,7 +116,7 @@ If the change is in semantic rules, add a constraint in the rule, so they only
 apply on the indicated version range and package types.
 
 Remember to add a changelog entry in `spec/changelog.yml` for any change in the
-spec. If no section exist for the version determined by the above rules, please
+spec. If no section exists for the version determined by the above rules, please
 add the new section. Multiple `next` versions may exist at the same moment if
 multiple versions are in development.
 
