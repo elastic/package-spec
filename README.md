@@ -99,8 +99,7 @@ of the changed specification must be determined as follows:
     There are some exceptions, for changes that could be done in patch versions:
     * When the proposed change is intended to address existing issues
       in packages like ambiguous mappings or security risks.
-    * Exception: When the proposed change affects a feature marked as technical
-      preview.
+    * When the proposed change affects a feature marked as technical preview.
   * If the proposed change introduces support for a new feature that requires
     explicit support in the Stack, the new version will be `x.Y.0`, where
     `Y = y + 1`. That is, we bump up the minor version. See note below about
