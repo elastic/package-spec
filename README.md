@@ -67,34 +67,72 @@ Note that the specification files primarily define the structure (syntax) of a p
 
 # Specification Versioning
 
-Package specifications are versioned. Versions follow the [semantic versioning](https://semver.org/) scheme. In the context of package specifications, this means the following.
+Package Spec version follows [semantic versioning](https://semver.org) for its
+compatibility with the Stack and only partially for the packages format.
+That means that patch versions may include stricter validations for packages,
+but they should not include support for new features.
+Major versions are reserved for significant changes in the format of the files,
+the structure of packages or the interpretation of the Package Spec.
 
-* Packages must specify the specification version they are using. This is done via the `format_version` property in the package's root `manifest.yml` file. The value of `format_version` must conform to the semantic versioning scheme.
+Packages must specify the specification version they are using. This is done via
+the `format_version` property in the package's root `manifest.yml` file. The value
+of `format_version` must conform to the semantic versioning scheme.
 
-* Specifications are defined by schema files and semantic rules, some attributes or files will only be available since, or till a version.
+Specifications are defined by schema files and semantic rules, some attributes or
+files will only be available since, or till a version.
 
-* Note that the latest version of each major may include a pre-release suffix, `e.g. 1.4.0-alpha1`. This indicates that this version is still under development and may be changed multiple times. Once the pre-relase suffix is removed, however, the specification at that version becomes immutable. Further changes must follow the process outlined below in _Changing a Specification_.
+Note that some versions may include a pre-release suffix, `e.g. 1.4.0-alpha1`. This
+indicates that these versions are still under development and may be changed multiple
+times. These versions in development can be used in prerelease versions of
+packages, but breaking changes can still occur.
+Once the pre-relase suffix is removed, however, the specification at that version becomes
+immutable. Further changes must follow the process outlined below in _Changing a Specification_.
 
 ## Changing a Specification
 
-* Consider a proposal to change the specification in some way. The version number of the changed specification must be determined as follows:
-  * If the proposed change makes the specification stricter than it is at `x.y.z`, the new version number will be `X.0.0`, where `X = x + 1`. That is, we bump up the major version. 
-     * If the change is in a schema file, consider the `spec` the latest
-       version, and add a JSON patch in the `versions` section to support older
-       schemas.
-     * If the change is in semantic rules, add a constraint in the rule, so they only apply on
-       the indicated version range.
-     * Add a changelog entry in the `spec/changelog.yml` file in the section of this major.
-  * If the proposed change makes the specification looser than it is at `x.y.z`, the new version number will be `x.Y.0`, where `Y = y + 1`. That is, we bump up the minor version and create a new changelog section in the `spec/changelog.yml` file. Note that adding new, but optional, constraints to a specification is a change that makes a specification looser.
-  * If the proposed change does not change the strictness of the specification at `x.y.z`, the new version number will be `x.y.Z`, where `Z = z + 1`. That is, we bump the patch version.
-     * Apply the proposed changes to the existing specification under the `spec` folder.
-     * Set the root-level `version` property in the specification's root `spec.yml` file to `x.y.Z`.
-     * Add a changelog entry in the `spec/changelog.yml` file in the section for
-       this version.
+Consider a proposal to change the specification in some way. The version number
+of the changed specification must be determined as follows:
+
+  * If the proposed change introduces changes in the format of the files that
+    require manual changes in packages, the new version number will be `X.0.0`,
+    where `X = x + 1`. That is, we bump up the major version.
+    * Exception: When the proposed change is intended to address existing issues
+      in packages like ambiguous mappings or security risks.
+    * Exception: When the proposed change affects a feature marked as technical
+      preview.
+  * If the proposed change introduces support for a new feature that requires
+    explicit support in the Stack, the new version will be `x.Y.0`, where
+    `Y = y + 1`. That is, we bump up the minor version. See note below about
+    compatibility between packages and the Stack.
+  * Any other change would be included in the next patch version, `x.y.Z` where
+    `Z = z + 1`. This includes any change on validation that doesn't neccesarily
+    lead to a change in the behaviour of the installed package.
+
+If the change is in a schema file, add a JSON patch in the `versions` section to
+continue supporting the previous format.
+
+If the change is in semantic rules, add a constraint in the rule, so they only
+apply on the indicated version range and package types.
+
+Remember to add a changelog entry in `spec/changelog.yml` for any change in the
+spec. If no section exist for the version determined by the above rules, please
+add the new section. Multiple `next` versions may exist at the same moment if
+multiple versions are in development.
 
 ## Version Compatibility between Packages and Specifications
 
 A package specifying its `format_version` as `x.y.z` must be valid against specifications in the semantic version range `[x.y.z, X.0.0)`, where `X = x + 1`.
+
+## Version Compatibility between Packages and the Stack
+
+Starting on Package Spec v3 and for some Elastic offerings, compatibility
+between packages and the Stack is based on the major and minor Package Spec
+version.
+
+Eventually all Elastic Stack offerings will have ranges of compatible versions.
+In these ranges the patch is ignored. So for example a Stack could be declared
+compatible with a minimum spec version of `2.0` and maximum of `3.0`. This would
+mean that it is compatible with packages using any spec version >= 2.0.0 and <3.1.0.
 
 ## Contributing
 
