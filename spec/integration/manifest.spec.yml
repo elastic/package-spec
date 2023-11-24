@@ -251,7 +251,7 @@ spec:
         github:
           description: Github team name of the package maintainer.
           type: string
-          pattern: '^(([a-zA-Z0-9-]+)|([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+))$'
+          pattern: '^(([a-zA-Z0-9-_]+)|([a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+))$'
         type:
           description: >
             Describes who owns the package and the level of support that is
