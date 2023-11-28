@@ -636,3 +636,6 @@
   - description: Introduce "value" property for constant_keyword fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/194
+  - description: Allow _ in github owner field
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/668
