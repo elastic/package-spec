@@ -252,6 +252,10 @@ spec:
           description: Github team name of the package maintainer.
           type: string
           pattern: '^(([a-zA-Z0-9-_]+)|([a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+))$'
+          examples:
+                - "elastic"
+                - "apm-agent-java"
+                - "ux_infra_team"
         type:
           description: >
             Describes who owns the package and the level of support that is
