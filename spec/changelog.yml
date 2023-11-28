@@ -2,11 +2,8 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 3.0.2-next
+- version: 3.0.2
   changes:
-  - description: Prepare for next version
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/661
   - description: Add parquet files in terraform service deployer
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/662
