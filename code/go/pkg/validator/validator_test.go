@@ -81,7 +81,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_github_owner": {
 			"manifest.yml",
 			[]string{
-				"field owner.github: Does not match pattern '^(([a-zA-Z0-9-]+)|([a-zA-Z0-9-]+\\/[a-zA-Z0-9-]+))$'",
+				"field owner.github: Does not match pattern '^(([a-zA-Z0-9-_]+)|([a-zA-Z0-9-_]+\\/[a-zA-Z0-9-_]+))$'",
 			},
 		},
 		"bad_owner_type": {

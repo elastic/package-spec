@@ -13,6 +13,9 @@
   - description: Require to define if a variable is a secret if it looks like a secret
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/665
+  - description: Allow _ in github owner field
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/668
 - version: 3.0.1
   changes:
   - description: Using non-GA versions of the spec in GA packages produces a filterable validation error instead of a warning
