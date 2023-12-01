@@ -573,6 +573,10 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.0.2
+    patch:
+      - op: remove
+        path: "/items/allOf/8" # removing subobjects when type is object
   - before: 3.0.0
     patch:
       - op: remove
