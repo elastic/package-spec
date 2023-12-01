@@ -176,7 +176,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_subobjects": {
 			"data_stream/rules/fields/base-fields.yml",
 			[]string{
-				`field 5.type: 5.type must be one of the following: "object"`,
+				`field 6.type: 6.type must be one of the following: "object"`,
 			},
 		},
 		"bad_profiling_symbolizer": {
