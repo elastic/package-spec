@@ -534,8 +534,14 @@ spec:
           required:
             - type
         then:
-          required:
-            - object_type
+          oneOf:
+            - required:
+              - object_type
+            - properties:
+                enabled:
+                  const: false
+              required:
+                - enabled
       - if:
           properties:
             fields:
