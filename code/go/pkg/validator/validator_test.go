@@ -43,6 +43,7 @@ func TestValidateFile(t *testing.T) {
 		"ignored_malformed":                  {},
 		"custom_ilm_policy":                  {},
 		"profiling_symbolizer":               {},
+		"disabled_object_3_0_2":              {},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
@@ -139,6 +140,8 @@ func TestValidateFile(t *testing.T) {
 				`field "my_custom_date" of type keyword can't set date_format. date_format is allowed for date field type only`,
 				`field 2: object_type is required`,
 				`field 3.type: 3.type must be one of the following: "group", "nested"`,
+				`field 4.enabled: 4.enabled does not match: false`,
+				`field 5.enabled: 5.enabled does not match: true`,
 			},
 		},
 		"deploy_custom_agent_invalid_property": {

@@ -534,8 +534,20 @@ spec:
           required:
             - type
         then:
-          required:
-            - object_type
+          oneOf:
+            - required:
+              - object_type
+              properties:
+                enabled:
+                  const: true
+            - properties:
+                enabled:
+                  const: false
+              required:
+                - enabled
+              not:
+                required:
+                  - object_type
       - if:
           properties:
             fields:
@@ -554,6 +566,14 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.0.3
+    patch:
+      - op: remove
+        path: "/items/allOf/6/then/oneOf"
+      - op: add
+        path: "/items/allOf/6/then/required"
+        value:
+          - object_type
   - before: 3.0.0
     patch:
       - op: remove
