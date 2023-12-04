@@ -357,3 +357,7 @@
         - name: user_provided_metadata
           type: object
           enabled: false
+        - name: other_provided_metadata
+          type: object
+          object_type: keyword
+          enabled: true
