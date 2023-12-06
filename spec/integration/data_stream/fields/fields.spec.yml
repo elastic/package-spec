@@ -591,8 +591,6 @@ versions:
         path: "/items/allOf/8" # removing subobjects when type is object
       - op: remove
         path: "/items/properties/subobjects"
-  - before: 3.0.3
-    patch:
       - op: remove
         path: "/items/allOf/6/then/oneOf"
       - op: add
