@@ -7,6 +7,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/671
+  - description: Do not require an object_type on objects with `enabled` set to `false`
+    type: bugfix
+    link: https://github.com/elastic/package-spec/issues/675
   - description: Add support for subobjects in fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/573

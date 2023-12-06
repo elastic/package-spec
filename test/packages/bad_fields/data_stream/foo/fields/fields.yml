@@ -12,3 +12,10 @@
   fields:
     - name: foo
       type: keyword
+- name: enabled_object_without_object_type
+  type: object
+  enabled: true
+- name: disabled_object_with_object_type
+  type: object
+  object_type: keyword
+  enabled: false

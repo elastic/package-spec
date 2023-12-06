@@ -1,16 +1,16 @@
-format_version: 3.0.3
-name: bad_fields
-title: "Bad Fields"
+format_version: 3.0.2
+name: disabled_object_3_0_2
+title: "Disabled Object in 3.0.2"
 version: 0.0.1
 source:
   license: "Elastic-2.0"
-description: "This package contains bad fields definitions"
+description: "This is a package to test a corner case that we disallowed in 3.0.3, where an object could have enabled false and an object_type"
 type: integration
 categories:
   - custom
 conditions:
   kibana:
-    version: "^8.4.1"
+    version: "^8.10.1"
   elastic:
     subscription: "basic"
 screenshots:
@@ -32,5 +32,5 @@ policy_templates:
         title: Collect sample logs from instances
         description: Collecting sample logs
 owner:
-  type: elastic
   github: elastic/ecosystem
+  type: elastic
