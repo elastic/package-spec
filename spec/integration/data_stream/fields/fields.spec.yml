@@ -402,7 +402,7 @@ spec:
           fields.
         type: boolean
         default: false
-      
+
       subobjects:
         description: >
           Specifies if field names containing dots should be expanded into subobjects.
@@ -578,7 +578,7 @@ spec:
               enum:
                 - object
           required:
-            - type            
+            - type
 
     required:
     - name
@@ -591,6 +591,8 @@ versions:
         path: "/items/allOf/8" # removing subobjects when type is object
       - op: remove
         path: "/items/properties/subobjects"
+  - before: 3.0.3
+    patch:
       - op: remove
         path: "/items/allOf/6/then/oneOf"
       - op: add

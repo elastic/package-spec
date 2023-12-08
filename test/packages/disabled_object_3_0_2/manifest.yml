@@ -4,7 +4,7 @@ title: "Disabled Object in 3.0.2"
 version: 0.0.1
 source:
   license: "Elastic-2.0"
-description: "This is a package to test a corner case that we disallowed in 3.1.0, where an object could have enabled false and an object_type"
+description: "This is a package to test a corner case that we disallowed in 3.0.3, where an object could have enabled false and an object_type"
 type: integration
 categories:
   - custom

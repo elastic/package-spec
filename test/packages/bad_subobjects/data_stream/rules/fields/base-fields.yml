@@ -20,8 +20,7 @@
   type: object
   object_type: keyword
   subobjects: false
-  # Bad subobjects: type can only be 'object', but it is 'group'. 
+  # Bad subobjects: type can only be 'object', but it is 'group'.
 - name: prometheus.wrong.labels
   type: group
   subobjects: false
-  
