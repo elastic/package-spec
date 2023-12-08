@@ -7,6 +7,11 @@
   - description: Add support for subobjects in fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/573
+- version: 3.0.4-next
+  changes:
+  - description: Prepare for next version
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/681
 - version: 3.0.3
   changes:
   - description: Do not require an object_type on objects with `enabled` set to `false`
