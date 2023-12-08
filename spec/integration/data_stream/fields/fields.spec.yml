@@ -403,6 +403,15 @@ spec:
         type: boolean
         default: false
 
+      subobjects:
+        description: >
+          Specifies if field names containing dots should be expanded into subobjects.
+          For example, if this is set to `true`, a field named `foo.bar` will be
+          expanded into an object with a field named `bar` inside an object
+          named `foo`.
+        type: boolean
+        default: true
+
       # Conditional properties.
       default_metric: true
       metrics: true
@@ -560,12 +569,28 @@ spec:
               enum:
                 - group
                 - nested
+      - if:
+          required:
+            - subobjects
+        then:
+          properties:
+            type:
+              enum:
+                - object
+          required:
+            - type
 
     required:
     - name
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.1.0
+    patch:
+      - op: remove
+        path: "/items/allOf/8" # removing subobjects when type is object
+      - op: remove
+        path: "/items/properties/subobjects"
   - before: 3.0.3
     patch:
       - op: remove
