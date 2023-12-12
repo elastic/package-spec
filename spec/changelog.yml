@@ -12,6 +12,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/681
+  - description: Fix validation of empty arrays in YAML files
+    type: bugfix
+    link: https://github.com/elastic/package-spec/issues/683
 - version: 3.0.3
   changes:
   - description: Do not require an object_type on objects with `enabled` set to `false`
