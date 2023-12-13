@@ -86,3 +86,6 @@
   metrics:
     - min
     - max
+- name: empty_expected_values
+  type: keyword
+  expected_values: []

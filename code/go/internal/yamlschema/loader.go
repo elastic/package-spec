@@ -113,7 +113,7 @@ func expandItemKey(c interface{}) interface{} {
 
 	// c is an array
 	if cArr, isArray := c.([]interface{}); isArray {
-		var arr []interface{}
+		arr := []interface{}{}
 		for _, ca := range cArr {
 			arr = append(arr, expandItemKey(ca))
 		}

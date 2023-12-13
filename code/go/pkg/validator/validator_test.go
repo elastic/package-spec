@@ -172,7 +172,6 @@ func TestValidateFile(t *testing.T) {
 			"data_stream/foo_stream/manifest.yml",
 			[]string{
 				"field streams.0.vars.1: options is required",
-				"field streams.0.vars.2.options: Invalid type. Expected: array, given: null",
 				"field streams.0.vars.3: Must not be present",
 			},
 		},
