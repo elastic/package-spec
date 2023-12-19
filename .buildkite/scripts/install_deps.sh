@@ -35,6 +35,8 @@ add_bin_path(){
 
 with_go() {
     create_bin_folder
+    check_platform_architecture
+
     retry 5 curl -sL -o "${WORKSPACE}/bin/gvm" "https://github.com/andrewkroh/gvm/releases/download/${SETUP_GVM_VERSION}/gvm-${platform_type_lowercase}-${arch_type}"
     chmod +x "${WORKSPACE}/bin/gvm"
     eval "$(gvm "$(cat .go-version)")"
@@ -46,6 +48,8 @@ with_go() {
 
 with_github_cli() {
     create_bin_folder
+    check_platform_architecture
+
     mkdir -p "${WORKSPACE}/tmp"
 
     local gh_filename="gh_${GH_CLI_VERSION}_${platform_type_lowercase}_${arch_type}"
@@ -76,7 +80,9 @@ with_jq() {
 }
 
 with_docker_compose() {
-    mkdir -p "${WORKSPACE}/bin"
+    create_bin_folder
+    check_platform_architecture
+
     retry 5 curl -sSL -o "${WORKSPACE}/bin/docker-compose" "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-${platform_type_lowercase}-${hw_type}"
     chmod +x "${WORKSPACE}/bin/docker-compose"
     docker-compose version
