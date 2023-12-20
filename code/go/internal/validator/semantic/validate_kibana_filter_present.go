@@ -18,6 +18,7 @@ import (
 )
 
 var (
+	errDashboardPanelWithoutFilter   = errors.New("at least one panel does not have a filter")
 	errDashboardWithFilterAndNoQuery = errors.New("saved query found, but no filter")
 	errDashboardFilterNotFound       = errors.New("no filter found")
 )
@@ -52,13 +53,74 @@ func ValidateKibanaFilterPresent(fsys fspath.FS) specerrors.ValidationErrors {
 }
 
 func checkDashboardHasFilter(file pkgpath.File) error {
+	err := findPanelsFilters(file)
+	if err != nil {
+		dashboardErr := findDashboardFilter(file)
+		if dashboardErr != nil {
+			return fmt.Errorf("%w and %w", dashboardErr, err)
+		}
+	}
+	return nil
+}
+
+func findPanelsFilters(file pkgpath.File) error {
+	panelsJSON, err := file.Values("$.attributes.panelsJSON")
+	if err != nil {
+		return fmt.Errorf("unable to find panels definition: %w", err)
+	}
+
+	var panels []struct {
+		EmbeddableConfig struct {
+			Attributes struct {
+				State struct {
+					Filters []any `mapstructure:"filters"`
+					Query   struct {
+						Query string `mapstructure:"query"`
+					} `mapstructure:"query"`
+				} `mapstructure:"state"`
+			} `mapstructure:"attributes"`
+		} `mapstructure:"embeddableConfig"`
+		Type string `mapstructure:"type"`
+	}
+	switch panelsJSON := panelsJSON.(type) {
+	case []any:
+		// Dashboard is decoded, as in source packages.
+		err = mapstructure.Decode(panelsJSON, &panels)
+		if err != nil {
+			return fmt.Errorf("unable to decode panels definition: %w", err)
+		}
+	case string:
+		// Dashboard is encoded as in built packages.
+		err = json.Unmarshal([]byte(panelsJSON), &panels)
+		if err != nil {
+			return fmt.Errorf("unable to decode embedded panels definition: %w", err)
+		}
+	default:
+		return fmt.Errorf("unexpected type for panels JSON: %T", panelsJSON)
+	}
+
+	for _, panel := range panels {
+		if panel.Type == "search" {
+			continue
+		}
+		hasFilters := len(panel.EmbeddableConfig.Attributes.State.Filters) > 0
+		hasQuery := panel.EmbeddableConfig.Attributes.State.Query.Query != ""
+		if !hasFilters && !hasQuery {
+			return errDashboardPanelWithoutFilter
+		}
+	}
+
+	return nil
+}
+
+func findDashboardFilter(file pkgpath.File) error {
 	searchJSON, err := file.Values("$.attributes.kibanaSavedObjectMeta.searchSourceJSON")
 	if err != nil {
 		return fmt.Errorf("unable to find search definition: %w", err)
 	}
 
 	var search struct {
-		Filter []interface{} `mapstructure:"filter"`
+		Filter []any `mapstructure:"filter"`
 		Query  struct {
 			Query string `mapstructure:"query"`
 		} `mapstructure:"query"`

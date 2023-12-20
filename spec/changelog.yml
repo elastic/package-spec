@@ -15,6 +15,9 @@
   - description: Fix validation of empty arrays in YAML files
     type: bugfix
     link: https://github.com/elastic/package-spec/issues/683
+  - description: Dashboards with filters in all panels don't require a filter at the dashboard level
+    type: enhancement
+    link: https://github.com/elastic/package-spec/issues/687
 - version: 3.0.3
   changes:
   - description: Do not require an object_type on objects with `enabled` set to `false`
