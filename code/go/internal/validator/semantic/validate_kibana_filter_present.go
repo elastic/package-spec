@@ -19,7 +19,7 @@ import (
 
 var (
 	errDashboardPanelWithoutFilter   = errors.New("at least one panel does not have a filter")
-	errDashboardWithFilterAndNoQuery = errors.New("saved query found, but no filter")
+	errDashboardWithQueryAndNoFilter = errors.New("saved query found, but no filter")
 	errDashboardFilterNotFound       = errors.New("no filter found")
 )
 
@@ -38,7 +38,7 @@ func ValidateKibanaFilterPresent(fsys fspath.FS) specerrors.ValidationErrors {
 		err = checkDashboardHasFilter(file)
 		if err != nil {
 			code := specerrors.CodeKibanaDashboardWithoutFilter
-			if errors.Is(err, errDashboardWithFilterAndNoQuery) {
+			if errors.Is(err, errDashboardWithQueryAndNoFilter) {
 				code = specerrors.CodeKibanaDashboardWithQueryButNoFilter
 			}
 			errs = append(errs,
@@ -144,7 +144,7 @@ func findDashboardFilter(file pkgpath.File) error {
 
 	if len(search.Filter) == 0 {
 		if len(search.Query.Query) > 0 {
-			return errDashboardWithFilterAndNoQuery
+			return errDashboardWithQueryAndNoFilter
 		}
 		return errDashboardFilterNotFound
 	}
