@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"slices"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
@@ -180,7 +181,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 			continue
 		}
 
-		if rule.types != nil && !stringSliceContains(rule.types, pkgType) {
+		if rule.types != nil && !slices.Contains(rule.types, pkgType) {
 			continue
 		}
 
@@ -188,15 +189,6 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 	}
 
 	return validationRules
-}
-
-func stringSliceContains(elems []string, v string) bool {
-	for _, a := range elems {
-		if a == v {
-			return true
-		}
-	}
-	return false
 }
 
 func (vr validationRules) validate(fsys fspath.FS) specerrors.ValidationErrors {
