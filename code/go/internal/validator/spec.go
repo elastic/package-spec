@@ -36,6 +36,7 @@ type validationRule func(pkg fspath.FS) specerrors.ValidationErrors
 
 type validationRules []validationRule
 
+// GASpecCheckVersion represents minimum version to start checking for unreleased versions of specs
 var GASpecCheckVersion = semver.MustParse("3.0.1")
 
 // NewSpec creates a new Spec for the given version
