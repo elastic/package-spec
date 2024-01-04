@@ -13,12 +13,47 @@ spec:
         anyOf:
           - required:
             - hostname
+    volume:
+      type:
+        - object
+        - "null"
+      properties:
+        name:
+          type: string
+        driver:
+          type: string
+        driver_opts:
+          type: object
+          patternProperties:
+            "^.+$": 
+              type:
+                - string
+                - number
+        external:
+          type:
+            - boolean
+            - object
+          properties:
+            name:
+              deprecated: true
+              type: string
+          additionalProperties: false,
+          patternProperties: { "^x-": {} }
+      additionalProperties: false
+      patternProperties: { "^x-": {} }
   properties:
     version:
       description: Docker Compose version
       type: string
       pattern: '^2.3$'
-    services:
+    volumes:
+      description: Docker Compose volume declaration
+      type: object
+      patternProperties:
+        "^[a-zA-Z0-9._-]+$":
+          "$ref": "#/definitions/volume"
+      additionalProperties: false
+  services:
       description: Service list
       type: object
       additionalProperties:
