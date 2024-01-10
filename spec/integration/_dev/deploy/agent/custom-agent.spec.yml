@@ -53,18 +53,18 @@ spec:
         "^[a-zA-Z0-9._-]+$":
           "$ref": "#/definitions/volume"
       additionalProperties: false
-  services:
-      description: Service list
-      type: object
-      additionalProperties:
-        description: Additional services
-        "$ref": "#/definitions/service"
-      properties:
-        docker-custom-agent:
-          description: Custom agent service definition
+    services:
+        description: Service list
+        type: object
+        additionalProperties:
+          description: Additional services
           "$ref": "#/definitions/service"
-      required:
-        - docker-custom-agent
+        properties:
+          docker-custom-agent:
+            description: Custom agent service definition
+            "$ref": "#/definitions/service"
+        required:
+          - docker-custom-agent
   required:
     - version
     - services
