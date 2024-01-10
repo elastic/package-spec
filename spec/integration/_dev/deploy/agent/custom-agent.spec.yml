@@ -14,33 +14,7 @@ spec:
           - required:
             - hostname
     volume:
-      type:
-        - object
-        - "null"
-      properties:
-        name:
-          type: string
-        driver:
-          type: string
-        driver_opts:
-          type: object
-          patternProperties:
-            "^.+$": 
-              type:
-                - string
-                - number
-        external:
-          type:
-            - boolean
-            - object
-          properties:
-            name:
-              deprecated: true
-              type: string
-          additionalProperties: false
-          patternProperties: { "^x-": {} }
-      additionalProperties: false
-      patternProperties: { "^x-": {} }
+      type: "null"
   properties:
     version:
       description: Docker Compose version
