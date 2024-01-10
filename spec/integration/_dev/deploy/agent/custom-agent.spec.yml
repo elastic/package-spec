@@ -37,7 +37,7 @@ spec:
             name:
               deprecated: true
               type: string
-          additionalProperties: false,
+          additionalProperties: false
           patternProperties: { "^x-": {} }
       additionalProperties: false
       patternProperties: { "^x-": {} }
