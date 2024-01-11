@@ -172,6 +172,10 @@ func TestValidateFile(t *testing.T) {
 			[]string{
 				"field processors.1: Additional property reroute is not allowed",
 				"field processors.2.foreach.processor: Additional property paint is not allowed",
+				"field processors: At least one of the items must match",
+				"field processors.3.rename: if is required",
+				"field processors: At least one of the items must match",
+				"field processors.0: remove is required",
 			},
 		},
 		"bad_dotted_fields": {

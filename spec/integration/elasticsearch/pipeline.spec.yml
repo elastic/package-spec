@@ -64,6 +64,31 @@ spec:
       type: array
       items:
         $ref: "#/definitions/processor"
+      if:
+        contains:
+          required: [ rename ]
+          properties:
+            rename:
+              properties:
+                field:
+                  const: "message"
+                target_field:
+                  const: "event.original"
+      then:
+        allOf:
+          - contains:
+              required: [ rename ]
+              properties:
+                rename:
+                  required: [ if ]
+                  properties:
+                    if:
+                      const: "ctx.event?.original == null"
+          - contains:
+              required: [ remove ]
+              properties:
+                field:
+                  const: "message"
 
   properties:
     description:
