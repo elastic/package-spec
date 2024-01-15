@@ -178,6 +178,16 @@ func TestValidateFile(t *testing.T) {
 				"field processors.0: remove is required",
 			},
 		},
+		"bad_ingest_pipeline_v2": {
+			"data_stream/bad_rename/elasticsearch/ingest_pipeline/default.yml",
+			[]string{
+				"field processors: At least one of the items must match",
+				"field processors.1.rename.if: processors.1.rename.if does not match: \"ctx.event?.original == null\"",
+				"field processors: At least one of the items must match",
+				"field processors.2.remove: ignore_missing is required",
+				"field processors.2.remove.if: processors.2.remove.if does not match: \"ctx.event?.original != null\"",
+			},
+		},
 		"bad_dotted_fields": {
 			"manifest.yml",
 			[]string{

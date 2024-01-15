@@ -87,8 +87,15 @@ spec:
           - contains:
               required: [ remove ]
               properties:
-                field:
-                  const: "message"
+                remove:
+                  required: [ field, ignore_missing, if ]
+                  properties:
+                    field:
+                      const: "message"
+                    ignore_missing:
+                      const: true
+                    if:
+                      const: "ctx.event?.original != null"
 
   properties:
     description:
@@ -100,3 +107,11 @@ spec:
     on_failure:
       description: List of processors to apply in case of failure.
       $ref: "#/definitions/processors"
+
+versions:
+  - before: 3.2.0
+    patch:
+      - op: remove
+        path: /definitions/processors/if # remove rename processor validation
+      - op: remove
+        path: /definitions/processors/then # remove rename processor validation
