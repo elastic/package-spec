@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"slices"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
@@ -36,6 +37,7 @@ type validationRule func(pkg fspath.FS) specerrors.ValidationErrors
 
 type validationRules []validationRule
 
+// GASpecCheckVersion represents minimum version to start checking for unreleased version of the spec
 var GASpecCheckVersion = semver.MustParse("3.0.1")
 
 // NewSpec creates a new Spec for the given version
@@ -179,7 +181,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 			continue
 		}
 
-		if rule.types != nil && !stringSliceContains(rule.types, pkgType) {
+		if rule.types != nil && !slices.Contains(rule.types, pkgType) {
 			continue
 		}
 
@@ -187,15 +189,6 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 	}
 
 	return validationRules
-}
-
-func stringSliceContains(elems []string, v string) bool {
-	for _, a := range elems {
-		if a == v {
-			return true
-		}
-	}
-	return false
 }
 
 func (vr validationRules) validate(fsys fspath.FS) specerrors.ValidationErrors {
