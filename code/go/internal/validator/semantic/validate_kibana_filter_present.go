@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"path"
 
+	"github.com/elastic/kbncontent"
 	"github.com/mitchellh/mapstructure"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
@@ -64,48 +65,18 @@ func checkDashboardHasFilter(file pkgpath.File) error {
 }
 
 func findPanelsFilters(file pkgpath.File) error {
-	panelsJSON, err := file.Values("$.attributes.panelsJSON")
+	dashboardJSON, err := file.Values("$")
 	if err != nil {
-		return fmt.Errorf("unable to find panels definition: %w", err)
+		return fmt.Errorf("unable to get dashboard document: %w", err)
 	}
 
-	var panels []struct {
-		EmbeddableConfig struct {
-			Attributes struct {
-				State struct {
-					Filters []any `mapstructure:"filters"`
-					Query   struct {
-						Query string `mapstructure:"query"`
-					} `mapstructure:"query"`
-				} `mapstructure:"state"`
-			} `mapstructure:"attributes"`
-		} `mapstructure:"embeddableConfig"`
-		Type string `mapstructure:"type"`
-	}
-	switch panelsJSON := panelsJSON.(type) {
-	case []any:
-		// Dashboard is decoded, as in source packages.
-		err = mapstructure.Decode(panelsJSON, &panels)
-		if err != nil {
-			return fmt.Errorf("unable to decode panels definition: %w", err)
-		}
-	case string:
-		// Dashboard is encoded as in built packages.
-		err = json.Unmarshal([]byte(panelsJSON), &panels)
-		if err != nil {
-			return fmt.Errorf("unable to decode embedded panels definition: %w", err)
-		}
-	default:
-		return fmt.Errorf("unexpected type for panels JSON: %T", panelsJSON)
+	visualizations, err := kbncontent.DescribeByValueDashboardPanels(dashboardJSON)
+	if err != nil {
+		return fmt.Errorf("error describing visualization saved object: %w", err)
 	}
 
-	for _, panel := range panels {
-		if panel.Type == "search" {
-			continue
-		}
-		hasFilters := len(panel.EmbeddableConfig.Attributes.State.Filters) > 0
-		hasQuery := panel.EmbeddableConfig.Attributes.State.Query.Query != ""
-		if !hasFilters && !hasQuery {
+	for _, visualization := range visualizations {
+		if visualization.CanUseFilter() && !visualization.HasFilters() {
 			return errDashboardPanelWithoutFilter
 		}
 	}

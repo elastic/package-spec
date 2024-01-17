@@ -64,6 +64,9 @@ func TestCheckDashboardHasFilter(t *testing.T) {
 			require.Len(t, files, 1, "looking for %s", c.dashboard)
 
 			err = checkDashboardHasFilter(files[0])
+			if err != nil {
+				t.Log(err)
+			}
 			if c.valid {
 				assert.NoError(t, err)
 			} else {

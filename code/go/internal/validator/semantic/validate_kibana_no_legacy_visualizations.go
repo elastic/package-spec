@@ -8,6 +8,7 @@ import (
 	"path"
 
 	"github.com/elastic/kbncontent"
+
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
@@ -30,7 +31,6 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) specerrors.ValidationE
 			errs = append(errs, specerrors.NewStructuredErrorf("file \"%s\" is invalid: error getting JSON: %w", filePath, err))
 			continue
 		}
-
 
 		visMap, ok := visJSON.(map[string]interface{})
 		if !ok {
