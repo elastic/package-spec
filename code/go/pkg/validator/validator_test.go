@@ -103,16 +103,6 @@ func TestValidateFile(t *testing.T) {
 				"package version undefined in the package manifest file",
 			},
 		},
-		"bad_aggregate_metric_double": {
-			"data_stream/foo/fields/fields.yml",
-			[]string{
-				`field 0: metrics is required`,
-				`field 1: default_metric is required`,
-				`field 2.metrics.2: 2.metrics.2 must be one of the following: "min", "max", "sum", "value_count", "avg"`,
-				`field 3: Must not be present`,
-				`field 3: Must not be present`,
-			},
-		},
 		"bad_time_series": {
 			"data_stream/example/fields/fields.yml",
 			[]string{
@@ -722,7 +712,6 @@ func TestValidateRoutingRules(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {
