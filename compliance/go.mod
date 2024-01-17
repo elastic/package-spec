@@ -174,3 +174,5 @@ require (
 )
 
 replace github.com/elastic/package-spec/v3 => ../
+
+replace github.com/elastic/kbncontent => github.com/jsoriano/kbncontent v0.0.0-20240117141617-f8f2c26a5191
