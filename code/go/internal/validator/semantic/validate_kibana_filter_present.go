@@ -76,7 +76,14 @@ func findPanelsFilters(file pkgpath.File) error {
 	}
 
 	for _, visualization := range visualizations {
-		if visualization.CanUseFilter() && !visualization.HasFilters() {
+		if !visualization.CanUseFilter() {
+			continue
+		}
+		hasFilters, err := visualization.HasFilters()
+		if err != nil {
+			return fmt.Errorf("error checking if visualization has filters: %w", err)
+		}
+		if !hasFilters {
 			return errDashboardPanelWithoutFilter
 		}
 	}
