@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"path"
 
+	"github.com/elastic/kbncontent"
 	"github.com/mitchellh/mapstructure"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
@@ -18,7 +19,8 @@ import (
 )
 
 var (
-	errDashboardWithFilterAndNoQuery = errors.New("saved query found, but no filter")
+	errDashboardPanelWithoutFilter   = errors.New("at least one panel does not have a filter")
+	errDashboardWithQueryAndNoFilter = errors.New("saved query found, but no filter")
 	errDashboardFilterNotFound       = errors.New("no filter found")
 )
 
@@ -37,7 +39,7 @@ func ValidateKibanaFilterPresent(fsys fspath.FS) specerrors.ValidationErrors {
 		err = checkDashboardHasFilter(file)
 		if err != nil {
 			code := specerrors.CodeKibanaDashboardWithoutFilter
-			if errors.Is(err, errDashboardWithFilterAndNoQuery) {
+			if errors.Is(err, errDashboardWithQueryAndNoFilter) {
 				code = specerrors.CodeKibanaDashboardWithQueryButNoFilter
 			}
 			errs = append(errs,
@@ -52,13 +54,51 @@ func ValidateKibanaFilterPresent(fsys fspath.FS) specerrors.ValidationErrors {
 }
 
 func checkDashboardHasFilter(file pkgpath.File) error {
+	err := findPanelsFilters(file)
+	if err != nil {
+		dashboardErr := findDashboardFilter(file)
+		if dashboardErr != nil {
+			return fmt.Errorf("%w and %w", dashboardErr, err)
+		}
+	}
+	return nil
+}
+
+func findPanelsFilters(file pkgpath.File) error {
+	dashboardJSON, err := file.Values("$")
+	if err != nil {
+		return fmt.Errorf("unable to get dashboard document: %w", err)
+	}
+
+	visualizations, err := kbncontent.DescribeByValueDashboardPanels(dashboardJSON)
+	if err != nil {
+		return fmt.Errorf("error describing visualization saved object: %w", err)
+	}
+
+	for _, visualization := range visualizations {
+		if !visualization.CanUseFilter() {
+			continue
+		}
+		hasFilters, err := visualization.HasFilters()
+		if err != nil {
+			return fmt.Errorf("error checking if visualization has filters: %w", err)
+		}
+		if !hasFilters {
+			return errDashboardPanelWithoutFilter
+		}
+	}
+
+	return nil
+}
+
+func findDashboardFilter(file pkgpath.File) error {
 	searchJSON, err := file.Values("$.attributes.kibanaSavedObjectMeta.searchSourceJSON")
 	if err != nil {
 		return fmt.Errorf("unable to find search definition: %w", err)
 	}
 
 	var search struct {
-		Filter []interface{} `mapstructure:"filter"`
+		Filter []any `mapstructure:"filter"`
 		Query  struct {
 			Query string `mapstructure:"query"`
 		} `mapstructure:"query"`
@@ -82,7 +122,7 @@ func checkDashboardHasFilter(file pkgpath.File) error {
 
 	if len(search.Filter) == 0 {
 		if len(search.Query.Query) > 0 {
-			return errDashboardWithFilterAndNoQuery
+			return errDashboardWithQueryAndNoFilter
 		}
 		return errDashboardFilterNotFound
 	}

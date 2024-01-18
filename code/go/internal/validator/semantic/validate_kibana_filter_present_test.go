@@ -45,6 +45,16 @@ func TestCheckDashboardHasFilter(t *testing.T) {
 			dashboard: "testdata/dashboards/tomcat-with-filter-encoded.json",
 			valid:     true,
 		},
+
+		// Dashboard has the filter in all panels.
+		{
+			dashboard: "testdata/dashboards/mysql-filter-in-panels.json",
+			valid:     true,
+		},
+		{
+			dashboard: "testdata/dashboards/mysql-filter-in-panels-encoded.json",
+			valid:     true,
+		},
 	}
 
 	for _, c := range cases {
@@ -54,6 +64,9 @@ func TestCheckDashboardHasFilter(t *testing.T) {
 			require.Len(t, files, 1, "looking for %s", c.dashboard)
 
 			err = checkDashboardHasFilter(files[0])
+			if err != nil {
+				t.Log(err)
+			}
 			if c.valid {
 				assert.NoError(t, err)
 			} else {
