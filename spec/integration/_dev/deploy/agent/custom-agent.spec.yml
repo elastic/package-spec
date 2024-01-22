@@ -13,11 +13,20 @@ spec:
         anyOf:
           - required:
             - hostname
+    volume:
+      type: "null"
   properties:
     version:
       description: Docker Compose version
       type: string
       pattern: '^2.3$'
+    volumes:
+      description: Docker Compose volume declaration
+      type: object
+      patternProperties:
+        "^[a-zA-Z0-9._-]+$":
+          "$ref": "#/definitions/volume"
+      additionalProperties: false
     services:
       description: Service list
       type: object
