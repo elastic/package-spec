@@ -4,23 +4,20 @@
 ##
 - version: 3.1.0-next
   changes:
-  - description: Allowing volumes to be defined in custom-agent-deployer
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/689
   - description: Add support for subobjects in fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/573
-- version: 3.0.4-next
+- version: 3.0.4
   changes:
-  - description: Prepare for next version
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/681
   - description: Fix validation of empty arrays in YAML files
     type: bugfix
     link: https://github.com/elastic/package-spec/issues/683
   - description: Dashboards with filters in all panels don't require a filter at the dashboard level
     type: enhancement
     link: https://github.com/elastic/package-spec/issues/687
+  - description: Allow volumes to be defined in custom-agent-deployer
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/689
 - version: 3.0.3
   changes:
   - description: Do not require an object_type on objects with `enabled` set to `false`
