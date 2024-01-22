@@ -7,6 +7,11 @@
   - description: Add support for subobjects in fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/573
+- version: 3.0.5-next
+  changes:
+  - description: Prepare for next version
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/697
 - version: 3.0.4
   changes:
   - description: Fix validation of empty arrays in YAML files
