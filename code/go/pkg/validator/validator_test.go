@@ -167,27 +167,6 @@ func TestValidateFile(t *testing.T) {
 				`field 3: asset_types is required`,
 			},
 		},
-		"bad_ingest_pipeline": {
-			"data_stream/test/elasticsearch/ingest_pipeline/default.yml",
-			[]string{
-				"field processors.1: Additional property reroute is not allowed",
-				"field processors.2.foreach.processor: Additional property paint is not allowed",
-				"field processors: At least one of the items must match",
-				"field processors.3.rename: if is required",
-				"field processors: At least one of the items must match",
-				"field processors.0: remove is required",
-			},
-		},
-		"bad_ingest_pipeline_v2": {
-			"data_stream/bad_rename/elasticsearch/ingest_pipeline/default.yml",
-			[]string{
-				"field processors: At least one of the items must match",
-				"field processors.1.rename.if: processors.1.rename.if does not match: \"ctx.event?.original == null\"",
-				"field processors: At least one of the items must match",
-				"field processors.2.remove: ignore_missing is required",
-				"field processors.2.remove.if: processors.2.remove.if does not match: \"ctx.event?.original != null\"",
-			},
-		},
 		"bad_dotted_fields": {
 			"manifest.yml",
 			[]string{
@@ -669,6 +648,60 @@ func TestValidateRoutingRules(t *testing.T) {
 
 			for _, foundError := range errs {
 				require.Contains(t, expectedErrorMessages, foundError.Error())
+			}
+		})
+	}
+}
+
+func TestValidateIngestPipelines(t *testing.T) {
+	tests := map[string]map[string][]string{
+		"good":    {},
+		"good_v2": {},
+		// "good_v3": {}, // TODO: this fails with "package with GA version (1.0.0) is using an unreleased version of the spec (3.1.0-next)"
+		"bad_ingest_pipeline": {
+			"test": []string{
+				"field processors.1: Additional property reroute is not allowed",
+				"field processors.2.foreach.processor: Additional property paint is not allowed",
+			},
+			"bad_rename_message": []string{
+				"field processors.1.rename: if is required",
+				"field processors.0: remove is required",
+			},
+			"bad_rename_message_2": []string{
+				"field processors.2.remove.field: processors.2.remove.field does not match: \"message\"",
+				"field processors.2.remove.if: processors.2.remove.if does not match: \"ctx.event?.original != null\"",
+			},
+		},
+	}
+
+	for pkgName, pipelines := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
+			var allErrorMessages []string
+			for pipeline, expectedErrorMessages := range pipelines {
+				pipelineFilePath := filepath.Join(pkgRootPath, "data_stream", pipeline, "elasticsearch", "ingest_pipeline", "default.yml")
+				errPrefix := fmt.Sprintf("file \"%s\" is invalid: ", pipelineFilePath)
+				for _, errMsg := range expectedErrorMessages {
+					allErrorMessages = append(allErrorMessages, errPrefix+errMsg)
+				}
+			}
+			errs := ValidateFromPath(pkgRootPath)
+			if len(allErrorMessages) == 0 {
+				require.NoError(t, errs)
+			} else {
+				require.Error(t, errs)
+				vErrs, ok := errs.(specerrors.ValidationErrors)
+				fmt.Println(vErrs)
+				if ok {
+					var errMessages []string
+					for _, vErr := range vErrs {
+						errMessages = append(errMessages, vErr.Error())
+					}
+					assert.Len(t, errs, len(allErrorMessages))
+					for _, expectedErrMessage := range allErrorMessages {
+						require.Contains(t, errMessages, expectedErrMessage)
+					}
+				}
 			}
 		})
 	}

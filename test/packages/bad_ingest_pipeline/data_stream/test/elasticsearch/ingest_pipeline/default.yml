@@ -14,9 +14,6 @@ processors:
       paint:
         field: "_ingest._value"
         color: "pink" 
-- rename:
-    field: message
-    target_field: event.original
 on_failure:
 - set:
     field: error.message

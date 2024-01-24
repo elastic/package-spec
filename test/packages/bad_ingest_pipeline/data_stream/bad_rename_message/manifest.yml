@@ -1,4 +1,4 @@
-title: "Bad Rename"
+title: "Test Data Stream"
 type: logs
 streams:
   - input: logfile

@@ -123,6 +123,7 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 		"Must validate all the schemas (allOf)",
 		"Must validate at least one schema (anyOf)",
 		"Must validate one and only one schema (oneOf)",
+		"At least one of the items must match",
 	}
 	for _, e := range errs {
 		for _, msg := range msgTransforms {
