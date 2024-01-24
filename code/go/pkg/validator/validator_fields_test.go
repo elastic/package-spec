@@ -174,7 +174,7 @@ func TestValidateFields(t *testing.T) {
 			},
 		},
 
-		// subobjects
+		// Disabling subobjects.
 		{
 			title:           "disabled subobjects with wildcard",
 			packageTemplate: "integration_v3_1",
@@ -382,6 +382,81 @@ func TestValidateFields(t *testing.T) {
 			},
 			expectedErrors: []string{
 				`field 0.type: 0.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
+			},
+		},
+
+		// Runtime fields
+		{
+			title:           "runtime fields: wrong type",
+			packageTemplate: "integration_v3_0",
+			fields: []map[string]any{
+				{
+					"name":    "runtime_boolean",
+					"type":    "boolean",
+					"runtime": true,
+				},
+				{
+					"name":    "runtime_script",
+					"type":    "keyword",
+					"runtime": "doc['message'].value().doSomething()",
+				},
+			},
+		},
+		{
+			title:           "runtime fields: wrong type",
+			packageTemplate: "integration_v3_0",
+			fields: []map[string]any{
+				{
+					"name":    "runtime_field",
+					"type":    "byte",
+					"runtime": true,
+				},
+			},
+			expectedErrors: []string{
+				`field 0: Must not be present`,
+			},
+		},
+		{
+			title:           "runtime fields: invalid runtime value",
+			packageTemplate: "integration_v3_0",
+			fields: []map[string]any{
+				{
+					"name":    "runtime_field",
+					"type":    "boolean",
+					"runtime": 30,
+				},
+			},
+			expectedErrors: []string{
+				`field 0.runtime: Invalid type. Expected: string, given: integer`,
+			},
+		},
+		{
+			title:           "runtime fields: invalid runtime boolean",
+			packageTemplate: "integration_v3_0",
+			fields: []map[string]any{
+				{
+					"name":    "runtime_field",
+					"type":    "binary",
+					"runtime": true,
+				},
+			},
+			expectedErrors: []string{
+				`field 0: Must not be present`,
+			},
+		},
+		{
+
+			title:           "runtime fields: invalid runtime boolean",
+			packageTemplate: "integration_v3_0",
+			fields: []map[string]any{
+				{
+					"name":    "runtime_field",
+					"type":    "binary",
+					"runtime": "doc['message'].value().doSomething()",
+				},
+			},
+			expectedErrors: []string{
+				`field 0: Must not be present`,
 			},
 		},
 	}
