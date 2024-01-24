@@ -37,7 +37,6 @@ func TestValidateFile(t *testing.T) {
 		"deploy_custom_agent_multi_services": {},
 		"deploy_docker":                      {},
 		"deploy_terraform":                   {},
-		"time_series":                        {},
 		"missing_data_stream":                {},
 		"icons_dark_mode":                    {},
 		"ignored_malformed":                  {},
@@ -223,12 +222,6 @@ func TestValidateFile(t *testing.T) {
 				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Aggs-based tag cloud\" (tagcloud, Aggs-based)",
 				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"\" (heatmap, Aggs-based)",
 				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Timelion time series\" (timelion, Timelion)",
-			},
-		},
-		"bad_time_series_missing_dimensions": {
-			"data_stream/missing_dimension/manifest.yml",
-			[]string{
-				"time series mode enabled but no dimensions configured",
 			},
 		},
 	}

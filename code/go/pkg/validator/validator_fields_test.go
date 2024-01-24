@@ -28,8 +28,28 @@ func TestValidateFields(t *testing.T) {
 	}{
 		// Check that base templates are fine on their own.
 		{
-			title:           "base integration-v3",
+			title:           "base integration_v1_2_time_series",
+			packageTemplate: "integration_v1_2_time_series",
+		},
+		{
+			title:           "base integration_v3_0",
 			packageTemplate: "integration_v3_0",
+		},
+		{
+			title:           "base integration_v3_0_2",
+			packageTemplate: "integration_v3_0_2",
+		},
+		{
+			title:           "base integration_v3_0_3_time_series",
+			packageTemplate: "integration_v3_0_3_time_series",
+			// This package needs at least a dimension field.
+			fields: []map[string]any{
+				{
+					"name":      "afield",
+					"type":      "keyword",
+					"dimension": true,
+				},
+			},
 		},
 
 		// Generic validations.
@@ -223,7 +243,7 @@ func TestValidateFields(t *testing.T) {
 			},
 		},
 
-		// bad_time_series
+		// time series
 		{
 			title:           "time_series: dimension",
 			packageTemplate: "integration_v1_2_time_series",
@@ -233,6 +253,35 @@ func TestValidateFields(t *testing.T) {
 					"type":      "keyword",
 					"dimension": true,
 				},
+			},
+		},
+		{
+			title:           "counter",
+			packageTemplate: "integration_v1_2_time_series",
+			fields: []map[string]any{
+				{
+					"name":        "agent.call_count",
+					"type":        "long",
+					"metric_type": "counter",
+				},
+			},
+		},
+		{
+			title:           "gauge",
+			packageTemplate: "integration_v1_2_time_series",
+			fields: []map[string]any{
+				{
+					"name":        "agent.current_count",
+					"type":        "long",
+					"metric_type": "gauge",
+				},
+			},
+		},
+		{
+			title:           "missing dimensions",
+			packageTemplate: "integration_v3_0_3_time_series",
+			expectedErrors: []string{
+				"time series mode enabled but no dimensions configured",
 			},
 		},
 		{

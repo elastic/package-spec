@@ -1,16 +1,18 @@
-format_version: 1.2.0
-name: time_series
-title: "Package with time series"
-version: 0.0.1
-license: basic
-description: "This is a package with time series data"
+format_version: 3.0.3
+name: integration_v3_0_3_time_series
+title: "Missing Dimensions"
+version: 0.1.0
+source:
+  license: "Elastic-2.0"
+description: "This is a package with time series but without any dimension."
 type: integration
 categories:
   - custom
-  - monitoring
-release: beta
 conditions:
-  kibana.version: "^7.16.0"
+  kibana:
+    version: "^8.10.1"
+  elastic:
+    subscription: "basic"
 screenshots:
   - src: /img/sample-screenshot.png
     title: Sample screenshot
@@ -30,4 +32,5 @@ policy_templates:
         title: Collect sample logs from instances
         description: Collecting sample logs
 owner:
-  github: elastic/integrations-developer-experience
+  github: elastic/ecosystem
+  type: elastic
