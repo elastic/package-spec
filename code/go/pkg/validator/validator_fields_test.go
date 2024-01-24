@@ -188,6 +188,35 @@ func TestValidateFields(t *testing.T) {
 				`field 0.type: 0.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
 			},
 		},
+
+		// disabled_object_3_0_2
+		{
+			title:           "bad disabled object was allowed till 3.0.2",
+			packageTemplate: "integration_v3_0_2",
+			fields: []map[string]any{
+				{
+					"name":        "user_provided_metadata",
+					"type":        "object",
+					"object_type": "keyword",
+					"enabled":     false,
+				},
+			},
+		},
+		{
+			title:           "bad disabled object",
+			packageTemplate: "integration_v3_0",
+			fields: []map[string]any{
+				{
+					"name":        "user_provided_metadata",
+					"type":        "object",
+					"object_type": "keyword",
+					"enabled":     false,
+				},
+			},
+			expectedErrors: []string{
+				`field 0.enabled: 0.enabled does not match: true`,
+			},
+		},
 	}
 
 	for _, c := range cases {

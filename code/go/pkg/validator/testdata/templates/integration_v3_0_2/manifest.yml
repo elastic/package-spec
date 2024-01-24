@@ -1,16 +1,16 @@
 format_version: 3.0.2
-name: disabled_object_3_0_2
-title: "Disabled Object in 3.0.2"
-version: 0.0.1
+name: integration_v3_0
+title: "Base dummy package to test fields with v3.0"
+version: 1.0.0
 source:
-  license: "Elastic-2.0"
-description: "This is a package to test a corner case that we disallowed in 3.0.3, where an object could have enabled false and an object_type"
+  license: "Apache-2.0"
+description: "This is a base package to test fields with spec v3.0"
 type: integration
 categories:
   - custom
 conditions:
   kibana:
-    version: "^8.10.1"
+    version: "^8.11.4"
   elastic:
     subscription: "basic"
 screenshots:

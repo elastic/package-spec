@@ -1,17 +1,17 @@
 <!-- Use this template language as a starting point, replacing {placeholder text} with details about the integration. -->
 <!-- Find more detailed documentation guidelines in https://github.com/elastic/integrations/blob/main/docs/documentation_guidelines.md -->
 
-# Disabled Object in 3.0.2
+# Base dummy package to test fields with v3.0
 
-<!-- The Disabled Object in 3.0.2 integration allows you to monitor {name of service}. {name of service} is {describe service}.
+<!-- The Base dummy package to test fields with v3.0 integration allows you to monitor {name of service}. {name of service} is {describe service}.
 
-Use the Disabled Object in 3.0.2 integration to {purpose}. Then visualize that data in Kibana, create alerts to notify you if something goes wrong, and reference {data stream type} when troubleshooting an issue.
+Use the Base dummy package to test fields with v3.0 integration to {purpose}. Then visualize that data in Kibana, create alerts to notify you if something goes wrong, and reference {data stream type} when troubleshooting an issue.
 
 For example, if you wanted to {sample use case} you could {action}. Then you can {visualize|alert|troubleshoot} by {action}. -->
 
 ## Data streams
 
-<!-- The Disabled Object in 3.0.2 integration collects {one|two} type{s} of data streams: {logs and/or metrics}. -->
+<!-- The Base dummy package to test fields with v3.0 integration collects {one|two} type{s} of data streams: {logs and/or metrics}. -->
 
 <!-- If applicable -->
 <!-- **Logs** help you keep a record of events happening in {service}.
