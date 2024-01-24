@@ -679,7 +679,7 @@ func TestValidateIngestPipelines(t *testing.T) {
 			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 			var allErrorMessages []string
 			for pipeline, expectedErrorMessages := range pipelines {
-				pipelineFilePath := filepath.Join(pkgRootPath, "data_stream", pipeline, "elasticsearch", "ingest_pipeline", "default.yml")
+				pipelineFilePath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName, "data_stream", pipeline, "elasticsearch", "ingest_pipeline", "default.yml")
 				errPrefix := fmt.Sprintf("file \"%s\" is invalid: ", pipelineFilePath)
 				for _, errMsg := range expectedErrorMessages {
 					allErrorMessages = append(allErrorMessages, errPrefix+errMsg)
