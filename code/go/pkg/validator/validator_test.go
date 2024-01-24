@@ -43,7 +43,6 @@ func TestValidateFile(t *testing.T) {
 		"ignored_malformed":                  {},
 		"custom_ilm_policy":                  {},
 		"profiling_symbolizer":               {},
-		"disabled_object_3_0_2":              {},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
@@ -112,17 +111,6 @@ func TestValidateFile(t *testing.T) {
 				`field 0.fields.7.object_type: 0.fields.7.object_type must be one of the following: "histogram", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
 				`field 0.fields.8.type: 0.fields.8.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
 				"field \"example.agent.call_duration\" of type histogram can't be a dimension, allowed types for dimensions: constant_keyword, keyword, long, integer, short, byte, double, float, half_float, scaled_float, unsigned_long, ip",
-			},
-		},
-		"bad_fields": {
-			"data_stream/foo/fields/fields.yml",
-			[]string{
-				`field 0.type: 0.type must be one of the following: "aggregate_metric_double", "alias", "histogram", "constant_keyword", "text", "match_only_text", "keyword", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "date", "date_nanos", "boolean", "binary", "integer_range", "float_range", "long_range", "double_range", "date_range", "ip_range", "group", "geo_point", "object", "ip", "nested", "flattened", "wildcard", "version", "unsigned_long"`,
-				`field "my_custom_date" of type keyword can't set date_format. date_format is allowed for date field type only`,
-				`field 2: object_type is required`,
-				`field 3.type: 3.type must be one of the following: "group", "nested"`,
-				`field 4.enabled: 4.enabled does not match: false`,
-				`field 5.enabled: 5.enabled does not match: true`,
 			},
 		},
 		"deploy_custom_agent_invalid_property": {

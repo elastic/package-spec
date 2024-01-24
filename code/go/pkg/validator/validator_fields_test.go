@@ -46,6 +46,109 @@ func TestValidateFields(t *testing.T) {
 				`field 0.type: 0.type must be one of the following: "aggregate_metric_double", "alias", "histogram", "constant_keyword", "text", "match_only_text", "keyword", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "date", "date_nanos", "boolean", "binary", "integer_range", "float_range", "long_range", "double_range", "date_range", "ip_range", "group", "geo_point", "object", "ip", "nested", "flattened", "wildcard", "version", "unsigned_long"`,
 			},
 		},
+		{
+			title:           "array",
+			packageTemplate: "integration_v3_0",
+			fields: []map[string]any{
+				{
+					"name": "afield",
+					"type": "array",
+				},
+			},
+			expectedErrors: []string{
+				`field 0.type: 0.type must be one of the following: "aggregate_metric_double", "alias", "histogram", "constant_keyword", "text", "match_only_text", "keyword", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "date", "date_nanos", "boolean", "binary", "integer_range", "float_range", "long_range", "double_range", "date_range", "ip_range", "group", "geo_point", "object", "ip", "nested", "flattened", "wildcard", "version", "unsigned_long"`,
+			},
+		},
+		{
+			title:           "invalid custom date",
+			packageTemplate: "integration_v3_0",
+			fields: []map[string]any{
+				{
+					"name":        "my_custom_date",
+					"type":        "keyword",
+					"date_format": "yyy-MM-dd",
+				},
+			},
+			expectedErrors: []string{
+				`field "my_custom_date" of type keyword can't set date_format. date_format is allowed for date field type only`,
+			},
+		},
+		{
+			title:           "required object type",
+			packageTemplate: "integration_v3_0",
+			fields: []map[string]any{
+				{
+					"name": "object_without_object_type.*",
+					"type": "object",
+				},
+			},
+			expectedErrors: []string{
+				`field 0: object_type is required`,
+			},
+		},
+		{
+			title:           "object with subfields should be of type group",
+			packageTemplate: "integration_v3_0",
+			fields: []map[string]any{
+				{
+					"name":        "object_with_subfields",
+					"type":        "object",
+					"object_type": "keyword",
+					"fields": []map[string]any{
+						{
+							"name": "foo",
+							"type": "keyword",
+						},
+					},
+				},
+			},
+			expectedErrors: []string{
+				`field 0.type: 0.type must be one of the following: "group", "nested"`,
+			},
+		},
+		{
+
+			title:           "enabled object without object type",
+			packageTemplate: "integration_v3_0",
+			fields: []map[string]any{
+				{
+					"name":    "someobject",
+					"type":    "object",
+					"enabled": true,
+				},
+			},
+			expectedErrors: []string{
+				`field 0.enabled: 0.enabled does not match: false`,
+			},
+		},
+		{
+
+			title:           "disabled object with object type",
+			packageTemplate: "integration_v3_0",
+			fields: []map[string]any{
+				{
+					"name":        "someobject",
+					"type":        "object",
+					"object_type": "keyword",
+					"enabled":     false,
+				},
+			},
+			expectedErrors: []string{
+				`field 0.enabled: 0.enabled does not match: true`,
+			},
+		},
+		{
+			title:           "bad disabled object was allowed till 3.0.2",
+			packageTemplate: "integration_v3_0_2",
+			fields: []map[string]any{
+				{
+					"name":        "user_provided_metadata",
+					"type":        "object",
+					"object_type": "keyword",
+					"enabled":     false,
+				},
+			},
+		},
 
 		// aggregate_metric_double
 		{
@@ -186,35 +289,6 @@ func TestValidateFields(t *testing.T) {
 			},
 			expectedErrors: []string{
 				`field 0.type: 0.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
-			},
-		},
-
-		// disabled_object_3_0_2
-		{
-			title:           "bad disabled object was allowed till 3.0.2",
-			packageTemplate: "integration_v3_0_2",
-			fields: []map[string]any{
-				{
-					"name":        "user_provided_metadata",
-					"type":        "object",
-					"object_type": "keyword",
-					"enabled":     false,
-				},
-			},
-		},
-		{
-			title:           "bad disabled object",
-			packageTemplate: "integration_v3_0",
-			fields: []map[string]any{
-				{
-					"name":        "user_provided_metadata",
-					"type":        "object",
-					"object_type": "keyword",
-					"enabled":     false,
-				},
-			},
-			expectedErrors: []string{
-				`field 0.enabled: 0.enabled does not match: true`,
 			},
 		},
 	}
