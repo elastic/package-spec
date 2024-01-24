@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"regexp"
 	"slices"
 	"strings"
 
@@ -102,8 +103,9 @@ func substringInSlice(str string, list []string) bool {
 }
 
 func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors {
-	// Rename unclear error messages and filter out redundant errors
 	var processedErrs specerrors.ValidationErrors
+
+	// Rename unclear error messages
 	msgTransforms := []struct {
 		original string
 		new      string
@@ -117,6 +119,8 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 			new:      "variable identified as possible secret, secret parameter required to be set to true or false",
 		},
 	}
+
+	// Filter out redundant errors
 	redundant := []string{
 		"Must validate \"then\" as \"if\" was valid",
 		"Must validate \"else\" as \"if\" was not valid",
@@ -125,12 +129,29 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 		"Must validate one and only one schema (oneOf)",
 		"At least one of the items must match",
 	}
+
+	// Add error code to specific errors
+	addErrorCode := []struct {
+		matcher *regexp.Regexp
+		code    string
+	}{
+		{
+			matcher: regexp.MustCompile(`rename: if is required|remove is required|remove.field does not match: "message"|remove.if does not match: "ctx.event\?.original != null"`),
+			code:    specerrors.MessageRenameToEventOriginalValidation,
+		},
+	}
+
 	for _, e := range errs {
 		for _, msg := range msgTransforms {
 			if strings.Contains(e.Error(), msg.original) {
 				e = specerrors.NewStructuredError(
 					errors.New(strings.Replace(e.Error(), msg.original, msg.new, 1)),
 					specerrors.UnassignedCode)
+			}
+		}
+		for _, transform := range addErrorCode {
+			if transform.matcher.MatchString(e.Error()) {
+				e = specerrors.NewStructuredError(e, transform.code)
 			}
 		}
 		if substringInSlice(e.Error(), redundant) {

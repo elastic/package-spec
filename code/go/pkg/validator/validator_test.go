@@ -658,18 +658,19 @@ func TestValidateIngestPipelines(t *testing.T) {
 		"good":    {},
 		"good_v2": {},
 		// "good_v3": {}, // TODO: this fails with "package with GA version (1.0.0) is using an unreleased version of the spec (3.1.0-next)"
+		"skip_pipeline_rename_validation": {},
 		"bad_ingest_pipeline": {
 			"test": []string{
 				"field processors.1: Additional property reroute is not allowed",
 				"field processors.2.foreach.processor: Additional property paint is not allowed",
 			},
 			"bad_rename_message": []string{
-				"field processors.1.rename: if is required",
-				"field processors.0: remove is required",
+				"field processors.1.rename: if is required (JSE00001)",
+				"field processors.0: remove is required (JSE00001)",
 			},
 			"bad_rename_message_2": []string{
-				"field processors.2.remove.field: processors.2.remove.field does not match: \"message\"",
-				"field processors.2.remove.if: processors.2.remove.if does not match: \"ctx.event?.original != null\"",
+				"field processors.2.remove.field: processors.2.remove.field does not match: \"message\" (JSE00001)",
+				"field processors.2.remove.if: processors.2.remove.if does not match: \"ctx.event?.original != null\" (JSE00001)",
 			},
 		},
 	}
@@ -685,13 +686,24 @@ func TestValidateIngestPipelines(t *testing.T) {
 					allErrorMessages = append(allErrorMessages, errPrefix+errMsg)
 				}
 			}
+
 			errs := ValidateFromPath(pkgRootPath)
+
+			if verrs, ok := errs.(specerrors.ValidationErrors); ok {
+				filterConfig, err := specerrors.LoadConfigFilter(os.DirFS(pkgRootPath))
+				if !errors.Is(err, os.ErrNotExist) {
+					filter := specerrors.NewFilter(filterConfig)
+					result, err := filter.Run(verrs)
+					require.NoError(t, err)
+					errs = result.Processed
+				}
+			}
+
 			if len(allErrorMessages) == 0 {
 				require.NoError(t, errs)
 			} else {
 				require.Error(t, errs)
 				vErrs, ok := errs.(specerrors.ValidationErrors)
-				fmt.Println(vErrs)
 				if ok {
 					var errMessages []string
 					for _, vErr := range vErrs {
