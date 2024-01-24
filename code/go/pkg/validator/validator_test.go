@@ -132,12 +132,6 @@ func TestValidateFile(t *testing.T) {
 				"field streams.0.vars.3: Must not be present",
 			},
 		},
-		"bad_subobjects": {
-			"data_stream/rules/fields/base-fields.yml",
-			[]string{
-				`field 6.type: 6.type must be one of the following: "object"`,
-			},
-		},
 		"bad_profiling_symbolizer": {
 			"data_stream/example/manifest.yml",
 			[]string{

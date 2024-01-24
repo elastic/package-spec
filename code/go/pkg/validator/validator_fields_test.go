@@ -51,6 +51,10 @@ func TestValidateFields(t *testing.T) {
 				},
 			},
 		},
+		{
+			title:           "base integration_v3_1",
+			packageTemplate: "integration_v3_1",
+		},
 
 		// Generic validations.
 		{
@@ -167,6 +171,46 @@ func TestValidateFields(t *testing.T) {
 					"object_type": "keyword",
 					"enabled":     false,
 				},
+			},
+		},
+
+		// subobjects
+		{
+			title:           "disabled subobjects with wildcard",
+			packageTemplate: "integration_v3_1",
+			fields: []map[string]any{
+				{
+					"name":        "prometheus.b.labels.*",
+					"type":        "object",
+					"object_type": "keyword",
+					"subobjects":  false,
+				},
+			},
+		},
+		{
+			title:           "disabled subobjects without wildcard",
+			packageTemplate: "integration_v3_1",
+			fields: []map[string]any{
+				{
+					"name":        "prometheus.b.labels",
+					"type":        "object",
+					"object_type": "keyword",
+					"subobjects":  false,
+				},
+			},
+		},
+		{
+			title:           "disabled subobjects cannot be on type group",
+			packageTemplate: "integration_v3_1",
+			fields: []map[string]any{
+				{
+					"name":       "prometheus.b.labels",
+					"type":       "group",
+					"subobjects": false,
+				},
+			},
+			expectedErrors: []string{
+				`field 0.type: 0.type must be one of the following: "object"`,
 			},
 		},
 

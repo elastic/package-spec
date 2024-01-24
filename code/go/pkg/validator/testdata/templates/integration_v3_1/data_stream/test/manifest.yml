@@ -1,4 +1,4 @@
-title: "Rules"
+title: "Test data stream"
 type: logs
 streams:
   - input: logfile
