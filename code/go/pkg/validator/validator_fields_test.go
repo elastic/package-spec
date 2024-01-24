@@ -26,12 +26,13 @@ func TestValidateFields(t *testing.T) {
 		fields          any
 		expectedErrors  []string
 	}{
+		// Check that base templates are fine on their own.
 		{
 			title:           "base integration-v3",
 			packageTemplate: "integration_v3_0",
-			fields:          nil,
-			expectedErrors:  nil,
 		},
+
+		// Generic validations.
 		{
 			title:           "unknown type",
 			packageTemplate: "integration_v3_0",
@@ -46,7 +47,19 @@ func TestValidateFields(t *testing.T) {
 			},
 		},
 
-		// bad_aggregate_metric_double
+		// aggregate_metric_double
+		{
+			title:           "aggregate_metric_double",
+			packageTemplate: "integration_v3_0",
+			fields: []map[string]any{
+				{
+					"name":           "metrics",
+					"type":           "aggregate_metric_double",
+					"metrics":        []string{"min", "max", "sum", "value_count"},
+					"default_metric": "max",
+				},
+			},
+		},
 		{
 			title:           "bad aggregate_metric_double: required metrics",
 			packageTemplate: "integration_v3_0",
@@ -106,6 +119,75 @@ func TestValidateFields(t *testing.T) {
 				`field 0: Must not be present`,
 			},
 		},
+
+		// bad_time_series
+		{
+			title:           "time_series: dimension",
+			packageTemplate: "integration_v1_2_time_series",
+			fields: []map[string]any{
+				{
+					"name":      "agent.id",
+					"type":      "keyword",
+					"dimension": true,
+				},
+			},
+		},
+		{
+			title:           "bad time_series: invalid type for time series",
+			packageTemplate: "integration_v1_2_time_series",
+			fields: []map[string]any{
+				{
+					"name":        "no_valid_type",
+					"type":        "boolean",
+					"metric_type": "gauge",
+				},
+			},
+			expectedErrors: []string{
+				`field 0.type: 0.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
+			},
+		},
+		{
+			title:           "bad time_series: no type",
+			packageTemplate: "integration_v1_2_time_series",
+			fields: []map[string]any{
+				{
+					"name":        "no_type",
+					"metric_type": "gauge",
+				},
+			},
+			expectedErrors: []string{
+				`field 0: type is required`,
+			},
+		},
+		{
+			title:           "bad time_series: histogram cannot be a dimension",
+			packageTemplate: "integration_v1_2_time_series",
+			fields: []map[string]any{
+				{
+					"name":        "example.agent.call_duration",
+					"type":        "histogram",
+					"metric_type": "gauge",
+					"dimension":   true,
+				},
+			},
+			expectedErrors: []string{
+				`field "example.agent.call_duration" of type histogram can't be a dimension, allowed types for dimensions: constant_keyword, keyword, long, integer, short, byte, double, float, half_float, scaled_float, unsigned_long, ip`,
+			},
+		},
+		{
+			title:           "bad time_series: ambiguous object cannot be a dimension",
+			packageTemplate: "integration_v1_2_time_series",
+			fields: []map[string]any{
+				{
+					"name":        "field_object",
+					"type":        "object",
+					"metric_type": "gauge",
+				},
+			},
+			expectedErrors: []string{
+				`field 0.type: 0.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
+			},
+		},
 	}
 
 	for _, c := range cases {
@@ -116,8 +198,7 @@ func TestValidateFields(t *testing.T) {
 				assert.NoError(t, err)
 				return
 			}
-
-			assert.Error(t, err)
+			require.Error(t, err)
 
 			errs, ok := err.(specerrors.ValidationErrors)
 			require.True(t, ok)
