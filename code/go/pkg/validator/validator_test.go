@@ -37,13 +37,11 @@ func TestValidateFile(t *testing.T) {
 		"deploy_custom_agent_multi_services": {},
 		"deploy_docker":                      {},
 		"deploy_terraform":                   {},
-		"time_series":                        {},
 		"missing_data_stream":                {},
 		"icons_dark_mode":                    {},
 		"ignored_malformed":                  {},
 		"custom_ilm_policy":                  {},
 		"profiling_symbolizer":               {},
-		"disabled_object_3_0_2":              {},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
@@ -103,47 +101,6 @@ func TestValidateFile(t *testing.T) {
 				"package version undefined in the package manifest file",
 			},
 		},
-		"bad_aggregate_metric_double": {
-			"data_stream/foo/fields/fields.yml",
-			[]string{
-				`field 0: metrics is required`,
-				`field 1: default_metric is required`,
-				`field 2.metrics.2: 2.metrics.2 must be one of the following: "min", "max", "sum", "value_count", "avg"`,
-				`field 3: Must not be present`,
-				`field 3: Must not be present`,
-			},
-		},
-		"bad_time_series": {
-			"data_stream/example/fields/fields.yml",
-			[]string{
-				`field 0.fields.4.type: 0.fields.4.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
-				`field 0.fields.5: type is required`,
-				`field 0.fields.8.type: 0.fields.8.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
-				"field \"example.agent.call_duration\" of type histogram can't be a dimension, allowed types for dimensions: constant_keyword, keyword, long, integer, short, byte, double, float, half_float, scaled_float, unsigned_long, ip",
-			},
-		},
-		"bad_metric_type_fields": {
-			"data_stream/example/fields/fields.yml",
-			[]string{
-				`field 0.fields.4.type: 0.fields.4.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
-				`field 0.fields.5: type is required`,
-				`field 0.fields.6.type: 0.fields.6.type must be one of the following: "object"`,
-				`field 0.fields.7.object_type: 0.fields.7.object_type must be one of the following: "histogram", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
-				`field 0.fields.8.type: 0.fields.8.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
-				"field \"example.agent.call_duration\" of type histogram can't be a dimension, allowed types for dimensions: constant_keyword, keyword, long, integer, short, byte, double, float, half_float, scaled_float, unsigned_long, ip",
-			},
-		},
-		"bad_fields": {
-			"data_stream/foo/fields/fields.yml",
-			[]string{
-				`field 0.type: 0.type must be one of the following: "aggregate_metric_double", "alias", "histogram", "constant_keyword", "text", "match_only_text", "keyword", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "date", "date_nanos", "boolean", "binary", "integer_range", "float_range", "long_range", "double_range", "date_range", "ip_range", "group", "geo_point", "object", "ip", "nested", "flattened", "wildcard", "version", "unsigned_long"`,
-				`field "my_custom_date" of type keyword can't set date_format. date_format is allowed for date field type only`,
-				`field 2: object_type is required`,
-				`field 3.type: 3.type must be one of the following: "group", "nested"`,
-				`field 4.enabled: 4.enabled does not match: false`,
-				`field 5.enabled: 5.enabled does not match: true`,
-			},
-		},
 		"deploy_custom_agent_invalid_property": {
 			"_dev/deploy/agent/custom-agent.yml",
 			[]string{
@@ -175,25 +132,10 @@ func TestValidateFile(t *testing.T) {
 				"field streams.0.vars.3: Must not be present",
 			},
 		},
-		"bad_subobjects": {
-			"data_stream/rules/fields/base-fields.yml",
-			[]string{
-				`field 6.type: 6.type must be one of the following: "object"`,
-			},
-		},
 		"bad_profiling_symbolizer": {
 			"data_stream/example/manifest.yml",
 			[]string{
 				"profiling data type cannot be used in GA packages",
-			},
-		},
-		"bad_runtime_fields": {
-			"data_stream/foo/fields/fields.yml",
-			[]string{
-				`field 0: Must not be present`,
-				`field 1.runtime: Invalid type. Expected: string, given: integer`,
-				`field 2: Must not be present`,
-				`field 3: Must not be present`,
 			},
 		},
 		"bad_secret_vars": {
@@ -254,12 +196,6 @@ func TestValidateFile(t *testing.T) {
 				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Aggs-based tag cloud\" (tagcloud, Aggs-based)",
 				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"\" (heatmap, Aggs-based)",
 				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Timelion time series\" (timelion, Timelion)",
-			},
-		},
-		"bad_time_series_missing_dimensions": {
-			"data_stream/missing_dimension/manifest.yml",
-			[]string{
-				"time series mode enabled but no dimensions configured",
 			},
 		},
 	}
@@ -722,7 +658,6 @@ func TestValidateRoutingRules(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {

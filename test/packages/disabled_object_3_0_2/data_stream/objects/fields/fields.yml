@@ -1,4 +1,0 @@
-- name: user_provided_metadata
-  type: object
-  object_type: keyword # This should not be allowed, but was in 3.0.2.
-  enabled: false

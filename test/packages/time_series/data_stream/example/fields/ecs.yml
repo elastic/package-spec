@@ -1,3 +1,0 @@
-- name: container.id
-  external: ecs
-  dimension: true

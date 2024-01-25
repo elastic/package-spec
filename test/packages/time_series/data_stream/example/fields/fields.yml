@@ -1,9 +1,0 @@
-- name: example.agent.id
-  type: keyword
-  dimension: true
-- name: example.agent.call_count
-  type: long
-  metric_type: counter
-- name: example.agent.current_count
-  type: long
-  metric_type: gauge
