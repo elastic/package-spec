@@ -107,32 +107,32 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 
 	// Rename unclear error messages
 	msgTransforms := []struct {
-		original string
-		new      string
+		matcher *regexp.Regexp
+		new     string
 	}{
 		{
-			original: "Must not validate the schema (not)",
-			new:      "Must not be present",
+			matcher: regexp.MustCompile(`Must not validate the schema \(not\)`),
+			new:     "Must not be present",
 		},
 		{
-			original: "secret is required",
-			new:      "variable identified as possible secret, secret parameter required to be set to true or false",
+			matcher: regexp.MustCompile("secret is required"),
+			new:     "variable identified as possible secret, secret parameter required to be set to true or false",
 		},
 		{
-			original: "field processors.1.rename: if is required",
-			new:      "field processors.1.rename: rename \"message\" to \"event.original\" processor requires if: 'ctx.event?.original == null'",
+			matcher: regexp.MustCompile(`field processors.[0-9]+.rename: if is required`),
+			new:     "rename \"message\" to \"event.original\" processor requires if: 'ctx.event?.original == null'",
 		},
 		{
-			original: "field processors.0: remove is required",
-			new:      "field processors.0: rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
+			matcher: regexp.MustCompile(`field processors.[0-9]+: remove is required`),
+			new:     "rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
 		},
 		{
-			original: "processors.2.remove.field does not match: \"message\"",
-			new:      "rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
+			matcher: regexp.MustCompile(`processors.[0-9]+.remove.field does not match: "message"`),
+			new:     "rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
 		},
 		{
-			original: "processors.2.remove.if does not match: \"ctx.event?.original != null\"",
-			new:      "rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null'",
+			matcher: regexp.MustCompile(`processors.[0-9]+.remove.if does not match: "ctx\.event\?\.original != null"`),
+			new:     "rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null'",
 		},
 	}
 
@@ -152,16 +152,16 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 		code    string
 	}{
 		{
-			matcher: regexp.MustCompile("rename \"message\" to \"event.original\" processor"),
+			matcher: regexp.MustCompile(`rename "message" to "event.original" processor`),
 			code:    specerrors.MessageRenameToEventOriginalValidation,
 		},
 	}
 
 	for _, e := range errs {
 		for _, msg := range msgTransforms {
-			if strings.Contains(e.Error(), msg.original) {
+			if msg.matcher.MatchString(e.Error()) {
 				e = specerrors.NewStructuredError(
-					errors.New(strings.Replace(e.Error(), msg.original, msg.new, 1)),
+					errors.New(strings.Replace(e.Error(), msg.matcher.FindString(e.Error()), msg.new, 1)),
 					specerrors.UnassignedCode)
 			}
 		}
