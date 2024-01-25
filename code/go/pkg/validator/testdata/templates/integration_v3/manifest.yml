@@ -1,10 +1,10 @@
-format_version: 3.1.0
-name: integration_v3_1
-title: "Base dummy package to test fields with v3.1"
-version: 1.0.0-rc1
+format_version: 3.0.0
+name: integration_v3
+title: "Base dummy package to test fields with v3"
+version: 1.0.0
 source:
   license: "Apache-2.0"
-description: "This is a base package to test fields with spec v3.1"
+description: "This is a base package to test fields with spec v3"
 type: integration
 categories:
   - custom

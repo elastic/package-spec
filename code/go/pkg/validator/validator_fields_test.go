@@ -6,16 +6,21 @@ package validator
 
 import (
 	"bytes"
+	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
+	"github.com/Masterminds/semver/v3"
 	cp "github.com/otiai10/copy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"
 
+	spec "github.com/elastic/package-spec/v3"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -23,6 +28,7 @@ func TestValidateFields(t *testing.T) {
 	cases := []struct {
 		title           string
 		packageTemplate string
+		specVersion     *semver.Version
 		fields          any
 		expectedErrors  []string
 	}{
@@ -32,12 +38,13 @@ func TestValidateFields(t *testing.T) {
 			packageTemplate: "integration_v1_2_time_series",
 		},
 		{
-			title:           "base integration_v3_0",
-			packageTemplate: "integration_v3_0",
+			title:           "base integration_v3",
+			packageTemplate: "integration_v3",
 		},
 		{
 			title:           "base integration_v3_0_2",
-			packageTemplate: "integration_v3_0_2",
+			packageTemplate: "integration_v3",
+			specVersion:     semver.MustParse("3.0.2"),
 		},
 		{
 			title:           "base integration_v3_0_3_time_series",
@@ -53,13 +60,14 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "base integration_v3_1",
-			packageTemplate: "integration_v3_1",
+			packageTemplate: "integration_v3",
+			specVersion:     semver.MustParse("3.1.0"),
 		},
 
 		// Generic validations.
 		{
 			title:           "unknown type",
-			packageTemplate: "integration_v3_0",
+			packageTemplate: "integration_v3",
 			fields: []map[string]any{
 				{
 					"name": "afield",
@@ -72,7 +80,7 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "array",
-			packageTemplate: "integration_v3_0",
+			packageTemplate: "integration_v3",
 			fields: []map[string]any{
 				{
 					"name": "afield",
@@ -85,7 +93,7 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "invalid custom date",
-			packageTemplate: "integration_v3_0",
+			packageTemplate: "integration_v3",
 			fields: []map[string]any{
 				{
 					"name":        "my_custom_date",
@@ -99,7 +107,7 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "required object type",
-			packageTemplate: "integration_v3_0",
+			packageTemplate: "integration_v3",
 			fields: []map[string]any{
 				{
 					"name": "object_without_object_type.*",
@@ -112,7 +120,7 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "object with subfields should be of type group",
-			packageTemplate: "integration_v3_0",
+			packageTemplate: "integration_v3",
 			fields: []map[string]any{
 				{
 					"name":        "object_with_subfields",
@@ -132,8 +140,9 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 
-			title:           "enabled object without object type",
-			packageTemplate: "integration_v3_0",
+			title:           "enabled object without object type checked since 3.0.3",
+			packageTemplate: "integration_v3",
+			specVersion:     semver.MustParse("3.0.3"),
 			fields: []map[string]any{
 				{
 					"name":    "someobject",
@@ -147,8 +156,9 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 
-			title:           "disabled object with object type",
-			packageTemplate: "integration_v3_0",
+			title:           "disabled object with object type is disallowed since 3.0.3",
+			packageTemplate: "integration_v3",
+			specVersion:     semver.MustParse("3.0.3"),
 			fields: []map[string]any{
 				{
 					"name":        "someobject",
@@ -163,7 +173,8 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "bad disabled object was allowed till 3.0.2",
-			packageTemplate: "integration_v3_0_2",
+			packageTemplate: "integration_v3",
+			specVersion:     semver.MustParse("3.0.2"),
 			fields: []map[string]any{
 				{
 					"name":        "user_provided_metadata",
@@ -177,7 +188,8 @@ func TestValidateFields(t *testing.T) {
 		// Disabling subobjects.
 		{
 			title:           "disabled subobjects with wildcard",
-			packageTemplate: "integration_v3_1",
+			packageTemplate: "integration_v3",
+			specVersion:     semver.MustParse("3.1.0"),
 			fields: []map[string]any{
 				{
 					"name":        "prometheus.b.labels.*",
@@ -189,7 +201,8 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "disabled subobjects without wildcard",
-			packageTemplate: "integration_v3_1",
+			packageTemplate: "integration_v3",
+			specVersion:     semver.MustParse("3.1.0"),
 			fields: []map[string]any{
 				{
 					"name":        "prometheus.b.labels",
@@ -201,7 +214,8 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "disabled subobjects cannot be on type group",
-			packageTemplate: "integration_v3_1",
+			packageTemplate: "integration_v3",
+			specVersion:     semver.MustParse("3.1.0"),
 			fields: []map[string]any{
 				{
 					"name":       "prometheus.b.labels",
@@ -217,7 +231,7 @@ func TestValidateFields(t *testing.T) {
 		// aggregate_metric_double
 		{
 			title:           "aggregate_metric_double",
-			packageTemplate: "integration_v3_0",
+			packageTemplate: "integration_v3",
 			fields: []map[string]any{
 				{
 					"name":           "metrics",
@@ -229,7 +243,7 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "bad aggregate_metric_double: required metrics",
-			packageTemplate: "integration_v3_0",
+			packageTemplate: "integration_v3",
 			fields: []map[string]any{
 				{
 					"name":           "no_metrics",
@@ -243,7 +257,7 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "bad aggregate_metric_double: required default metric",
-			packageTemplate: "integration_v3_0",
+			packageTemplate: "integration_v3",
 			fields: []map[string]any{
 				{
 					"name":    "no_default_metric",
@@ -257,7 +271,7 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "bad aggregate_metric_double: wrong metrics",
-			packageTemplate: "integration_v3_0",
+			packageTemplate: "integration_v3",
 			fields: []map[string]any{
 				{
 					"name":           "no_default_metric",
@@ -272,7 +286,7 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "bad aggregate_metric_double: aggregate_metric_double params in long field",
-			packageTemplate: "integration_v3_0",
+			packageTemplate: "integration_v3",
 			fields: []map[string]any{
 				{
 					"name":           "no_default_metric",
@@ -388,7 +402,7 @@ func TestValidateFields(t *testing.T) {
 		// Runtime fields
 		{
 			title:           "runtime fields: wrong type",
-			packageTemplate: "integration_v3_0",
+			packageTemplate: "integration_v3",
 			fields: []map[string]any{
 				{
 					"name":    "runtime_boolean",
@@ -404,7 +418,7 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "runtime fields: wrong type",
-			packageTemplate: "integration_v3_0",
+			packageTemplate: "integration_v3",
 			fields: []map[string]any{
 				{
 					"name":    "runtime_field",
@@ -418,7 +432,7 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "runtime fields: invalid runtime value",
-			packageTemplate: "integration_v3_0",
+			packageTemplate: "integration_v3",
 			fields: []map[string]any{
 				{
 					"name":    "runtime_field",
@@ -432,7 +446,7 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "runtime fields: invalid runtime boolean",
-			packageTemplate: "integration_v3_0",
+			packageTemplate: "integration_v3",
 			fields: []map[string]any{
 				{
 					"name":    "runtime_field",
@@ -447,7 +461,7 @@ func TestValidateFields(t *testing.T) {
 		{
 
 			title:           "runtime fields: invalid runtime boolean",
-			packageTemplate: "integration_v3_0",
+			packageTemplate: "integration_v3",
 			fields: []map[string]any{
 				{
 					"name":    "runtime_field",
@@ -463,7 +477,7 @@ func TestValidateFields(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
-			packagePath := createPackageWithFields(t, "testpackage", c.packageTemplate, c.fields)
+			packagePath := createPackageWithFields(t, "testpackage", c.packageTemplate, c.specVersion, c.fields)
 			err := ValidateFromPath(packagePath)
 			if len(c.expectedErrors) == 0 {
 				assert.NoError(t, err)
@@ -486,7 +500,7 @@ func TestValidateFields(t *testing.T) {
 	}
 }
 
-func createPackageWithFields(t *testing.T, pkgName string, pkgTemplate string, fields any) string {
+func createPackageWithFields(t *testing.T, pkgName string, pkgTemplate string, specVersion *semver.Version, fields any) string {
 	var encodedFields []byte
 	switch fields.(type) {
 	case nil:
@@ -500,10 +514,10 @@ func createPackageWithFields(t *testing.T, pkgName string, pkgTemplate string, f
 		encodedFields = jsonFields.Bytes()
 	}
 
-	return createPackageWithRawFields(t, pkgName, pkgTemplate, encodedFields)
+	return createPackageWithRawFields(t, pkgName, pkgTemplate, specVersion, encodedFields)
 }
 
-func createPackageWithRawFields(t *testing.T, pkgName string, pkgTemplate string, rawFields []byte) string {
+func createPackageWithRawFields(t *testing.T, pkgName string, pkgTemplate string, specVersion *semver.Version, rawFields []byte) string {
 	basePackageDir := filepath.Join("testdata", "templates", pkgTemplate)
 	require.DirExists(t, basePackageDir, "checking if template package exists")
 
@@ -517,5 +531,81 @@ func createPackageWithRawFields(t *testing.T, pkgName string, pkgTemplate string
 		require.NoError(t, err, "creating fields file")
 	}
 
+	if specVersion != nil {
+		err := overrideSpecVersion(pkgDir, specVersion)
+		require.NoError(t, err)
+	}
+
 	return pkgDir
+}
+
+func overrideSpecVersion(pkgDir string, version *semver.Version) error {
+	if version == nil {
+		return nil
+	}
+
+	manifestPath := filepath.Join(pkgDir, "manifest.yml")
+	d, err := os.ReadFile(manifestPath)
+	if err != nil {
+		return err
+	}
+
+	versionRegexp := regexp.MustCompile(`(\n|^)format_version: [^\s]+`)
+	d = versionRegexp.ReplaceAll(d, []byte(fmt.Sprintf(`format_version: "%s"`, version.String())))
+	err = os.WriteFile(manifestPath, d, 0644)
+	if err != nil {
+		return err
+	}
+
+	// Check if package is using an unreleased version of the spec ensure that it is a non GA version.
+	if !version.LessThan(semver.MustParse("3.0.1")) {
+		specVersion, err := spec.CheckVersion(*version)
+		if err != nil {
+			return err
+		}
+		if specVersion.Prerelease() != "" {
+			err = setPrereleasePackageVersion(pkgDir, "rc1")
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func setPrereleasePackageVersion(pkgDir string, prerelease string) error {
+	// Update version in manifest.
+	manifestPath := filepath.Join(pkgDir, "manifest.yml")
+	d, err := os.ReadFile(manifestPath)
+	if err != nil {
+		return err
+	}
+
+	pkgVersionRegexp := regexp.MustCompile(`(\n|^)version: ([^\s]+)`)
+	submatch := pkgVersionRegexp.FindSubmatch(d)
+	if len(submatch) < 3 {
+		return errors.New("no version in manifest?")
+	}
+	pkgVersion := semver.MustParse(string(submatch[2]))
+	prereleaseVersion, err := pkgVersion.SetPrerelease(prerelease)
+	if err != nil {
+		return err
+	}
+	d = pkgVersionRegexp.ReplaceAll(d, []byte(fmt.Sprintf(`%sversion: "%s"`, submatch[1], prereleaseVersion.String())))
+	err = os.WriteFile(manifestPath, d, 0644)
+	if err != nil {
+		return err
+	}
+
+	// Update version in changelog.
+	changelogPath := filepath.Join(pkgDir, "changelog.yml")
+	changelog, err := os.ReadFile(changelogPath)
+	if err != nil {
+		return err
+	}
+	changelogRegexp := regexp.MustCompile(fmt.Sprintf(`-\s+version:\s+"?%s"?`, pkgVersion.String()))
+	changelog = changelogRegexp.ReplaceAll(changelog, []byte(fmt.Sprintf(`- version: "%s"`, prereleaseVersion.String())))
+
+	return os.WriteFile(changelogPath, changelog, 0644)
 }
