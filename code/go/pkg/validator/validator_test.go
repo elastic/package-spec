@@ -665,12 +665,12 @@ func TestValidateIngestPipelines(t *testing.T) {
 				"field processors.2.foreach.processor: Additional property paint is not allowed",
 			},
 			"bad_rename_message": []string{
-				"field processors.1.rename: if is required (JSE00001)",
-				"field processors.0: remove is required (JSE00001)",
+				"field processors.1.rename: rename \"message\" to \"event.original\" processor requires if: 'ctx.event?.original == null' (JSE00001)",
+				"field processors.0: rename \"message\" to \"event.original\" processor requires remove \"message\" processor (JSE00001)",
 			},
 			"bad_rename_message_2": []string{
-				"field processors.2.remove.field: processors.2.remove.field does not match: \"message\" (JSE00001)",
-				"field processors.2.remove.if: processors.2.remove.if does not match: \"ctx.event?.original != null\" (JSE00001)",
+				"field processors.2.remove.field: rename \"message\" to \"event.original\" processor requires remove \"message\" processor (JSE00001)",
+				"field processors.2.remove.if: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null' (JSE00001)",
 			},
 		},
 	}
