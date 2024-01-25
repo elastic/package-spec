@@ -1,9 +1,9 @@
-format_version: 1.2.0
-name: integration_v1_2_time_series 
-title: "Package with time series"
-version: 0.0.1
+format_version: 1.0.0
+name: integration_v1
+title: "Package with spec v1"
+version: 1.0.0
 license: basic
-description: "This is a package with time series data"
+description: "This is a package with spec v1"
 type: integration
 categories:
   - custom

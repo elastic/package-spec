@@ -25,17 +25,35 @@ import (
 )
 
 func TestValidateFields(t *testing.T) {
+	timeSeriesPatch := patch{
+		op:   "append",
+		file: filepath.Join("data_stream", "test", "manifest.yml"),
+		content: map[string]any{
+			"elasticsearch": map[string]any{
+				"source_mode": "synthetic",
+				"index_mode":  "time_series",
+			},
+		},
+	}
+
 	cases := []struct {
 		title           string
 		packageTemplate string
 		specVersion     *semver.Version
+		patches         []patch
 		fields          any
 		expectedErrors  []string
 	}{
 		// Check that base templates are fine on their own.
 		{
+			title:           "base integration_v1",
+			packageTemplate: "integration_v1",
+		},
+		{
 			title:           "base integration_v1_2_time_series",
-			packageTemplate: "integration_v1_2_time_series",
+			packageTemplate: "integration_v1",
+			specVersion:     semver.MustParse("1.2.0"),
+			patches:         []patch{timeSeriesPatch},
 		},
 		{
 			title:           "base integration_v3",
@@ -48,8 +66,10 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "base integration_v3_0_3_time_series",
-			packageTemplate: "integration_v3_0_3_time_series",
-			// This package needs at least a dimension field.
+			packageTemplate: "integration_v3",
+			specVersion:     semver.MustParse("3.0.3"),
+			patches:         []patch{timeSeriesPatch},
+			// This package needs at least a dimension field with this patch.
 			fields: []map[string]any{
 				{
 					"name":      "afield",
@@ -304,7 +324,9 @@ func TestValidateFields(t *testing.T) {
 		// time series
 		{
 			title:           "time_series: dimension",
-			packageTemplate: "integration_v1_2_time_series",
+			packageTemplate: "integration_v1",
+			specVersion:     semver.MustParse("1.2.0"),
+			patches:         []patch{timeSeriesPatch},
 			fields: []map[string]any{
 				{
 					"name":      "agent.id",
@@ -315,7 +337,9 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "counter",
-			packageTemplate: "integration_v1_2_time_series",
+			packageTemplate: "integration_v1",
+			specVersion:     semver.MustParse("1.2.0"),
+			patches:         []patch{timeSeriesPatch},
 			fields: []map[string]any{
 				{
 					"name":        "agent.call_count",
@@ -326,7 +350,9 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "gauge",
-			packageTemplate: "integration_v1_2_time_series",
+			packageTemplate: "integration_v1",
+			specVersion:     semver.MustParse("1.2.0"),
+			patches:         []patch{timeSeriesPatch},
 			fields: []map[string]any{
 				{
 					"name":        "agent.current_count",
@@ -337,14 +363,18 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "missing dimensions",
-			packageTemplate: "integration_v3_0_3_time_series",
+			packageTemplate: "integration_v3",
+			specVersion:     semver.MustParse("3.0.3"),
+			patches:         []patch{timeSeriesPatch},
 			expectedErrors: []string{
 				"time series mode enabled but no dimensions configured",
 			},
 		},
 		{
 			title:           "bad time_series: invalid type for time series",
-			packageTemplate: "integration_v1_2_time_series",
+			packageTemplate: "integration_v1",
+			specVersion:     semver.MustParse("1.2.0"),
+			patches:         []patch{timeSeriesPatch},
 			fields: []map[string]any{
 				{
 					"name":        "no_valid_type",
@@ -358,7 +388,9 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "bad time_series: no type",
-			packageTemplate: "integration_v1_2_time_series",
+			packageTemplate: "integration_v1",
+			specVersion:     semver.MustParse("1.2.0"),
+			patches:         []patch{timeSeriesPatch},
 			fields: []map[string]any{
 				{
 					"name":        "no_type",
@@ -371,7 +403,9 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "bad time_series: histogram cannot be a dimension",
-			packageTemplate: "integration_v1_2_time_series",
+			packageTemplate: "integration_v1",
+			specVersion:     semver.MustParse("1.2.0"),
+			patches:         []patch{timeSeriesPatch},
 			fields: []map[string]any{
 				{
 					"name":        "example.agent.call_duration",
@@ -386,7 +420,9 @@ func TestValidateFields(t *testing.T) {
 		},
 		{
 			title:           "bad time_series: ambiguous object cannot be a dimension",
-			packageTemplate: "integration_v1_2_time_series",
+			packageTemplate: "integration_v1",
+			specVersion:     semver.MustParse("1.2.0"),
+			patches:         []patch{timeSeriesPatch},
 			fields: []map[string]any{
 				{
 					"name":        "field_object",
@@ -477,7 +513,7 @@ func TestValidateFields(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
-			packagePath := createPackageWithFields(t, "testpackage", c.packageTemplate, c.specVersion, c.fields)
+			packagePath := createPackageWithFields(t, "testpackage", c.packageTemplate, c.specVersion, c.patches, c.fields)
 			err := ValidateFromPath(packagePath)
 			if len(c.expectedErrors) == 0 {
 				assert.NoError(t, err)
@@ -500,24 +536,33 @@ func TestValidateFields(t *testing.T) {
 	}
 }
 
-func createPackageWithFields(t *testing.T, pkgName string, pkgTemplate string, specVersion *semver.Version, fields any) string {
-	var encodedFields []byte
-	switch fields.(type) {
+// encodeContent encodes the content as YAML, unless it is already an array of bytes, that is returned as is.
+func encodeContent(content any) ([]byte, error) {
+	switch content.(type) {
 	case nil:
+		return nil, nil
 	case []byte:
-		encodedFields = fields.([]byte)
+		return content.([]byte), nil
 	default:
 		var jsonFields bytes.Buffer
 		enc := yaml.NewEncoder(&jsonFields)
-		err := enc.Encode(fields)
-		require.NoError(t, err)
-		encodedFields = jsonFields.Bytes()
+		enc.SetIndent(2)
+		err := enc.Encode(content)
+		if err != nil {
+			return nil, err
+		}
+		return jsonFields.Bytes(), nil
 	}
-
-	return createPackageWithRawFields(t, pkgName, pkgTemplate, specVersion, encodedFields)
 }
 
-func createPackageWithRawFields(t *testing.T, pkgName string, pkgTemplate string, specVersion *semver.Version, rawFields []byte) string {
+func createPackageWithFields(t *testing.T, pkgName string, pkgTemplate string, specVersion *semver.Version, patches []patch, fields any) string {
+	encodedFields, err := encodeContent(fields)
+	require.NoError(t, err)
+
+	return createPackageWithRawFields(t, pkgName, pkgTemplate, specVersion, patches, encodedFields)
+}
+
+func createPackageWithRawFields(t *testing.T, pkgName string, pkgTemplate string, specVersion *semver.Version, patches []patch, rawFields []byte) string {
 	basePackageDir := filepath.Join("testdata", "templates", pkgTemplate)
 	require.DirExists(t, basePackageDir, "checking if template package exists")
 
@@ -533,6 +578,11 @@ func createPackageWithRawFields(t *testing.T, pkgName string, pkgTemplate string
 
 	if specVersion != nil {
 		err := overrideSpecVersion(pkgDir, specVersion)
+		require.NoError(t, err)
+	}
+
+	for _, patch := range patches {
+		err := patch.apply(pkgDir)
 		require.NoError(t, err)
 	}
 
@@ -608,4 +658,35 @@ func setPrereleasePackageVersion(pkgDir string, prerelease string) error {
 	changelog = changelogRegexp.ReplaceAll(changelog, []byte(fmt.Sprintf(`- version: "%s"`, prereleaseVersion.String())))
 
 	return os.WriteFile(changelogPath, changelog, 0644)
+}
+
+type patch struct {
+	op      string
+	file    string
+	content any
+}
+
+func (p patch) apply(pkgDir string) error {
+	path := filepath.Join(pkgDir, p.file)
+
+	switch p.op {
+	case "append":
+		f, err := os.OpenFile(path, os.O_WRONLY|os.O_APPEND, 0)
+		if err != nil {
+			return err
+		}
+		content, err := encodeContent(p.content)
+		if err != nil {
+			return err
+		}
+		_, err = f.WriteString("\n" + string(content))
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+	default:
+		return fmt.Errorf("unknown patch operation %s", p.op)
+	}
+
+	return nil
 }
