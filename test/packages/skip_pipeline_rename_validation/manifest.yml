@@ -1,7 +1,7 @@
-format_version: 3.0.3
+format_version: 3.2.0
 name: skip_pipeline_rename_validation
 title: "Skip Ingest Pipeline Message Rename Validation"
-version: 0.0.1
+version: 1.0.0
 source:
   license: "Elastic-2.0"
 description: "Test package for skipping pipeline validation"

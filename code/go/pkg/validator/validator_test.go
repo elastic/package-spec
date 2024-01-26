@@ -655,9 +655,7 @@ func TestValidateRoutingRules(t *testing.T) {
 
 func TestValidateIngestPipelines(t *testing.T) {
 	tests := map[string]map[string][]string{
-		"good":    {},
-		"good_v2": {},
-		// "good_v3": {}, // TODO: this fails with "package with GA version (1.0.0) is using an unreleased version of the spec (3.1.0-next)"
+		"good_v3":                         {},
 		"skip_pipeline_rename_validation": {},
 		"bad_ingest_pipeline": {
 			"test": []string{
