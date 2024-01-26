@@ -119,20 +119,20 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 			new:     "variable identified as possible secret, secret parameter required to be set to true or false",
 		},
 		{
-			matcher: regexp.MustCompile(`field processors.[0-9]+.rename: if is required`),
-			new:     "rename \"message\" to \"event.original\" processor requires if: 'ctx.event?.original == null'",
+			matcher: regexp.MustCompile(`(field processors.[0-9]+.rename): if is required`),
+			new:     "%s: rename \"message\" to \"event.original\" processor requires if: 'ctx.event?.original == null'",
 		},
 		{
-			matcher: regexp.MustCompile(`field processors.[0-9]+: remove is required`),
-			new:     "rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
+			matcher: regexp.MustCompile(`(field processors.[0-9]+): remove is required`),
+			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
 		},
 		{
-			matcher: regexp.MustCompile(`processors.[0-9]+.remove.field does not match: "message"`),
-			new:     "rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
+			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.field): processors.[0-9]+.remove.field does not match: "message"`),
+			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
 		},
 		{
-			matcher: regexp.MustCompile(`processors.[0-9]+.remove.if does not match: "ctx\.event\?\.original != null"`),
-			new:     "rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null'",
+			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.if): processors.[0-9]+.remove.if does not match: "ctx\.event\?\.original != null"`),
+			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null'",
 		},
 	}
 
@@ -159,7 +159,11 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 
 	for _, e := range errs {
 		for _, msg := range msgTransforms {
-			if msg.matcher.MatchString(e.Error()) {
+			if match := msg.matcher.FindStringSubmatch(e.Error()); len(match) > 1 {
+				e = specerrors.NewStructuredError(
+					errors.New(strings.Replace(e.Error(), match[0], fmt.Sprintf(msg.new, match[1]), 1)),
+					specerrors.UnassignedCode)
+			} else if msg.matcher.MatchString(e.Error()) {
 				e = specerrors.NewStructuredError(
 					errors.New(strings.Replace(e.Error(), msg.matcher.FindString(e.Error()), msg.new, 1)),
 					specerrors.UnassignedCode)
