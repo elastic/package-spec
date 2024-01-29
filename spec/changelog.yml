@@ -12,6 +12,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/697
+  - description: Disallow to use 'integration' as data stream name
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/704
 - version: 3.0.4
   changes:
   - description: Fix validation of empty arrays in YAML files
