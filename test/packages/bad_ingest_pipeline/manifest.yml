@@ -1,4 +1,4 @@
-format_version: 3.1.0
+format_version: 3.0.5
 name: bad_ingest_pipeline
 title: "Package with bad ingest pipelines"
 version: 1.0.0

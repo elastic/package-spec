@@ -1,4 +1,4 @@
-format_version: 3.1.0
+format_version: 3.0.5
 name: skip_pipeline_rename_validation
 title: "Skip Ingest Pipeline Message Rename Validation"
 version: 1.0.0

@@ -109,7 +109,7 @@ spec:
       $ref: "#/definitions/processors"
 
   versions:
-  - before: 3.0.5-next
+  - before: 3.0.5
     patch:
       - op: remove
         path: /definitions/processors/if # remove rename processor validation
