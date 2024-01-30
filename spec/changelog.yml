@@ -9,13 +9,13 @@
     link: https://github.com/elastic/package-spec/pull/573
 - version: 3.0.5-next
   changes:
+  - description: Disallow to use 'integration' as data stream name
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/704
   - description: Add validation for ingest pipeline rename processor
     type: breaking-change
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/690
-  - description: Disallow to use 'integration' as data stream name
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/704
 - version: 3.0.4
   changes:
   - description: Fix validation of empty arrays in YAML files
