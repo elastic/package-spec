@@ -715,6 +715,23 @@ func TestValidateIngestPipelines(t *testing.T) {
 			}
 		})
 	}
+
+func TestValidateForbiddenDataStreamName(t *testing.T) {
+	testPackagesPath := path.Join("..", "..", "..", "..", "test", "packages")
+	pkgPath := path.Join(testPackagesPath, "bad_data_stream_name")
+	err := ValidateFromPath(pkgPath)
+	require.Error(t, err)
+
+	expectedErrorMessages := []string{
+		fmt.Sprintf(`item [integration] is not allowed in folder [%s]`, path.Join(pkgPath, "data_stream")),
+	}
+	errs, ok := err.(specerrors.ValidationErrors)
+	require.True(t, ok)
+	assert.Len(t, errs, len(expectedErrorMessages))
+
+	for _, foundError := range errs {
+		assert.Contains(t, expectedErrorMessages, foundError.Error())
+	}
 }
 
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {
