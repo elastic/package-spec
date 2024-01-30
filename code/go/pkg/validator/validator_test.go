@@ -715,6 +715,7 @@ func TestValidateIngestPipelines(t *testing.T) {
 			}
 		})
 	}
+}
 
 func TestValidateForbiddenDataStreamName(t *testing.T) {
 	testPackagesPath := path.Join("..", "..", "..", "..", "test", "packages")
