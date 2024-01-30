@@ -2,12 +2,6 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 3.2.0-next
-  changes:
-  - description: Add validation for ingest pipeline rename processor
-    type: breaking-change
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/690
 - version: 3.1.0-next
   changes:
   - description: Add support for subobjects in fields
@@ -15,9 +9,10 @@
     link: https://github.com/elastic/package-spec/pull/573
 - version: 3.0.5-next
   changes:
-  - description: Prepare for next version
+  - description: Add validation for ingest pipeline rename processor
+    type: breaking-change
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/697
+    link: https://github.com/elastic/package-spec/pull/690
 - version: 3.0.4
   changes:
   - description: Fix validation of empty arrays in YAML files
