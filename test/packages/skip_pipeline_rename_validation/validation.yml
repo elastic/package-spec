@@ -1,3 +1,5 @@
 errors:
   exclude_checks:
+    - JSE00001 # Ingest pipeline validation for rename message processor.
     - PSR00001 # Allow to use unreleased features in GA package.
+

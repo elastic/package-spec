@@ -64,6 +64,38 @@ spec:
       type: array
       items:
         $ref: "#/definitions/processor"
+      if:
+        contains:
+          required: [ rename ]
+          properties:
+            rename:
+              properties:
+                field:
+                  const: "message"
+                target_field:
+                  const: "event.original"
+      then:
+        allOf:
+          - contains:
+              required: [ rename ]
+              properties:
+                rename:
+                  required: [ if ]
+                  properties:
+                    if:
+                      const: "ctx.event?.original == null"
+          - contains:
+              required: [ remove ]
+              properties:
+                remove:
+                  required: [ field, ignore_missing, if ]
+                  properties:
+                    field:
+                      const: "message"
+                    ignore_missing:
+                      const: true
+                    if:
+                      const: "ctx.event?.original != null"
 
   properties:
     description:
@@ -75,3 +107,11 @@ spec:
     on_failure:
       description: List of processors to apply in case of failure.
       $ref: "#/definitions/processors"
+
+  versions:
+  - before: 3.0.5
+    patch:
+      - op: remove
+        path: /definitions/processors/if # remove rename processor validation
+      - op: remove
+        path: /definitions/processors/then # remove rename processor validation

@@ -167,13 +167,6 @@ func TestValidateFile(t *testing.T) {
 				`field 3: asset_types is required`,
 			},
 		},
-		"bad_ingest_pipeline": {
-			"data_stream/test/elasticsearch/ingest_pipeline/default.yml",
-			[]string{
-				"field processors.1: Additional property reroute is not allowed",
-				"field processors.2.foreach.processor: Additional property paint is not allowed",
-			},
-		},
 		"bad_dotted_fields": {
 			"manifest.yml",
 			[]string{
@@ -660,6 +653,70 @@ func TestValidateRoutingRules(t *testing.T) {
 	}
 }
 
+func TestValidateIngestPipelines(t *testing.T) {
+	tests := map[string]map[string][]string{
+		"good_v3":                         {},
+		"skip_pipeline_rename_validation": {},
+		"bad_ingest_pipeline": {
+			"test": []string{
+				"field processors.1: Additional property reroute is not allowed",
+				"field processors.2.foreach.processor: Additional property paint is not allowed",
+			},
+			"bad_rename_message": []string{
+				"field processors.1.rename: rename \"message\" to \"event.original\" processor requires if: 'ctx.event?.original == null' (JSE00001)",
+				"field processors.0: rename \"message\" to \"event.original\" processor requires remove \"message\" processor (JSE00001)",
+			},
+			"bad_rename_message_2": []string{
+				"field processors.2.remove.field: rename \"message\" to \"event.original\" processor requires remove \"message\" processor (JSE00001)",
+				"field processors.2.remove.if: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null' (JSE00001)",
+			},
+		},
+	}
+
+	for pkgName, pipelines := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
+			var allErrorMessages []string
+			for pipeline, expectedErrorMessages := range pipelines {
+				pipelineFilePath := path.Join(pkgRootPath, "data_stream", pipeline, "elasticsearch", "ingest_pipeline", "default.yml")
+				errPrefix := fmt.Sprintf("file \"%s\" is invalid: ", pipelineFilePath)
+				for _, errMsg := range expectedErrorMessages {
+					allErrorMessages = append(allErrorMessages, errPrefix+errMsg)
+				}
+			}
+
+			errs := ValidateFromPath(pkgRootPath)
+
+			if verrs, ok := errs.(specerrors.ValidationErrors); ok {
+				filterConfig, err := specerrors.LoadConfigFilter(os.DirFS(pkgRootPath))
+				if !errors.Is(err, os.ErrNotExist) {
+					filter := specerrors.NewFilter(filterConfig)
+					result, err := filter.Run(verrs)
+					require.NoError(t, err)
+					errs = result.Processed
+				}
+			}
+
+			if len(allErrorMessages) == 0 {
+				require.NoError(t, errs)
+			} else {
+				require.Error(t, errs)
+				vErrs, ok := errs.(specerrors.ValidationErrors)
+				if ok {
+					var errMessages []string
+					for _, vErr := range vErrs {
+						errMessages = append(errMessages, vErr.Error())
+					}
+					assert.Len(t, errs, len(allErrorMessages))
+					for _, expectedErrMessage := range allErrorMessages {
+						require.Contains(t, errMessages, expectedErrMessage)
+					}
+				}
+			}
+		})
+	}
+}
+
 func TestValidateForbiddenDataStreamName(t *testing.T) {
 	testPackagesPath := path.Join("..", "..", "..", "..", "test", "packages")
 	pkgPath := path.Join(testPackagesPath, "bad_data_stream_name")
@@ -676,7 +733,6 @@ func TestValidateForbiddenDataStreamName(t *testing.T) {
 	for _, foundError := range errs {
 		assert.Contains(t, expectedErrorMessages, foundError.Error())
 	}
-
 }
 
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {

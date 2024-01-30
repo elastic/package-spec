@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"regexp"
 	"slices"
 	"strings"
 
@@ -102,34 +103,75 @@ func substringInSlice(str string, list []string) bool {
 }
 
 func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors {
-	// Rename unclear error messages and filter out redundant errors
 	var processedErrs specerrors.ValidationErrors
+
+	// Rename unclear error messages
 	msgTransforms := []struct {
-		original string
-		new      string
+		matcher *regexp.Regexp
+		new     string
 	}{
 		{
-			original: "Must not validate the schema (not)",
-			new:      "Must not be present",
+			matcher: regexp.MustCompile(`Must not validate the schema \(not\)`),
+			new:     "Must not be present",
 		},
 		{
-			original: "secret is required",
-			new:      "variable identified as possible secret, secret parameter required to be set to true or false",
+			matcher: regexp.MustCompile("secret is required"),
+			new:     "variable identified as possible secret, secret parameter required to be set to true or false",
+		},
+		{
+			matcher: regexp.MustCompile(`(field processors.[0-9]+.rename): if is required`),
+			new:     "%s: rename \"message\" to \"event.original\" processor requires if: 'ctx.event?.original == null'",
+		},
+		{
+			matcher: regexp.MustCompile(`(field processors.[0-9]+): remove is required`),
+			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
+		},
+		{
+			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.field): processors.[0-9]+.remove.field does not match: "message"`),
+			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
+		},
+		{
+			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.if): processors.[0-9]+.remove.if does not match: "ctx\.event\?\.original != null"`),
+			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null'",
 		},
 	}
+
+	// Filter out redundant errors
 	redundant := []string{
 		"Must validate \"then\" as \"if\" was valid",
 		"Must validate \"else\" as \"if\" was not valid",
 		"Must validate all the schemas (allOf)",
 		"Must validate at least one schema (anyOf)",
 		"Must validate one and only one schema (oneOf)",
+		"At least one of the items must match",
 	}
+
+	// Add error code to specific errors
+	addErrorCode := []struct {
+		matcher *regexp.Regexp
+		code    string
+	}{
+		{
+			matcher: regexp.MustCompile(`rename "message" to "event.original" processor`),
+			code:    specerrors.MessageRenameToEventOriginalValidation,
+		},
+	}
+
 	for _, e := range errs {
 		for _, msg := range msgTransforms {
-			if strings.Contains(e.Error(), msg.original) {
+			if match := msg.matcher.FindStringSubmatch(e.Error()); len(match) > 1 {
 				e = specerrors.NewStructuredError(
-					errors.New(strings.Replace(e.Error(), msg.original, msg.new, 1)),
+					errors.New(strings.Replace(e.Error(), match[0], fmt.Sprintf(msg.new, match[1]), 1)),
 					specerrors.UnassignedCode)
+			} else if msg.matcher.MatchString(e.Error()) {
+				e = specerrors.NewStructuredError(
+					errors.New(strings.Replace(e.Error(), msg.matcher.FindString(e.Error()), msg.new, 1)),
+					specerrors.UnassignedCode)
+			}
+		}
+		for _, transform := range addErrorCode {
+			if transform.matcher.MatchString(e.Error()) {
+				e = specerrors.NewStructuredError(e, transform.code)
 			}
 		}
 		if substringInSlice(e.Error(), redundant) {
