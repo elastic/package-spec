@@ -592,6 +592,8 @@ versions:
         path: "/items/allOf/8" # removing subobjects when type is object
       - op: remove
         path: "/items/properties/subobjects"
+      - op: remove
+        path: "/items/properties/type/enum/35" #remove counted_keyword type
   - before: 3.0.3
     patch:
       - op: remove

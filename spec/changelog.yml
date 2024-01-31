@@ -17,7 +17,6 @@
     link: https://github.com/elastic/package-spec/pull/704
   - description: Add validation for ingest pipeline rename processor
     type: breaking-change
-    type: enhancement
     link: https://github.com/elastic/package-spec/pull/690
 - version: 3.0.4
   changes:
