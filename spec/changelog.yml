@@ -7,6 +7,9 @@
   - description: Add support for subobjects in fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/573
+  - description: Add support for counted_keyword field type in data streams
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/707
 - version: 3.0.5-next
   changes:
   - description: Disallow to use 'integration' as data stream name
