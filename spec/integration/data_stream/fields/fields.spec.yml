@@ -90,6 +90,7 @@ spec:
         - wildcard
         - version
         - unsigned_long
+        - counted_keyword
 
       description:
         description: Short description of field
