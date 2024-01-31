@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.2.1
 	github.com/cucumber/godog v0.13.0
 	github.com/cucumber/messages/go/v21 v21.0.1
-	github.com/elastic/elastic-package v0.96.0
+	github.com/elastic/elastic-package v0.96.1
 	github.com/elastic/go-elasticsearch/v8 v8.12.0
 	github.com/elastic/go-licenser v0.4.1
 	github.com/elastic/package-spec/v3 v3.0.4
