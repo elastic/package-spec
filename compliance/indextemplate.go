@@ -30,6 +30,9 @@ type SimulatedIndexTemplate struct {
 // MappingProperty is the definition of a property in an index template.
 type MappingProperty map[string]any
 
+// CheckCondition checks if a property satisfies a condition. Conditions are in the
+// form key:value, where the key and the value are compared with attributes of the
+// property.
 func (p MappingProperty) CheckCondition(condition string) bool {
 	key, value, ok := strings.Cut(condition, ":")
 	if !ok {
@@ -62,6 +65,7 @@ func (p MappingProperty) CheckCondition(condition string) bool {
 	return false
 }
 
+// Properties returns the child properties of this property.
 func (p MappingProperty) Properties() (map[string]MappingProperty, error) {
 	properties, ok := p["properties"]
 	if !ok {
