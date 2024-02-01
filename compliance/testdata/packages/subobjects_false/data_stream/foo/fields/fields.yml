@@ -1,0 +1,4 @@
+- name: foo.object
+  type: object
+  object_type: keyword
+  subobjects: false
