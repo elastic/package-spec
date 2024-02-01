@@ -5,22 +5,90 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
-	"reflect"
+	"strconv"
 	"strings"
-
-	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 )
+
+// IndexTemplate contains the result of getting an index template, decoded
+// from json into a map.
+type IndexTemplate struct {
+	IndexPatterns []string `json:"index_patterns"`
+}
 
 // SimulatedIndexTemplate contains the result of simulating an index template,
 // with the component templates resolved.
 type SimulatedIndexTemplate struct {
-	types.Template
+	Mappings struct {
+		Runtime    map[string]MappingProperty `json:"runtime"`
+		Properties map[string]MappingProperty `json:"properties"`
+	} `json:"mappings"`
+}
+
+// MappingProperty is the definition of a property in an index template.
+type MappingProperty map[string]any
+
+func (p MappingProperty) CheckCondition(condition string) bool {
+	key, value, ok := strings.Cut(condition, ":")
+	if !ok {
+		panic("cannot understand condition " + condition)
+	}
+
+	v, ok := p[strings.TrimSpace(key)]
+	if !ok {
+		return false
+	}
+
+	switch v := v.(type) {
+	case string:
+		return strings.TrimSpace(value) == strings.TrimSpace(v)
+	case bool:
+		expected, err := strconv.ParseBool(value)
+		return err != nil || expected == v
+	case json.Number:
+		expected, err := strconv.ParseInt(value, 10, 64)
+		if err != nil {
+			return false
+		}
+		n, err := v.Int64()
+		if err != nil {
+			return false
+		}
+		return expected == n
+	}
+
+	return false
+}
+
+func (p MappingProperty) Properties() (map[string]MappingProperty, error) {
+	properties, ok := p["properties"]
+	if !ok {
+		return nil, nil
+	}
+	mapProperties, ok := properties.(map[string]any)
+	if !ok {
+		return nil, errors.New("not a map")
+	}
+
+	result := make(map[string]MappingProperty)
+	for k, v := range mapProperties {
+		anyMap, ok := v.(map[string]any)
+		if !ok {
+			return nil, errors.New("not a map")
+		}
+		result[k] = MappingProperty(anyMap)
+	}
+
+	return result, nil
 }
 
 // FieldMapping looks for the definition of a field in the simulated index template.
-func (t *SimulatedIndexTemplate) FieldMapping(name string) (any, error) {
+func (t *SimulatedIndexTemplate) FieldMapping(name string) (MappingProperty, error) {
 	if runtimeField, isRuntime := t.Mappings.Runtime[name]; isRuntime {
+		// TODO: Look for some solution to don't need to modify the properties.
+		runtimeField["runtime"] = true
 		return runtimeField, nil
 	}
 
@@ -35,19 +103,9 @@ func (t *SimulatedIndexTemplate) FieldMapping(name string) (any, error) {
 			return property, nil
 		}
 
-		// Using reflect because Property type is defined as any and there are too many
-		// possible matching types.
-		value := reflect.ValueOf(property).Elem()
-		if value.Kind() != reflect.Struct {
-			return nil, fmt.Errorf("property %q not found in index template, unexpected parent kind %s", name, value.Kind())
-		}
-		nextPropertiesValue := value.FieldByName("Properties")
-		if nextPropertiesValue.IsZero() {
-			return nil, fmt.Errorf("property %q not found in index template, zero properties", name)
-		}
-		nextProperties, ok := nextPropertiesValue.Interface().(map[string]types.Property)
-		if !ok {
-			return nil, fmt.Errorf("property %q not found in index template, cannot convert properties", name)
+		nextProperties, err := property.Properties()
+		if err != nil {
+			return nil, fmt.Errorf("property %q not found in index template: %w", name, err)
 		}
 		properties = nextProperties
 	}
