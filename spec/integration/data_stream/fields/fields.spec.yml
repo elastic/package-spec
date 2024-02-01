@@ -90,6 +90,7 @@ spec:
         - wildcard
         - version
         - unsigned_long
+        - counted_keyword
 
       description:
         description: Short description of field
@@ -587,6 +588,8 @@ spec:
 versions:
   - before: 3.1.0
     patch:
+      - op: remove
+        path: "/items/properties/type/enum/34" #remove counted_keyword type
       - op: remove
         path: "/items/allOf/8" # removing subobjects when type is object
       - op: remove

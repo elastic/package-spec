@@ -89,3 +89,8 @@
 - name: empty_expected_values
   type: keyword
   expected_values: []
+- name: some_counted_keyword
+  type: counted_keyword
+- name: counted_keyword_non_indexed
+  type: counted_keyword
+  index: false
