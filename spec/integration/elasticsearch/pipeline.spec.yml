@@ -108,8 +108,8 @@ spec:
       description: List of processors to apply in case of failure.
       $ref: "#/definitions/processors"
 
-  versions:
-  - before: 3.0.5
+versions:
+  - before: 3.1.0
     patch:
       - op: remove
         path: /definitions/processors/if # remove rename processor validation
