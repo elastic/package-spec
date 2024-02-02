@@ -108,7 +108,7 @@ spec:
       description: List of processors to apply in case of failure.
       $ref: "#/definitions/processors"
 
-  versions:
+versions:
   - before: 3.1.0
     patch:
       - op: remove
