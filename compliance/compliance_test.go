@@ -10,13 +10,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/cucumber/godog"
-	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"golang.org/x/exp/slices"
 )
 
@@ -68,19 +68,15 @@ func indexTemplateHasAFieldWith(indexTemplateName, fieldName, condition string) 
 		return err
 	}
 
-	// TODO: Properly build conditions.
-	switch condition {
-	case "runtime:true":
-		if _, isRuntime := fieldMapping.(types.RuntimeField); isRuntime {
-			return nil
-		}
+	if fieldMapping.CheckCondition(condition) {
+		return nil
 	}
 
 	d, err := json.MarshalIndent(fieldMapping, "", "  ")
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Found the following mapping of type %T for field %q:\n", fieldMapping, fieldName)
+	fmt.Printf("Found the following mapping for field %q:\n", fieldName)
 	fmt.Println(string(d))
 	return fmt.Errorf("conditon %q not satisfied by field %q", condition, fieldName)
 }
@@ -162,13 +158,16 @@ func thereIsATransform(transformID string) error {
 		return err
 	}
 
-	resp, err := es.client.Transform.GetTransform().
-		TransformId(transformID).
-		Do(context.TODO())
+	resp, err := es.client.TransformGetTransform(
+		es.client.TransformGetTransform.WithContext(context.TODO()),
+		es.client.TransformGetTransform.WithTransformID(transformID),
+	)
 	if err != nil {
 		return fmt.Errorf("failed to get transform %q: %w", transformID, err)
 	}
-	if resp.Count == 0 {
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("transform %q not found", transformID)
 	}
 

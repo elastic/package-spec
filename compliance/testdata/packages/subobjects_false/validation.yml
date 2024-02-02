@@ -1,0 +1,3 @@
+errors:
+  exclude_checks:
+    - "PSR00001" # GA package using non-GA features

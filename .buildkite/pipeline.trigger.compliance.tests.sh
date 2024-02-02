@@ -26,7 +26,8 @@ steps:
 EOF
 
 # Generate each test we want to do.
-compliance_test 8.10.0-SNAPSHOT 2.10.0
+compliance_test 8.13.0-SNAPSHOT 3.1.0
+compliance_test 8.12.0 3.0.4
 compliance_test 8.9.0 2.7.0
 
 # Annotate junit results.

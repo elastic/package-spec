@@ -8,17 +8,19 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 
 	"github.com/elastic/go-elasticsearch/v8"
-	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 )
 
 // Elasticsearch is an elasticsearch client.
 type Elasticsearch struct {
-	client *elasticsearch.TypedClient
+	client *elasticsearch.Client
 }
 
 // NewElasticsearchClient creates a new Elasticsearch client.
@@ -49,7 +51,7 @@ func NewElasticsearchClient() (*Elasticsearch, error) {
 			},
 		}
 	}
-	client, err := elasticsearch.NewTypedClient(config)
+	client, err := elasticsearch.NewClient(config)
 	if err != nil {
 		return nil, err
 	}
@@ -60,25 +62,69 @@ func NewElasticsearchClient() (*Elasticsearch, error) {
 }
 
 // IndexTemplate looks for an index template.
-func (es *Elasticsearch) IndexTemplate(name string) (*types.IndexTemplate, error) {
-	resp, err := es.client.Indices.GetIndexTemplate().Name(name).Do(context.TODO())
+func (es *Elasticsearch) IndexTemplate(name string) (*IndexTemplate, error) {
+	resp, err := es.client.Indices.GetIndexTemplate(
+		es.client.Indices.GetIndexTemplate.WithContext(context.TODO()),
+		es.client.Indices.GetIndexTemplate.WithName(name),
+	)
 	if err != nil {
 		return nil, err
 	}
-	if n := len(resp.IndexTemplates); n != 1 {
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("HTTP status code %d", resp.StatusCode)
+	}
+
+	var templatesResponse struct {
+		IndexTemplates []struct {
+			IndexTemplate *IndexTemplate `json:"index_template"`
+		} `json:"index_templates"`
+	}
+	err = newJSONDecoder(resp.Body).Decode(&templatesResponse)
+	if err != nil {
+		return nil, err
+	}
+
+	if n := len(templatesResponse.IndexTemplates); n != 1 {
 		return nil, fmt.Errorf("one index template expected, found %d", n)
 	}
 
-	return &resp.IndexTemplates[0].IndexTemplate, nil
+	return templatesResponse.IndexTemplates[0].IndexTemplate, nil
 }
 
 // SimulateIndexTemplate simulates the instantiation of an index template, resolving its
 // component templates.
 func (es *Elasticsearch) SimulateIndexTemplate(name string) (*SimulatedIndexTemplate, error) {
-	resp, err := es.client.Indices.SimulateTemplate().Name(name).Do(context.TODO())
+	resp, err := es.client.Indices.SimulateTemplate(
+		es.client.Indices.SimulateTemplate.WithName(name),
+		es.client.Indices.SimulateTemplate.WithContext(context.TODO()),
+	)
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
-	return &SimulatedIndexTemplate{resp.Template}, nil
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("HTTP status code %d", resp.StatusCode)
+	}
+
+	var simulateResponse struct {
+		Template *SimulatedIndexTemplate `json:"template"`
+	}
+	err = newJSONDecoder(resp.Body).Decode(&simulateResponse)
+	if err != nil {
+		return nil, err
+	}
+	if simulateResponse.Template == nil {
+		return nil, errors.New("empty template simulated, something is wrong")
+	}
+
+	return simulateResponse.Template, nil
+}
+
+func newJSONDecoder(r io.Reader) *json.Decoder {
+	dec := json.NewDecoder(r)
+	dec.UseNumber()
+	return dec
 }

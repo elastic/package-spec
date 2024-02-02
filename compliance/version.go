@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"slices"
 	"strings"
 	"testing"
 
@@ -45,6 +46,7 @@ func versionsToTest(t *testing.T) string {
 
 	var result strings.Builder
 	for _, version := range versions {
+		version, _ := version.SetPrerelease("")
 		if version.GreaterThan(&maxVersion) {
 			continue
 		}
@@ -87,7 +89,7 @@ func checkFeaturesVersions(t *testing.T, fs fs.FS, paths []string) {
 			return fmt.Errorf("no version tags")
 		}
 		for _, tag := range tags {
-			if !sliceContains[string](versions, strings.TrimLeft(tag.Name, "@")) {
+			if !slices.Contains(versions, strings.TrimLeft(tag.Name, "@")) {
 				return fmt.Errorf("tag indicates an unknown spec version %s", tag.Name)
 			}
 		}
@@ -105,13 +107,4 @@ func checkFeaturesVersions(t *testing.T, fs fs.FS, paths []string) {
 			}
 		}
 	}
-}
-
-func sliceContains[T comparable](slice []T, x T) bool {
-	for _, elem := range slice {
-		if elem == x {
-			return true
-		}
-	}
-	return false
 }
