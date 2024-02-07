@@ -23,6 +23,10 @@ vars:
     title: A file to a secret, but not a secret itself.
     type: text
     show_user: true
+  - name: token_url
+    title: A URL to get secrets, but not a secret itself.
+    type: url
+    show_user: true
 policy_templates:
   - name: apache
     title: Apache logs and metrics

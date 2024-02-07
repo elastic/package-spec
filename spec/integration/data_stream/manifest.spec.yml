@@ -158,7 +158,7 @@ spec:
                  - not:
                      properties:
                        name:
-                         pattern: "_file$"
+                         pattern: "(_file|_url)$"
                - properties:
                    type:
                      const: password
