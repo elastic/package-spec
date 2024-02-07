@@ -19,6 +19,10 @@ vars:
     title: Package Level Secret
     show_user: true
     secret: true
+  - name: bearer_token_file
+    title: A file to a secret, but not a secret itself.
+    type: text
+    show_user: true
 policy_templates:
   - name: apache
     title: Apache logs and metrics

@@ -7,6 +7,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/711
+  - description: Discard variables ending with _file as secret candidates
+    type: enhancement
+    link: https://github.com/elastic/package-spec/issues/712
 - version: 3.1.0
   changes:
   - description: Add support for subobjects in fields
