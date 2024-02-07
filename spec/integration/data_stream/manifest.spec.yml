@@ -151,9 +151,14 @@ spec:
                  - options
          - if:
              anyOf:
-               - properties:
-                   name:
-                     pattern: "(access_key|api_key|passphrase|password|secret|token)"
+               - allOf:
+                 - properties:
+                     name:
+                       pattern: "(access_key|api_key|passphrase|password|secret|token)"
+                 - not:
+                     properties:
+                       name:
+                         pattern: "(_file|_url)$"
                - properties:
                    type:
                      const: password
