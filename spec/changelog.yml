@@ -2,16 +2,14 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 3.1.3-next
-  changes:
-  - description: Introduce cloudsecurity_cdr category
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/716
 - version: 3.1.2-next
   changes:
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/714
+  - description: Introduce cloudsecurity_cdr category
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/716
 - version: 3.1.1
   changes:
   - description: Discard variables ending with _file or _url as secret candidates
