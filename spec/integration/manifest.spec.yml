@@ -90,6 +90,7 @@ spec:
           - web_application_firewall
           - websphere
           - workplace_search
+          - cloudsecurity_cdr
         examples:
           - web
     conditions:
