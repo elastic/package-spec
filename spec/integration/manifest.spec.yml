@@ -35,6 +35,7 @@ spec:
           - big_data
           - cdn_security
           - cloud
+          - cloudsecurity_cdr
           - config_management
           - connector
           - connector_client
@@ -90,7 +91,6 @@ spec:
           - web_application_firewall
           - websphere
           - workplace_search
-          - cloudsecurity_cdr
         examples:
           - web
     conditions:
