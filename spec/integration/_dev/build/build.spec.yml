@@ -25,7 +25,7 @@ spec:
               description: >
                 Whether or not import common used dynamic templates and properties into the package
               default: false
-              deprecated: true
+              deprecated: true # See: https://github.com/elastic/package-spec/pull/726
           required:
             - reference
   required:
