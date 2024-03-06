@@ -19,7 +19,7 @@ spec:
             reference:
               type: string
               description: Source reference
-              pattern: '^git@.+'
+              pattern: "^git@.+"
             import_mappings:
               type: boolean
               description: >
@@ -29,9 +29,13 @@ spec:
           required:
             - reference
   required:
-  - dependencies
+    - dependencies
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.1.3
+    patch:
+      - op: remove
+        path: "/properties/dependencies/properties/ecs/properties/import_mappings/deprecated"
   - before: 2.3.0
     patch:
       - op: remove
