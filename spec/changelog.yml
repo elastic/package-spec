@@ -7,6 +7,9 @@
   - description: Prepare for next version
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/720
+  - description: Deprecate `dependencies.ecs.import_mappings` in favor of `ecs@mappings` from Elasticsearch
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/726
 - version: 3.1.2
   changes:
   - description: Introduce cloudsecurity_cdr category
