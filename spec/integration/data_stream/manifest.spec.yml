@@ -279,7 +279,6 @@ spec:
                 examples:
                   - ["strict_date_optional_time","yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"] # This is the default if not set.
                   - ["MM/dd/yyyy"]
-
             dynamic_templates:
               type: array
               items:
@@ -353,6 +352,15 @@ spec:
                             $ref: "./fields/fields.spec.yml#/items/properties/scaling_factor"
                           type:
                              $ref: "./fields/fields.spec.yml#/items/properties/type"
+            subobjects:
+              description: >
+                Specifies if field names containing dots should be expanded into subobjects.
+                For example, if this is set to `true`, a field named `foo.bar` will be
+                expanded into an object with a field named `bar` inside an object
+                named `foo`.
+              type: boolean
+              default: true
+
         ingest_pipeline:
           description: Elasticsearch ingest pipeline settings
           type: object
@@ -515,6 +523,10 @@ spec:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.2.0
+    patch:
+      - op: remove
+        path: /definitions/elasticsearch_index_template/properties/mappings/properties/subobjects
   - before: 3.0.2
     patch:
       # Required secret for variables that look like secrets.
