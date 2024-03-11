@@ -1,5 +1,9 @@
 title: subojects
 type: logs
+elasticsearch:
+  index_template:
+    mappings:
+      subobjects: true
 streams:
   - input: logfile
     vars:
