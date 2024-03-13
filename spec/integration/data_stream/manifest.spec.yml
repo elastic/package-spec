@@ -354,10 +354,54 @@ spec:
                              $ref: "./fields/fields.spec.yml#/items/properties/type"
             subobjects:
               description: >
-                Specifies if field names containing dots should be expanded into subobjects.
-                For example, if this is set to `true`, a field named `foo.bar` will be
-                expanded into an object with a field named `bar` inside an object
-                named `foo`.
+                Turn the support for subobjects on or off in the mapping
+                configuration for the data stream.
+                
+                By default, it's set to `true`, allowing objects to contain
+                subobjects. Setting it to `false` restricts objects
+                from holding subobjects, enabling storing documents
+                with dot-contained field names and common prefixes.
+                
+                This setting changes how documents can be structured.
+
+                Example when subobjects is `false`:
+
+                PUT my-index-000001
+                {
+                  "mappings": {
+                    "subobjects": false 
+                  }
+                }
+
+                PUT my-index-000001/_doc/metric_1
+                {
+                  "time" : "100ms", 
+                  "time.min" : "10ms",
+                  "time.max" : "900ms"
+                }                
+
+                Before disabling subobjects, consider the following implications:
+
+                - Nested field types cannot be used in data streams.
+                - The subobjects mapping definition is immutable.
+                - This setting depends on auto-flattening mappings,
+                  which comes with limitations [^1] for integration
+                  and custom mappings in data streams without
+                  subobjects.
+                - Auto-flattening is available starting from version
+                  8.14, thus integrations must be on at least this
+                  version.
+
+                For comprehensive details on subobjects, refer to
+                the Elasticsearch documentation [^2].
+                
+
+                [^1]: Auto-flattening limitations are documented at:
+                https://www.elastic.co/guide/en/elasticsearch/reference/master/subobjects.html#_auto_flattening_object_mappings
+
+                [^2]: Elasticsearch documentation on subobjects:
+                https://www.elastic.co/guide/en/elasticsearch/reference/current/subobjects.html
+
               type: boolean
               default: true
 
