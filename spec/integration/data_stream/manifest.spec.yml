@@ -357,14 +357,19 @@ spec:
                 Turn the support for subobjects on or off in the mapping
                 configuration for the data stream.
                 
-                By default, it's set to `true`, allowing objects to contain
-                subobjects. Setting it to `false` restricts objects
+                By default, it's set to `true`, enabling Elasticsearch to
+                expands fields that contain dots in their names
+                to their corresponding object structure.
+
+                Setting it to `false` restricts objects
                 from holding subobjects, enabling storing documents
                 with dot-contained field names and common prefixes.
                 
-                This setting changes how documents can be structured.
+                It is still possible to send documents that have
+                objects to a data stream that has set subobjects
+                to `false`.
 
-                Example when subobjects is `false`:
+                Example when the subobjects mapping option is `false`:
 
                 PUT my-index-000001
                 {
@@ -389,7 +394,7 @@ spec:
                   and custom mappings in data streams without
                   subobjects.
                 - Auto-flattening is available starting from version
-                  8.14, thus integrations must be on at least this
+                  8.14, integrations must be on at least this
                   version.
 
                 For comprehensive details on subobjects, refer to
