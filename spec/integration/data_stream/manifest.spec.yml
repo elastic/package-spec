@@ -387,15 +387,15 @@ spec:
 
                 Before disabling subobjects, consider the following implications:
 
-                - Nested field types cannot be used in data streams.
-                - The subobjects mapping definition is immutable.
-                - This setting depends on auto-flattening mappings,
-                  which comes with limitations [^1] for integration
-                  and custom mappings in data streams without
-                  subobjects.
-                - Auto-flattening is available starting from version
-                  8.14, integrations must be on at least this
-                  version.
+                  - Nested field types cannot be used in data streams.
+                  - The subobjects mapping definition is immutable.
+                  - This setting depends on auto-flattening mappings,
+                    which comes with limitations [^1] for integration
+                    and custom mappings in data streams without
+                    subobjects.
+                  - Auto-flattening is available starting from version
+                    8.14, integrations must be on at least this
+                    version.
 
                 For comprehensive details on subobjects, refer to
                 the Elasticsearch documentation [^2].
