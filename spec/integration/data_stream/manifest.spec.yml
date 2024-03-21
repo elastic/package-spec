@@ -338,17 +338,21 @@ spec:
                         type: object
                         additionalProperties: false
                         properties:
-                          type:
-                             $ref: "./fields/fields.spec.yml#/items/properties/type"
-                          scaling_factor:
-                            $ref: "./fields/fields.spec.yml#/items/properties/scaling_factor"
-                          ignore_malformed:
-                            $ref: "./fields/fields.spec.yml#/items/properties/ignore_malformed"
+                          doc_values:
+                            $ref: "./fields/fields.spec.yml#/items/properties/doc_values"
                           fields:
                             type: object
                             minProperties: 1
                             additionalProperties:
                               $ref: "#/definitions/elasticsearch_index_template/properties/mappings/properties/dynamic_templates/items/patternProperties/^_embedded_ecs/properties/mapping"
+                          ignore_malformed:
+                            $ref: "./fields/fields.spec.yml#/items/properties/ignore_malformed"
+                          index:
+                            $ref: "./fields/fields.spec.yml#/items/properties/index"
+                          scaling_factor:
+                            $ref: "./fields/fields.spec.yml#/items/properties/scaling_factor"
+                          type:
+                             $ref: "./fields/fields.spec.yml#/items/properties/type"
         ingest_pipeline:
           description: Elasticsearch ingest pipeline settings
           type: object
