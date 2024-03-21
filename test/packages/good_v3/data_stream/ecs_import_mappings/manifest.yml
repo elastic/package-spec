@@ -217,6 +217,18 @@ elasticsearch:
             mapping:
               type: keyword
             path_match: agent.name
+        - _embedded_ecs-event_original_non_indexed_keyword:
+            mapping:
+              type: keyword
+              index: false
+              doc_values: false
+            path_match: 'event.original'
+        - _embedded_ecs-x509_public_key_exponent_non_indexed_keyword:
+            mapping:
+              type: keyword
+              index: false
+              doc_values: false
+            path_match: '*.x509.public_key_exponent'
         - _embedded_ecs-service_name_to_keyword:
             mapping:
               type: keyword
