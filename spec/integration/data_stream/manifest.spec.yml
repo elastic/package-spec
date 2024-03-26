@@ -279,7 +279,6 @@ spec:
                 examples:
                   - ["strict_date_optional_time","yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"] # This is the default if not set.
                   - ["MM/dd/yyyy"]
-
             dynamic_templates:
               type: array
               items:
@@ -353,6 +352,64 @@ spec:
                             $ref: "./fields/fields.spec.yml#/items/properties/scaling_factor"
                           type:
                              $ref: "./fields/fields.spec.yml#/items/properties/type"
+            subobjects:
+              description: >
+                Turn the support for subobjects on or off in the mapping
+                configuration for the data stream.
+                
+                By default, it's set to `true`, enabling Elasticsearch to
+                expands fields that contain dots in their names
+                to their corresponding object structure.
+
+                Setting it to `false` restricts objects
+                from holding subobjects, enabling storing documents
+                with dot-contained field names and common prefixes.
+                
+                It is still possible to send documents that have
+                objects to a data stream that has set subobjects
+                to `false`.
+
+                Example when the subobjects mapping option is `false`:
+
+                PUT my-index-000001
+                {
+                  "mappings": {
+                    "subobjects": false 
+                  }
+                }
+
+                PUT my-index-000001/_doc/metric_1
+                {
+                  "time" : "100ms", 
+                  "time.min" : "10ms",
+                  "time.max" : "900ms"
+                }                
+
+                Before disabling subobjects, consider the following implications:
+
+                  - Nested field types cannot be used in data streams.
+                  - The subobjects mapping definition is immutable.
+                  - This setting depends on auto-flattening mappings,
+                    which comes with limitations [^1] for integration
+                    and custom mappings in data streams without
+                    subobjects.
+                  - Auto-flattening is available starting from version
+                    8.14, integrations must be on at least this
+                    version.
+
+                For comprehensive details on subobjects, refer to
+                the Elasticsearch documentation [^2].
+                
+
+                [^1]: Auto-flattening limitations are documented at:
+                https://www.elastic.co/guide/en/elasticsearch/reference/master/subobjects.html#_auto_flattening_object_mappings
+
+                [^2]: Elasticsearch documentation on subobjects:
+                https://www.elastic.co/guide/en/elasticsearch/reference/current/subobjects.html
+
+              type: boolean
+              default: true
+
         ingest_pipeline:
           description: Elasticsearch ingest pipeline settings
           type: object
@@ -515,6 +572,10 @@ spec:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.2.0
+    patch:
+      - op: remove
+        path: /definitions/elasticsearch_index_template/properties/mappings/properties/subobjects
   - before: 3.0.2
     patch:
       # Required secret for variables that look like secrets.
