@@ -6,10 +6,10 @@ require (
 	github.com/Masterminds/semver/v3 v3.2.1
 	github.com/cucumber/godog v0.14.0
 	github.com/cucumber/messages/go/v21 v21.0.1
-	github.com/elastic/elastic-package v0.98.2
+	github.com/elastic/elastic-package v0.99.0
 	github.com/elastic/go-elasticsearch/v8 v8.12.1
 	github.com/elastic/go-licenser v0.4.1
-	github.com/elastic/package-spec/v3 v3.1.2
+	github.com/elastic/package-spec/v3 v3.1.3
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
@@ -45,7 +45,7 @@ require (
 	github.com/elastic/elastic-transport-go/v8 v8.4.0 // indirect
 	github.com/elastic/go-elasticsearch/v7 v7.17.10 // indirect
 	github.com/elastic/go-resource v0.1.1 // indirect
-	github.com/elastic/go-ucfg v0.8.6 // indirect
+	github.com/elastic/go-ucfg v0.8.8 // indirect
 	github.com/elastic/gojsonschema v1.2.1 // indirect
 	github.com/elastic/kbncontent v0.1.3 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
@@ -65,7 +65,7 @@ require (
 	github.com/go-openapi/swag v0.22.3 // indirect
 	github.com/gofrs/uuid v4.4.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/gnostic-models v0.6.8 // indirect
@@ -157,16 +157,16 @@ require (
 	golang.org/x/time v0.5.0 // indirect
 	golang.org/x/tools v0.19.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/protobuf v1.31.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	helm.sh/helm/v3 v3.14.2 // indirect
-	k8s.io/api v0.29.2 // indirect
+	helm.sh/helm/v3 v3.14.3 // indirect
+	k8s.io/api v0.29.3 // indirect
 	k8s.io/apiextensions-apiserver v0.29.0 // indirect
-	k8s.io/apimachinery v0.29.2 // indirect
-	k8s.io/cli-runtime v0.29.2 // indirect
-	k8s.io/client-go v0.29.2 // indirect
+	k8s.io/apimachinery v0.29.3 // indirect
+	k8s.io/cli-runtime v0.29.3 // indirect
+	k8s.io/client-go v0.29.3 // indirect
 	k8s.io/component-base v0.29.0 // indirect
 	k8s.io/klog/v2 v2.110.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20231010175941-2dd684a91f00 // indirect
