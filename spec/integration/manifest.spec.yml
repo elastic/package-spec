@@ -149,6 +149,31 @@ spec:
       examples:
       - Collect logs and metrics from Apache HTTP Servers with Elastic Agent.
       - Collect logs and metrics from Amazon Web Services with Elastic Agent.
+    deployment_modes:
+      description: >
+        Options related to the deployment modes. The deployment mode refers to the mode used to
+        deploy the Elastic Agents running this policy.
+      type: object
+      additionalProperties: false
+      properties:
+        default:
+          description: >
+            Options specific to the default deployment mode, where agents are normally managed
+            by users, explicitly enrolled to Fleet and visible in UIs.
+          type: object
+          properties:
+            enabled:
+              type: boolean
+              default: true
+        agentless:
+          description: >
+            Options specific to the Agentless deployment mode. This mode is used in offerings
+            where the Elastic Agents running these policies are fully managed for the user.
+          type: object
+          properties:
+            enabled:
+              type: boolean
+              default: false
     icons:
       description: List of icons for by this package.
       type: array
@@ -341,6 +366,8 @@ spec:
                 - ec2_logs
                 - spamfirewall
                 - access
+          deployment_modes:
+            $ref: "#/definitions/deployment_modes"
           inputs:
             description: List of inputs supported by policy template.
             type: array

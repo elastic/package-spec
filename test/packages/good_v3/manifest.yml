@@ -31,15 +31,15 @@ policy_templates:
   - name: apache
     title: Apache logs and metrics
     description: Collect logs and metrics from Apache instances
+    deployment_modes:
+      agentless:
+        enabled:
+          true
     inputs:
       - type: apache/metrics
         title: Collect metrics from Apache instances
         description: Collecting Apache status metrics
         multi: false
-        deployment_modes:
-          agentless:
-            enabled:
-              true
         vars:
           - name: input_password
             type: password
@@ -64,16 +64,18 @@ policy_templates:
               - http://127.0.0.1
             hide_in_deployment_modes:
               - agentless
+  - name: apache
+    title: Apache logs and metrics in agentless
+    description: Collect logs and metrics from Apache instances in agentless
+    deployment_modes:
+      agentless:
+        enabled:
+          true
+    inputs:
       - type: apache/metrics
         title: Collect metrics in agentless
         description: Collecting metrics in agentless mode
         multi: false
-        deployment_modes:
-          default:
-            enabled: false
-          agentless:
-            enabled:
-              true
         vars:
           - name: input_password
             type: password

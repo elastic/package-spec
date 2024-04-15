@@ -100,6 +100,16 @@ spec:
             default: true
             examples:
               - false
+          hide_in_deployment_modes:
+            description: >
+              Whether this variable should be hidden in the UI for agent policies intended
+              to some specific deployment modes.
+            type: array
+            items:
+              type: string
+              enum:
+                - default
+                - agentless
           url_allowed_schemes:
             description: >
               List of allowed URL schemes for the url type. If empty, any scheme is allowed.
