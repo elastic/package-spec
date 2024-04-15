@@ -29,6 +29,7 @@ policy_templates:
     description: Collect sample logs
     deployment_modes:
       default:
+        # It is not allowed to disable the default deployment mode till 3.2.0.
         enabled:
           false
       agentless:
@@ -45,6 +46,7 @@ policy_templates:
             show_user: true
             secret: true
             hide_in_deployment_modes:
+              # It is not allowed to hide variables in the default deployment mode till 3.2.0.
               - default
 
 owner:

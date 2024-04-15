@@ -584,8 +584,15 @@ spec:
 versions:
   - before: 3.2.0
     patch:
+      # Does not allow to hide variables in default mode till this version.
+      - op: remove
+        path: /definitions/vars/items/properties/hide_in_deployment_modes/items/enum/0
       - op: remove
         path: /definitions/elasticsearch_index_template/properties/mappings/properties/subobjects
+  - before: 3.1.4
+    patch:
+      - op: remove
+        path: /definitions/vars/items/properties/hide_in_deployment_modes
   - before: 3.0.2
     patch:
       # Required secret for variables that look like secrets.

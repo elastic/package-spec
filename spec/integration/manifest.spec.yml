@@ -458,6 +458,14 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.2.0
+    patch:
+      - op: remove
+        path: "/definitions/deployment_modes/properties/default"
+  - before: 3.1.4
+    patch:
+      - op: remove
+        path: "/properties/policy_templates/items/properties/deployment_modes"
   - before: 3.0.0
     patch:
       - op: replace

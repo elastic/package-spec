@@ -194,8 +194,8 @@ func TestValidateFile(t *testing.T) {
 		"bad_deployment_mode": {
 			"manifest.yml",
 			[]string{
-				`field policy_templates.0.inputs.0: Additional property deployment_modes is not allowed`,
-				`field policy_templates.0.inputs.0.vars.0: Additional property hide_in_deployment_modes is not allowed`,
+				`field policy_templates.0.deployment_modes: Additional property default is not allowed`,
+				`field policy_templates.0.inputs.0.vars.0.hide_in_deployment_modes.0: policy_templates.0.inputs.0.vars.0.hide_in_deployment_modes.0 must be one of the following: "agentless"`,
 			},
 		},
 	}
