@@ -4,6 +4,9 @@
 ##
 - version: 3.2.0-next
   changes:
+  - description: Add subobjects definition (at the data stream level)
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/727
   - description: Allow to disable policies and variables in default deployment mode.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/738
