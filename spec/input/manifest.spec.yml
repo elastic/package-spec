@@ -67,6 +67,8 @@ spec:
             type: string
             examples:
               - Collect logs and metrics from Apache instances
+          deployment_modes:
+            $ref: "../integration/manifest.spec.yml#/definitions/deployment_modes"
           icons:
             $ref: "../integration/manifest.spec.yml#/definitions/icons"
           screenshots:

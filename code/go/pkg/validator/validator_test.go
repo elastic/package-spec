@@ -191,6 +191,13 @@ func TestValidateFile(t *testing.T) {
 				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Timelion time series\" (timelion, Timelion)",
 			},
 		},
+		"bad_deployment_mode": {
+			"manifest.yml",
+			[]string{
+				`field policy_templates.0.deployment_modes: Additional property default is not allowed`,
+				`field policy_templates.0.inputs.0.vars.0.hide_in_deployment_modes.0: policy_templates.0.inputs.0.vars.0.hide_in_deployment_modes.0 must be one of the following: "agentless"`,
+			},
+		},
 	}
 
 	for pkgName, test := range tests {

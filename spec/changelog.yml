@@ -7,6 +7,14 @@
   - description: Add subobjects definition (at the data stream level)
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/727
+  - description: Allow to disable policies and variables in default deployment mode.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/738
+- version: 3.1.4-next
+  changes:
+  - description: Add definitions for different deployment modes.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/738
 - version: 3.1.3
   changes:
   - description: Deprecate `dependencies.ecs.import_mappings` in favor of `ecs@mappings` from Elasticsearch
