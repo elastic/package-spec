@@ -18,7 +18,7 @@ spec:
       additionalProperties: false
       properties:
         user:
-          description: "User that runs Elastic Agent process"
+          description: "User that runs the Elastic Agent process"
           type: string
           example: root
           default: ""
@@ -29,8 +29,8 @@ spec:
           type: string
           enum:
             - host
-        capabilities:
-          description: "Capabilities that must have the system to run Elastic Agent process"
+        linux_capabilities:
+          description: "Linux Capabilities that must been enabled in the system to run the Elastic Agent process"
           type: array
           items:
             type: string
@@ -82,7 +82,7 @@ spec:
               - AUDIT_CONTROL
               - AUDIT_READ
         runtime:
-          description: "Runtime to run Elastic Agent"
+          description: "Runtime to run the Elastic Agent process"
           type: string
           enum:
             - docker
