@@ -17,6 +17,11 @@ spec:
       type: object
       additionalProperties: false
       properties:
+        runtime:
+          description: "Runtime to run the Elastic Agent process"
+          type: string
+          enum:
+            - docker
         user:
           description: "User that runs the Elastic Agent process"
           type: string
@@ -29,6 +34,17 @@ spec:
           type: string
           enum:
             - host
+        expose_ports:
+          description: "List of ports to be exposed to access to the Elastic Agent"
+          type: array
+          items:
+            type: string
+            description: Port to be exposed, as defined in https://docs.docker.com/compose/compose-file/compose-file-v2/#ports
+            examples:
+              - "3000"
+              - "8000:8000"
+              - "127.0.0.1:7443:7443"
+              - "8000:8000/udp"
         linux_capabilities:
           description: "Linux Capabilities that must been enabled in the system to run the Elastic Agent process"
           type: array
@@ -81,10 +97,5 @@ spec:
             examples:
               - AUDIT_CONTROL
               - AUDIT_READ
-        runtime:
-          description: "Runtime to run the Elastic Agent process"
-          type: string
-          enum:
-            - docker
       required:
         - runtime
