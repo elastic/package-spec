@@ -50,7 +50,7 @@ spec:
         build_pull_requests: true # requires filter_enabled and filter_condition settings as below when used with buildkite-pr-bot
         filter_enabled: true
         filter_condition: >-
-          build.pull_request.id == null || (build.creator.name == 'elasticmachine' && build.pull_request.id != null)
+          build.pull_request.id == null || (build.creator.name == 'elasticmachine' && build.pull_request.id != null && build.source == 'api')
       repository: elastic/package-spec
       cancel_intermediate_builds: true
       cancel_intermediate_builds_branch_filter: '!main'
@@ -94,7 +94,7 @@ spec:
         build_tags: true
         filter_enabled: true
         filter_condition: >-
-          build.pull_request.id == null || (build.creator.name == 'elasticmachine' && build.pull_request.id != null)
+          build.pull_request.id == null || (build.creator.name == 'elasticmachine' && build.pull_request.id != null && build.source == 'api')
       repository: elastic/package-spec
       cancel_intermediate_builds: true
       cancel_intermediate_builds_branch_filter: '!main'
