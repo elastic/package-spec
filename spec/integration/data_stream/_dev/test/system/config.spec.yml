@@ -34,7 +34,7 @@ spec:
           type: string
           enum:
             - host
-        expose_ports:
+        ports:
           description: "List of ports to be exposed to access to the Elastic Agent"
           type: array
           items:
