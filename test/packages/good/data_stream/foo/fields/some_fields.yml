@@ -27,6 +27,11 @@
   description: A field with a pattern defined
   pattern: '^[a-zA-Z]$'
   example: abcd
+- name: foobar
+  type: keyword
+  ignore_above: 5
+  description: A field that can be ignored without failing tests
+  accept_ignored_values: true
 - name: aaa
   type: integer
   metric_type: gauge

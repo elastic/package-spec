@@ -1,0 +1,6 @@
+- name: foobar
+  type: text
+  description: A field with a pattern defined
+  pattern: '^[a-zA-Z]$'
+  example: abcd
+  accept_ignored_values: "for sure"
