@@ -12,7 +12,7 @@
     link: https://github.com/elastic/package-spec/pull/738
   - description: Add property to accept ignored values in fields
     type: enhancement
-    link: https://github.com/elastic/package-spec/pull/727
+    link: https://github.com/elastic/package-spec/pull/743
 - version: 3.1.4
   changes:
   - description: Add definitions for different deployment modes.
