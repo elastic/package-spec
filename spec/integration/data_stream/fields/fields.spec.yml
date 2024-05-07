@@ -318,16 +318,6 @@ spec:
         type: integer
         default: 1024
 
-      accept_ignored_values:
-        description: >
-          If set to true, elastic-package system tests will not fail if values
-          for this field can't be indexed for any incoming documents. This
-          should only be used if the failure is related to the test environment
-          and wouldn't happen in production, mitigate the issue via mapping or
-          pipeline changes otherwise. Defaults to false.
-        type: boolean
-        default: false
-
       object_type:
         description: >
           Type of the members of the object when `type: object` is used. In

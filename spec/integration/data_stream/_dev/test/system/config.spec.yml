@@ -12,3 +12,14 @@ spec:
       description: Timeout for waiting for metrics data during a system test.
       type: string
       example: 10m
+    skip_ignored_fields:
+      description: >
+        If listed here, elastic-package system tests will not fail if values
+        for the specified field names can't be indexed for any incoming documents. This
+        should only be used if the failure is related to the test environment
+        and wouldn't happen in production. Mitigate the issue via mapping or
+        pipeline changes otherwise.
+      type: array
+      items:
+        type: string
+        example: "error.message"

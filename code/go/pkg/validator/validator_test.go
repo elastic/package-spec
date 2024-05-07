@@ -49,7 +49,7 @@ func TestValidateFile(t *testing.T) {
 			},
 		},
 		"bad_deploy_variants": {
-			"_dev/deploy/variants.yml",
+			"_dev/deploy/variants.yVml",
 			[]string{
 				"field (root): default is required",
 				"field variants: Invalid type. Expected: object, given: array",
@@ -130,6 +130,12 @@ func TestValidateFile(t *testing.T) {
 			[]string{
 				"field streams.0.vars.1: options is required",
 				"field streams.0.vars.3: Must not be present",
+			},
+		},
+		"bad_skip_ignored_fields": {
+			"_dev/test/system/test-default-config.yml",
+			[]string{
+				"field skip_ignored_fields: should be a list of strings",
 			},
 		},
 		"bad_profiling_symbolizer": {
