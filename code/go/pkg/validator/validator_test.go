@@ -49,7 +49,7 @@ func TestValidateFile(t *testing.T) {
 			},
 		},
 		"bad_deploy_variants": {
-			"_dev/deploy/variants.yVml",
+			"_dev/deploy/variants.yml",
 			[]string{
 				"field (root): default is required",
 				"field variants: Invalid type. Expected: object, given: array",
