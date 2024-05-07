@@ -97,5 +97,13 @@ spec:
             examples:
               - AUDIT_CONTROL
               - AUDIT_READ
+        custom_script:
+          description: "Optional: Custom script to be run to update environment where Elastic Agent runs (e.g. installing new libraries/dependencies)"
+          type: string
+          default: ""
+        pre_start_script:
+          description: "Optional: Custom script to be run to set required changes for the Elastic Agent process (e.g. export environmen variables)"
+          type: string
+          default: ""
       required:
         - runtime
