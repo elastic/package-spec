@@ -1,15 +1,18 @@
-format_version: 3.2.0
+format_version: 3.1.2
 name: bad_skip_ignored_fields
-title: Bad package
+title: "Malformed skip_ignored_fields"
 version: 0.0.1
-license: basic
+source:
+  license: "Elastic-2.0"
 description: "This is a new package."
 type: integration
 categories:
   - custom
-release: experimental
 conditions:
-  kibana.version: "^7.13.0"
+  kibana:
+    version: "^8.12.1"
+  elastic:
+    subscription: "basic"
 screenshots:
   - src: /img/sample-screenshot.png
     title: Sample screenshot
@@ -29,5 +32,5 @@ policy_templates:
         title: Collect sample logs from instances
         description: Collecting sample logs
 owner:
-  type: invalid
-  github: elastic/integrations-developer-experience
+  github: elastic/integrations
+  type: elastic

@@ -133,9 +133,9 @@ func TestValidateFile(t *testing.T) {
 			},
 		},
 		"bad_skip_ignored_fields": {
-			"_dev/test/system/test-default-config.yml",
+			"data_stream/foo/_dev/test/system/test-default-config.yml",
 			[]string{
-				"field skip_ignored_fields: should be a list of strings",
+				"field skip_ignored_fields: Invalid type. Expected: array, given: boolean",
 			},
 		},
 		"bad_profiling_symbolizer": {
