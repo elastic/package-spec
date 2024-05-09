@@ -33,8 +33,7 @@ policy_templates:
     description: Collect logs and metrics from Apache instances
     deployment_modes:
       agentless:
-        enabled:
-          true
+        enabled: true
     inputs:
       - type: apache/metrics
         title: Collect metrics from Apache instances
@@ -69,8 +68,7 @@ policy_templates:
     description: Collect logs and metrics from Apache instances in agentless
     deployment_modes:
       agentless:
-        enabled:
-          true
+        enabled: true
     inputs:
       - type: apache/metrics
         title: Collect metrics in agentless
