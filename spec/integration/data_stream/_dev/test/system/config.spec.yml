@@ -22,6 +22,7 @@ spec:
           type: string
           enum:
             - docker
+          default: docker
         user:
           description: "User that runs the Elastic Agent process"
           type: string
@@ -105,5 +106,3 @@ spec:
           description: "Optional: Custom script to be run to set required changes for the Elastic Agent process (e.g. export environmen variables)"
           type: string
           default: ""
-      required:
-        - runtime
