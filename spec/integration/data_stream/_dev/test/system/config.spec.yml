@@ -98,7 +98,7 @@ spec:
             examples:
               - AUDIT_CONTROL
               - AUDIT_READ
-        custom_script:
+        provisioning_script:
           description: "Optional: Custom script to be run to update environment where Elastic Agent runs (e.g. installing new libraries/dependencies)"
           type: object
           additionalProperties: false
