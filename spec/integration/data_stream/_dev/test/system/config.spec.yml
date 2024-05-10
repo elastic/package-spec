@@ -107,9 +107,10 @@ spec:
               description: "Programming language to run the script."
               type: string
               examples:
+                - "sh"
                 - "bash"
                 - "python"
-              default: "bash"
+              default: "sh"
             contents:
               description: "Contents of the script."
               type: string
