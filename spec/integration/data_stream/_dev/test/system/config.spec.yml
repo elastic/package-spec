@@ -114,6 +114,8 @@ spec:
               description: "Contents of the script."
               type: string
               default: ""
+          required:
+            - contents
         pre_start_script:
           description: "Optional: Custom sh script to be run to set required changes for the Elastic Agent process (e.g. export environment variables)"
           type: object
@@ -129,3 +131,5 @@ spec:
               description: "Contents of the script."
               type: string
               default: ""
+          required:
+            - contents
