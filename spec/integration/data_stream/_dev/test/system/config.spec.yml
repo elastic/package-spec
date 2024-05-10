@@ -5,22 +5,6 @@ spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
   additionalProperties: true
-  definitions:
-    agent_scripts:
-      type: object
-      additionalProperties: false
-      properties:
-        language:
-          description: "Programming language to run the script."
-          type: string
-          examples:
-            - "bash"
-            - "python"
-          default: "bash"
-        contents:
-          description: "Contents of the script."
-          type: string
-          default: ""
   properties:
     skip:
       $ref: "./../skip.spec.yml#/definitions/skip"
@@ -116,7 +100,32 @@ spec:
               - AUDIT_READ
         custom_script:
           description: "Optional: Custom script to be run to update environment where Elastic Agent runs (e.g. installing new libraries/dependencies)"
-          $ref: "#/definitions/agent_scripts"
+          type: object
+          additionalProperties: false
+          properties:
+            language:
+              description: "Programming language to run the script."
+              type: string
+              examples:
+                - "bash"
+                - "python"
+              default: "bash"
+            contents:
+              description: "Contents of the script."
+              type: string
+              default: ""
         pre_start_script:
-          description: "Optional: Custom script to be run to set required changes for the Elastic Agent process (e.g. export environmen variables)"
-          $ref: "#/definitions/agent_scripts"
+          description: "Optional: Custom sh script to be run to set required changes for the Elastic Agent process (e.g. export environment variables)"
+          type: object
+          additionalProperties: false
+          properties:
+            language:
+              description: "Programming language to run the script. Currently, just supported \"sh\"."
+              type: string
+              enum:
+               - sh
+              default: sh
+            contents:
+              description: "Contents of the script."
+              type: string
+              default: ""
