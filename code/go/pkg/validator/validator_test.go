@@ -132,6 +132,12 @@ func TestValidateFile(t *testing.T) {
 				"field streams.0.vars.3: Must not be present",
 			},
 		},
+		"bad_skip_ignored_fields": {
+			"data_stream/foo/_dev/test/system/test-default-config.yml",
+			[]string{
+				"field skip_ignored_fields: Invalid type. Expected: array, given: boolean",
+			},
+		},
 		"bad_profiling_symbolizer": {
 			"data_stream/example/manifest.yml",
 			[]string{
