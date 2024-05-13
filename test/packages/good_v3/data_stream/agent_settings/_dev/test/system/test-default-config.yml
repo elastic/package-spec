@@ -9,5 +9,11 @@ agent:
   ports:
     - 127.0.0.0:8000:8000
     - 8888:8888
-  custom_script: mkdir -p /testfolder/
-  pre_start_script: export PATH=${PATH}:/testfolder/
+  provisioning_script:
+    language: bash
+    contents: |
+      mkdir -p /testfolder/
+  pre_start_script:
+    language: bash
+    contents: |
+      export PATH=${PATH}:/testfolder/
