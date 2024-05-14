@@ -10,8 +10,6 @@
   - description: Allow to disable policies and variables in default deployment mode.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/738
-- version: 3.1.5-next
-  changes:
   - description: Add property to not fail system tests on ignored values in fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/743
