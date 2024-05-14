@@ -26,7 +26,7 @@ spec:
     agent:
       description: "Configuration overrides for the Elastic Agent"
       type: object
-      additionalProperties: false
+      additionalProperties: true
       properties:
         runtime:
           description: "Runtime to run the Elastic Agent process"
