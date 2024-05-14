@@ -82,14 +82,9 @@ func indexTemplateHasAFieldWith(indexTemplateName, fieldName, condition string) 
 }
 
 func thePackageIsInstalled(packageName string) error {
-	// TODO: embed sample packages, so we can build a standalone test binary.
-	packagePath := filepath.Join("testdata", "packages", packageName)
-	info, err := os.Stat(packagePath)
-	if errors.Is(err, os.ErrNotExist) {
-		return godog.ErrPending
-	}
-	if !info.IsDir() {
-		return fmt.Errorf("\"%s\" should be a directory", packagePath)
+	packagePath, err := findTestPackage(packageName)
+	if err != nil {
+		return err
 	}
 
 	elasticPackage, err := NewElasticPackage()
@@ -104,6 +99,34 @@ func thePackageIsInstalled(packageName string) error {
 	}
 
 	return nil
+}
+
+func findTestPackage(packageName string) (string, error) {
+	// TODO: embed sample packages, so we can build a standalone test binary.
+	paths := []string{
+		filepath.Join("testdata", "packages", packageName),
+
+		// Support testing with packages from the spec to avoid duplicating packages.
+		filepath.Join("..", "test", "packages", packageName),
+	}
+
+	for _, path := range paths {
+		info, err := os.Stat(path)
+		if errors.Is(err, os.ErrNotExist) {
+			continue
+		}
+		if err != nil {
+			return "", fmt.Errorf("failed to check if path %s exists: %w", path, err)
+		}
+		if !info.IsDir() {
+			return "", fmt.Errorf("\"%s\" should be a directory", path)
+		}
+
+		return path, nil
+	}
+
+	return "", godog.ErrPending
+
 }
 
 func aPolicyIsCreatedWithPackage(packageName string) error {

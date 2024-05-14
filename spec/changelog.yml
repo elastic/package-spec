@@ -13,6 +13,9 @@
   - description: Add property to not fail system tests on ignored values in fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/743
+  - description: Support store mapping option.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/748
   - description: Add agent settings definitions into configuration files for system tests.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/739

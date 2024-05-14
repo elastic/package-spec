@@ -42,6 +42,7 @@ func TestValidateFile(t *testing.T) {
 		"ignored_malformed":                  {},
 		"custom_ilm_policy":                  {},
 		"profiling_symbolizer":               {},
+		"logs_synthetic_mode":                {},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
