@@ -207,6 +207,16 @@ spec:
         type: boolean
         default: true
 
+      store:
+        description: >
+          By default, field values are indexed, but not stored. This means that
+          the field can be queried, but the original field cannot be retrieved.
+          Setting this value to true ensures that the field is also stored, what
+          is useful in situations where the field would not be available even in
+          the _source, like when synthetic source mode is enabled.
+        type: boolean
+        default: false
+
       copy_to:
         description: >
           The copy_to parameter allows you to copy the values of multiple fields
@@ -586,6 +596,10 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.2.0
+    patch:
+      - op: remove
+        path: "/items/properties/store"
   - before: 3.1.0
     patch:
       - op: remove
