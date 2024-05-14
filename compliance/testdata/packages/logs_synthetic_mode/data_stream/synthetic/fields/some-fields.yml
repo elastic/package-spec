@@ -1,3 +1,0 @@
-- name: decision_id
-  type: text
-  store: true
