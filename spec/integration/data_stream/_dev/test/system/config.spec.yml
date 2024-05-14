@@ -41,8 +41,8 @@ spec:
           default: ""
         pid_mode:
           description: >
-            (From docker-compose docs) Turns on sharing between container and the host
-            operating system the PID address space
+            Control access to PID namespaces. When set to `host`, the Elastic Agent
+            will have access to the PID namespace of the host.
           type: string
           enum:
             - host
@@ -110,12 +110,12 @@ spec:
               - AUDIT_CONTROL
               - AUDIT_READ
         provisioning_script:
-          description: "Optional: Custom script to be run to update environment where Elastic Agent runs (e.g. installing new libraries/dependencies)"
+          description: "Optional: Script to run to customize the system where Elastic Agent runs (e.g. installing new libraries/dependencies)"
           type: object
           additionalProperties: false
           properties:
             language:
-              description: "Programming language to run the script."
+              description: "Programming language of the provisioning script."
               type: string
               examples:
                 - "sh"
@@ -123,24 +123,24 @@ spec:
                 - "python"
               default: "sh"
             contents:
-              description: "Contents of the script."
+              description: "Code to run as a provisioning script."
               type: string
               default: ""
           required:
             - contents
         pre_start_script:
-          description: "Optional: Custom sh script to be run to set required changes for the Elastic Agent process (e.g. export environment variables)"
+          description: "Optional: Custom sh script to be executed before starting the Elastic Agent process (e.g. export environment variables)"
           type: object
           additionalProperties: false
           properties:
             language:
-              description: "Programming language to run the script. Currently, just supported \"sh\"."
+              description: "Programming language of the pre-start script. Currently, just supported \"sh\"."
               type: string
               enum:
                - sh
               default: sh
             contents:
-              description: "Contents of the script."
+              description: "Code to run before starting the Elastic Agent."
               type: string
               default: ""
           required:
