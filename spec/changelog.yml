@@ -16,6 +16,9 @@
   - description: Support store mapping option.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/748
+  - description: Add agent settings definitions into configuration files for system tests.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/739
 - version: 3.1.4
   changes:
   - description: Add definitions for different deployment modes.
