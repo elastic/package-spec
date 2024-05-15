@@ -134,7 +134,7 @@ spec:
           additionalProperties: false
           properties:
             language:
-              description: "Programming language of the pre-start script. Currently, just supported \"sh\"."
+              description: "Programming language of the pre-start script. Currently, only \"sh\" is supported."
               type: string
               enum:
                - sh
