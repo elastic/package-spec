@@ -10,5 +10,5 @@ Feature: Basic package types support
   @2.6.0
   Scenario: Input package can be installed
    Given the "basic_input" package is installed
-     And a policy is created with "basic_input" package, "test" template, "test" input, "logfile" input type and dataset "spec.input-test"
-    Then there is an index template "logs-spec.input-test" with pattern "logs-spec.input-test-*"
+     And a policy is created with "basic_input" package, "test" template, "test" input, "logfile" input type and dataset "spec.input_test"
+    Then there is an index template "logs-spec.input_test" with pattern "logs-spec.input_test-*"
