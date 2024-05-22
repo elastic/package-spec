@@ -7,4 +7,4 @@ spec:
   additionalProperties: true
   properties:
     skip:
-      $ref: "./../skip.spec.yml#/definitions/skip"
+      $ref: "./../config.spec.yml#/definitions/skip"

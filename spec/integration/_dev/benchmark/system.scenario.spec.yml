@@ -28,11 +28,7 @@ spec:
           type: string
         vars:
           description: The data_stream specific variables.
-          type:
-            - object
-            - "null"
-          additionalProperties: true
-          default: ~
+          $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/vars"
     warmup_time_period:
       description: |
         A time period as a duration string for warmup of the benchmark. 
@@ -148,11 +144,7 @@ spec:
       type: string
     vars:
       description: The package level variables.
-      type:
-        - object
-        - "null"
-      additionalProperties: true
-      default: ~
+      $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/vars"
     data_stream:
       $ref: "#/definitions/data_stream"
     warmup_time_period:
