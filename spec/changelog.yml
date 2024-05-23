@@ -10,17 +10,17 @@
   - description: Allow to disable policies and variables in default deployment mode.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/738
-  - description: Add property to not fail system tests on ignored values in fields
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/743
   - description: Support store mapping option.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/748
+- version: 3.1.5
+  changes:
+  - description: Add property to not fail system tests on ignored values in fields
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/743
   - description: Add agent settings definitions into configuration files for system tests.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/739
-- version: 3.1.5-next
-  changes:
   - description: Fix filter detection in dashboards with map visualizations.
     type: bugfix
     link: https://github.com/elastic/package-spec/pull/750
