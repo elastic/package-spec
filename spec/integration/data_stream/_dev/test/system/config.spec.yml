@@ -149,11 +149,11 @@ spec:
       description: Variables used to configure settings defined in the package manifest.
       $ref: "./../config.spec.yml#/definitions/vars"
     data_stream:
-      oneOf:
-        - type: "null"
-        - type: object
-          additionalProperties: true
-          properties:
-            vars:
-              description: Variables used to configure settings defined in the data stream manifest.
-              $ref: "./../config.spec.yml#/definitions/vars"
+      type:
+        - "null"
+        - object
+      additionalProperties: true
+      properties:
+        vars:
+          description: Variables used to configure settings defined in the data stream manifest.
+          $ref: "./../config.spec.yml#/definitions/vars"

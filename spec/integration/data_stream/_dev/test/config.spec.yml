@@ -22,11 +22,11 @@ spec:
       required: [ "reason", "link" ]
     vars:
       description: Variables defined for the test case.
-      oneOf:
-        - type: "null"
-        - type: object
-          additionalProperties: true
-          properties:
-            "data_stream.dataset":
-              type: string
-              pattern: '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'
+      type:
+        - "null"
+        - object
+      additionalProperties: true
+      properties:
+        "data_stream.dataset":
+          type: string
+          pattern: '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'
