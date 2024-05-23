@@ -26,7 +26,10 @@
     link: https://github.com/elastic/package-spec/pull/750
   - description: Add support for policy tests.
     type: enhancement
-    link: https://github.com/elastic/package-spec/issues/751
+    link: https://github.com/elastic/package-spec/pull/751
+  - description: Check format of data_stream.dataset test variable
+    type: breaking-change
+    link: https://github.com/elastic/package-spec/pull/752
 - version: 3.1.4
   changes:
   - description: Add definitions for different deployment modes.

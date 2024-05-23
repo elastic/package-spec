@@ -7,7 +7,7 @@ spec:
   additionalProperties: true
   properties:
     skip:
-      $ref: "./../skip.spec.yml#/definitions/skip"
+      $ref: "./../config.spec.yml#/definitions/skip"
     wait_for_data_timeout:
       description: Timeout for waiting for metrics data during a system test.
       type: string
@@ -145,3 +145,15 @@ spec:
               default: ""
           required:
             - contents
+    vars:
+      description: Variables used to configure settings defined in the package manifest.
+      $ref: "./../config.spec.yml#/definitions/vars"
+    data_stream:
+      type:
+        - "null"
+        - object
+      additionalProperties: true
+      properties:
+        vars:
+          description: Variables used to configure settings defined in the data stream manifest.
+          $ref: "./../config.spec.yml#/definitions/vars"
