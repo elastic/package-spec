@@ -10,12 +10,14 @@ spec:
       $ref: "./../config.spec.yml#/definitions/skip"
     data_stream:
       description: Configuration for the data stream.
-      type: object
-      additionalProperties: false
-      properties:
-        vars:
-          description: Variables used to configure settings defined in the data stream manifest.
-          $ref: "./../config.spec.yml#/definitions/vars"
+      oneOf:
+        - type: "null"
+        - type: object
+          additionalProperties: false
+          properties:
+            vars:
+              description: Variables used to configure settings defined in the data stream manifest.
+              $ref: "./../config.spec.yml#/definitions/vars"
     input:
       description: The input of the package to test.
       type: string

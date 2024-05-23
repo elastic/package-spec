@@ -1,2 +1,3 @@
 vars:
   data_stream.dataset: 'hyphen-not-allowed'
+data_stream: ~
