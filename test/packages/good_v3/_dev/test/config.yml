@@ -1,0 +1,10 @@
+system:
+  parallel: true
+pipeline:
+  parallel: false
+asset:
+  parallel: false
+policy:
+  parallel: false
+static:
+  parallel: false

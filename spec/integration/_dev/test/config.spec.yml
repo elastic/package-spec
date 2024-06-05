@@ -1,0 +1,48 @@
+##
+## Describes the specification for a system test configuration file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  definitions:
+    parallel:
+      description: Tests defined can be run in parallel (default true).
+      type: boolean
+      default: true
+  properties:
+    system:
+      description: Configuration for system tests
+      type: object
+      additionalProperties: false
+      properties:
+        parallel:
+          $ref: "#/definitions/parallel"
+    pipeline:
+      description: Configuration for pipeline tests
+      type: object
+      additionalProperties: false
+      properties:
+        parallel:
+          $ref: "#/definitions/parallel"
+    policy:
+      description: Configuration for policy tests
+      type: object
+      additionalProperties: false
+      properties:
+        parallel:
+          $ref: "#/definitions/parallel"
+    static:
+      description: Configuration for static tests
+      type: object
+      additionalProperties: false
+      properties:
+        parallel:
+          $ref: "#/definitions/parallel"
+    asset:
+      description: Configuration for asset tests
+      type: object
+      additionalProperties: false
+      properties:
+        parallel:
+          $ref: "#/definitions/parallel"

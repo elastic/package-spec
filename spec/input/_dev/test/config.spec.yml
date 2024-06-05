@@ -1,0 +1,22 @@
+##
+## Describes the specification for a system test configuration file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  properties:
+    system:
+      description: Configuration for system tests
+      type: object
+      additionalProperties: false
+      properties:
+        parallel:
+          $ref: "../../../integration/_dev/test/config.spec.yml#/definitions/parallel"
+    policy:
+      description: Configuration for policy tests
+      type: object
+      additionalProperties: false
+      properties:
+        parallel:
+           $ref: "../../../integration/_dev/test/config.spec.yml#/definitions/parallel"
