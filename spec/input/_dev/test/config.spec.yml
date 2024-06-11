@@ -8,19 +8,7 @@ spec:
   properties:
     system:
       description: Configuration for system tests
-      type: object
-      additionalProperties: false
-      properties:
-        parallel:
-          $ref: "../../../integration/_dev/test/config.spec.yml#/definitions/parallel"
-        skip:
-          $ref: "../../../integration/data_stream/_dev/test/config.spec.yml#/definitions/skip"
+      $ref: "../../../integration/_dev/test/config.spec.yml#/definitions/config_tests"
     policy:
       description: Configuration for policy tests
-      type: object
-      additionalProperties: false
-      properties:
-        parallel:
-           $ref: "../../../integration/_dev/test/config.spec.yml#/definitions/parallel"
-        skip:
-          $ref: "../../../integration/data_stream/_dev/test/config.spec.yml#/definitions/skip"
+      $ref: "../../../integration/_dev/test/config.spec.yml#/definitions/config_tests"

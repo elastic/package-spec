@@ -6,53 +6,29 @@ spec:
   type: object
   additionalProperties: false
   definitions:
-    parallel:
-      description: Tests defined can be run in parallel (default true).
-      type: boolean
-      default: true
+    config_tests:
+      type: object
+      additionalProperties: false
+      properties:
+        parallel:
+          description: Tests defined can be run in parallel (default true).
+          type: boolean
+          default: true
+        skip:
+          $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/skip"
   properties:
     system:
       description: Configuration for system tests
-      type: object
-      additionalProperties: false
-      properties:
-        parallel:
-          $ref: "#/definitions/parallel"
-        skip:
-          $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/skip"
+      $ref: "#/definitions/config_tests"
     pipeline:
       description: Configuration for pipeline tests
-      type: object
-      additionalProperties: false
-      properties:
-        parallel:
-          $ref: "#/definitions/parallel"
-        skip:
-          $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/skip"
+      $ref: "#/definitions/config_tests"
     policy:
       description: Configuration for policy tests
-      type: object
-      additionalProperties: false
-      properties:
-        parallel:
-          $ref: "#/definitions/parallel"
-        skip:
-          $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/skip"
+      $ref: "#/definitions/config_tests"
     static:
       description: Configuration for static tests
-      type: object
-      additionalProperties: false
-      properties:
-        parallel:
-          $ref: "#/definitions/parallel"
-        skip:
-          $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/skip"
+      $ref: "#/definitions/config_tests"
     asset:
       description: Configuration for asset tests
-      type: object
-      additionalProperties: false
-      properties:
-        parallel:
-          $ref: "#/definitions/parallel"
-        skip:
-          $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/skip"
+      $ref: "#/definitions/config_tests"
