@@ -10,10 +10,10 @@ spec:
       type: object
       additionalProperties: false
       properties:
-        parallel:
-          description: Tests defined can be run in parallel (default true).
+        sequential:
+          description: Tests defined should be run sequentially (default false).
           type: boolean
-          default: true
+          default: false
         skip:
           $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/skip"
   properties:

@@ -1,7 +1,7 @@
 system:
-  parallel: true
+  sequential: true
 policy:
-  parallel: false
+  sequential: false
   skip:
-    reason: ignoring all system tests
+    reason: ignoring all policy tests
     link: https://github.com/elastic/package-spec/issues/1

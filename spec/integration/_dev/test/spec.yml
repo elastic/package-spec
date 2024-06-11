@@ -7,5 +7,3 @@ spec:
       contentMediaType: "application/x-yaml"
       required: false
       $ref: "./config.spec.yml"
-
-
