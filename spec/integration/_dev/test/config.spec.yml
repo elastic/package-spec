@@ -18,6 +18,8 @@ spec:
       properties:
         parallel:
           $ref: "#/definitions/parallel"
+        skip:
+          $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/skip"
     pipeline:
       description: Configuration for pipeline tests
       type: object
@@ -25,6 +27,8 @@ spec:
       properties:
         parallel:
           $ref: "#/definitions/parallel"
+        skip:
+          $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/skip"
     policy:
       description: Configuration for policy tests
       type: object
@@ -32,6 +36,8 @@ spec:
       properties:
         parallel:
           $ref: "#/definitions/parallel"
+        skip:
+          $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/skip"
     static:
       description: Configuration for static tests
       type: object
@@ -39,6 +45,8 @@ spec:
       properties:
         parallel:
           $ref: "#/definitions/parallel"
+        skip:
+          $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/skip"
     asset:
       description: Configuration for asset tests
       type: object
@@ -46,3 +54,5 @@ spec:
       properties:
         parallel:
           $ref: "#/definitions/parallel"
+        skip:
+          $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/skip"

@@ -1,5 +1,8 @@
 system:
   parallel: true
+  skip:
+    reason: ignoring all system tests
+    link: https://github.com/elastic/package-spec/issues/1
 pipeline:
   parallel: false
 asset:

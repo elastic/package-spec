@@ -2,3 +2,6 @@ system:
   parallel: true
 policy:
   parallel: false
+  skip:
+    reason: ignoring all system tests
+    link: https://github.com/elastic/package-spec/issues/1

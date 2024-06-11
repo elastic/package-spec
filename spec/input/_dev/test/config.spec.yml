@@ -13,6 +13,8 @@ spec:
       properties:
         parallel:
           $ref: "../../../integration/_dev/test/config.spec.yml#/definitions/parallel"
+        skip:
+          $ref: "../../../integration/data_stream/_dev/test/config.spec.yml#/definitions/skip"
     policy:
       description: Configuration for policy tests
       type: object
@@ -20,3 +22,5 @@ spec:
       properties:
         parallel:
            $ref: "../../../integration/_dev/test/config.spec.yml#/definitions/parallel"
+        skip:
+          $ref: "../../../integration/data_stream/_dev/test/config.spec.yml#/definitions/skip"
