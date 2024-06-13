@@ -7,7 +7,7 @@ require (
 	github.com/PaesslerAG/jsonpath v0.1.1
 	github.com/boumenot/gocover-cobertura v1.2.0
 	github.com/creasty/defaults v1.7.0
-	github.com/elastic/go-licenser v0.4.1
+	github.com/elastic/go-licenser v0.4.2
 	github.com/elastic/gojsonschema v1.2.1
 	github.com/elastic/kbncontent v0.1.4
 	github.com/evanphx/json-patch/v5 v5.9.0
