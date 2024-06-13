@@ -1,13 +1,13 @@
 system:
-  sequential: true
+  parallel: true
   skip:
     reason: ignoring all system tests
     link: https://github.com/elastic/package-spec/issues/1
 pipeline:
-  sequential: false
+  parallel: false
 asset:
-  sequential: false
+  parallel: false
 policy:
-  sequential: false
+  parallel: false
 static:
-  sequential: false
+  parallel: false

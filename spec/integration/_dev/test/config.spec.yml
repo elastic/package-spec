@@ -10,8 +10,8 @@ spec:
       type: object
       additionalProperties: false
       properties:
-        sequential:
-          description: Tests defined should be run sequentially (default false).
+        parallel:
+          description: Tests defined can be run in parallel (default true).
           type: boolean
           default: false
         skip:
