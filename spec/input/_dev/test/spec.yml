@@ -11,3 +11,9 @@ spec:
       name: policy
       required: false
       $ref: "../../../integration/data_stream/_dev/test/policy/spec.yml"
+    - description: Common Configuration of tests.
+      type: file
+      pattern: '^config.yml$'
+      contentMediaType: "application/x-yaml"
+      required: false
+      $ref: "./config.spec.yml"

@@ -1,0 +1,34 @@
+##
+## Describes the specification for a system test configuration file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  definitions:
+    config_tests:
+      type: object
+      additionalProperties: false
+      properties:
+        parallel:
+          description: Tests defined can be run in parallel (default true).
+          type: boolean
+          default: false
+        skip:
+          $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/skip"
+  properties:
+    system:
+      description: Configuration for system tests
+      $ref: "#/definitions/config_tests"
+    pipeline:
+      description: Configuration for pipeline tests
+      $ref: "#/definitions/config_tests"
+    policy:
+      description: Configuration for policy tests
+      $ref: "#/definitions/config_tests"
+    static:
+      description: Configuration for static tests
+      $ref: "#/definitions/config_tests"
+    asset:
+      description: Configuration for asset tests
+      $ref: "#/definitions/config_tests"

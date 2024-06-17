@@ -17,3 +17,8 @@ spec:
       name: deploy
       required: false
       $ref: "./deploy/spec.yml"
+    - description: Folder containing configuration related test configuration.
+      type: folder
+      name: test
+      required: false
+      $ref: "./test/spec.yml"
