@@ -13,6 +13,9 @@
   - description: Support store mapping option.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/748
+  - description: Add configuration folder _dev/test for global test settings
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/759
 - version: 3.1.5
   changes:
   - description: Add property to not fail system tests on ignored values in fields
