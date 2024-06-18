@@ -4,14 +4,16 @@ set -euo pipefail
 
 WORKSPACE="$(pwd)"
 
-source .buildkite/scripts/install_deps.sh
-add_bin_path
+if [[ "${CI:-"false"}" == "true" ]]; then
+    source .buildkite/scripts/install_deps.sh
+    add_bin_path
 
-echo "--- Install Go :go:"
-with_go
+    echo "--- Install Go :go:"
+    with_go
 
-echo "--- Install docker-compose"
-with_docker_compose
+    echo "--- Install docker-compose"
+    with_docker_compose
+fi
 
 function usage() {
     echo "usage: $0 STACK_VERSION SPEC_VERSION"
