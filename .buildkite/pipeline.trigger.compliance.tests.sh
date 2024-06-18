@@ -26,6 +26,7 @@ steps:
 EOF
 
 # Generate each test we want to do.
+compliance_test 8.15.0-SNAPSHOT 3.2.0
 compliance_test 8.14.1-SNAPSHOT 3.2.0
 compliance_test 8.14.0 3.2.0
 compliance_test 8.9.0 2.7.0
