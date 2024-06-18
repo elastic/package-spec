@@ -78,7 +78,7 @@ func indexTemplateHasAFieldWith(indexTemplateName, fieldName, condition string) 
 	}
 	fmt.Printf("Found the following mapping for field %q:\n", fieldName)
 	fmt.Println(string(d))
-	return fmt.Errorf("conditon %q not satisfied by field %q", condition, fieldName)
+	return fmt.Errorf("condition %q not satisfied by field %q", condition, fieldName)
 }
 
 func thePackageIsInstalled(packageName string) error {
@@ -126,7 +126,6 @@ func findTestPackage(packageName string) (string, error) {
 	}
 
 	return "", godog.ErrPending
-
 }
 
 func aPolicyIsCreatedWithPackage(packageName string) error {
