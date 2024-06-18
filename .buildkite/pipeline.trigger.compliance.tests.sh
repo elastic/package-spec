@@ -26,7 +26,8 @@ steps:
 EOF
 
 # Generate each test we want to do.
-compliance_test 8.15.0-SNAPSHOT 3.2.0
+## Requires changes in elastic-package to be able to test log_synthetic_mode test package
+# compliance_test 8.15.0-SNAPSHOT 3.2.0
 compliance_test 8.14.1-SNAPSHOT 3.1.5
 compliance_test 8.14.0 3.1.5
 compliance_test 8.13.4 3.1.5
