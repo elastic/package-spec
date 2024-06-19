@@ -17,6 +17,7 @@ import (
 	"testing"
 
 	"github.com/cucumber/godog"
+	messages "github.com/cucumber/messages/go/v21"
 	"golang.org/x/exp/slices"
 )
 
@@ -78,7 +79,7 @@ func indexTemplateHasAFieldWith(indexTemplateName, fieldName, condition string) 
 	}
 	fmt.Printf("Found the following mapping for field %q:\n", fieldName)
 	fmt.Println(string(d))
-	return fmt.Errorf("conditon %q not satisfied by field %q", condition, fieldName)
+	return fmt.Errorf("condition %q not satisfied by field %q", condition, fieldName)
 }
 
 func thePackageIsInstalled(packageName string) error {
@@ -126,7 +127,6 @@ func findTestPackage(packageName string) (string, error) {
 	}
 
 	return "", godog.ErrPending
-
 }
 
 func aPolicyIsCreatedWithPackage(packageName string) error {
@@ -203,6 +203,15 @@ func thereIsATransformAlias(transformAliasName string) error {
 }
 
 func InitializeScenario(ctx *godog.ScenarioContext) {
+	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
+		skipped := slices.ContainsFunc(sc.Tags, func(elem *messages.PickleTag) bool {
+			return elem.Name == "@skip"
+		})
+		if skipped {
+			return ctx, godog.ErrSkip
+		}
+		return ctx, nil
+	})
 	ctx.Step(`^index template "([^"]*)" has a field "([^"]*)" with "([^"]*)"$`, indexTemplateHasAFieldWith)
 	ctx.Step(`^the "([^"]*)" package is installed$`, thePackageIsInstalled)
 	ctx.Step(`^a policy is created with "([^"]*)" package$`, aPolicyIsCreatedWithPackage)

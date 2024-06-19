@@ -2,9 +2,9 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 3.2.0-next
+- version: 3.2.0
   changes:
-  - description: Add subobjects definition (at the data stream level)
+  - description: Add subobjects definition (at the data stream level).
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/727
   - description: Allow to disable policies and variables in default deployment mode.
@@ -13,7 +13,7 @@
   - description: Support store mapping option.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/748
-  - description: Add configuration folder _dev/test for global test settings
+  - description: Add configuration folder _dev/test for global test settings.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/759
 - version: 3.1.5
