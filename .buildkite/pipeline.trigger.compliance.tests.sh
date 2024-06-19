@@ -12,6 +12,8 @@ cat <<EOF
         command: ".buildkite/scripts/run-installer-compliance.sh ${stack_version} ${spec_version}"
         artifact_paths:
           - compliance/report-*.xml
+        env:
+          ELASTIC_PACKAGE_CHECK_UPDATE_DISABLED: "true"
         agents:
           provider: "gcp"
 EOF
@@ -26,11 +28,8 @@ steps:
 EOF
 
 # Generate each test we want to do.
-## Requires changes in elastic-package to be able to test log_synthetic_mode test package
-# compliance_test 8.15.0-SNAPSHOT 3.2.0
-compliance_test 8.14.1-SNAPSHOT 3.1.5
+compliance_test 8.15.0-SNAPSHOT 3.2.0
 compliance_test 8.14.0 3.1.5
-compliance_test 8.13.4 3.1.5
 compliance_test 8.9.0 2.7.0
 
 # Annotate junit results.
