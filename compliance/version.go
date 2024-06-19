@@ -89,6 +89,9 @@ func checkFeaturesVersions(t *testing.T, fs fs.FS, paths []string) {
 			return fmt.Errorf("no version tags")
 		}
 		for _, tag := range tags {
+			if tag.Name == "@skip" {
+				return nil
+			}
 			if !slices.Contains(versions, strings.TrimLeft(tag.Name, "@")) {
 				return fmt.Errorf("tag indicates an unknown spec version %s", tag.Name)
 			}

@@ -17,6 +17,7 @@ import (
 	"testing"
 
 	"github.com/cucumber/godog"
+	messages "github.com/cucumber/messages/go/v21"
 	"golang.org/x/exp/slices"
 )
 
@@ -202,6 +203,15 @@ func thereIsATransformAlias(transformAliasName string) error {
 }
 
 func InitializeScenario(ctx *godog.ScenarioContext) {
+	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
+		skipped := slices.ContainsFunc(sc.Tags, func(elem *messages.PickleTag) bool {
+			return elem.Name == "@skip"
+		})
+		if skipped {
+			return ctx, godog.ErrSkip
+		}
+		return ctx, nil
+	})
 	ctx.Step(`^index template "([^"]*)" has a field "([^"]*)" with "([^"]*)"$`, indexTemplateHasAFieldWith)
 	ctx.Step(`^the "([^"]*)" package is installed$`, thePackageIsInstalled)
 	ctx.Step(`^a policy is created with "([^"]*)" package$`, aPolicyIsCreatedWithPackage)
