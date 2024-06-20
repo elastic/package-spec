@@ -5,7 +5,7 @@ env:
   SETUP_MAGE_VERSION: "latest"
   DOCKER_COMPOSE_VERSION: "v2.17.2"
   GO_LINUX_AGENT_IMAGE: "golang:${GO_VERSION}"
-  GO_WINDOWS_AGENT_IMAGE: "family/ci-windows-2022"
+  GO_WINDOWS_AGENT_IMAGE: "family/core-windows-2022"
 
 steps:
   - label: ":go: Run check-static"
