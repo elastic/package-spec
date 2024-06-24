@@ -48,7 +48,7 @@ spec:
     $ref: "../integration/data_stream/fields/spec.yml"
   - description: Sample event file
     type: file
-    name: "sample_event.json"
+    pattern: "^sample_event(_[a-z0-9]+)?.json$"
     contentMediaType: "application/json"
     required: false
   - description: Folder containing development resources
