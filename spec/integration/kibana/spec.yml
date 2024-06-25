@@ -137,6 +137,10 @@ spec:
       forbiddenPatterns:
         - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden 
 versions:
+  - before: 3.3.0
+    patch:
+      - op: remove
+        path: "/contents/13" # remove SLO definitions
   - before: 2.10.0
     patch:
       - op: remove
