@@ -2,6 +2,11 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
+- version: 3.3.0-next
+  changes:
+  - description: Add support for `slo` assets.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/767
 - version: 3.2.1-next
   changes:
   - description: Prepare for next version
@@ -725,3 +730,4 @@
   - description: Introduce "value" property for constant_keyword fields
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/194
+
