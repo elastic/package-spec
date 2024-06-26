@@ -647,7 +647,7 @@ func TestValidateRoutingRules(t *testing.T) {
 		"good":    []string{},
 		"good_v2": []string{},
 		"bad_routing_rules": []string{
-			`routing rules defined in data stream "rules" but dataset field is missing: dataset field is required in data stream "rules"`,
+			`routing rules defined in data stream "rules" but dataset field is missing: dataset field is required in manifest for data stream "rules"`,
 		},
 		"bad_routing_rules_wrong_spec": []string{
 			`item [routing_rules.yml] is not allowed in folder [../../../../test/packages/bad_routing_rules_wrong_spec/data_stream/rules]`,

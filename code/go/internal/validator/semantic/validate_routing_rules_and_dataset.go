@@ -56,7 +56,7 @@ func validateDatasetInDataStream(fsys fspath.FS, dataStream string) error {
 	}
 
 	if manifest.Dataset == "" {
-		return fmt.Errorf("dataset field is required in data stream %q", dataStream)
+		return fmt.Errorf("dataset field is required in manifest for data stream %q", dataStream)
 	}
 	return nil
 }
