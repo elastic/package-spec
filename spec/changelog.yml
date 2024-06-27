@@ -7,6 +7,9 @@
   - description: Add support for `slo` assets.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/767
+  - description: Improve error information for missing dataset field in manifest.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/769
 - version: 3.2.1-next
   changes:
   - description: Prepare for next version
