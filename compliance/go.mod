@@ -6,10 +6,10 @@ require (
 	github.com/Masterminds/semver/v3 v3.2.1
 	github.com/cucumber/godog v0.14.1
 	github.com/cucumber/messages/go/v21 v21.0.1
-	github.com/elastic/elastic-package v0.100.0
+	github.com/elastic/elastic-package v0.101.0
 	github.com/elastic/go-elasticsearch/v8 v8.14.0
 	github.com/elastic/go-licenser v0.4.2
-	github.com/elastic/package-spec/v3 v3.1.4
+	github.com/elastic/package-spec/v3 v3.2.1
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
@@ -53,7 +53,7 @@ require (
 	github.com/evanphx/json-patch v5.7.0+incompatible // indirect
 	github.com/evanphx/json-patch/v5 v5.9.0 // indirect
 	github.com/exponent-io/jsonpath v0.0.0-20210407135951-1de76d718b3f // indirect
-	github.com/fatih/color v1.16.0 // indirect
+	github.com/fatih/color v1.17.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-errors/errors v1.4.2 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
@@ -126,12 +126,12 @@ require (
 	github.com/power-devops/perfstat v0.0.0-20210106213030-5aafc221ea8c // indirect
 	github.com/rivo/uniseg v0.4.3 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
-	github.com/shirou/gopsutil/v3 v3.24.4 // indirect
+	github.com/shirou/gopsutil/v3 v3.24.5 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
-	github.com/spf13/cobra v1.8.0 // indirect
+	github.com/spf13/cobra v1.8.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
@@ -147,37 +147,37 @@ require (
 	go.opentelemetry.io/otel/metric v1.24.0 // indirect
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
 	go.starlark.net v0.0.0-20230525235612-a134d8f9ddca // indirect
-	golang.org/x/crypto v0.22.0 // indirect
-	golang.org/x/mod v0.17.0 // indirect
-	golang.org/x/net v0.24.0 // indirect
+	golang.org/x/crypto v0.24.0 // indirect
+	golang.org/x/mod v0.18.0 // indirect
+	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/oauth2 v0.15.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/sys v0.20.0 // indirect
-	golang.org/x/term v0.19.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/term v0.21.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	golang.org/x/tools v0.20.0 // indirect
+	golang.org/x/tools v0.22.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	helm.sh/helm/v3 v3.14.4 // indirect
-	k8s.io/api v0.30.0 // indirect
-	k8s.io/apiextensions-apiserver v0.29.0 // indirect
-	k8s.io/apimachinery v0.30.0 // indirect
-	k8s.io/cli-runtime v0.30.0 // indirect
-	k8s.io/client-go v0.30.0 // indirect
-	k8s.io/component-base v0.29.0 // indirect
+	helm.sh/helm/v3 v3.15.2 // indirect
+	k8s.io/api v0.30.2 // indirect
+	k8s.io/apiextensions-apiserver v0.30.0 // indirect
+	k8s.io/apimachinery v0.30.2 // indirect
+	k8s.io/cli-runtime v0.30.2 // indirect
+	k8s.io/client-go v0.30.2 // indirect
+	k8s.io/component-base v0.30.0 // indirect
 	k8s.io/klog/v2 v2.120.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20240228011516-70dd3763d340 // indirect
-	k8s.io/kubectl v0.29.0 // indirect
+	k8s.io/kubectl v0.30.0 // indirect
 	k8s.io/utils v0.0.0-20230726121419-3b25d923346b // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/kustomize/api v0.13.5-0.20230601165947-6ce0bf390ce3 // indirect
 	sigs.k8s.io/kustomize/kyaml v0.14.3-0.20230601165947-6ce0bf390ce3 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
-	sigs.k8s.io/yaml v1.3.0 // indirect
+	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
 replace github.com/elastic/package-spec/v3 => ../
