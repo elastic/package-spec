@@ -1,10 +1,11 @@
 ##
-## Entrypoint of "input packages" specification.
+## Entrypoint of "content packages" specification.
+## The specification is considered "beta" at the moment, so it may change until we release it as GA.
 ##
 ## Describes the folders and files that make up a package.
 ##
 spec:
-  additionalContents: true
+  additionalContents: false
   totalContentsLimit: 65535
   totalSizeLimit: 50MB
   sizeLimit: 30MB
@@ -30,38 +31,21 @@ spec:
     contentMediaType: "text/plain"
     name: "LICENSE.txt"
     required: false
-  - description: Folder containing agent-related definitions
-    type: folder
-    name: agent
-    required: true
-    $ref: "../integration/agent/spec.yml"
   - description: Folder containing documentation for the package
     type: folder
     name: docs
     required: true
     $ref: "../integration/docs/spec.yml"
-  - description: Folder containing field definitions
+  - description: Folder containing images for the package
     type: folder
-    name: fields
-    required: true
-    $ref: "../integration/data_stream/fields/spec.yml"
-  - description: Sample event file
-    type: file
-    name: "sample_event.json"
-    contentMediaType: "application/json"
+    name: img
     required: false
-  - description: Folder containing development resources
+    $ref: "../integration/img/spec.yml"
+  - description: Folder containing Kibana assets provided by the package
     type: folder
-    name: _dev
+    name: kibana
     required: false
-    visibility: private
-    $ref: "./_dev/spec.yml"
-  - description: File containing lifecycle configuration (technical preview)
-    type: file
-    contentMediaType: "application/x-yaml"
-    name: "lifecycle.yml"
-    required: false
-    $ref: "../integration/data_stream/lifecycle.spec.yml"
+    $ref: "../integration/kibana/spec.yml"
   - description: Configuration file to process the results returned from the package validation. This file is just for package validation and it should be ignored when installing or using the package.
     type: file
     contentMediaType: "application/x-yaml"
@@ -70,7 +54,7 @@ spec:
     $ref: "../integration/validation.spec.yml"
 
 versions:
-  - before: 2.10.0
+  - before: 3.4.0
     patch:
       - op: remove
-        path: "/contents/8" # remove lifecycle definition
+        path: "/contents" # Package type not available before this version.
