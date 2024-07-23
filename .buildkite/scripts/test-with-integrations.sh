@@ -53,10 +53,10 @@ get_source_commit_link() {
     echo "https://github.com/${GITHUB_PR_BASE_OWNER}/${GITHUB_PR_BASE_REPO}/commit/${GITHUB_PR_HEAD_SHA}"
 }
 
-#set_git_config() {
-#    git config user.name "${GITHUB_USERNAME_SECRET}"
-#    git config user.email "${GITHUB_EMAIL_SECRET}"
-#}
+set_git_config() {
+    git config user.name "${GITHUB_USERNAME_SECRET}"
+    git config user.email "${GITHUB_EMAIL_SECRET}"
+}
 
 git_push_with_auth() {
     local owner="$1"
@@ -135,7 +135,7 @@ create_or_update_pull_request() {
 
     pushd "${repo_path}" > /dev/null
 
-    #set_git_config
+    set_git_config
 
     echo "Checking branch ${INTEGRATIONS_PR_BRANCH} in remote ${INTEGRATIONS_GITHUB_OWNER}/${INTEGRATIONS_GITHUB_REPO_NAME}"
     if ! exists_branch "${INTEGRATIONS_GITHUB_OWNER}" "${INTEGRATIONS_GITHUB_REPO_NAME}" "${INTEGRATIONS_PR_BRANCH}" ; then
