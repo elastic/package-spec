@@ -63,7 +63,7 @@ git_push_with_auth() {
     local repository="$2"
     local branch="$3"
 
-    retry 3 git push https://${GITHUB_USERNAME_SECRET}:${GITHUB_TOKEN}@github.com/${owner}/${repository}.git "${branch}"
+    retry 3 git push https://${GITHUB_TOKEN}@github.com/${owner}/${repository}.git "${branch}"
 }
 
 clone_repository() {

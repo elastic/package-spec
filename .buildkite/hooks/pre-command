@@ -4,8 +4,6 @@ source .buildkite/scripts/tooling.sh
 
 set -euo pipefail
 
-GITHUB_TOKEN_VAULT_PATH=kv/ci-shared/platform-ingest/github_token
-
 GO_VERSION=$(cat .go-version)
 export GO_VERSION
 
@@ -13,10 +11,8 @@ export GO_VERSION
 # https://buildkite.com/docs/pipelines/managing-log-output#redacted-environment-variables
 
 if [[ "$BUILDKITE_PIPELINE_SLUG" == "package-spec-test-with-integrations" && "$BUILDKITE_STEP_KEY" == "pr-integrations" ]]; then
-    GITHUB_USERNAME_SECRET=$(retry 5 vault kv get -field username ${GITHUB_TOKEN_VAULT_PATH})
-    export GITHUB_USERNAME_SECRET
-    GITHUB_EMAIL_SECRET=$(retry 5 vault kv get -field email ${GITHUB_TOKEN_VAULT_PATH})
-    export GITHUB_EMAIL_SECRET
-    GITHUB_TOKEN=$(retry 5 vault kv get -field token ${GITHUB_TOKEN_VAULT_PATH})
-    export GITHUB_TOKEN
+    GITHUB_USERNAME_SECRET="elasticmachine"
+    export GITHUB_USERNAME_SECRET=$GITHUB_USERNAME_SECRET
+    export GITHUB_EMAIL_SECRET="elasticmachine@elastic.co"
+    export GITHUB_TOKEN=$VAULT_GITHUB_TOKEN
 fi
