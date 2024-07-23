@@ -14,7 +14,7 @@ conditions:
     version: '^8.16.0' #TBD
   elastic:
     subscription: 'basic'
-interested_on:
+discovery:
   fields:
     - name: process.pid
 screenshots:

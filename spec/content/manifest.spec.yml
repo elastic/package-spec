@@ -6,7 +6,7 @@ spec:
   type: object
   additionalProperties: false
   definitions:
-    interested_on:
+    discovery:
       description: >
         Description of the data this package can be used with. It can be used to discover
         the package from elements in the existing data.
@@ -52,8 +52,8 @@ spec:
       $ref: "../integration/manifest.spec.yml#/definitions/categories"
     conditions:
       $ref: "../integration/manifest.spec.yml#/definitions/conditions"
-    interested_on:
-      $ref: "#/definitions/interested_on"
+    discovery:
+      $ref: "#/definitions/discovery"
     icons:
       $ref: "../integration/manifest.spec.yml#/definitions/icons"
     screenshots:
