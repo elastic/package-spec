@@ -45,7 +45,7 @@ spec:
     type: folder
     name: kibana
     required: false
-    $ref: "../integration/kibana/spec.yml"
+    $ref: "./kibana/spec.yml"
   - description: Configuration file to process the results returned from the package validation. This file is just for package validation and it should be ignored when installing or using the package.
     type: file
     contentMediaType: "application/x-yaml"
