@@ -5,7 +5,10 @@
 package loader
 
 import (
+	"errors"
+	"fmt"
 	"io/fs"
+	"os"
 
 	"github.com/Masterminds/semver/v3"
 
@@ -18,5 +21,12 @@ import (
 func LoadSpec(fsys fs.FS, version semver.Version, pkgType string) (spectypes.ItemSpec, error) {
 	fileSpecLoader := yamlschema.NewFileSchemaLoader()
 	loader := specschema.NewFolderSpecLoader(fsys, fileSpecLoader, version)
-	return loader.Load(pkgType)
+	spec, err := loader.Load(pkgType)
+	if errors.Is(err, os.ErrNotExist) {
+		return nil, fmt.Errorf("package type %q not supported (%w)", pkgType, err)
+	}
+	if err != nil {
+		return nil, err
+	}
+	return spec, nil
 }
