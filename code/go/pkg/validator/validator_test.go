@@ -233,6 +233,7 @@ func TestValidateFile(t *testing.T) {
 					filter := specerrors.NewFilter(filterConfig)
 					result, err := filter.Run(verrs)
 					require.NoError(t, err)
+					assert.Empty(t, result.UnusedProcessors, "There are unused exclusion checks in the validation.yml file")
 					errs = result.Processed
 				}
 			}
