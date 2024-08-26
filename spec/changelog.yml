@@ -12,6 +12,9 @@
   - description: Add support for `slo` assets.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/767
+  - description: Add spec for img directory.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/777
 - version: 3.2.2-next
   changes:
   - description: Improved error message for unsupported package types.
