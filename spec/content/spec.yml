@@ -11,7 +11,6 @@ spec:
   sizeLimit: 30MB
   configurationSizeLimit: 5MB
   relativePathSizeLimit: 3MB
-  fieldsPerDataStreamLimit: 2048
   release: beta
   contents:
   - description: The main package manifest file
