@@ -17,7 +17,7 @@ spec:
     contentMediaType: "application/x-yaml"
     name: "tags.yml"
     required: false
-    $ref: "./tags.spec.yml"
+    $ref: "../../integration/kibana/tags.spec.yml"
   - description: Folder containing Kibana SLO assets
     type: folder
     name: slo

@@ -1,5 +1,5 @@
 ##
-## Describes the specification for a routing rules yml file
+## Describes the specification for the additional kibana tags provided by the package.
 ##
 spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
