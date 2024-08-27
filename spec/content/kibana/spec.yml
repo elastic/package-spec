@@ -1,0 +1,31 @@
+spec:
+  additionalContents: false
+  contents:
+  - description: Folder containing Kibana dashboard assets
+    type: folder
+    name: dashboard
+    required: false
+    contents:
+    - description: A dashboard asset file
+      type: file
+      contentMediaType: "application/json"
+      pattern: '^{PACKAGE_NAME}-.+\.json$'
+      forbiddenPatterns:
+        - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
+  - description: File containing saved object tag definitions for assets
+    type: file
+    contentMediaType: "application/x-yaml"
+    name: "tags.yml"
+    required: false
+    $ref: "../../integration/kibana/tags.spec.yml"
+  - description: Folder containing Kibana SLO assets
+    type: folder
+    name: slo
+    required: false
+    contents:
+    - description: An SLO asset file
+      type: file
+      contentMediaType: "application/json"
+      pattern: '^{PACKAGE_NAME}-.+\.json$'
+      forbiddenPatterns:
+        - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden

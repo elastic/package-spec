@@ -1,0 +1,70 @@
+##
+## Describes the specification for the content package's main manifest.yml file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  definitions:
+    discovery:
+      description: >
+        Description of the data this package can be used with. It can be used to discover
+        the package from elements in the existing data.
+      type: object
+      additionalProperties: false
+      properties:
+        fields:
+          description: Description of the fields this package can be used with.
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                description: Name of the field.
+                type: string
+  properties:
+    format_version:
+      description: The version of the package specification format used by this package.
+      $ref: "../integration/manifest.spec.yml#/definitions/version"
+    name:
+      description: The name of the package.
+      type: string
+      pattern: '^[a-z0-9_]+$'
+      examples:
+      - apache
+    title:
+      $ref: "../integration/manifest.spec.yml#/definitions/title"
+    description:
+      $ref: "../integration/manifest.spec.yml#/definitions/description"
+    version:
+      description: The version of the package.
+      $ref: "../integration/manifest.spec.yml#/definitions/version"
+    source:
+      $ref: "../integration/manifest.spec.yml#/definitions/source"
+    type:
+      description: The type of package.
+      type: string
+      enum:
+      - content
+      examples:
+      - content
+    categories:
+      $ref: "../integration/manifest.spec.yml#/definitions/categories"
+    conditions:
+      $ref: "../integration/manifest.spec.yml#/definitions/conditions"
+    discovery:
+      $ref: "#/definitions/discovery"
+    icons:
+      $ref: "../integration/manifest.spec.yml#/definitions/icons"
+    screenshots:
+      $ref: "../integration/manifest.spec.yml#/definitions/screenshots"
+    owner:
+      $ref: "../integration/manifest.spec.yml#/definitions/owner"
+  required:
+  - format_version
+  - name
+  - title
+  - description
+  - version
+  - type
+  - owner

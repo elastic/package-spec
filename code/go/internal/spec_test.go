@@ -19,6 +19,7 @@ func TestLoadAllBundledVersions(t *testing.T) {
 	require.NoError(t, err)
 
 	for _, version := range versions {
+		testForVersionType(t, version, "content")
 		testForVersionType(t, version, "input")
 		testForVersionType(t, version, "integration")
 	}

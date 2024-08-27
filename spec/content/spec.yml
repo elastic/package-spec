@@ -1,16 +1,17 @@
 ##
-## Entrypoint of "integration packages" specification.
+## Entrypoint of "content packages" specification.
+## The specification is considered "beta" at the moment, so it may change until we release it as GA.
 ##
 ## Describes the folders and files that make up a package.
 ##
 spec:
-  additionalContents: true
+  additionalContents: false
   totalContentsLimit: 65535
   totalSizeLimit: 250MB
   sizeLimit: 150MB
   configurationSizeLimit: 5MB
   relativePathSizeLimit: 3MB
-  fieldsPerDataStreamLimit: 2048
+  release: beta
   contents:
   - description: The main package manifest file
     type: file
@@ -24,62 +25,36 @@ spec:
     contentMediaType: "application/x-yaml"
     name: "changelog.yml"
     required: true
-    $ref: "./changelog.spec.yml"
-  - description: The package's NOTICE file
-    type: file
-    contentMediaType: "text/plain"
-    name: "NOTICE.txt"
-    required: false
+    $ref: "../integration/changelog.spec.yml"
   - description: The package's license file
     type: file
     contentMediaType: "text/plain"
     name: "LICENSE.txt"
     required: false
-  - description: Folder containing data stream definitions
-    type: folder
-    name: data_stream
-    required: false
-    $ref: "./data_stream/spec.yml"
   - description: Folder containing documentation for the package
     type: folder
     name: docs
     required: true
-    $ref: "./docs/spec.yml"
-  - description: Folder containing agent-related definitions
+    $ref: "../integration/docs/spec.yml"
+  - description: Folder containing images for the package
     type: folder
-    name: agent
+    name: img
     required: false
-    $ref: "./agent/spec.yml"
-  - description: Folder containing Kibana assets used by the package
+    $ref: "../integration/img/spec.yml"
+  - description: Folder containing Kibana assets provided by the package
     type: folder
     name: kibana
     required: false
     $ref: "./kibana/spec.yml"
-  - description: Folder containing development resources
-    type: folder
-    name: _dev
-    required: false
-    visibility: private
-    $ref: "./_dev/spec.yml"
-  - description: Folder containing Elasticsearch assets used by the package
-    type: folder
-    name: elasticsearch
-    required: false
-    $ref: "./elasticsearch/spec.yml"
   - description: Configuration file to process the results returned from the package validation. This file is just for package validation and it should be ignored when installing or using the package.
     type: file
     contentMediaType: "application/x-yaml"
     name: "validation.yml"
     required: false
-    $ref: "./validation.spec.yml"
-  - description: Folder containing images for the package
-    type: folder
-    name: img
-    required: false
-    $ref: "./img/spec.yml"
+    $ref: "../integration/validation.spec.yml"
 
 versions:
-  - before: 3.3.0
+  - before: 3.4.0
     patch:
       - op: remove
-        path: "/contents/11" # Definition for img folder.
+        path: "/contents" # Package type not available before this version.

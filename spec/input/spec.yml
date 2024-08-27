@@ -1,6 +1,5 @@
 ##
 ## Entrypoint of "input packages" specification.
-## The specification is considered "beta" at the moment, so it may change until we release it as GA.
 ##
 ## Describes the folders and files that make up a package.
 ##
@@ -69,8 +68,17 @@ spec:
     name: "validation.yml"
     required: false
     $ref: "../integration/validation.spec.yml"
+  - description: Folder containing images for the package
+    type: folder
+    name: img
+    required: false
+    $ref: "../integration/img/spec.yml"
 
 versions:
+  - before: 3.3.0
+    patch:
+      - op: remove
+        path: "/contents/10" # Definition for img folder.
   - before: 2.10.0
     patch:
       - op: remove

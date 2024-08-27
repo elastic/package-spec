@@ -33,6 +33,7 @@ func TestValidateFile(t *testing.T) {
 		"good_v2":                            {},
 		"good_v3":                            {},
 		"good_input":                         {},
+		"good_content":                       {},
 		"deploy_custom_agent":                {},
 		"deploy_custom_agent_multi_services": {},
 		"deploy_docker":                      {},
@@ -232,6 +233,7 @@ func TestValidateFile(t *testing.T) {
 					filter := specerrors.NewFilter(filterConfig)
 					result, err := filter.Run(verrs)
 					require.NoError(t, err)
+					assert.Empty(t, result.UnusedProcessors, "There are unused exclusion checks in the validation.yml file")
 					errs = result.Processed
 				}
 			}

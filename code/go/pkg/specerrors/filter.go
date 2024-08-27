@@ -23,6 +23,8 @@ type Filter struct {
 type FilterResult struct {
 	Processed error
 	Removed   error
+
+	UnusedProcessors []Processor
 }
 
 // Run runs all the processors over all the validation errors and return the filtered ones
@@ -30,6 +32,7 @@ func (r *Filter) Run(allErrors ValidationErrors) (FilterResult, error) {
 	newErrors := allErrors
 	var allFiltered ValidationErrors
 
+	var unused []Processor
 	for _, p := range r.processors {
 		result, err := p.Process(newErrors)
 		if err != nil {
@@ -37,11 +40,16 @@ func (r *Filter) Run(allErrors ValidationErrors) (FilterResult, error) {
 		}
 		newErrors = result.Processed
 		allFiltered.Append(result.Removed)
+
+		if len(result.Removed) == 0 {
+			unused = append(unused, p)
+		}
 	}
 
 	return FilterResult{
-		Processed: nilOrValidationErrors(newErrors),
-		Removed:   nilOrValidationErrors(allFiltered),
+		Processed:        nilOrValidationErrors(newErrors),
+		Removed:          nilOrValidationErrors(allFiltered),
+		UnusedProcessors: unused,
 	}, nil
 }
 
