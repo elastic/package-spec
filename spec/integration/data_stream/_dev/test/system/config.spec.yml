@@ -36,8 +36,10 @@ spec:
           default: docker
         type:
           description: >
-            "Elastic Agent image to be used for testing. Setting default will be used the
-            same Elastic Agent image as the stack."
+            Elastic Agent image to be used for testing. Setting `default` will be used the
+            same Elastic Agent image as the stack. Setting `complete` will use the "complete"
+            image, that includes all supported collectors, a web browser and the required runtime
+            for synthetic testing.
           type: string
           enum:
             - default
