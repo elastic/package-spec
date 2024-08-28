@@ -34,7 +34,7 @@ spec:
           enum:
             - docker
           default: docker
-        type:
+        base_image:
           description: >
             Elastic Agent image to be used for testing. Setting `default` will be used the
             same Elastic Agent image as the stack. Setting `complete` will use the "complete"
