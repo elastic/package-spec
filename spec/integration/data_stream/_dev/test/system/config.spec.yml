@@ -34,6 +34,16 @@ spec:
           enum:
             - docker
           default: docker
+        type:
+          description: >
+            "Elastic Agent image to be used for testing. Setting default will be used the
+            same Elastic Agent image as the stack."
+          type: string
+          enum:
+            - default
+            - complete
+            - minimal
+          default: "default"
         user:
           description: "User that runs the Elastic Agent process"
           type: string
