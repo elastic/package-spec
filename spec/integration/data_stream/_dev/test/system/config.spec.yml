@@ -42,7 +42,6 @@ spec:
           enum:
             - default
             - complete
-            - minimal
           default: "default"
         user:
           description: "User that runs the Elastic Agent process"
