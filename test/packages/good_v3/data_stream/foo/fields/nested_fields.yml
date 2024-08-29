@@ -1,0 +1,22 @@
+- name: a
+  type: nested
+  include_in_parent: true
+- name: a.b
+  type: keyword
+- name: c
+  type: nested
+  include_in_root: true
+- name: nested
+  type: nested
+  fields:
+    - name: a
+      type: keyword
+    - name: b
+      type: long
+- name: groupnested
+  type: group-nested
+  fields:
+    - name: a
+      type: keyword
+    - name: b
+      type: long
