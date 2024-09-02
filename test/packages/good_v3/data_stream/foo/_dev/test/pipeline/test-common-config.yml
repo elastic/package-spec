@@ -1,2 +1,6 @@
 multiline:
   first_line_pattern: "^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}"
+numeric_keyword_fields:
+  - "foo.code"
+string_number_fields:
+  - "foo.count"

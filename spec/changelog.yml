@@ -23,6 +23,9 @@
   - description: Add new agent.base_image setting for system tests configuration files.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/788
+  - description: Add new string_number_fields option for tests.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/791
   - description: Add new value systemd for agent.base_image setting in system tests configuration files.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/792
