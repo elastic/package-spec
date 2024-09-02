@@ -18,3 +18,6 @@ spec:
     numeric_keyword_fields:
       description: List of keyword type fields allowed to have a numeric value.
       type: array
+    string_number_fields:
+      description: List of numeric type fields allowed to have a string value if it can be parsed as a number.
+      type: array
