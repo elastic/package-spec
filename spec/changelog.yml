@@ -12,6 +12,11 @@
   - description: Add support for `slo` assets.
     type: enhancement
     link: https://github.com/elastic/package-spec/pull/767
+- version: 3.2.3-next
+  changes:
+  - description: Update description of agent.base_image in system tests configuration files.
+    type: bugfix
+    link: https://github.com/elastic/package-spec/pull/796
 - version: 3.2.2
   changes:
   - description: Add spec for img directory.
