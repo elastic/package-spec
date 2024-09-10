@@ -130,13 +130,16 @@ func findTestPackage(packageName string) (string, error) {
 }
 
 func aPolicyIsCreatedWithPackage(packageName string) error {
-	const version = "1.0.0" // TODO: Add support for package and version
+	const version = "1.0.0"
+	return aPolicyIsCreatedWithPackageAndVersion(packageName, version)
+}
 
+func aPolicyIsCreatedWithPackageAndVersion(packageName, packageVersion string) error {
 	kibana, err := NewKibanaClient()
 	if err != nil {
 		return err
 	}
-	_, err = kibana.CreatePolicyForPackage(packageName, version)
+	_, err = kibana.CreatePolicyForPackage(packageName, packageVersion)
 	if err != nil {
 		return err
 	}
@@ -215,6 +218,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^index template "([^"]*)" has a field "([^"]*)" with "([^"]*)"$`, indexTemplateHasAFieldWith)
 	ctx.Step(`^the "([^"]*)" package is installed$`, thePackageIsInstalled)
 	ctx.Step(`^a policy is created with "([^"]*)" package$`, aPolicyIsCreatedWithPackage)
+	ctx.Step(`^a policy is created with "([^"]*)" package and "([^"]*)" version$`, aPolicyIsCreatedWithPackageAndVersion)
 	ctx.Step(`^a policy is created with "([^"]*)" package, "([^"]*)" template, "([^"]*)" input, "([^"]*)" input type and dataset "([^"]*)"$`, aPolicyIsCreatedWithPackageInputAndDataset)
 	ctx.Step(`^there is an index template "([^"]*)" with pattern "([^"]*)"$`, thereIsAnIndexTemplateWithPattern)
 	ctx.Step(`^there is a transform "([^"]*)"$`, thereIsATransform)

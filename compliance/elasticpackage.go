@@ -41,7 +41,7 @@ func (ep *ElasticPackage) Close() error {
 
 // Install installs the package in the given path.
 func (ep *ElasticPackage) Install(packagePath string) error {
-	cmd := exec.Command("go", "run", elasticPackageImportPath, "install")
+	cmd := exec.Command("go", "run", elasticPackageImportPath, "-C", packagePath, "install")
 	cmd.Stderr = os.Stderr
 	cmd.Stdout = os.Stdout
 	cmd.Env = append(os.Environ(),
@@ -51,7 +51,6 @@ func (ep *ElasticPackage) Install(packagePath string) error {
 		elasticPackageGetEnv("ELASTICSEARCH_USERNAME"),
 		elasticPackageGetEnv("KIBANA_HOST"),
 	)
-	cmd.Dir = packagePath
 	err := cmd.Run()
 	if err != nil {
 		return fmt.Errorf("elastic-package failed: %w", err)
