@@ -174,34 +174,37 @@ spec:
             enabled:
               type: boolean
               default: false
-            identity:
+            organization:
               description: >
-                The identity of the team responsible for the integration. This is used to tag the
-                agentless agent deployments for monitoring.
-              type: object
-              additionalProperties: false
-              properties:
-                organization:
-                  description: >
-                    The responsible organization of the integration. This is used to tag the agentless agent deployments
-                    for monitoring.
-                  type: string
-                  examples:
-                    - "Security"
-                division:
-                  description: >
-                    The division responsible for the integration. This is used to tag the agentless agent deployments
-                    for monitoring.
-                  type: string
-                  examples:
-                    - "Cloud Security"
-                team:
-                  description: >
-                    The team responsible for the integration. This is used to tag the agentless
-                    agent deployments for monitoring.
-                  type: string
-                  examples:
-                    - "cloud-security-posture-management"
+                The responsible organization of the integration. This is used to tag the agentless agent deployments
+                for monitoring.
+              type: string
+              examples:
+                - "security"
+            division:
+              description: >
+                The division responsible for the integration. This is used to tag the agentless agent deployments
+                for monitoring.
+              type: string
+              examples:
+                - "cloud-security"
+            team:
+              description: >
+                The team responsible for the integration. This is used to tag the agentless
+                agent deployments for monitoring.
+              type: string
+              examples:
+                - "cloud-security-posture-management"
+            allOf:
+              - if:
+                  properties:
+                    enabled:
+                      const: true
+                then:
+                  required:
+                    - organization
+                    - division
+                    - team
 
     icons:
       description: List of icons for by this package.
