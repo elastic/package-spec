@@ -12,6 +12,8 @@
     - description: Add support for `slo` assets.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/767
+- version: 3.2.3-next
+  changes:
     - description: Add support for identity of agentless deployment mode.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/801

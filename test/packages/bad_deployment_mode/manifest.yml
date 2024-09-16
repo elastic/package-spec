@@ -30,11 +30,12 @@ policy_templates:
     deployment_modes:
       default:
         # It is not allowed to disable the default deployment mode till 3.2.0.
-        enabled:
-          false
+        enabled: false
       agentless:
-        enabled:
-          true
+        enabled: true
+        organization: elastic
+        division: observability
+        team: obs-infraobs-integrations
     inputs:
       - type: logfile
         title: Collect sample logs from instances
