@@ -15,7 +15,7 @@
 - version: 3.2.3-next
   changes:
     - description: Add support for identity of agentless deployment mode.
-      type: enhancement
+      type: breaking-change
       link: https://github.com/elastic/package-spec/pull/801
 - version: 3.2.2
   changes:
