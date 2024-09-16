@@ -8,9 +8,9 @@ source:
   license: "Apache-2.0"
 conditions:
   kibana:
-    version: "^8.10.0"
+    version: '^8.10.0'
   elastic:
-    subscription: "basic"
+    subscription: 'basic'
     capabilities:
       - observability
 vars:
@@ -58,7 +58,7 @@ policy_templates:
               - default
           - name: hosts
             type: url
-            url_allowed_schemes: ["http", "https"]
+            url_allowed_schemes: ['http', 'https']
             title: Hosts
             multi: true
             required: true
@@ -89,7 +89,7 @@ policy_templates:
             secret: true
           - name: hosts
             type: url
-            url_allowed_schemes: ["http", "https"]
+            url_allowed_schemes: ['http', 'https']
             title: Hosts
             multi: true
             required: true
