@@ -195,16 +195,16 @@ spec:
               type: string
               examples:
                 - "cloud-security-posture-management"
-            allOf:
-              - if:
-                  properties:
-                    enabled:
-                      const: true
-                then:
-                  required:
-                    - organization
-                    - division
-                    - team
+          allOf:
+            - if:
+                properties:
+                  enabled:
+                    const: true
+              then:
+                required:
+                  - organization
+                  - division
+                  - team
 
     icons:
       description: List of icons for by this package.
