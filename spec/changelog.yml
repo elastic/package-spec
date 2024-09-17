@@ -14,7 +14,7 @@
       link: https://github.com/elastic/package-spec/pull/767
 - version: 3.2.3-next
   changes:
-    - description: Add support for identity of agentless deployment mode.
+    - description: Add support for identity of agentless deployment mode, and make it mandatory when this mode is enabled.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/801
 - version: 3.2.2
