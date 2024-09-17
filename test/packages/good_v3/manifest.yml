@@ -73,9 +73,9 @@ policy_templates:
     deployment_modes:
       agentless:
         enabled: true
-        organization: elastic
-        division: observability
-        team: obs-infraobs-integrations
+        organization: security
+        division: engineering
+        team: cloud-security
     inputs:
       - type: apache/metrics
         title: Collect metrics in agentless
