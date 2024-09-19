@@ -202,15 +202,15 @@ func TestValidateFile(t *testing.T) {
 		"bad_deployment_mode": {
 			"manifest.yml",
 			[]string{
-				`field policy_templates.0.deployment_modes.agentless: Additional property organization is required`,
-				`field policy_templates.0.deployment_modes.agentless: Additional property division is required`,
-				`field policy_templates.0.deployment_modes.agentless: Additional property team is required`,
+				`field policy_templates.0.deployment_modes: Additional property default is not allowed`,
 			},
 		},
 		"bad_deployment_mode_without_identities": {
 			"manifest.yml",
 			[]string{
-				`field policy_templates.0.deployment_modes: Additional property default is not allowed`,
+				`field policy_templates.0.deployment_modes.agentless: Additional property organization is required`,
+				`field policy_templates.0.deployment_modes.agentless: Additional property division is required`,
+				`field policy_templates.0.deployment_modes.agentless: Additional property team is required`,
 			},
 		},
 		"bad_input_dataset_vars": {
