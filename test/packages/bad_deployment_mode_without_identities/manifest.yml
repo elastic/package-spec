@@ -1,6 +1,6 @@
-format_version: 3.1.4
+format_version: 3.2.2
 name: bad_deployment_mode_without_identities
-title: "Bad Deployment Mode"
+title: "Bad Deployment Mode Without Identities"
 version: 0.0.1
 source:
   license: "Apache-2.0"
