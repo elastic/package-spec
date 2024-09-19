@@ -1,5 +1,5 @@
 format_version: 3.1.4
-name: bad_deployment_mode_without_identities
+name: bad_deployment_mode
 title: "Bad Deployment Mode"
 version: 0.0.1
 source:
