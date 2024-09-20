@@ -4,461 +4,466 @@
 ##
 - version: 3.4.0-next
   changes:
-  - description: Add support for content packages.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/777
+    - description: Add support for content packages.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/777
 - version: 3.3.0-next
   changes:
-  - description: Add support for `slo` assets.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/767
+    - description: Add support for `slo` assets.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/767
+- version: 3.2.3-next
+  changes:
+    - description: Add support for identity of agentless deployment mode, and make it mandatory when this mode is enabled.
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/801
 - version: 3.2.2
   changes:
-  - description: Add spec for img directory.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/777
-  - description: Improved error message for unsupported package types.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/777
-  - description: Add new agent.base_image setting for system tests configuration files.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/788
-  - description: Add new string_number_fields option for tests.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/791
-  - description: Add new value systemd for agent.base_image setting in system tests configuration files.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/792
+    - description: Add spec for img directory.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/777
+    - description: Improved error message for unsupported package types.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/777
+    - description: Add new agent.base_image setting for system tests configuration files.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/788
+    - description: Add new string_number_fields option for tests.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/791
+    - description: Add new value systemd for agent.base_image setting in system tests configuration files.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/792
 - version: 3.2.1
   changes:
-  - description: Improve error information for missing dataset field in manifest.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/769
+    - description: Improve error information for missing dataset field in manifest.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/769
 - version: 3.2.0
   changes:
-  - description: Add subobjects definition (at the data stream level).
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/727
-  - description: Allow to disable policies and variables in default deployment mode.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/738
-  - description: Support store mapping option.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/748
-  - description: Add configuration folder _dev/test for global test settings.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/759
+    - description: Add subobjects definition (at the data stream level).
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/727
+    - description: Allow to disable policies and variables in default deployment mode.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/738
+    - description: Support store mapping option.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/748
+    - description: Add configuration folder _dev/test for global test settings.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/759
 - version: 3.1.5
   changes:
-  - description: Add property to not fail system tests on ignored values in fields
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/743
-  - description: Add agent settings definitions into configuration files for system tests.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/739
-  - description: Fix filter detection in dashboards with map visualizations.
-    type: bugfix
-    link: https://github.com/elastic/package-spec/pull/750
-  - description: Add support for policy tests.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/751
-  - description: Check format of data_stream.dataset test variable
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/753
+    - description: Add property to not fail system tests on ignored values in fields
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/743
+    - description: Add agent settings definitions into configuration files for system tests.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/739
+    - description: Fix filter detection in dashboards with map visualizations.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/750
+    - description: Add support for policy tests.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/751
+    - description: Check format of data_stream.dataset test variable
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/753
 - version: 3.1.4
   changes:
-  - description: Add definitions for different deployment modes.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/738
+    - description: Add definitions for different deployment modes.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/738
 - version: 3.1.3
   changes:
-  - description: Deprecate `dependencies.ecs.import_mappings` in favor of `ecs@mappings` from Elasticsearch
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/726
-  - description: Allow to include `index` and `doc_values` in embedded ECS templates
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/729
+    - description: Deprecate `dependencies.ecs.import_mappings` in favor of `ecs@mappings` from Elasticsearch
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/726
+    - description: Allow to include `index` and `doc_values` in embedded ECS templates
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/729
 - version: 3.1.2
   changes:
-  - description: Introduce cloudsecurity_cdr category
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/716
+    - description: Introduce cloudsecurity_cdr category
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/716
 - version: 3.1.1
   changes:
-  - description: Discard variables ending with _file or _url as secret candidates
-    type: enhancement
-    link: https://github.com/elastic/package-spec/issues/712
+    - description: Discard variables ending with _file or _url as secret candidates
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/712
 - version: 3.1.0
   changes:
-  - description: Add support for subobjects in fields
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/573
-  - description: Add support for counted_keyword field type in data streams
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/707
-  - description: Disallow to use 'integration' as data stream name
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/704
-  - description: Add validation for ingest pipeline rename processor
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/690
+    - description: Add support for subobjects in fields
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/573
+    - description: Add support for counted_keyword field type in data streams
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/707
+    - description: Disallow to use 'integration' as data stream name
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/704
+    - description: Add validation for ingest pipeline rename processor
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/690
 - version: 3.0.4
   changes:
-  - description: Fix validation of empty arrays in YAML files
-    type: bugfix
-    link: https://github.com/elastic/package-spec/issues/683
-  - description: Dashboards with filters in all panels don't require a filter at the dashboard level
-    type: enhancement
-    link: https://github.com/elastic/package-spec/issues/687
-  - description: Allow volumes to be defined in custom-agent-deployer
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/689
+    - description: Fix validation of empty arrays in YAML files
+      type: bugfix
+      link: https://github.com/elastic/package-spec/issues/683
+    - description: Dashboards with filters in all panels don't require a filter at the dashboard level
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/687
+    - description: Allow volumes to be defined in custom-agent-deployer
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/689
 - version: 3.0.3
   changes:
-  - description: Do not require an object_type on objects with `enabled` set to `false`
-    type: bugfix
-    link: https://github.com/elastic/package-spec/issues/675
+    - description: Do not require an object_type on objects with `enabled` set to `false`
+      type: bugfix
+      link: https://github.com/elastic/package-spec/issues/675
 - version: 3.0.2
   changes:
-  - description: Add parquet files in terraform service deployer
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/662
-  - description: Require to define if a variable is a secret if it looks like a secret
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/665
-  - description: Allow _ in github owner field
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/668
+    - description: Add parquet files in terraform service deployer
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/662
+    - description: Require to define if a variable is a secret if it looks like a secret
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/665
+    - description: Allow _ in github owner field
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/668
 - version: 3.0.1
   changes:
-  - description: Using non-GA versions of the spec in GA packages produces a filterable validation error instead of a warning
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/627
-  - description: 'Allow to set index: false in dynamic templates defined in data stream manifests'
-    type: enhancement
-    link: https://github.com/elastic/package-spec/issues/650
-  - description: Validate that data streams with time series enabled have configured dimensions
-    type: enhancement
-    link: https://github.com/elastic/package-spec/issues/655
-  - description: Fix spec for rally benchmark scenario
-    type: bugfix
-    link: https://github.com/elastic/package-spec/pull/653
+    - description: Using non-GA versions of the spec in GA packages produces a filterable validation error instead of a warning
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/627
+    - description: 'Allow to set index: false in dynamic templates defined in data stream manifests'
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/650
+    - description: Validate that data streams with time series enabled have configured dimensions
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/655
+    - description: Fix spec for rally benchmark scenario
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/653
 - version: 3.0.0
   changes:
-  - description: Validate processors used in ingest pipelines
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/586
-  - description: Stricter validation of index template settings in manifests
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/587
-  - description: Disallow dotted fields
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/591
-  - description: Add validation rule to ensure there are no dangling object IDs
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/589
-  - description: Require owner.type field
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/604
-  - description: Require filter in dashboards to limit scope of queries
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/607
-  - description: Disallow legacy visualizations
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/610
-  - description: Remove ValidationErrors from validator package
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/625
-  - description: Make exception for legacy input controls
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/619
-  - description: object_type is mandatory when object type is used
-    type: bugfix
-    link: https://github.com/elastic/package-spec/pull/628
-  - description: Update import paths for Go code
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/issues/626
-  - description: Warnings are reported as errors that can be filtered
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/issues/636
-  - description: Remove deprecated `corpora.generator.size` in favour of `corpora.generator.total_events`
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/639
-  - description: Require group or nested types for fields with subobjects
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/629
-  - description: Add search to the dashboard elements that should be used by value
-    type: enhancement
-    link: https://github.com/elastic/package-spec/issues/635
-  - description: Allow metric_type without type for external fields
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/637
+    - description: Validate processors used in ingest pipelines
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/586
+    - description: Stricter validation of index template settings in manifests
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/587
+    - description: Disallow dotted fields
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/591
+    - description: Add validation rule to ensure there are no dangling object IDs
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/589
+    - description: Require owner.type field
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/604
+    - description: Require filter in dashboards to limit scope of queries
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/607
+    - description: Disallow legacy visualizations
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/610
+    - description: Remove ValidationErrors from validator package
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/625
+    - description: Make exception for legacy input controls
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/619
+    - description: object_type is mandatory when object type is used
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/628
+    - description: Update import paths for Go code
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/issues/626
+    - description: Warnings are reported as errors that can be filtered
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/issues/636
+    - description: Remove deprecated `corpora.generator.size` in favour of `corpora.generator.total_events`
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/639
+    - description: Require group or nested types for fields with subobjects
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/629
+    - description: Add search to the dashboard elements that should be used by value
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/635
+    - description: Allow metric_type without type for external fields
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/637
 - version: 2.13.0
   changes:
-  - description: Allow to define expected values in fields definitions.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/616
-  - description: Add support for structured errors
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/609
+    - description: Allow to define expected values in fields definitions.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/616
+    - description: Add support for structured errors
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/609
 - version: 2.12.0
   changes:
-  - description: Add flag to manifests to indicate if a package or data stream requires root privileges
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/605
+    - description: Add flag to manifests to indicate if a package or data stream requires root privileges
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/605
 - version: 2.11.0
   changes:
-  - description: Add owner.type field to indicate package support level
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/568
-  - description: Make tags.yml print a warning instead of failing
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/577
-  - description: Make namespace parameter optional in routing_rules.yml
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/578
-  - description: Update Go runtime to 1.21.1
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/593
+    - description: Add owner.type field to indicate package support level
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/568
+    - description: Make tags.yml print a warning instead of failing
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/577
+    - description: Make namespace parameter optional in routing_rules.yml
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/578
+    - description: Update Go runtime to 1.21.1
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/593
 - version: 2.10.0
   changes:
-  - description: Packages can define required stack capabilities
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/561
-  - description: Add specific settings for data retention lifecycle configuration (for DLM).
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/556
-  - description: Add new validation for usages of metric_type field.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/527
-  - description: Add asset tags to package level under kibana folder.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/567
-  - description: Add support for log files in deploy terraform spec
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/571
-  - description: Add aliases to transform spec
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/574
+    - description: Packages can define required stack capabilities
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/561
+    - description: Add specific settings for data retention lifecycle configuration (for DLM).
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/556
+    - description: Add new validation for usages of metric_type field.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/527
+    - description: Add asset tags to package level under kibana folder.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/567
+    - description: Add support for log files in deploy terraform spec
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/571
+    - description: Add aliases to transform spec
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/574
 - version: 2.9.0
   changes:
-  - description: Update minimum kibana version required for runtime fields
-    type: bugfix
-    link: https://github.com/elastic/package-spec/pull/543
-  - description: Add support for JSON Patches in folder spec files
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/540
-  - description: Add variants definitions in benchmark input services.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/526
-  - description: Add tf and k8s benchmark input service definitions.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/526
-  - description: Add `data_stream.dataset` as an alternative to `data_stream.name` for benchmarks.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/526
-  - description: Add ability to specify secret vars
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/339
-  - description: Add support to define routing rules in data streams (technical preview)
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/535
+    - description: Update minimum kibana version required for runtime fields
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/543
+    - description: Add support for JSON Patches in folder spec files
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/540
+    - description: Add variants definitions in benchmark input services.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/526
+    - description: Add tf and k8s benchmark input service definitions.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/526
+    - description: Add `data_stream.dataset` as an alternative to `data_stream.name` for benchmarks.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/526
+    - description: Add ability to specify secret vars
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/339
+    - description: Add support to define routing rules in data streams (technical preview)
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/535
 - version: 2.8.1
   changes:
-  - description: Add validation for data types of metrics
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/525
-  - description: Extend benchmarks spec to add rally scenario
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/524
+    - description: Add validation for data types of metrics
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/525
+    - description: Extend benchmarks spec to add rally scenario
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/524
 - version: 2.8.0
   changes:
-  - description: Add new subcategory "advanced_analytics_ueba"
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/515
-  - description: Rename e2e benchmarks to system for consistency with other tests
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/512
-  - description: Extend system benchmarks spec to allow for corpus generator configs
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/512
-  - description: Add validation to avoid fields with external key without _dev/build/build.yml file
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/513
-  - description: Add support for field validation in input packages
-    type: bugfix
-    link: https://github.com/elastic/package-spec/pull/516
-  - description: Add support to define runtime fields
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/505
+    - description: Add new subcategory "advanced_analytics_ueba"
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/515
+    - description: Rename e2e benchmarks to system for consistency with other tests
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/512
+    - description: Extend system benchmarks spec to allow for corpus generator configs
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/512
+    - description: Add validation to avoid fields with external key without _dev/build/build.yml file
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/513
+    - description: Add support for field validation in input packages
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/516
+    - description: Add support to define runtime fields
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/505
 - version: 2.7.0
   changes:
-  - description: Add `profiling` data stream type (technical preview)
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/503
-  - description: Add support for aggregate_metric_double field type
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/500
-  - description: Add e2e integration benchmarks spec
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/492
-  - description: Add `ignore_malformed` to data_stream/fields/fields.spec.yml
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/498
-  - description: Update Go runtime to 1.20.3
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/504
+    - description: Add `profiling` data stream type (technical preview)
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/503
+    - description: Add support for aggregate_metric_double field type
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/500
+    - description: Add e2e integration benchmarks spec
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/492
+    - description: Add `ignore_malformed` to data_stream/fields/fields.spec.yml
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/498
+    - description: Update Go runtime to 1.20.3
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/504
 - version: 2.6.0
   changes:
-  - description: Remove monitoring_infrastructure category
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/490
-  - description: Add date_format to field of type date
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/481
-  - description: Add select as a new field type
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/486
-  - description: Add transform settings.unattended option
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/491
-  - description: Release input packages spec as GA
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/485
+    - description: Remove monitoring_infrastructure category
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/490
+    - description: Add date_format to field of type date
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/481
+    - description: Add select as a new field type
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/486
+    - description: Add transform settings.unattended option
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/491
+    - description: Release input packages spec as GA
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/485
 - version: 2.5.1
   changes:
-  - description: Add category for vulnerability_management
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/471
+    - description: Add category for vulnerability_management
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/471
 - version: 2.5.0
   changes:
-  - description: Add new subcategories
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/469
+    - description: Add new subcategories
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/469
 - version: 2.4.0
   changes:
-  - description: Allow security_rule objects to have rule IDs different from the object IDs.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/463
-  - description: Add index_template.data_stream.hidden flag to data stream manifest
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/465
-  - description: Update description of top level hidden field in data_streams and deprecate it.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/466
+    - description: Allow security_rule objects to have rule IDs different from the object IDs.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/463
+    - description: Add index_template.data_stream.hidden flag to data stream manifest
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/465
+    - description: Update description of top level hidden field in data_streams and deprecate it.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/466
 - version: 2.3.0
   changes:
-  - description: Remove the release tag, semantic versioning should be used instead.
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/452
-  - description: Add support for elasticsearch index templates into input packages.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/455
-  - description: Add flag in _dev/build/build.yml to import ECS mappings.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/455
+    - description: Remove the release tag, semantic versioning should be used instead.
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/452
+    - description: Add support for elasticsearch index templates into input packages.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/455
+    - description: Add flag in _dev/build/build.yml to import ECS mappings.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/455
 - version: 2.2.0
   changes:
-  - description: Support definition of system tests for input packages
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/443
-  - description: Allow to include a sample event in input packages
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/447
-  - description: Add "elasticsearch.dynamic_dataset" and "elasticsearch.dynamic_namespace" to data stream manifest
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/327
+    - description: Support definition of system tests for input packages
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/443
+    - description: Allow to include a sample event in input packages
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/447
+    - description: Add "elasticsearch.dynamic_dataset" and "elasticsearch.dynamic_namespace" to data stream manifest
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/327
 - version: 2.1.0
   changes:
-  - description: Allowing multiple services included as part of custom-agent-deployer
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/436
+    - description: Allowing multiple services included as part of custom-agent-deployer
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/436
 - version: 2.0.0
   changes:
-  - description: Add setting to configure the source mode of a data stream.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/issues/340
-  - description: Semantic validation is also executed when shema validation fails.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/428
-  - description: Add infrastructure category.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/issues/429
+    - description: Add setting to configure the source mode of a data stream.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/340
+    - description: Semantic validation is also executed when shema validation fails.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/428
+    - description: Add infrastructure category.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/429
 - version: 2.0.0-rc2
   changes:
-  - description: Add map as another reference type to check to show warnings
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/414
-  - description: Document and validate `object_type` and `object_type_mapping_type`.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/417
-  - description: Fix import paths for Go code
-    type: bugfix
-    link: https://github.com/elastic/package-spec/issues/423
+    - description: Add map as another reference type to check to show warnings
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/414
+    - description: Document and validate `object_type` and `object_type_mapping_type`.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/417
+    - description: Fix import paths for Go code
+      type: bugfix
+      link: https://github.com/elastic/package-spec/issues/423
 - version: 2.0.0-rc1
   changes:
-  - description: Enable validation of duplicated fields.
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/issues/331
-  - description: Remove deprecated `license` field.
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/issues/331
-  - description: Remove `array` as supported field data type.
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/412
-  - description: Check that referenced ILM policies are defined for the data stream.
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/413
-  - description: Stricter validation of field definitions.
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/420
+    - description: Enable validation of duplicated fields.
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/issues/331
+    - description: Remove deprecated `license` field.
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/issues/331
+    - description: Remove `array` as supported field data type.
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/412
+    - description: Check that referenced ILM policies are defined for the data stream.
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/413
+    - description: Stricter validation of field definitions.
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/420
 - version: 1.18.0
   changes:
-  - description: Update Go runtime to 1.19.1.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/409
+    - description: Update Go runtime to 1.19.1.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/409
 - version: 1.17.0
   changes:
-  - description: Adjust field name pattern to support '/'.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/issues/402
-  - description: Add pipeline benchmarks support
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/405
+    - description: Adjust field name pattern to support '/'.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/402
+    - description: Add pipeline benchmarks support
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/405
 - version: 1.16.0
   changes:
-  - description: New version validation. Internal changes to start preparing major version 2.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/384
+    - description: New version validation. Internal changes to start preparing major version 2.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/384
 - version: 1.15.0
   changes:
-  - description: Add definition for the license file in a package
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/367
-  - description: Add support for icons in dark mode
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/378
-  - description: Add warning when dashboards include visualizations by reference
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/389
+    - description: Add definition for the license file in a package
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/367
+    - description: Add support for icons in dark mode
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/378
+    - description: Add warning when dashboards include visualizations by reference
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/389
 - version: 1.14.0
   changes:
-  - description: Add 'textarea' var type
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/356
+    - description: Add 'textarea' var type
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/356
 - version: 1.13.0
   changes:
-  - description: Add threat_intel category
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/366
-  - description: Add Elasticsearch transform support
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/307
+    - description: Add threat_intel category
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/366
+    - description: Add Elasticsearch transform support
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/307
 - version: 1.12.1
   changes:
-  - description: Use fork of gojsonschema instead of replace
-    type: bugfix
-    link: https://github.com/elastic/package-spec/pull/364
+    - description: Use fork of gojsonschema instead of replace
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/364
 - version: 1.12.0
   changes:
     - description: Add setting to configure index mode for data streams
@@ -485,271 +490,270 @@
       link: https://github.com/elastic/package-spec/pull/328
 - version: 1.9.0
   changes:
-  - description: Add custom agent tests spec
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/335
+    - description: Add custom agent tests spec
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/335
 - version: 1.8.1
   changes:
-  - description: Disable validation of duplicated fields.
-    type: bugfix
-    link: https://github.com/elastic/package-spec/pull/332
+    - description: Disable validation of duplicated fields.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/332
 - version: 1.8.0
   changes:
-  - description: Validate top changelog links to have a valid number if it is a github URL.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/324
-  - description: Validate that fields are only defined once per data stream.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/309
-  - description: Add Kibana/osquery-saved-query
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/321
-  - description: Prepare for support of multiple, independent package types. Require "type" to be present in manifest.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/323
-  - description: Define all fields properties currently supported.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/314
+    - description: Validate top changelog links to have a valid number if it is a github URL.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/324
+    - description: Validate that fields are only defined once per data stream.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/309
+    - description: Add Kibana/osquery-saved-query
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/321
+    - description: Prepare for support of multiple, independent package types. Require "type" to be present in manifest.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/323
+    - description: Define all fields properties currently supported.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/314
 - version: 1.7.0
   changes:
-  - description: Add kibana/osquery-pack-asset
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/299
+    - description: Add kibana/osquery-pack-asset
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/299
 - version: 1.6.0
   changes:
-  - description: Validate required fields
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/291
-  - description: Increase fields limit from 1024 to 2048.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/294
+    - description: Validate required fields
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/291
+    - description: Increase fields limit from 1024 to 2048.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/294
 - version: 1.5.0
   changes:
-  - description: Add kibana/csp-rule-template asset
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/276
-  - description: Fix validation of dimension fields inside objects
-    type: bugfix
-    link: https://github.com/elastic/package-spec/pull/279
-  - description: Add support for match_only_text field type
-    type: enhancement
-    link: https://github.com/elastic/package-spec/issues/284
-  - description: Add limits to file sizes and number of files
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/278
+    - description: Add kibana/csp-rule-template asset
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/276
+    - description: Fix validation of dimension fields inside objects
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/279
+    - description: Add support for match_only_text field type
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/284
+    - description: Add limits to file sizes and number of files
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/278
 - version: 1.4.1
   changes:
-  - description: ML model file name now matches the id of the model.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/268
-  - description: Support auxiliary files in terraform deploy spec
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/272
-  - description: Add `developmentFolder` flag to mark directories with files intended for development.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/270
-  - description: Allow directory names with hyphens inside _dev directories.
-    type: bugfix
-    link: https://github.com/elastic/package-spec/pull/270
+    - description: ML model file name now matches the id of the model.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/268
+    - description: Support auxiliary files in terraform deploy spec
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/272
+    - description: Add `developmentFolder` flag to mark directories with files intended for development.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/270
+    - description: Allow directory names with hyphens inside _dev directories.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/270
 - version: 1.4.0
   changes:
-  - description: Report error when a directory name inside a package contains hyphens (-).
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/259
-  - description: Deprecate the release attribute, make it optional and set to ga by default.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/256
-  - description: Restrict the allowed prerelease labels in sematic versions.
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/256
+    - description: Report error when a directory name inside a package contains hyphens (-).
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/259
+    - description: Deprecate the release attribute, make it optional and set to ga by default.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/256
+    - description: Restrict the allowed prerelease labels in sematic versions.
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/256
 - version: 1.3.0
   changes:
-  - description: Support wait-for-data timeout
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/237
-  - description: Add support for dimension fields.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/236
-  - description: Add email, time_zone and url config types.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/241
-  - description: Add support for dimension fields from external sources.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/248
+    - description: Support wait-for-data timeout
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/237
+    - description: Add support for dimension fields.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/236
+    - description: Add email, time_zone and url config types.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/241
+    - description: Add support for dimension fields from external sources.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/248
 - version: 1.2.0
   changes:
-  - description: Add tag support for elastic export
-    type: bugfix
-    link: https://github.com/elastic/package-spec/pull/223
-  - description: Add "elasticsearch.privileges.cluster" to package manifest
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/226
-  - description: Support ML model Elasticsearch type.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/204
+    - description: Add tag support for elastic export
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/223
+    - description: Add "elasticsearch.privileges.cluster" to package manifest
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/226
+    - description: Support ML model Elasticsearch type.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/204
 - version: 1.1
   changes:
-  - description: Prepare for 1.0.1
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/208
-  - description: Revert "dynamic_template" field property
-    type: bugfix
-    link: https://github.com/elastic/package-spec/pull/212
-  - description: Add "elasticsearch.privileges.indices" to data stream manifest
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/211
-  - description: Release v1.1
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/218
+    - description: Prepare for 1.0.1
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/208
+    - description: Revert "dynamic_template" field property
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/212
+    - description: Add "elasticsearch.privileges.indices" to data stream manifest
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/211
+    - description: Release v1.1
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/218
 - version: 1.0.0
   changes:
-  - description: Release as GA
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/207
+    - description: Release as GA
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/207
 - version: 1.0.0-alpha1
   changes:
-  - description: Initial version of the Elastic Package specifiction.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/1
-  - description: Adding the histogram field as a valid ES field type.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/52
-  - description: Add `metric_type` and `unit` to fields.yml.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/73
-  - description: Adding "traces" as a valid data stream type.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/78
-  - description: Add "agent/input" folder for top level configuration.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/79
-  - description: Allow `condition` under inputs.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/87
-  - description: Add `ilm_policy` to data stream manifest.yml
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/90
-  - description: Add `hidden` fields to data stream manifest file.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/91
-  - description: 'Revert: Allow `condition` under inputs.'
-    type: bugfix
-    link: https://github.com/elastic/package-spec/pull/93
-  - description: Support `lens` Kibana type.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/94
-  - description: Add numeric_keyword_fields option for pipeline tests.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/95
-  - description: Support multiple test cases in system tests.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/101
-  - description: Support unsigned_long Elasticsearch type.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/103
-  - description: Clean up go.mod and go.sum and add go mod tidy command.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/104
-  - description: Add field for skipping tests.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/105
-  - description: Add fields for matching datasets dynamically
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/102
-  - description: Make data_stream folder optional in the package
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/113
-  - description: Enforce README.md file
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/116
-  - description: Support Terraform deployment files. Enable "deploy" definitions for data stream
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/111
-  - description: Add "synthetics" to data stream type enum in manifest spec
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/119
-  - description: "Terraform service deployer: support user-defined environment variables"
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/123
-  - description: Add `alias` type to fields spec.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/120
-  - description: Support Kubernetes service deployer
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/130
-  - description: Add specification for package CHANGELOG files.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/131
-  - description: Deprecate JSON-formatted pipeline test configs in favor of YAML-formatted ones
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/139
-  - description: Support static tests
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/141
-  - description: Add policy groups
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/137
-  - description: Add multi property to inputs
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/110
-  - description: Ensure integrity between input groups and data streams
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/143
-  - description: Pipeline test results can be optional
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/147
-  - description: Remove deprecated JSON-formatted pipeline test configs
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/150
-  - description: Add optional NOTICE.txt file to a package
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/151
-  - description: Add kibana/security-rule asset
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/142
-  - description: Support `ML module` Kibana type.
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/152
-  - description: Make input groups language consistent.
-    type: bugfix
-    link: https://github.com/elastic/package-spec/pull/157
-  - description: Predefine input groups
-    type: breaking-change
-    link: https://github.com/elastic/package-spec/pull/158
-  - description: Define Github owner field pattern
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/164
-  - description: Ensure version consistency between manifest and changelog
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/172
-  - description: Improve version consistency in case of missing/undefined version
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/174
-  - description: Fix security_rule format
-    type: bugfix
-    link: https://github.com/elastic/package-spec/pull/175
-  - description: Define common test config for pipeline tests
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/176
-  - description: Validate if field groups don't have units and metric types defined
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/183
-  - description: Introduce "reference" property for fields
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/179
-  - description: Define build-time dependencies
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/181
-  - description: Introduce "dynamic_template" property for fields
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/188
-  - description: Relax ECS dependency in the build manifest
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/191
-  - description: Improve semantic versioning for version integrity
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/193
-  - description: Introduce "value" property for constant_keyword fields
-    type: enhancement
-    link: https://github.com/elastic/package-spec/pull/194
-
+    - description: Initial version of the Elastic Package specifiction.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1
+    - description: Adding the histogram field as a valid ES field type.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/52
+    - description: Add `metric_type` and `unit` to fields.yml.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/73
+    - description: Adding "traces" as a valid data stream type.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/78
+    - description: Add "agent/input" folder for top level configuration.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/79
+    - description: Allow `condition` under inputs.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/87
+    - description: Add `ilm_policy` to data stream manifest.yml
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/90
+    - description: Add `hidden` fields to data stream manifest file.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/91
+    - description: 'Revert: Allow `condition` under inputs.'
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/93
+    - description: Support `lens` Kibana type.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/94
+    - description: Add numeric_keyword_fields option for pipeline tests.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/95
+    - description: Support multiple test cases in system tests.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/101
+    - description: Support unsigned_long Elasticsearch type.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/103
+    - description: Clean up go.mod and go.sum and add go mod tidy command.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/104
+    - description: Add field for skipping tests.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/105
+    - description: Add fields for matching datasets dynamically
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/102
+    - description: Make data_stream folder optional in the package
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/113
+    - description: Enforce README.md file
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/116
+    - description: Support Terraform deployment files. Enable "deploy" definitions for data stream
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/111
+    - description: Add "synthetics" to data stream type enum in manifest spec
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/119
+    - description: "Terraform service deployer: support user-defined environment variables"
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/123
+    - description: Add `alias` type to fields spec.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/120
+    - description: Support Kubernetes service deployer
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/130
+    - description: Add specification for package CHANGELOG files.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/131
+    - description: Deprecate JSON-formatted pipeline test configs in favor of YAML-formatted ones
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/139
+    - description: Support static tests
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/141
+    - description: Add policy groups
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/137
+    - description: Add multi property to inputs
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/110
+    - description: Ensure integrity between input groups and data streams
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/143
+    - description: Pipeline test results can be optional
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/147
+    - description: Remove deprecated JSON-formatted pipeline test configs
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/150
+    - description: Add optional NOTICE.txt file to a package
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/151
+    - description: Add kibana/security-rule asset
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/142
+    - description: Support `ML module` Kibana type.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/152
+    - description: Make input groups language consistent.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/157
+    - description: Predefine input groups
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/158
+    - description: Define Github owner field pattern
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/164
+    - description: Ensure version consistency between manifest and changelog
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/172
+    - description: Improve version consistency in case of missing/undefined version
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/174
+    - description: Fix security_rule format
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/175
+    - description: Define common test config for pipeline tests
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/176
+    - description: Validate if field groups don't have units and metric types defined
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/183
+    - description: Introduce "reference" property for fields
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/179
+    - description: Define build-time dependencies
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/181
+    - description: Introduce "dynamic_template" property for fields
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/188
+    - description: Relax ECS dependency in the build manifest
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/191
+    - description: Improve semantic versioning for version integrity
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/193
+    - description: Introduce "value" property for constant_keyword fields
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/194
