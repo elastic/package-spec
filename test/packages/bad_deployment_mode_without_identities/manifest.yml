@@ -1,6 +1,6 @@
-format_version: 3.1.4
-name: bad_deployment_mode
-title: "Bad Deployment Mode"
+format_version: 3.2.2
+name: bad_deployment_mode_without_identities
+title: "Bad Deployment Mode Without Identities"
 version: 0.0.1
 source:
   license: "Apache-2.0"
@@ -29,15 +29,10 @@ policy_templates:
     description: Collect sample logs
     deployment_modes:
       default:
-        # It is not allowed to disable the default deployment mode till 3.2.0.
-        enabled:
-          false
+        enabled: true
       agentless:
-        enabled:
-          true
-        organization: elastic
-        division: observability
-        team: obs-infraobs-integrations
+        enabled: true
+        # If the agentless deployment mode is enabled, the organization, division, and team  must be provided.
     inputs:
       - type: logfile
         title: Collect sample logs from instances
@@ -48,9 +43,6 @@ policy_templates:
             title: Some API key
             show_user: true
             secret: true
-            hide_in_deployment_modes:
-              # It is not allowed to hide variables in the default deployment mode till 3.2.0.
-              - default
 
 owner:
   github: elastic/ecosystem
