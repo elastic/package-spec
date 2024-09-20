@@ -1,9 +1,9 @@
 {
-  "id": "services",
+  "id": "good_v3-services-from-logs-abc-1",
   "type": "entity-definition",
   "start": true,
   "definition": {
-    "id": "services-from-logs",
+    "id": "services_from_logs",
     "name": "Extract services from logs",
     "managed": true,
     "type": "service",
