@@ -29,6 +29,9 @@ func ValidateKibanaObjectIDs(fsys fspath.FS) specerrors.ValidationErrors {
 
 	for _, objectFile := range objectFiles {
 		filePath := objectFile.Path()
+		if strings.Contains(filePath, "kibana/entity_definition/") {
+			continue
+		}
 
 		objectID, err := objectFile.Values("$.id")
 		if err != nil {

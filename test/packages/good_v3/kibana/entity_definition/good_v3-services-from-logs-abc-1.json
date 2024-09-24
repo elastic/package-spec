@@ -1,0 +1,22 @@
+{
+  "definition": {
+    "id": "services_from_logs",
+    "name": "Extract services from logs",
+    "managed": true,
+    "type": "service",
+    "indexPatterns": ["logs-*"],
+    "identityFields": ["service.name"],
+    "displayNameTemplate": "{{service.name}}",
+    "metadata": [
+      "data_stream.type"
+    ],
+    "history": {
+      "timestampField": "@timestamp",
+      "interval": "1m",
+      "settings": {
+        "frequency": "2m"
+      }
+    },
+    "version": "1.0.0"
+  }
+}

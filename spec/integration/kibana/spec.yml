@@ -136,7 +136,20 @@ spec:
       pattern: '^{PACKAGE_NAME}-.+\.json$'
       forbiddenPatterns:
         - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden 
+  - description: Folder containing Kibana Entity definition assets
+    type: folder
+    name: entity_definition
+    required: false
+    contents:
+    - description: An Entity Definition asset file
+      type: file
+      contentMediaType: "application/json"
+      pattern: '^{PACKAGE_NAME}-.+\.json$'
 versions:
+  - before: 3.4.0
+    patch:
+      - op: remove
+        path: "/contents/14" # remove Entity definition definitions
   - before: 3.3.0
     patch:
       - op: remove

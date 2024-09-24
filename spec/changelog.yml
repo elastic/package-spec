@@ -4,9 +4,12 @@
 ##
 - version: 3.4.0-next
   changes:
-    - description: Add support for content packages.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/777
+  - description: Add support for content packages.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/777
+  - description: Add support for `entity definition` assets.
+    type: enhancement
+    link: https://github.com/elastic/package-spec/pull/804
 - version: 3.3.0-next
   changes:
     - description: Add support for `slo` assets.
