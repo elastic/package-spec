@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"path"
 	"slices"
+	"strings"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
@@ -43,6 +44,9 @@ func ValidateKibanaNoDanglingObjectIDs(fsys fspath.FS) specerrors.ValidationErro
 	}
 	for _, objectFile := range objectFiles {
 		filePath := objectFile.Path()
+		if strings.Contains(filePath, "kibana/entity_definition/") {
+			continue
+		}
 
 		currentReference, err := getCurrentObjectReference(objectFile, fsys.Path(filePath))
 		if err != nil {
