@@ -1,0 +1,45 @@
+##
+## Describes the specification for a Kibana knowledge base entry's manifest.yml file
+##
+spec:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      description: The name of the knowledge base entry
+      type: string
+    description:
+      description: The name of the knowledge base entry
+      type: string
+    index:
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          description: The name of the index associated with the knowledge base entry
+          type: string
+        system:
+          description: Specify whether the index is system-managed or not
+          type: boolean
+      required:
+        - name
+        - system
+    retrieval:
+      type: object
+      additionalProperties: false
+      properties:
+        syntactic_fields:
+          description: List of fields that should be used for syntactic search during retrieval.
+          type: array
+          items:
+            type: string
+        semantic_fields:
+          description: List of fields that should be used for semantic search during retrieval.
+          type: array
+          items:
+            type: string
+      required:
+        - syntactic_fields
+        - semantic_fields
+  required:
+    - name
