@@ -44,6 +44,7 @@ func TestValidateFile(t *testing.T) {
 		"custom_ilm_policy":                  {},
 		"profiling_symbolizer":               {},
 		"logs_synthetic_mode":                {},
+		"knowledge_base":                     {},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
