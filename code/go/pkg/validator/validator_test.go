@@ -228,6 +228,13 @@ func TestValidateFile(t *testing.T) {
 				`field data_stream.vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
 			},
 		},
+		"bad_knowledge_base": {
+			"kibana/kb_entry/foo/manifest.yml",
+			[]string{
+				`field (root): Additional property unknown is not allowed`,
+				`field index: name is required`,
+			},
+		},
 	}
 
 	for pkgName, test := range tests {

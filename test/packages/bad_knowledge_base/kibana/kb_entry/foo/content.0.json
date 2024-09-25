@@ -1,0 +1,106 @@
+{
+  "documents": [
+    {
+      "content_title": "Kibana 8.13.3 | Kibana Guide [8.15] | Elastic",
+      "content_body": {
+        "text": "\n\nKibana 8.13.3edit\n\nThe 8.13.3 release includes the following bug fixes.\nBug Fixesedit\n\n\n\n\nAlerting\n\n\n\n\n\n\nManage loading fields at initialization (#180412).\n\n\n\n\n\n\nElastic Security\n\n\n\nFor the Elastic Security 8.13.3 release information, refer to Elastic Security Solution Release Notes.\n\n\n\nFleet\n\n\n\n\n\n\nFixes managed agent policy preconfiguration update (#181624).\n\n\nUse lowercase dataset in template names (#180887).\n\n\nFixes KQL/kuery for getting Fleet Server agent count (#180650).\n\n\n\n\n\n\nIndex Management\n\n\n\n\n\n\nFixes allow_auto_create field in the Index Template form (#178321).\n\n\n\n\n\n\nLens & Visualizations\n\n\n\n\n\n\nFixes controls on fields with custom label (#180615).\n\n\n\n\n\n\nMachine Learning\n\n\n\n\n\n\nFixes deep link for Index data visualizer & ES|QL data visualizer (#180389).\n\n\n\n\n\n\nObservability\n\n\n\n\n\n\nMake anomalyDetectorTypes optional (#180717).\n\n\n\n\n\n\nSharedUX\n\n\n\n\n\n\nRevert change to shared UX markdown component for dashboard vis (#180906).\n\n\n\n\n\n\nSharing\n\n\n\n\n\n\nDefault to saved object description when panel description is not provided (#181177).\n\n\n\n\n\n\n",
+        "inference": {
+          "inference_id": "kibana-elser2",
+          "model_settings": {
+            "task_type": "sparse_embedding"
+          },
+          "chunks": [
+            {
+              "text": "Kibana 8.13.3edit\n\nThe 8.13.3 release includes the following bug fixes.\nBug Fixesedit\n\n\n\n\nAlerting\n\n\n\n\n\n\nManage loading fields at initialization (#180412).\n\n\n\n\n\n\nElastic Security\n\n\n\nFor the Elastic Security 8.13.3 release information, refer to Elastic Security Solution Release Notes.\n\n\n\nFleet\n\n\n\n\n\n\nFixes managed agent policy preconfiguration update (#181624).\n\n\nUse lowercase dataset in template names (#180887).\n\n\nFixes KQL/kuery for getting Fleet Server agent count (#180650).\n\n\n\n\n\n\nIndex Management\n\n\n\n\n\n\nFixes allow_auto_create field in the Index Template form (#178321).\n\n\n\n\n\n\nLens & Visualizations\n\n\n\n\n\n\nFixes controls on fields with custom label (#180615).\n\n\n\n\n\n\nMachine Learning\n\n\n\n\n\n\nFixes deep link for Index data visualizer & ES|QL data visualizer (#180389).\n\n\n\n\n\n\nObservability\n\n\n\n\n\n\nMake anomalyDetectorTypes optional (#180717).\n\n\n\n\n\n\nSharedUX\n\n\n\n\n\n\nRevert change to shared UX markdown component for dashboard vis (#180906).\n\n\n\n\n\n\nSharing\n\n\n\n\n\n\nDefault to saved object description when panel description is not provided (#181177).",
+              "embeddings": {
+                "3": 0.5052793,
+                "8": 1.3079101
+              }
+            }
+          ]
+        }
+      },
+      "root_type": "documentation",
+      "ai_subtitle": {
+        "text": "Kibana 8.13.3 Update; Critical Bug Fixes in Alerting, Fleet, Index Management, Visualizations, ML, Observability, SharedUX, Sharing.",
+        "inference": {
+          "inference_id": "kibana-elser2",
+          "model_settings": {
+            "task_type": "sparse_embedding"
+          },
+          "chunks": [
+            {
+              "text": "Kibana 8.13.3 Update; Critical Bug Fixes in Alerting, Fleet, Index Management, Visualizations, ML, Observability, SharedUX, Sharing.",
+              "embeddings": {
+                "3": 0.37727332,
+                "8": 1.184852
+              }
+            }
+          ]
+        }
+      },
+      "ai_summary": {
+        "text": "Kibana 8.13.3 Release; Alerting; Elastic Security; Fleet; Index Management; Lens & Visualizations; Machine Learning; Observability; SharedUX; Sharing. The Kibana 8.13.3 update delivers critical bug fixes across various components including Alerting, Fleet, Index Management, Lens & Visualizations, Machine Learning, Observability, SharedUX, and Sharing. Key improvements involve loading fields at initialization for Alerting, managed policy updates and lowercase dataset handling in Fleet, auto-create settings in Index Management, field controls in Lens & Visualizations, deep linking in Machine Learning, anomaly detection in Observability, markdown component in SharedUX, and saved object descriptions in Sharing.",
+        "inference": {
+          "inference_id": "kibana-elser2",
+          "model_settings": {
+            "task_type": "sparse_embedding"
+          },
+          "chunks": [
+            {
+              "text": "Kibana 8.13.3 Release; Alerting; Elastic Security; Fleet; Index Management; Lens & Visualizations; Machine Learning; Observability; SharedUX; Sharing. The Kibana 8.13.3 update delivers critical bug fixes across various components including Alerting, Fleet, Index Management, Lens & Visualizations, Machine Learning, Observability, SharedUX, and Sharing. Key improvements involve loading fields at initialization for Alerting, managed policy updates and lowercase dataset handling in Fleet, auto-create settings in Index Management, field controls in Lens & Visualizations, deep linking in Machine Learning, anomaly detection in Observability, markdown component in SharedUX, and saved object descriptions in Sharing.",
+              "embeddings": {
+                "3": 0.48509678,
+                "7": 0.029003777
+              }
+            }
+          ]
+        }
+      },
+      "ai_tags": [
+        "Kibana",
+        "Alerting",
+        "Elastic Security",
+        "Fleet",
+        "Index Management",
+        "Lens & Visualizations",
+        "Machine Learning",
+        "Observability",
+        "SharedUX",
+        "Sharing"
+      ],
+      "product_name": "Kibana",
+      "version": "8.15",
+      "slug": "guide-en-kibana-release-notes-8.13.3.html",
+      "url": "https://www.elastic.co/guide/en/kibana/8.15/release-notes-8.13.3.html",
+      "ai_questions_answered": {
+        "text": [
+          "What are the main components updated in Kibana 8.13.3?",
+          "How does the Alerting feature improve in Kibana 8.13.3?",
+          "What changes were made to Fleet in the Kibana 8.13.3 release?",
+          "What was the fix applied to Index Management in Kibana 8.13.3?",
+          "How were field controls enhanced in Lens & Visualizations for Kibana 8.13.3?",
+          "What Machine Learning deep linking issues were fixed in Kibana 8.13.3?",
+          "What anomaly detection updates are included in the Observability module for Kibana 8.13.3?",
+          "What changes occurred in the SharedUX markdown component in Kibana 8.13.3?",
+          "How does the Sharing feature handle descriptions differently in Kibana 8.13.3?"
+        ],
+        "inference": {
+          "inference_id": "kibana-elser2",
+          "model_settings": {
+            "task_type": "sparse_embedding"
+          },
+          "chunks": [
+            {
+              "text": "What are the main components updated in Kibana 8.13.3?",
+              "embeddings": {
+                "0": 0.06638469,
+                "3": 0.4976597
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
