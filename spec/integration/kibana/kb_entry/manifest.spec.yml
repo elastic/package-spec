@@ -9,7 +9,7 @@ spec:
       description: The name of the knowledge base entry
       type: string
     description:
-      description: The name of the knowledge base entry
+      description: A description of what the knowledge base entry provides
       type: string
     index:
       type: object
