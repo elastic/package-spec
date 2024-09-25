@@ -24,4 +24,4 @@ spec:
         - description: A knowledge base entry's content file
           type: file
           contentMediaType: "application/json"
-          pattern: '^content(\..+)?\.json$'
+          pattern: '^content(\.[0-9]+)?\.json$'
