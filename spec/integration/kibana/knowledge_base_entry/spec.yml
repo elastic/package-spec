@@ -1,0 +1,33 @@
+spec:
+  additionalContents: false
+  totalContentsLimit: 50
+  contents:
+    - description: Folder containing a single knowledge base entry definition
+      type: folder
+      pattern: '^[a-z0-9_]+[a-z0-9]$'
+      required: true
+      additionalContents: false
+      contents:
+        - description: A knowledge base entry's manifest file
+          type: file
+          contentMediaType: "application/x-yaml"
+          sizeLimit: 2MB
+          name: "manifest.yml"
+          required: true
+          $ref: "./manifest.spec.yml"
+        - description: Folder containing field definitions for the knowledge base index
+          type: folder
+          name: fields
+          required: true
+          $ref: "../../data_stream/fields/spec.yml"
+        - description: Folder containing the knowledge base content files
+          type: folder
+          name: content
+          required: true
+          additionalContents: false
+          contents:
+            - description: A knowledge base entry's content file
+              type: file
+              sizeLimit: 20MB
+              contentMediaType: "application/x-ndjson"
+              pattern: '^content(-[a-z0-9]+)?\.ndjson$'

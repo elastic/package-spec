@@ -138,9 +138,9 @@ spec:
         - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
   - description: Folder containing Kibana knowledge base entries
     type: folder
-    name: kb_entry
+    name: knowledge_base_entry
     required: false
-    $ref: "./kb_entry/spec.yml"
+    $ref: "./knowledge_base_entry/spec.yml"
 versions:
   - before: 3.4.0
     patch:

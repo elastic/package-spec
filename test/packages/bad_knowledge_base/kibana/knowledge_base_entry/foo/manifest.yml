@@ -1,14 +1,10 @@
 name: foo
 description: >
   Knowledge base entry containing all the foo-related documentation
-index:
-  name: .kibana_kb_foo
-  system: true
+unknown: maybe
 retrieval:
   syntactic_fields:
     - content_title
   semantic_fields:
     - content_body
-    - ai_subtitle
     - ai_summary
-    - ai_questions_answered

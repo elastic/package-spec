@@ -25,11 +25,6 @@ spec:
       examples:
         - true
         - "doc['message'].value().doSomething()"
-    inference_id:
-      description: >
-        For semantic_text fields, this specifies the id of the inference
-        endpoint associated with the field
-      type: string
 
   type: array
   items:
@@ -429,6 +424,12 @@ spec:
         type: boolean
         default: true
 
+      inference_id:
+        description: >
+          For semantic_text fields, this specifies the id of the inference
+          endpoint associated with the field
+        type: string
+
       # Conditional properties.
       default_metric: true
       metrics: true
@@ -597,19 +598,15 @@ spec:
           required:
             - type
       - if:
-          properties:
-            type:
-              const: semantic_field
           required:
-            - type
+            - inference_id
         then:
           properties:
-            inference_id:
-              $ref: "#/definitions/inference_id"
-        else:
-          not:
-            required:
-              - inference_id
+            type:
+              enum:
+                - semantic_text
+          required:
+            - type
 
     required:
     - name
@@ -622,6 +619,8 @@ versions:
         path: "/items/properties/type/enum/35" #remove semantic_text type
       - op: remove
         path: "/items/allOf/9" # removing inference_id when type is semantic_text
+      - op: remove
+        path: "/items/properties/inference_id" # removing inference_id field
   - before: 3.2.0
     patch:
       - op: remove

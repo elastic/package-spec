@@ -15,14 +15,10 @@ spec:
       type: object
       additionalProperties: false
       properties:
-        name:
-          description: The name of the index associated with the knowledge base entry
-          type: string
         system:
-          description: Specify whether the index is system-managed or not
+          description: Specify whether the index should be system-managed or not
           type: boolean
       required:
-        - name
         - system
     retrieval:
       type: object
@@ -43,3 +39,5 @@ spec:
         - semantic_fields
   required:
     - name
+    - index
+    - retrieval
