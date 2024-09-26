@@ -25,6 +25,11 @@ spec:
       examples:
         - true
         - "doc['message'].value().doSomething()"
+    inference_id:
+      description: >
+        For semantic_text fields, this specifies the id of the inference
+        endpoint associated with the field
+      type: string
 
   type: array
   items:
@@ -91,6 +96,7 @@ spec:
         - version
         - unsigned_long
         - counted_keyword
+        - semantic_text
 
       description:
         description: Short description of field
@@ -590,12 +596,32 @@ spec:
                 - object
           required:
             - type
+      - if:
+          properties:
+            type:
+              const: semantic_field
+          required:
+            - type
+        then:
+          properties:
+            inference_id:
+              $ref: "#/definitions/inference_id"
+        else:
+          not:
+            required:
+              - inference_id
 
     required:
     - name
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.4.0
+    patch:
+      - op: remove
+        path: "/items/properties/type/enum/35" #remove semantic_text type
+      - op: remove
+        path: "/items/allOf/9" # removing inference_id when type is semantic_text
   - before: 3.2.0
     patch:
       - op: remove
