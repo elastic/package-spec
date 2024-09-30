@@ -33,4 +33,4 @@ spec:
     type: folder
     name: knowledge_base_entry
     required: false
-    $ref: "../../integration/kibana/knowledge_base_entry/spec.yml"
+    $ref: "./knowledge_base_entry/spec.yml"

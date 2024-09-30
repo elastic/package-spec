@@ -5,8 +5,8 @@ spec:
   type: object
   additionalProperties: false
   properties:
-    name:
-      description: The name of the knowledge base entry
+    title:
+      description: The title of the knowledge base entry as used by the knowledge base
       type: string
     description:
       description: A description of what the knowledge base entry provides
@@ -38,6 +38,6 @@ spec:
         - syntactic_fields
         - semantic_fields
   required:
-    - name
+    - title
     - index
     - retrieval

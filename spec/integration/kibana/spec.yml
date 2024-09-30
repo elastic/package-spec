@@ -136,16 +136,7 @@ spec:
       pattern: '^{PACKAGE_NAME}-.+\.json$'
       forbiddenPatterns:
         - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
-  - description: Folder containing Kibana knowledge base entries
-    type: folder
-    name: knowledge_base_entry
-    required: false
-    $ref: "./knowledge_base_entry/spec.yml"
 versions:
-  - before: 3.4.0
-    patch:
-      - op: remove
-        path: "/contents/14" # remove kb_entry definitions
   - before: 3.3.0
     patch:
       - op: remove
