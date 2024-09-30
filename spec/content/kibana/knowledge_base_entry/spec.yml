@@ -19,7 +19,7 @@ spec:
           type: folder
           name: fields
           required: true
-          $ref: "../../data_stream/fields/spec.yml"
+          $ref: "../../../integration/data_stream/fields/spec.yml"
         - description: Folder containing the knowledge base content files
           type: folder
           name: content
