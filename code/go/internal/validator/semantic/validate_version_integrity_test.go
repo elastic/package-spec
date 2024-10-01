@@ -137,6 +137,24 @@ func TestChangelogLatestVersionIsGreaterThanOthers(t *testing.T) {
 			},
 			true,
 		},
+		{
+			"latest changelog entry next version",
+			[]string{
+				"1.2.0-next",
+				"1.1.0",
+				"1.0.0",
+			},
+			false,
+		},
+		{
+			"latest changelog entry next version older",
+			[]string{
+				"1.0.1-next",
+				"1.1.0",
+				"1.0.0",
+			},
+			true,
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.title, func(t *testing.T) {
