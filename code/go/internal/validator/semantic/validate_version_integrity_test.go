@@ -155,6 +155,15 @@ func TestChangelogLatestVersionIsGreaterThanOthers(t *testing.T) {
 			},
 			true,
 		},
+		{
+			"latest changelog entry prerelease tag",
+			[]string{
+				"1.1.1-preview01",
+				"1.1.0",
+				"1.0.0",
+			},
+			false,
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.title, func(t *testing.T) {
