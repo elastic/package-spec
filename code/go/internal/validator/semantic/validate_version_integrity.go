@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
@@ -33,6 +34,11 @@ func ValidateVersionIntegrity(fsys fspath.FS) specerrors.ValidationErrors {
 	}
 
 	err = ensureManifestVersionHasChangelogEntry(manifestVersion, changelogVersions)
+	if err != nil {
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
+	}
+
+	err = ensureChangelogLatestVersionIsGreaterThanOthers(changelogVersions)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
@@ -129,4 +135,25 @@ func ensureManifestVersionHasChangelogEntry(manifestVersion string, versions []s
 		}
 	}
 	return errors.New("current manifest version doesn't have changelog entry")
+}
+
+func ensureChangelogLatestVersionIsGreaterThanOthers(versions []string) error {
+	latestVersion, err := semver.NewVersion(versions[0])
+	if err != nil {
+		return fmt.Errorf("could not read package manifest version [%s]: %w", versions[0], err)
+	}
+
+	for i, v := range versions {
+		if i == 0 {
+			continue
+		}
+		changelogVersion, err := semver.NewVersion(v)
+		if err != nil {
+			return fmt.Errorf("could not read package manifest version [%s]: %w", changelogVersion, err)
+		}
+		if changelogVersion.GreaterThanEqual(latestVersion) {
+			return fmt.Errorf("changelog entry %s is greater than or equal to first changelog entry: %s", changelogVersion, latestVersion)
+		}
+	}
+	return nil
 }
