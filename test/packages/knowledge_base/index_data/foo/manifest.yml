@@ -1,7 +1,9 @@
+type: knowledge_base_entry
 title: foo
 description: >
   Knowledge base entry containing all the foo-related documentation
-unknown: maybe
+index:
+  system: true
 retrieval:
   syntactic_fields:
     - content_title

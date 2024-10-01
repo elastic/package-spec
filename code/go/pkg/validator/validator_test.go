@@ -229,7 +229,7 @@ func TestValidateFile(t *testing.T) {
 			},
 		},
 		"bad_knowledge_base": {
-			"kibana/knowledge_base_entry/foo/manifest.yml",
+			"index_data/foo/manifest.yml",
 			[]string{
 				`field (root): index is required`,
 				`field (root): Additional property unknown is not allowed`,
