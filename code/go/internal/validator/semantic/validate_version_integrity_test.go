@@ -11,7 +11,7 @@ import (
 )
 
 func TestChangelogUniqueVersions(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		title       string
 		versions    []string
 		expectedErr bool
@@ -47,7 +47,7 @@ func TestChangelogUniqueVersions(t *testing.T) {
 }
 
 func TestManifestVersionHasChangelogEntry(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		title           string
 		manifestVersion string
 		versions        []string
@@ -92,6 +92,16 @@ func TestManifestVersionHasChangelogEntry(t *testing.T) {
 			},
 			false,
 		},
+		{
+			"changelog and manifest next version",
+			"1.1.0-next",
+			[]string{
+				"1.1.0-next",
+				"1.0.1",
+				"1.0.0",
+			},
+			false,
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.title, func(t *testing.T) {
@@ -106,13 +116,13 @@ func TestManifestVersionHasChangelogEntry(t *testing.T) {
 }
 
 func TestChangelogLatestVersionIsGreaterThanOthers(t *testing.T) {
-	var tests = []struct {
+	tests := []struct {
 		title       string
 		versions    []string
 		expectedErr bool
 	}{
 		{
-			"latest changelog entry greater",
+			"valid latest changelog entry",
 			[]string{
 				"1.0.1",
 				"1.0.0",
@@ -129,7 +139,7 @@ func TestChangelogLatestVersionIsGreaterThanOthers(t *testing.T) {
 			true,
 		},
 		{
-			"latest changelog entry lower stable version",
+			"latest changelog entry lower than stable version",
 			[]string{
 				"1.0.1",
 				"1.1.0",
