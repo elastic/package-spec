@@ -1,0 +1,27 @@
+format_version: 3.4.0
+name: knowledge_base
+title: Knowledge base test content package
+description: >
+  This package is a dummy example for packages containing a knowledge base entry.
+version: 0.1.0
+type: content
+source:
+  license: "Elastic-2.0"
+conditions:
+  kibana:
+    version: '^8.15.0'
+  elastic:
+    subscription: 'enterprise'
+screenshots:
+  - src: /img/kibana-system.png
+    title: kibana system
+    size: 1220x852
+    type: image/png
+icons:
+  - src: /img/system.svg
+    title: system
+    size: 1000x1000
+    type: image/svg+xml
+owner:
+  github: elastic/ecosystem
+  type: elastic

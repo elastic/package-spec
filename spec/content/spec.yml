@@ -46,6 +46,11 @@ spec:
     name: kibana
     required: false
     $ref: "./kibana/spec.yml"
+  - description: Folder containing Index data assets used by the package
+    type: folder
+    name: index_data
+    required: false
+    $ref: "./index_data/spec.yml"
   - description: Configuration file to process the results returned from the package validation. This file is just for package validation and it should be ignored when installing or using the package.
     type: file
     contentMediaType: "application/x-yaml"

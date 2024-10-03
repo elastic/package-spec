@@ -135,7 +135,7 @@ spec:
       contentMediaType: "application/json"
       pattern: '^{PACKAGE_NAME}-.+\.json$'
       forbiddenPatterns:
-        - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden 
+        - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
 versions:
   - before: 3.3.0
     patch:

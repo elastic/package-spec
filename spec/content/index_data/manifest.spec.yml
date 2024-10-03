@@ -1,0 +1,69 @@
+##
+## Describes the specification for a Kibana knowledge base entry's manifest.yml file
+##
+spec:
+  type: object
+  additionalProperties: false
+  properties:
+    type:
+      type: string
+      description: >
+        Type of the index data.
+      enum:
+        - knowledge_base_entry
+    description:
+      description: A description of what the index data provides
+      type: string
+
+    # Conditional properties.
+    title: true
+    index: true
+    retrieval: true
+  allOf:
+    - if:
+        properties:
+          type:
+            const: knowledge_base_entry
+        required:
+          - type
+      then:
+        properties:
+          title:
+            description: The title of the knowledge base entry as used by the knowledge base
+            type: string
+          index:
+            type: object
+            additionalProperties: false
+            properties:
+              system:
+                description: Specify whether the index should be system-managed or not
+                type: boolean
+            required:
+              - system
+          retrieval:
+            type: object
+            additionalProperties: false
+            properties:
+              syntactic_fields:
+                description: List of fields that should be used for syntactic search during retrieval.
+                type: array
+                items:
+                  type: string
+              semantic_fields:
+                description: List of fields that should be used for semantic search during retrieval.
+                type: array
+                items:
+                  type: string
+            required:
+              - syntactic_fields
+              - semantic_fields
+        required:
+          - index
+          - retrieval
+      else:
+        not:
+          required:
+            - index
+            - retrieval
+  required:
+    - type

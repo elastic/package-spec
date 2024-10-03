@@ -1,0 +1,12 @@
+type: knowledge_base_entry
+title: foo
+description: >
+  Knowledge base entry containing all the foo-related documentation
+index:
+  system: true
+retrieval:
+  syntactic_fields:
+    - content_title
+  semantic_fields:
+    - content_body
+    - ai_summary
