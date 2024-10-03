@@ -23,6 +23,9 @@
     - description: Add support for identity of agentless deployment mode, and make it mandatory when this mode is enabled.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/801
+    - description: Add a new validation to check order of the newer changelog entry.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/808
 - version: 3.2.2
   changes:
     - description: Add spec for img directory.
