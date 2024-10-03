@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
+
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
@@ -124,6 +125,10 @@ func ensureUniqueVersions(versions []string) error {
 }
 
 func ensureManifestVersionHasChangelogEntry(manifestVersion string, versions []string) error {
+	if len(versions) == 0 {
+		return errors.New("no versions found in changelog")
+	}
+
 	if manifestVersion == versions[0] {
 		return nil
 	}
@@ -138,15 +143,16 @@ func ensureManifestVersionHasChangelogEntry(manifestVersion string, versions []s
 }
 
 func ensureChangelogLatestVersionIsGreaterThanOthers(versions []string) error {
+	if len(versions) == 0 {
+		return errors.New("no versions found in changelog")
+	}
+
 	latestVersion, err := semver.NewVersion(versions[0])
 	if err != nil {
 		return fmt.Errorf("could not read package manifest version [%s]: %w", versions[0], err)
 	}
 
-	for i, v := range versions {
-		if i == 0 {
-			continue
-		}
+	for _, v := range versions[1:] {
 		changelogVersion, err := semver.NewVersion(v)
 		if err != nil {
 			return fmt.Errorf("could not read package manifest version [%s]: %w", changelogVersion, err)
