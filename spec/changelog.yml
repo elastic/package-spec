@@ -7,9 +7,6 @@
     - description: Add support for content packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/777
-    - description: Add support for "Kibana knowledge base entry" assets.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/807
     - description: Add support for semantic_text field definition
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807

@@ -44,7 +44,6 @@ func TestValidateFile(t *testing.T) {
 		"custom_ilm_policy":                  {},
 		"profiling_symbolizer":               {},
 		"logs_synthetic_mode":                {},
-		"knowledge_base":                     {},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
@@ -226,13 +225,6 @@ func TestValidateFile(t *testing.T) {
 			[]string{
 				`field vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
 				`field data_stream.vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
-			},
-		},
-		"bad_knowledge_base": {
-			"index_data/foo/manifest.yml",
-			[]string{
-				`field (root): index is required`,
-				`field (root): Additional property unknown is not allowed`,
 			},
 		},
 	}

@@ -25,7 +25,6 @@ func validateContentType(fsys fs.FS, path string, contentType spectypes.ContentT
 			}
 		}
 	case "application/json":
-	case "application/x-ndjson":
 	case "text/markdown":
 	case "text/plain":
 	default:
