@@ -13,6 +13,7 @@ conditions:
     subscription: 'basic'
     capabilities:
       - observability
+      - security
 vars:
   - name: package_password
     type: password

@@ -86,7 +86,7 @@ func readChangelog(fsys fspath.FS, jsonpath string) ([]string, error) {
 
 	vals, err := f[0].Values(jsonpath)
 	if err != nil {
-		return nil, fmt.Errorf("can't changelog entries: %w", err)
+		return nil, fmt.Errorf("can't read changelog entries: %w", err)
 	}
 
 	versions, err := toStringSlice(vals)

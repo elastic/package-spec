@@ -11,6 +11,7 @@ conditions:
   elastic.subscription: 'basic'
   elastic.capabilities:
     - observability
+    - security
 vars:
   - name: package_password
     type: password

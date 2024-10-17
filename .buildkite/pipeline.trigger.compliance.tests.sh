@@ -39,9 +39,10 @@ cat <<EOF
         continue_on_failure: true
       - label: ":junit: Annotate compliance test results"
         plugins:
-          - junit-annotate#v2.4.1:
+          - junit-annotate#v2.5.0:
               artifacts: "compliance/report-*.xml"
               context: "compliance"
+              report-skipped: true
               always-annotate: true
         agents:
           provider: "gcp"

@@ -473,7 +473,6 @@ func TestValidateDuplicatedFields(t *testing.T) {
 			require.Contains(t, errMessages, expectedErrorMessage)
 		})
 	}
-
 }
 
 func TestValidateMinimumKibanaVersions(t *testing.T) {
@@ -522,7 +521,6 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestValidateWarnings(t *testing.T) {
@@ -569,7 +567,6 @@ func TestValidateWarnings(t *testing.T) {
 }
 
 func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
-
 	pkgName := "bad_external_without_dev_build"
 	tests := []struct {
 		title               string
@@ -769,6 +766,53 @@ func TestValidateForbiddenDataStreamName(t *testing.T) {
 
 	for _, foundError := range errs {
 		assert.Contains(t, expectedErrorMessages, foundError.Error())
+	}
+}
+
+func TestValidateCapabilitiesRequried(t *testing.T) {
+	tests := map[string][]string{
+		"good_v2": {},
+		"good_v3": {},
+		"bad_missing_capability_security_rules": {
+			"found security rule assets in package but security capability is missing in package manifest",
+		},
+	}
+
+	for pkgName, expectedErrorMessages := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
+
+			errs := ValidateFromPath(pkgRootPath)
+			if verrs, ok := errs.(specerrors.ValidationErrors); ok {
+				filterConfig, err := specerrors.LoadConfigFilter(os.DirFS(pkgRootPath))
+				if !errors.Is(err, os.ErrNotExist) {
+					filter := specerrors.NewFilter(filterConfig)
+					result, err := filter.Run(verrs)
+					require.NoError(t, err)
+					errs = result.Processed
+				}
+			}
+			if len(expectedErrorMessages) == 0 {
+				assert.NoError(t, errs)
+				return
+			}
+			assert.Error(t, errs)
+
+			vErrs, ok := errs.(specerrors.ValidationErrors)
+			if ok {
+				assert.Len(t, errs, len(expectedErrorMessages))
+				var errMessages []string
+				for _, vErr := range vErrs {
+					errMessages = append(errMessages, vErr.Error())
+				}
+
+				for _, expectedErrMessage := range expectedErrorMessages {
+					assert.Contains(t, errMessages, expectedErrMessage)
+				}
+				return
+			}
+			assert.Equal(t, errs.Error(), expectedErrorMessages[0])
+		})
 	}
 }
 
