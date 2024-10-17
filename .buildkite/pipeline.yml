@@ -41,16 +41,28 @@ steps:
       - label: ":pipeline: Trigger Compliance tests"
         command: ".buildkite/pipeline.trigger.compliance.tests.sh | buildkite-agent pipeline upload"
 
-      - label: ":junit: Junit annotate"
-        plugins:
-          - junit-annotate#v2.4.1:
-              artifacts: "build/test-results/*.xml;junit-win-report.xml"
-              fail-build-on-error: true
-        agents:
-          provider: "gcp"
+      - label: "Copy junit files from unit test steps"
+        key: preprocess-win-unit-results-files
+        commands:
+          - mkdir -p build/test-results
+          - buildkite-agent artifact download *.xml build/test-results/ --step windows-test 
+          - buildkite-agent artifact upload build/test-results/*.xml
+        artifact_paths:
+          - "build/test-results/*.xml"
         depends_on:
           - step: "linux-test"
             allow_failure: true
           - step: "windows-test"
+            allow_failure: true
+
+      - label: ":junit: Junit annotate"
+        plugins:
+          - junit-annotate#v2.4.1:
+              artifacts: "build/test-results/*.xml"
+              fail-build-on-error: true
+        agents:
+          provider: "gcp"
+        depends_on:
+          - step: "preprocess-win-unit-results-files"
             allow_failure: true
 
