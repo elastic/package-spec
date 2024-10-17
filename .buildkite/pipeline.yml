@@ -44,7 +44,7 @@ steps:
       - label: ":junit: Junit annotate"
         plugins:
           - junit-annotate#v2.4.1:
-              artifacts: "*.xml"
+              artifacts: "build/test-results/*.xml;junit-win-report.xml"
               fail-build-on-error: true
         agents:
           provider: "gcp"
