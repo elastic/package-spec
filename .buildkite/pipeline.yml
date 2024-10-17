@@ -41,12 +41,12 @@ steps:
       - label: ":pipeline: Trigger Compliance tests"
         command: ".buildkite/pipeline.trigger.compliance.tests.sh | buildkite-agent pipeline upload"
 
-      - label: "Copy junit files from unit test steps"
+      # This step also ensures that result files from unit tests are all of them in the same directory
+      - label: ":junit: Transform windows paths to linux for Junit plugin"
         key: preprocess-win-unit-results-files
         commands:
           - mkdir -p build/test-results
           - buildkite-agent artifact download *.xml build/test-results/ --step windows-test 
-          - buildkite-agent artifact upload build/test-results/*.xml
         artifact_paths:
           - "build/test-results/*.xml"
         depends_on:
