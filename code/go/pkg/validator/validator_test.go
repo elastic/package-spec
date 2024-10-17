@@ -473,24 +473,23 @@ func TestValidateDuplicatedFields(t *testing.T) {
 			require.Contains(t, errMessages, expectedErrorMessage)
 		})
 	}
-
 }
 
 func TestValidateMinimumKibanaVersions(t *testing.T) {
 	tests := map[string][]string{
-		"good":       []string{},
-		"good_input": []string{},
-		"good_v2":    []string{},
-		"custom_logs": []string{
+		"good":       {},
+		"good_input": {},
+		"good_v2":    {},
+		"custom_logs": {
 			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
 		},
-		"httpjson_input": []string{
+		"httpjson_input": {
 			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
 		},
-		"sql_input": []string{
+		"sql_input": {
 			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
 		},
-		"bad_runtime_kibana_version": []string{
+		"bad_runtime_kibana_version": {
 			"conditions.kibana.version must be ^8.10.0 or greater to include runtime fields",
 		},
 	}
@@ -522,17 +521,16 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestValidateWarnings(t *testing.T) {
 	tests := map[string][]string{
-		"good":    []string{},
-		"good_v2": []string{},
-		"visualizations_by_reference": []string{
+		"good":    {},
+		"good_v2": {},
+		"visualizations_by_reference": {
 			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens) (SVR00004)",
 		},
-		"bad_saved_object_tags_kibana_version": []string{
+		"bad_saved_object_tags_kibana_version": {
 			"conditions.kibana.version must be ^8.10.0 or greater to include saved object tags file: kibana/tags.yml (SVR00005)",
 		},
 	}
@@ -569,7 +567,6 @@ func TestValidateWarnings(t *testing.T) {
 }
 
 func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
-
 	pkgName := "bad_external_without_dev_build"
 	tests := []struct {
 		title               string
@@ -620,10 +617,10 @@ func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
 			require.NoError(t, err)
 
 			if test.buildFileContents != "" {
-				err := os.MkdirAll(buildFolderPath, 0755)
+				err := os.MkdirAll(buildFolderPath, 0o755)
 				require.NoError(t, err)
 
-				err = os.WriteFile(buildFilePath, []byte(test.buildFileContents), 0644)
+				err = os.WriteFile(buildFilePath, []byte(test.buildFileContents), 0o644)
 				require.NoError(t, err)
 			}
 
@@ -654,18 +651,18 @@ func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
 
 func TestValidateRoutingRules(t *testing.T) {
 	tests := map[string][]string{
-		"good":    []string{},
-		"good_v2": []string{},
-		"bad_routing_rules": []string{
+		"good":    {},
+		"good_v2": {},
+		"bad_routing_rules": {
 			`routing rules defined in data stream "rules" but dataset field is missing: dataset field is required in manifest for data stream "rules"`,
 		},
-		"bad_routing_rules_wrong_spec": []string{
+		"bad_routing_rules_wrong_spec": {
 			`item [routing_rules.yml] is not allowed in folder [../../../../test/packages/bad_routing_rules_wrong_spec/data_stream/rules]`,
 		},
-		"bad_routing_rules_missing_if": []string{
+		"bad_routing_rules_missing_if": {
 			`file "../../../../test/packages/bad_routing_rules_missing_if/data_stream/rules/routing_rules.yml" is invalid: field 0.rules.0: if is required`,
 		},
-		"bad_routing_rules_missing_target_dataset": []string{
+		"bad_routing_rules_missing_target_dataset": {
 			`file "../../../../test/packages/bad_routing_rules_missing_target_dataset/data_stream/rules/routing_rules.yml" is invalid: field 0.rules.0: target_dataset is required`,
 		},
 	}
@@ -769,6 +766,53 @@ func TestValidateForbiddenDataStreamName(t *testing.T) {
 
 	for _, foundError := range errs {
 		assert.Contains(t, expectedErrorMessages, foundError.Error())
+	}
+}
+
+func TestValidateCapabilitiesRequried(t *testing.T) {
+	tests := map[string][]string{
+		"good_v2": {},
+		"good_v3": {},
+		"bad_missing_capability_security_rules": {
+			"found security rule assets in package but security capability is missing in package manifest",
+		},
+	}
+
+	for pkgName, expectedErrorMessages := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
+
+			errs := ValidateFromPath(pkgRootPath)
+			if verrs, ok := errs.(specerrors.ValidationErrors); ok {
+				filterConfig, err := specerrors.LoadConfigFilter(os.DirFS(pkgRootPath))
+				if !errors.Is(err, os.ErrNotExist) {
+					filter := specerrors.NewFilter(filterConfig)
+					result, err := filter.Run(verrs)
+					require.NoError(t, err)
+					errs = result.Processed
+				}
+			}
+			if len(expectedErrorMessages) == 0 {
+				assert.NoError(t, errs)
+				return
+			}
+			assert.Error(t, errs)
+
+			vErrs, ok := errs.(specerrors.ValidationErrors)
+			if ok {
+				assert.Len(t, errs, len(expectedErrorMessages))
+				var errMessages []string
+				for _, vErr := range vErrs {
+					errMessages = append(errMessages, vErr.Error())
+				}
+
+				for _, expectedErrMessage := range expectedErrorMessages {
+					assert.Contains(t, errMessages, expectedErrMessage)
+				}
+				return
+			}
+			assert.Equal(t, errs.Error(), expectedErrorMessages[0])
+		})
 	}
 }
 
