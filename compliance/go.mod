@@ -8,10 +8,10 @@ require (
 	github.com/Masterminds/semver/v3 v3.3.0
 	github.com/cucumber/godog v0.14.1
 	github.com/cucumber/messages/go/v21 v21.0.1
-	github.com/elastic/elastic-package v0.105.0
+	github.com/elastic/elastic-package v0.106.0
 	github.com/elastic/go-elasticsearch/v8 v8.15.0
 	github.com/elastic/go-licenser v0.4.2
-	github.com/elastic/package-spec/v3 v3.2.3
+	github.com/elastic/package-spec/v3 v3.3.0
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
