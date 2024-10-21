@@ -40,7 +40,7 @@ func ensureSecurityRulesHasSecurityCapability(fsys fspath.FS) specerrors.Validat
 
 	if !slices.Contains(capabilities, "security") {
 		return specerrors.ValidationErrors{
-			specerrors.NewStructuredErrorf("found security rule assets in package but security capability is missing in package manifest"),
+			specerrors.NewStructuredErrorf("file \"%s\" is invalid: found security rule assets in package but security capability is missing", fsys.Path("manifest.yml")),
 		}
 	}
 

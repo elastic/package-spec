@@ -227,6 +227,12 @@ func TestValidateFile(t *testing.T) {
 				`field data_stream.vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
 			},
 		},
+		"bad_missing_capability_security_rules": {
+			"manifest.yml",
+			[]string{
+				"found security rule assets in package but security capability is missing",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
@@ -766,53 +772,6 @@ func TestValidateForbiddenDataStreamName(t *testing.T) {
 
 	for _, foundError := range errs {
 		assert.Contains(t, expectedErrorMessages, foundError.Error())
-	}
-}
-
-func TestValidateCapabilitiesRequried(t *testing.T) {
-	tests := map[string][]string{
-		"good_v2": {},
-		"good_v3": {},
-		"bad_missing_capability_security_rules": {
-			"found security rule assets in package but security capability is missing in package manifest",
-		},
-	}
-
-	for pkgName, expectedErrorMessages := range tests {
-		t.Run(pkgName, func(t *testing.T) {
-			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
-
-			errs := ValidateFromPath(pkgRootPath)
-			if verrs, ok := errs.(specerrors.ValidationErrors); ok {
-				filterConfig, err := specerrors.LoadConfigFilter(os.DirFS(pkgRootPath))
-				if !errors.Is(err, os.ErrNotExist) {
-					filter := specerrors.NewFilter(filterConfig)
-					result, err := filter.Run(verrs)
-					require.NoError(t, err)
-					errs = result.Processed
-				}
-			}
-			if len(expectedErrorMessages) == 0 {
-				assert.NoError(t, errs)
-				return
-			}
-			assert.Error(t, errs)
-
-			vErrs, ok := errs.(specerrors.ValidationErrors)
-			if ok {
-				assert.Len(t, errs, len(expectedErrorMessages))
-				var errMessages []string
-				for _, vErr := range vErrs {
-					errMessages = append(errMessages, vErr.Error())
-				}
-
-				for _, expectedErrMessage := range expectedErrorMessages {
-					assert.Contains(t, errMessages, expectedErrMessage)
-				}
-				return
-			}
-			assert.Equal(t, errs.Error(), expectedErrorMessages[0])
-		})
 	}
 }
 
