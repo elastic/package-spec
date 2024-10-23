@@ -227,6 +227,12 @@ func TestValidateFile(t *testing.T) {
 				`field data_stream.vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
 			},
 		},
+		"bad_missing_capability_security_rules": {
+			"manifest.yml",
+			[]string{
+				"found security rule assets in package but security capability is missing",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
@@ -473,7 +479,6 @@ func TestValidateDuplicatedFields(t *testing.T) {
 			require.Contains(t, errMessages, expectedErrorMessage)
 		})
 	}
-
 }
 
 func TestValidateMinimumKibanaVersions(t *testing.T) {
@@ -522,7 +527,6 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestValidateWarnings(t *testing.T) {
@@ -569,7 +573,6 @@ func TestValidateWarnings(t *testing.T) {
 }
 
 func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
-
 	pkgName := "bad_external_without_dev_build"
 	tests := []struct {
 		title               string
