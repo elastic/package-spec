@@ -15,6 +15,9 @@
     - description: Add validation rule to ensure security capability is added if there is any security rule asset.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/820
+    - description: Added new setting to manage how to show policy tmeplates in Kibana to the user. 
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/825
 - version: 3.3.0
   changes:
     - description: Add support for content packages.
