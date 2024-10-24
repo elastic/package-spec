@@ -28,7 +28,7 @@ vars:
     title: A URL to get secrets, but not a secret itself.
     type: url
     show_user: true
-policy_templates_behaviour: policy_templates_only
+policy_templates_behavior: policy_templates_only
 policy_templates:
   - name: apache
     title: Apache logs and metrics
