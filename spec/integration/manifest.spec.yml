@@ -366,15 +366,12 @@ spec:
     # on the policy_templates length
     policy_templates_behavior:
       description: >
-        Behavior to manage the policy templates (policy_templates field) defined that must be available in Kibana as tiles.
-        This is just applicable for those packages that define more than one policy template. By default for these packages, Kibana
-        shows all the policy templates defined in the manifest separately plus another one referring to the
-        whole integration (that contains all the policy templates definitions) available to the user.
-
-        If the `integration_package_only` option is selected, then just one policy template for the whole integration containing all policy
-        templates will be available in Kibana. If the `policy_templates_only` option is selected, then just the policy templates defined
-        in the manifest will be available in Kibana without the specific policy template for the whole integration. If the `default` option
-        is selected, then Kibana keeps the same behavior described above.
+        Expected behavior when there are more than one policy template defined.
+        When set to `combined_policy`, a single policy template is available that
+        combines all the defined templates. When set to `individual_policies`, all
+        policies are individually available, but there is no combined policy.
+        The default value is `all`, where the combined policy template is available
+        along with the individual policies.
       type: string
     policy_templates:
       description: List of policy templates offered by this package.
@@ -509,16 +506,16 @@ spec:
         properties:
           policy_templates_behavior:
             enum:
-              - default
-            default: default
+              - all
+            default: all
       else:
         properties:
           policy_templates_behavior:
             enum:
-              - integration_package_only
-              - policy_templates_only
-              - default
-            default: default
+              - combined_policy
+              - individual_policies
+              - all
+            default: all
 
 # JSON patches for newer versions should be placed on top
 versions:

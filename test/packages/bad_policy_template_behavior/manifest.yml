@@ -23,7 +23,7 @@ icons:
     title: Sample logo
     size: 32x32
     type: image/svg+xml
-policy_templates_behavior: integrations_only
+policy_templates_behavior: combined_only
 policy_templates:
   - name: sample
     title: Sample logs

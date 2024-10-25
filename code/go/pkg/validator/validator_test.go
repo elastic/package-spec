@@ -236,7 +236,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_policy_template_behavior": {
 			"manifest.yml",
 			[]string{
-				"field policy_templates_behavior: policy_templates_behavior must be one of the following: \"default\"",
+				"field policy_templates_behavior: policy_templates_behavior must be one of the following: \"all\"",
 			},
 		},
 	}
