@@ -233,6 +233,12 @@ func TestValidateFile(t *testing.T) {
 				"found security rule assets in package but security capability is missing",
 			},
 		},
+		"bad_policy_template_behavior": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates_behavior: policy_templates_behavior must be one of the following: \"all\"",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {

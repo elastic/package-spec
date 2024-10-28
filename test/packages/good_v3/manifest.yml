@@ -28,6 +28,7 @@ vars:
     title: A URL to get secrets, but not a secret itself.
     type: url
     show_user: true
+policy_templates_behavior: individual_policies
 policy_templates:
   - name: apache
     title: Apache logs and metrics
@@ -68,7 +69,7 @@ policy_templates:
               - http://127.0.0.1
             hide_in_deployment_modes:
               - agentless
-  - name: apache
+  - name: apache-agentless
     title: Apache logs and metrics in agentless
     description: Collect logs and metrics from Apache instances in agentless
     deployment_modes:
