@@ -11,8 +11,8 @@ require (
 	github.com/elastic/gojsonschema v1.2.1
 	github.com/elastic/kbncontent v0.1.4
 	github.com/evanphx/json-patch/v5 v5.9.0
+	github.com/go-viper/mapstructure/v2 v2.2.1
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901
-	github.com/mitchellh/mapstructure v1.5.0
 	github.com/otiai10/copy v1.14.0
 	github.com/stretchr/testify v1.9.0
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415
@@ -32,6 +32,7 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/pkg/errors v0.8.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
