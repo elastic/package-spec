@@ -410,6 +410,21 @@ spec:
                 - access
           deployment_modes:
             $ref: "#/definitions/deployment_modes"
+          links:
+            description: List of links related to policy template.
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  description: Type of link
+                  type: string
+                content:
+                  description: Link content
+                  type: string
+                url:
+                  description: Link url
+                  type: string
           inputs:
             description: List of inputs supported by policy template.
             type: array
