@@ -1,0 +1,7 @@
+title: Hidden data stream and ilm policy overrride
+type: metrics
+ilm_policy: metrics-kibana_links.ilm_policy-diagnostics
+elasticsearch:
+  index_template:
+    mappings:
+      dynamic: false
