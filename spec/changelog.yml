@@ -10,6 +10,9 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: Add support for next steps links to kibana manifest.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/834
 - version: 3.3.1-next
   changes:
     - description: Add validation rule to ensure security capability is added if there is any security rule asset.
