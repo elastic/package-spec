@@ -5,7 +5,7 @@ go 1.22.1
 toolchain go1.22.5
 
 require (
-	github.com/Masterminds/semver/v3 v3.3.0
+	github.com/Masterminds/semver/v3 v3.3.1
 	github.com/cucumber/godog v0.15.0
 	github.com/cucumber/messages/go/v21 v21.0.1
 	github.com/elastic/elastic-package v0.107.1
