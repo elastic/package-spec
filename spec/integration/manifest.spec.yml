@@ -413,9 +413,17 @@ spec:
           links:
             description: List of links related to policy template.
             type: array
+            minItems: 1
             items:
               type: object
+              additionalProperties: false
               properties:
+                title:
+                  description: Link title
+                  type: string
+                url:
+                  description: Link url
+                  type: string
                 type:
                   description: Type of link. `next_steps` for a regular link, `action` for a link button.
                   type: string
@@ -423,11 +431,12 @@ spec:
                     - action
                     - next_steps
                 content:
-                  description: Link content
+                  description: Link description
                   type: string
-                url:
-                  description: Link url
-                  type: string
+              required:
+              - title
+              - url
+              - type
           inputs:
             description: List of inputs supported by policy template.
             type: array
