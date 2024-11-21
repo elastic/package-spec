@@ -1,4 +1,0 @@
-data_stream:
-  vars:
-    paths:
-      - "/var/logs/apache/access.log*"

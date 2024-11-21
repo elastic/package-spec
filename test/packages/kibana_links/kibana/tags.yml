@@ -3,14 +3,7 @@
     - dashboard
     - visualization
     - search
-    - map
-    - lens
     - index_pattern
-    - security_rule
-    - csp_rule_template
-    - ml_module
-    - osquery_pack_asset
-    - osquery_saved_query
 - text: Bar
   asset_ids:
     - id1
@@ -18,6 +11,5 @@
 - text: myCustomTag
   asset_types:
     - dashboard
-    - map
   asset_ids:
     - id1

@@ -1,4 +1,0 @@
-wait_for_data_timeout: 10m
-skip_ignored_fields:
-  - error.message
-vars: ~

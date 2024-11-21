@@ -1,7 +1,7 @@
 format_version: 3.4.0
 name: kibana_links
-title: Good package
-description: This package is good for format version 3
+title: Package with links
+description: TPackage with kibana next steps links
 version: 1.0.0
 type: integration
 source:
@@ -28,7 +28,6 @@ vars:
     title: A URL to get secrets, but not a secret itself.
     type: url
     show_user: true
-policy_templates_behavior: individual_policies
 policy_templates:
   - name: apache
     title: Apache logs and metrics

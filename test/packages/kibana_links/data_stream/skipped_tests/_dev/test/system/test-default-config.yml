@@ -1,9 +1,0 @@
-skip:
-  reason: Test was skipped to test skipped test feature in spec.
-  link: https://github.com/elastic/integrations/issues/520
-input: foo
-vars: ~
-data_stream:
-  vars:
-    paths:
-      - "{{SERVICE_LOGS_DIR}}/access.log"
