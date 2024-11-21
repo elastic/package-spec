@@ -83,8 +83,8 @@ github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkp
 github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
 github.com/elastic/elastic-integration-corpus-generator-tool v0.10.0 h1:sx1lpZuTG5suJuvgix4FWQFCLFFbzkoOmPoHWYOPLCY=
 github.com/elastic/elastic-integration-corpus-generator-tool v0.10.0/go.mod h1:2/30n+2QRzRzus4TPVUV1T3U/j8g2ItUgvP0pcpjLGk=
-github.com/elastic/elastic-package v0.107.1 h1:pdGvXhTHt6mW2mDo1SAqGstnjE332p6YEq6zSrtA3qQ=
-github.com/elastic/elastic-package v0.107.1/go.mod h1:GpaSmHmHpjg9hM5YCKjKUpqRH3GK7INLMYOJIUHFrMM=
+github.com/elastic/elastic-package v0.107.2 h1:ss5bGMaPfLSHdgg7MfJsUkcUbq24jPXBV8flrk7SylQ=
+github.com/elastic/elastic-package v0.107.2/go.mod h1:ceBJiXsQt5cw/gTGI51yTkEiob19fA7px+QBHo2rIXE=
 github.com/elastic/elastic-transport-go/v8 v8.6.0 h1:Y2S/FBjx1LlCv5m6pWAF2kDJAHoSjSRSJCApolgfthA=
 github.com/elastic/elastic-transport-go/v8 v8.6.0/go.mod h1:YLHer5cj0csTzNFXoNQ8qhtGY1GTvSqPnKWKaqQE3Hk=
 github.com/elastic/go-elasticsearch/v7 v7.17.10 h1:TCQ8i4PmIJuBunvBS6bwT2ybzVFxxUhhltAs3Gyu1yo=
