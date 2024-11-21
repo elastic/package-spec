@@ -2,7 +2,7 @@ format_version: 3.4.0
 name: kibana_links
 title: Package with links
 description: TPackage with kibana next steps links
-version: 1.0.0
+version: 0.0.1
 type: integration
 source:
   license: "Apache-2.0"
