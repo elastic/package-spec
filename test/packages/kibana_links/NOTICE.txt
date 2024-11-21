@@ -1,2 +1,0 @@
-Elastic package-spec
-Copyright 2021 Elasticsearch B.V.

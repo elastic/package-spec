@@ -39,7 +39,11 @@ policy_templates:
         organization: elastic
         division: observability
         team: obs-infraobs-integrations
-
+      links:
+      - title: Security overview
+        type: post_install_step
+        content: "View security overview"
+        url: "/security/overview"
     inputs:
       - type: apache/metrics
         title: Collect metrics from Apache instances
