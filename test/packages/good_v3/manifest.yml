@@ -39,9 +39,9 @@ policy_templates:
         organization: elastic
         division: observability
         team: obs-infraobs-integrations
-      links:
+    links:
       - title: Security overview
-        type: post_install_step
+        type: next_step
         content: "View security overview"
         url: "/security/overview"
     inputs:

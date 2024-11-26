@@ -425,11 +425,11 @@ spec:
                   description: Link url
                   type: string
                 type:
-                  description: Type of link. `next_steps` for a regular link, `action` for a link button.
+                  description: Type of link. `next_steps` for links to locations that can be relevant right after configuring the policy. `action` for actions that can be performed while the policy is in use.
                   type: string
                   enum:
                     - action
-                    - next_steps
+                    - next_step
                 content:
                   description: Link description
                   type: string
