@@ -69,6 +69,8 @@ spec:
               - Collect logs and metrics from Apache instances
           deployment_modes:
             $ref: "../integration/manifest.spec.yml#/definitions/deployment_modes"
+          configuration_links:
+            $ref: "../integration/manifest.spec.yml#/definitions/configuration_links"
           icons:
             $ref: "../integration/manifest.spec.yml#/definitions/icons"
           screenshots:

@@ -239,6 +239,13 @@ func TestValidateFile(t *testing.T) {
 				"field policy_templates_behavior: policy_templates_behavior must be one of the following: \"all\"",
 			},
 		},
+		"bad_configuration_links": {
+			"manifest.yml",
+			[]string{
+				"field configuration_links: configuration_links must contain at least one element",
+				"field policy_templates.1.configuration_links: url is required",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
