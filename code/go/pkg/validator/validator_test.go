@@ -242,7 +242,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_configuration_links": {
 			"manifest.yml",
 			[]string{
-				"field configuration_links: configuration_links must contain at least one element",
+				"field policy_templates.0.configuration_links: Array must have at least 1 items",
 				"field policy_templates.1.configuration_links: url is required",
 			},
 		},
