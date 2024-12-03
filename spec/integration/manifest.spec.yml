@@ -551,7 +551,7 @@ versions:
   - before: 3.3.1
     patch:
       - op: remove
-        path: "/properties/policy_templates/items/properties/links"
+        path: "/properties/policy_templates/items/properties/configuration_links"
   - before: 3.2.0
     patch:
       - op: remove
