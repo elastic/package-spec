@@ -18,6 +18,9 @@
     - description: Added new policy_templates_behavior setting to manage how to show policy templates to the user in Kibana.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/825
+    - description: Fix content packages so they can be actually released as GA versions.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/issues/841
 - version: 3.3.0
   changes:
     - description: Add support for content packages.

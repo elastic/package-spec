@@ -11,7 +11,6 @@ spec:
   sizeLimit: 150MB
   configurationSizeLimit: 5MB
   relativePathSizeLimit: 3MB
-  release: beta
   contents:
   - description: The main package manifest file
     type: file
