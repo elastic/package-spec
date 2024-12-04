@@ -53,6 +53,11 @@ spec:
     $ref: "../integration/validation.spec.yml"
 
 versions:
+  - before: 3.3.1
+    patch:
+      - op: add
+        path: "/release"
+        value: "beta"
   - before: 3.3.0
     patch:
       - op: remove
