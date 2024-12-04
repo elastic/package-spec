@@ -12,3 +12,8 @@ Feature: Basic package types support
    Given the "basic_input" package is installed
      And a policy is created with "basic_input" package, "test" template, "test" input, "logfile" input type and dataset "spec.input_test"
     Then there is an index template "logs-spec.input_test" with pattern "logs-spec.input_test-*"
+
+  @3.3.0
+  Scenario: Content package can be installed
+   Given the "good_content" package is installed
+   #Then there are no errors.

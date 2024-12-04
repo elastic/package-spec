@@ -11,7 +11,6 @@ spec:
   sizeLimit: 150MB
   configurationSizeLimit: 5MB
   relativePathSizeLimit: 3MB
-  release: beta
   contents:
   - description: The main package manifest file
     type: file
@@ -54,6 +53,11 @@ spec:
     $ref: "../integration/validation.spec.yml"
 
 versions:
+  - before: 3.3.1
+    patch:
+      - op: add
+        path: "/release"
+        value: "beta"
   - before: 3.3.0
     patch:
       - op: remove
