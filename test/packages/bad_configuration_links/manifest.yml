@@ -1,7 +1,7 @@
-format_version: 3.4.0
-name: good_v3
-title: Good package
-description: This package is good for format version 3
+format_version: 3.3.1
+name: bad_links
+title: Bad Configuration Links
+description: Bad configuration links examples
 version: 1.0.1
 type: integration
 source:
@@ -39,11 +39,8 @@ policy_templates:
         organization: elastic
         division: observability
         team: obs-infraobs-integrations
-    configuration_links:
-      - title: Security overview
-        url: "/security/overview"
-        type: next_step
-        content: "View security overview"
+    # bad format: empty array
+    configuration_links: []
     inputs:
       - type: apache/metrics
         title: Collect metrics from Apache instances
@@ -82,6 +79,10 @@ policy_templates:
         organization: security
         division: engineering
         team: cloud-security
+        # bad format: missing fields
+    configuration_links:
+      - title: Security overview
+        type: next_step
     inputs:
       - type: apache/metrics
         title: Collect metrics in agentless
