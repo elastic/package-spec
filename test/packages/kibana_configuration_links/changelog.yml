@@ -2,7 +2,7 @@
   changes:
     - description: Expand kibana configuration links
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/
+      link: https://github.com/elastic/package-spec/pull/844
 - version: 1.0.1
   changes:
     - description: Add kibana configuration links

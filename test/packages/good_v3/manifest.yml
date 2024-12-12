@@ -40,11 +40,11 @@ policy_templates:
         division: observability
         team: obs-infraobs-integrations
     configuration_links:
-      - title: Security overview
-        url: "/overview"
+      - title: View Agents
+        url: "/agents"
         type: next_step
-        content: "View security overview"
-        appId: "security"
+        content: "Check your agents in Fleet"
+        appId: "fleet"
         internal: true
       - title: Elastic website
         url: "https://www.elastic.co/"

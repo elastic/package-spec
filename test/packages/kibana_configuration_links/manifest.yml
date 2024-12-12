@@ -46,7 +46,7 @@ policy_templates:
         content: "Check your agents in Fleet"
         appId: "fleet"
         internal: true
-      - title: Fleet
+      - title: Browse integrations
         url: "/browse"
         type: action
         appId: "integrations"
