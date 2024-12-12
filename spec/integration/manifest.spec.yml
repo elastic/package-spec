@@ -217,29 +217,26 @@ spec:
             description: Link title
             type: string
           url:
-            description: Link url
+            description: Link url. Format is `http://...` or `https://...` for external links,  `kbn:app/...` for links internal to Kibana.
             type: string
+            oneOf:
+              - type: string
+                pattern: '^http(s)?://'
+              - type: string
+                pattern: '^kbn:'
           type:
             description: Type of link. `next_steps` for links to locations that can be relevant right after configuring the policy. `action` for actions that can be performed while the policy is in use.
             type: string
             enum:
               - action
               - next_step
-          appId:
-            description: The identifier of the Kibana app to navigate to. Set this field when `internal` is true.
-            type: string
           content:
             description: Link description
             type: string
-          internal:
-            description: Set to true for internal kibana links, false for external links. Defaults to false.
-            type: boolean
-            default: false
         required:
         - title
         - url
         - type
-        - internal
     icons:
       description: List of icons for by this package.
       type: array

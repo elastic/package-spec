@@ -84,17 +84,14 @@ policy_templates:
       - title: Security overview
         type: next_step
         internal: true
-      # bad format: missing field `internal`
+      # bad format: doesn't match format kbn:/..
       - title: View Agents
-        url: "/agents"
+        url: "app/fleet/agents"
         type: next_step
-        content: "Check your agents in Fleet"
-        appId: "fleet"
-      # bad format: `internal: false` should match http or https format
+      # bad format: it should match either http/https format or kbn: format
       - title: View Agents
-        url: "/agents"
+        url: "elastic.co"
         type: next_step
-        internal: false
     inputs:
       - type: apache/metrics
         title: Collect metrics in agentless
