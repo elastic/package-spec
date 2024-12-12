@@ -83,7 +83,6 @@ policy_templates:
       # bad format: missing field url
       - title: Security overview
         type: next_step
-        internal: true
       # bad format: doesn't match format kbn:/..
       - title: View Agents
         url: "app/fleet/agents"

@@ -41,26 +41,19 @@ policy_templates:
         team: obs-infraobs-integrations
     configuration_links:
       - title: View Agents
-        url: "/agents"
+        url: "kbn:app/fleet/agents"
         type: next_step
         content: "Check your agents in Fleet"
-        appId: "fleet"
-        internal: true
       - title: Browse integrations
-        url: "/browse"
+        url: "kbn:app/integrations/browse"
         type: action
-        appId: "integrations"
-        internal: true
       - title: Elastic website
         url: "https://www.elastic.co/"
         type: action
         content: "See more"
-        internal: false
-      - title: Configure fleet
-        url: "https://www.elastic.co/guide/en/fleet/master/fleet-overview.html"
+      - title: See agents
+        url: "http://localhost:5601/app/fleet/agents"
         type: next_step
-        content: "See docs"
-        internal: false
     inputs:
       - type: apache/metrics
         title: Collect metrics from Apache instances
