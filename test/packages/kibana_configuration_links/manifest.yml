@@ -41,11 +41,11 @@ policy_templates:
         team: obs-infraobs-integrations
     configuration_links:
       - title: View Agents
-        url: "kbn:app/fleet/agents"
+        url: "kbn:/app/fleet/agents"
         type: next_step
         content: "Check your agents in Fleet"
       - title: Browse integrations
-        url: "kbn:app/integrations/browse"
+        url: "kbn:/app/integrations/browse"
         type: action
       - title: Elastic website
         url: "https://www.elastic.co/"

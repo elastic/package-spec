@@ -221,9 +221,7 @@ spec:
             type: string
             oneOf:
               - type: string
-                pattern: '^http(s)?://'
-              - type: string
-                pattern: '^kbn:'
+                pattern: '^(http(s)?://|kbn:)'
           type:
             description: Type of link. `next_steps` for links to locations that can be relevant right after configuring the policy. `action` for actions that can be performed while the policy is in use.
             type: string

@@ -87,7 +87,7 @@ policy_templates:
       - title: View Agents
         url: "app/fleet/agents"
         type: next_step
-      # bad format: it should match either http/https format or kbn: format
+      # bad format: it should match either http/https format or kbn:/ format
       - title: View Agents
         url: "elastic.co"
         type: next_step
