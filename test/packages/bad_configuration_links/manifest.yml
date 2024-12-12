@@ -83,6 +83,17 @@ policy_templates:
     configuration_links:
       - title: Security overview
         type: next_step
+      # bad format: missing field `internal`
+      - title: View Agents
+        url: "/agents"
+        type: next_step
+        content: "Check your agents in Fleet"
+        appId: "fleet"
+      # bad format: `internal: false` should match http or https format
+      - title: View Agents
+        url: "/agents"
+        type: next_step
+        internal: false
     inputs:
       - type: apache/metrics
         title: Collect metrics in agentless

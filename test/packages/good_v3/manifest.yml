@@ -41,9 +41,21 @@ policy_templates:
         team: obs-infraobs-integrations
     configuration_links:
       - title: Security overview
-        url: "/security/overview"
+        url: "/overview"
         type: next_step
         content: "View security overview"
+        appId: "security"
+        internal: true
+      - title: Elastic website
+        url: "https://www.elastic.co/"
+        type: action
+        content: "See more"
+        internal: false
+      - title: Configure fleet
+        url: "https://www.elastic.co/guide/en/fleet/master/fleet-overview.html"
+        type: next_step
+        content: "See docs"
+        internal: false
     inputs:
       - type: apache/metrics
         title: Collect metrics from Apache instances

@@ -2,7 +2,7 @@ format_version: 3.3.1
 name: kibana_configuration_links
 title: Kibana Configuration Links
 description: Kibana configuration links examples
-version: 1.0.1
+version: 1.0.2
 type: integration
 source:
   license: "Apache-2.0"
@@ -40,10 +40,27 @@ policy_templates:
         division: observability
         team: obs-infraobs-integrations
     configuration_links:
-      - title: Security overview
-        url: "/security/overview"
+      - title: View Agents
+        url: "/agents"
         type: next_step
-        content: "View security overview"
+        content: "Check your agents in Fleet"
+        appId: "fleet"
+        internal: true
+      - title: Fleet
+        url: "/browse"
+        type: action
+        appId: "integrations"
+        internal: true
+      - title: Elastic website
+        url: "https://www.elastic.co/"
+        type: action
+        content: "See more"
+        internal: false
+      - title: Configure fleet
+        url: "https://www.elastic.co/guide/en/fleet/master/fleet-overview.html"
+        type: next_step
+        content: "See docs"
+        internal: false
     inputs:
       - type: apache/metrics
         title: Collect metrics from Apache instances
