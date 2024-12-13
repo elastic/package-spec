@@ -24,6 +24,9 @@
     - description: Expand support to internal and external configuration_links defined in kibana manifest.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/844
+    - description: Release content packages as GA.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/841
 - version: 3.3.0
   changes:
     - description: Add support for content packages.
