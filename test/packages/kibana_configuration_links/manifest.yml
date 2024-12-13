@@ -1,8 +1,8 @@
-format_version: 3.4.0
-name: good_v3
-title: Good package
-description: This package is good for format version 3
-version: 1.0.1
+format_version: 3.3.1
+name: kibana_configuration_links
+title: Kibana Configuration Links
+description: Kibana configuration links examples
+version: 1.0.2
 type: integration
 source:
   license: "Apache-2.0"
@@ -44,6 +44,9 @@ policy_templates:
         url: "kbn:/app/fleet/agents"
         type: next_step
         content: "Check your agents in Fleet"
+      - title: Browse integrations
+        url: "kbn:/app/integrations/browse"
+        type: action
       - title: Elastic website
         url: "https://www.elastic.co/"
         type: action

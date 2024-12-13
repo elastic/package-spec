@@ -1,7 +1,7 @@
-format_version: 3.4.0
-name: good_v3
-title: Good package
-description: This package is good for format version 3
+format_version: 3.3.1
+name: bad_links
+title: Bad Configuration Links
+description: Bad configuration links examples
 version: 1.0.1
 type: integration
 source:
@@ -39,18 +39,8 @@ policy_templates:
         organization: elastic
         division: observability
         team: obs-infraobs-integrations
-    configuration_links:
-      - title: View Agents
-        url: "kbn:/app/fleet/agents"
-        type: next_step
-        content: "Check your agents in Fleet"
-      - title: Elastic website
-        url: "https://www.elastic.co/"
-        type: action
-        content: "See more"
-      - title: See agents
-        url: "http://localhost:5601/app/fleet/agents"
-        type: next_step
+    # bad format: empty array
+    configuration_links: []
     inputs:
       - type: apache/metrics
         title: Collect metrics from Apache instances
@@ -89,6 +79,18 @@ policy_templates:
         organization: security
         division: engineering
         team: cloud-security
+    configuration_links:
+      # bad format: missing field url
+      - title: Security overview
+        type: next_step
+      # bad format: doesn't match format kbn:/..
+      - title: View Agents
+        url: "app/fleet/agents"
+        type: next_step
+      # bad format: it should match either http/https format or kbn:/ format
+      - title: View Agents
+        url: "elastic.co"
+        type: next_step
     inputs:
       - type: apache/metrics
         title: Collect metrics in agentless

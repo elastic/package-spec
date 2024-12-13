@@ -44,6 +44,7 @@ func TestValidateFile(t *testing.T) {
 		"custom_ilm_policy":                  {},
 		"profiling_symbolizer":               {},
 		"logs_synthetic_mode":                {},
+		"kibana_configuration_links":         {},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
@@ -237,6 +238,15 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				"field policy_templates_behavior: policy_templates_behavior must be one of the following: \"all\"",
+			},
+		},
+		"bad_configuration_links": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0.configuration_links: Array must have at least 1 items",
+				"field policy_templates.1.configuration_links.0: url is required",
+				"field policy_templates.1.configuration_links.1.url: Does not match pattern '^(http(s)?://|kbn:/)'",
+				"field policy_templates.1.configuration_links.2.url: Does not match pattern '^(http(s)?://|kbn:/)'",
 			},
 		},
 	}

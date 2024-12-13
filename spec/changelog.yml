@@ -18,6 +18,12 @@
     - description: Added new policy_templates_behavior setting to manage how to show policy templates to the user in Kibana.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/825
+    - description: Add support for configuration links to kibana manifest.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/834
+    - description: Expand support to internal and external configuration_links defined in kibana manifest.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/844
     - description: Release content packages as GA.
       type: enhancement
       link: https://github.com/elastic/package-spec/issues/841
