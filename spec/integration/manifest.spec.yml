@@ -217,7 +217,7 @@ spec:
             description: Link title
             type: string
           url:
-            description: Link url. Format is `http://...` or `https://...` for external links,  `kbn:app/...` for links internal to Kibana.
+            description: Link url. Format is `http://...` or `https://...` for external links,  `kbn:/app/...` for links internal to Kibana.
             type: string
             pattern: '^(http(s)?://|kbn:/)'
           type:
