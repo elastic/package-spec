@@ -21,6 +21,9 @@
     - description: Add support for configuration links to kibana manifest.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/834
+    - description: Expand support to internal and external configuration_links defined in kibana manifest.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/844
 - version: 3.3.0
   changes:
     - description: Add support for content packages.

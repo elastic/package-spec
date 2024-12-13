@@ -79,9 +79,17 @@ policy_templates:
         organization: security
         division: engineering
         team: cloud-security
-        # bad format: missing fields
     configuration_links:
+      # bad format: missing field url
       - title: Security overview
+        type: next_step
+      # bad format: doesn't match format kbn:/..
+      - title: View Agents
+        url: "app/fleet/agents"
+        type: next_step
+      # bad format: it should match either http/https format or kbn:/ format
+      - title: View Agents
+        url: "elastic.co"
         type: next_step
     inputs:
       - type: apache/metrics

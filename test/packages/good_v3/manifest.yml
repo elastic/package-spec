@@ -40,10 +40,17 @@ policy_templates:
         division: observability
         team: obs-infraobs-integrations
     configuration_links:
-      - title: Security overview
-        url: "/security/overview"
+      - title: View Agents
+        url: "kbn:/app/fleet/agents"
         type: next_step
-        content: "View security overview"
+        content: "Check your agents in Fleet"
+      - title: Elastic website
+        url: "https://www.elastic.co/"
+        type: action
+        content: "See more"
+      - title: See agents
+        url: "http://localhost:5601/app/fleet/agents"
+        type: next_step
     inputs:
       - type: apache/metrics
         title: Collect metrics from Apache instances

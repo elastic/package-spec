@@ -245,6 +245,8 @@ func TestValidateFile(t *testing.T) {
 			[]string{
 				"field policy_templates.0.configuration_links: Array must have at least 1 items",
 				"field policy_templates.1.configuration_links.0: url is required",
+				"field policy_templates.1.configuration_links.1.url: Does not match pattern '^(http(s)?://|kbn:/)'",
+				"field policy_templates.1.configuration_links.2.url: Does not match pattern '^(http(s)?://|kbn:/)'",
 			},
 		},
 	}
