@@ -26,7 +26,7 @@
       link: https://github.com/elastic/package-spec/pull/844
     - description: Release content packages as GA.
       type: enhancement
-      link: https://github.com/elastic/package-spec/issues/841
+      link: https://github.com/elastic/package-spec/pull/841
 - version: 3.3.0
   changes:
     - description: Add support for content packages.
