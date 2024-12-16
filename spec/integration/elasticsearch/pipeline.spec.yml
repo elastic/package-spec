@@ -48,6 +48,7 @@ spec:
         # set_security_user: false # Applicable to packages?
         sort: { type: object }
         split: { type: object }
+        terminate: { type: object }
         trim: { type: object }
         uppercase: { type: object }
         urldecode: { type: object }
