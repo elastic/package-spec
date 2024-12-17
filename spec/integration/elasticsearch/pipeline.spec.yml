@@ -116,3 +116,7 @@ versions:
         path: /definitions/processors/if # remove rename processor validation
       - op: remove
         path: /definitions/processors/then # remove rename processor validation
+  - before: 3.3.0
+    patch:
+      - op: remove
+        path: /definitions/processors/terminate # remove terminate processor validation
