@@ -48,6 +48,7 @@ spec:
         # set_security_user: false # Applicable to packages?
         sort: { type: object }
         split: { type: object }
+        terminate: { type: object }
         trim: { type: object }
         uppercase: { type: object }
         urldecode: { type: object }
@@ -115,3 +116,7 @@ versions:
         path: /definitions/processors/if # remove rename processor validation
       - op: remove
         path: /definitions/processors/then # remove rename processor validation
+  - before: 3.3.0
+    patch:
+      - op: remove
+        path: /definitions/processors/terminate # remove terminate processor validation
