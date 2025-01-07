@@ -39,6 +39,9 @@ policy_templates:
         organization: elastic
         division: observability
         team: obs-infraobs-integrations
+        resources:
+          memory: 1024M
+          cpu: "0.5"
     configuration_links:
       - title: View Agents
         url: "kbn:/app/fleet/agents"
