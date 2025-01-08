@@ -198,25 +198,31 @@ spec:
                 - "cloud-security-posture-management"
             resources:
               description: >
-                The computing resources that the Agentless deployment will be initially allocated.
+                The computing resources specifications for the Agentless deployment.
               type: object
               additionalProperties: false
               properties:
-                memory:
+                requests:
                   description: >
-                    The amount of memory that the Agentless deployment will be initially allocated.
-                  type: string
-                  examples:
-                    - "1G"
-                    - "1.5G"
-                cpu:
-                  description: >
-                    The amount of CPUs that the Agentless deployment will be initially allocated.
-                  type: string
-                  examples:
-                    - "1"
-                    - "1.5"
-                    - "1500m"
+                    The computing resources that the Agentless deployment will be initially allocated.
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    memory:
+                      description: >
+                        The amount of memory that the Agentless deployment will be initially allocated.
+                      type: string
+                      examples:
+                        - "1G"
+                        - "1.5G"
+                    cpu:
+                      description: >
+                        The amount of CPUs that the Agentless deployment will be initially allocated.
+                      type: string
+                      examples:
+                        - "1"
+                        - "1.5"
+                        - "1500m"
           allOf:
             - if:
                 properties:
