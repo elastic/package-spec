@@ -10,6 +10,11 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+- version: 3.3.2-next
+  changes:
+    - description: Add support for Agentless resources.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/853
 - version: 3.3.1
   changes:
     - description: Add validation rule to ensure security capability is added if there is any security rule asset.

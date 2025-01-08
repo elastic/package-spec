@@ -215,6 +215,12 @@ func TestValidateFile(t *testing.T) {
 				`field policy_templates.0.deployment_modes.agentless: team is required`,
 			},
 		},
+		"bad_deployment_mode_resources": {
+			"manifest.yml",
+			[]string{
+				`field policy_templates.0.deployment_modes.agentless.resources.requests: Additional property disk is not allowed`,
+			},
+		},
 		"bad_input_dataset_vars": {
 			"_dev/test/policy/test-vars.yml",
 			[]string{
