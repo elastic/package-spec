@@ -36,9 +36,10 @@ policy_templates:
         division: observability
         team: obs-infraobs-integrations
         resources:
-          memory: 1024M
-          cpu: "0.5"
-          disk: 10G
+          requests:
+            memory: 1024M
+            cpu: "0.5"
+            disk: 10G
     inputs:
       - type: logfile
         title: Collect sample logs from instances

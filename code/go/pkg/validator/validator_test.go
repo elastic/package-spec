@@ -218,7 +218,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_deployment_mode_resources": {
 			"manifest.yml",
 			[]string{
-				`field policy_templates.0.deployment_modes.agentless.resources: Additional property disk is not allowed`,
+				`field policy_templates.0.deployment_modes.agentless.resources.requests: Additional property disk is not allowed`,
 			},
 		},
 		"bad_input_dataset_vars": {
