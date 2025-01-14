@@ -245,6 +245,14 @@ spec:
                   - organization
                   - division
                   - team
+    required_vars:
+      description: Required condiftional variables for the package.
+      type: array
+      items:
+        type: array
+        items:
+          type: string
+        minItems: 1
     configuration_links:
       description: List of links related to inputs and policy templates.
       type: array

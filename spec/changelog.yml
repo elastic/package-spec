@@ -4,6 +4,9 @@
 ##
 - version: 3.4.0-next
   changes:
+    - description: Add support for required conditional groups of variables.
+      type: enhancement
+      link:
     - description: Add support for `slo` assets.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/767
