@@ -246,7 +246,7 @@ spec:
                   - division
                   - team
     required_vars:
-      description: Required condiftional variables for the package.
+      description: Required conditional variables for the package.
       type: array
       items:
         type: array
@@ -486,6 +486,8 @@ spec:
                 - access
           deployment_modes:
             $ref: "#/definitions/deployment_modes"
+          required_vars:
+            $ref: "#/definitions/required_vars"
           configuration_links:
             $ref: "#/definitions/configuration_links"
           inputs:

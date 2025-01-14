@@ -6,7 +6,7 @@
   changes:
     - description: Add support for required conditional groups of variables.
       type: enhancement
-      link:
+      link: https://github.com/elastic/package-spec/pull/855
     - description: Add support for `slo` assets.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/767
