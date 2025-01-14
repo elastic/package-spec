@@ -163,6 +163,9 @@ spec:
           type: object
           properties:
             enabled:
+              description: >
+                Indicates if the default deployment mode is available for this template policy.
+                It is enabled by default.
               type: boolean
               default: true
         agentless:
@@ -174,7 +177,8 @@ spec:
           properties:
             enabled:
               description: >
-                Indicates if this deployment mode is available for this package.
+                Indicates if the agentless deployment mode is available for this template policy.
+                It is disabled by default.
               type: boolean
               default: false
             is_default:
