@@ -15,6 +15,9 @@
     - description: Add support for Agentless resources.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/853
+    - description: Allow to override default deployment mode.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/854
 - version: 3.3.1
   changes:
     - description: Add validation rule to ensure security capability is added if there is any security rule asset.
