@@ -245,14 +245,6 @@ spec:
                   - organization
                   - division
                   - team
-    required_vars:
-      description: Required conditional variables for the package.
-      type: array
-      items:
-        type: array
-        items:
-          type: string
-        minItems: 1
     configuration_links:
       description: List of links related to inputs and policy templates.
       type: array
@@ -486,8 +478,6 @@ spec:
                 - access
           deployment_modes:
             $ref: "#/definitions/deployment_modes"
-          required_vars:
-            $ref: "#/definitions/required_vars"
           configuration_links:
             $ref: "#/definitions/configuration_links"
           inputs:
@@ -525,6 +515,8 @@ spec:
                   description: Can input be defined multiple times
                   type: boolean
                   default: false
+                required_vars:
+                  $ref: "./data_stream/manifest.spec.yml#/definitions/required_vars"
                 vars:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
               required:
@@ -601,8 +593,6 @@ spec:
 versions:
   - before: 3.3.2
     patch:
-      - op: remove
-        path: "/properties/policy_templates/items/properties/required_vars"
       - op: remove
         path: "/definitions/deployment_modes/properties/agentless/properties/is_default"
       - op: remove

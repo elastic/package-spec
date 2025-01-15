@@ -94,13 +94,13 @@ policy_templates:
         organization: security
         division: engineering
         team: cloud-security
-    required_vars:
-      - [package_username,package_password]
     inputs:
       - type: apache/metrics
         title: Collect metrics in agentless
         description: Collecting metrics in agentless mode
         multi: false
+        required_vars:
+          - [hosts,password]
         vars:
           - name: input_password
             type: password

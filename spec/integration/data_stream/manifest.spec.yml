@@ -32,6 +32,17 @@ spec:
             - 1
           - - array
             - 2
+    required_vars:
+      description: Required conditional variables for the package.
+      type: array
+      items:
+        type: array
+        additionalProperties: false
+        items:
+          type: string
+          oneOf:
+            - $ref: "#/definitions/vars/items/properties/name"
+        minItems: 1
     vars:
       description: Input variables.
       type: array
