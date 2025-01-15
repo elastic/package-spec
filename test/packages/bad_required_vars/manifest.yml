@@ -32,7 +32,8 @@ policy_templates:
         title: Collect sample logs from instances
         description: Collecting sample logs
         required_vars:
-          - []
+          conditions: 
+            - []
         vars:
           - name: api_key
             type: password

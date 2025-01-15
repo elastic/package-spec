@@ -258,7 +258,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_required_vars": {
 			"manifest.yml",
 			[]string{
-				"field policy_templates.0.inputs.0.required_vars.0: Array must have at least 1 items",
+				"field policy_templates.0.inputs.0.required_vars.conditions.0: Array must have at least 1 items",
 			},
 		},
 	}
