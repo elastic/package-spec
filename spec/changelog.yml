@@ -4,9 +4,6 @@
 ##
 - version: 3.4.0-next
   changes:
-    - description: Add support for required conditional groups of variables.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/855
     - description: Add support for `slo` assets.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/767
@@ -15,6 +12,9 @@
       link: https://github.com/elastic/package-spec/pull/807
 - version: 3.3.2-next
   changes:
+  - description: Add support for required conditional groups of variables.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/855
     - description: Add support for Agentless resources.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/853

@@ -1,4 +1,4 @@
-format_version: 3.1.4
+format_version: 3.3.2
 name: bad_required_vars
 title: "Bad Required Vars"
 version: 0.0.1
@@ -27,7 +27,8 @@ policy_templates:
   - name: sample
     title: Sample logs
     description: Collect sample logs
-    required_vars: []
+    required_vars:
+      - []
     inputs:
       - type: logfile
         title: Collect sample logs from instances
