@@ -37,6 +37,24 @@ policy_templates:
 `,
 		},
 		{
+			title: "variable defined in policy",
+			manifest: `
+vars:
+  - name: user
+  - name: password
+policy_templates:
+  - vars:
+    - name: api_key
+    inputs:
+    - required_vars:
+        user_password:
+          - name: user
+          - name: password
+        api_key:
+          - name: api_key
+`,
+		},
+		{
 			title: "missing variable",
 			manifest: `
 vars:
@@ -65,6 +83,28 @@ vars:
     required: true
 policy_templates:
   - inputs:
+    - required_vars:
+        user_password:
+          - name: user
+          - name: password
+        api_key:
+          - name: api_key
+`,
+			errors: []string{
+				`required var "api_key" in optional group is defined as always required`,
+			},
+		},
+		{
+			title: "variable defined as required in policy",
+			manifest: `
+vars:
+  - name: user
+  - name: password
+policy_templates:
+  - vars:
+    - name: api_key
+      required: true
+    inputs:
     - required_vars:
         user_password:
           - name: user
