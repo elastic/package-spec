@@ -36,31 +36,50 @@ spec:
       description: Required conditional variables for the package.
       type: object
       additionalProperties: false
-      properties:
-        conditions:
-          description: Required variables for the package.
+      patternProperties:
+        "^[a-zA-Z0-9_]+$":
           type: array
           items:
-            type: array
-            items:
-              type: string
-              minItems: 1
-        unless:
-          description: >
-            List of variables and the values that should defer validation.
-          type: array
-          items:
+            minItems: 1
             type: object
+            required:
+              - name
             additionalProperties: false
             properties:
               name:
-                description: Variable name.
+                description: Required variable name
                 type: string
                 examples:
                   - hosts
               value:
-                description: Value of the variable.
+                description: Value of the variable, if not present we validate the var's presense
                 $ref: "#/definitions/input_variable_value"
+      # additionalProperties: false
+      # properties:
+      #   conditions:
+      #     description: Required variables for the package.
+      #     type: array
+      #     items:
+      #       type: array
+      #       items:
+      #         type: string
+      #         minItems: 1
+      #   unless:
+      #     description: >
+      #       List of variables and the values that should defer validation.
+      #     type: array
+      #     items:
+      #       type: object
+      #       additionalProperties: false
+      #       properties:
+      #         name:
+      #           description: Variable name.
+      #           type: string
+      #           examples:
+      #             - hosts
+      #         value:
+      #           description: Value of the variable.
+      #           $ref: "#/definitions/input_variable_value"
     vars:
       description: Input variables.
       type: array
