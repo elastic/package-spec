@@ -20,7 +20,7 @@
       link: https://github.com/elastic/package-spec/pull/854
     - description: Add `terminate` processor to list pipeline spec.
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/847
+      link: https://github.com/elastic/package-spec/pull/857
 - version: 3.3.1
   changes:
     - description: Add validation rule to ensure security capability is added if there is any security rule asset.
