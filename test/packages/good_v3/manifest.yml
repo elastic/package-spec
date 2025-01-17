@@ -61,6 +61,14 @@ policy_templates:
         title: Collect metrics from Apache instances
         description: Collecting Apache status metrics
         multi: false
+        required_vars:
+          host_password: 
+            - name: hosts
+              value: localhost
+            - name: password
+          api_key_host: 
+            - name: api_key
+            - name: hosts
         vars:
           - name: input_password
             type: password
@@ -99,6 +107,11 @@ policy_templates:
         title: Collect metrics in agentless
         description: Collecting metrics in agentless mode
         multi: false
+        required_vars:
+          host_password: 
+            - name: hosts
+              value: localhost
+            - name: password
         vars:
           - name: input_password
             type: password

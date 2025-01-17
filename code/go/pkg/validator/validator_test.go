@@ -255,6 +255,12 @@ func TestValidateFile(t *testing.T) {
 				"field policy_templates.1.configuration_links.2.url: Does not match pattern '^(http(s)?://|kbn:/)'",
 			},
 		},
+		"bad_required_vars": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0.inputs.0.required_vars.some_key.0: name is required",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
