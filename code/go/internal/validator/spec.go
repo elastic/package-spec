@@ -213,6 +213,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateKibanaNoLegacyVisualizations, types: []string{"integration"}, since: semver.MustParse("3.0.0")},
 		{fn: semantic.ValidateDimensionsPresent, types: []string{"integration"}, since: semver.MustParse("3.0.1")},
 		{fn: semantic.ValidateCapabilitiesRequired, since: semver.MustParse("2.10.0")}, // capabilities definition was added in spec version 2.10.0
+		{fn: semantic.ValidateRequiredVarGroups},
 	}
 
 	var validationRules validationRules
