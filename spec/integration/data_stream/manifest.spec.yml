@@ -543,6 +543,8 @@ spec:
           template_path:
             description: "Path to Elasticsearch index template for stream."
             type: string
+          required_vars:
+            $ref: "#/definitions/required_vars"
           vars:
             $ref: "#/definitions/vars"
           enabled:
