@@ -258,7 +258,17 @@ func TestValidateFile(t *testing.T) {
 		"bad_required_vars": {
 			"manifest.yml",
 			[]string{
-				"field policy_templates.0.inputs.0.required_vars.some_key.0: name is required",
+				`field policy_templates.0.inputs.0.required_vars.password.1: name is required`,
+				`required var "api_key" in optional group is defined as always required`,
+				`required var "password" in optional group is not defined`,
+			},
+		},
+		"bad_required_vars_data_streams": {
+			"data_stream/test/manifest.yml",
+			[]string{
+				`field streams.0.required_vars.empty_name.0: name is required`,
+				`required var "api_key" in optional group is defined as always required`,
+				`required var "password" in optional group is not defined`,
 			},
 		},
 	}

@@ -2,6 +2,11 @@ title: Nginx access logs
 type: logs
 streams:
   - input: logfile
+    required_vars:
+      password:
+        - name: stream_password
+      select:
+        - name: my_select
     vars:
       - name: stream_password
         type: password

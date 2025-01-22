@@ -32,7 +32,10 @@ policy_templates:
         title: Collect sample logs from instances
         description: Collecting sample logs
         required_vars:
-          some_key: 
+          api_key:
+            - name: api_key
+          password:
+            - name: password
             - value: some_value
         vars:
           - name: api_key
@@ -40,6 +43,7 @@ policy_templates:
             title: Some API key
             show_user: true
             secret: true
+            required: true
             hide_in_deployment_modes:
               # It is not allowed to hide variables in the default deployment mode till 3.2.0.
               - default

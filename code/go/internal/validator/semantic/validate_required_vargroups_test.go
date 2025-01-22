@@ -5,7 +5,6 @@
 package semantic
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -70,7 +69,7 @@ policy_templates:
           - name: api_key
 `,
 			errors: []string{
-				`required var "api_key" in optional group is not defined`,
+				`file "manifest.yml" is invalid: required var "api_key" in optional group is not defined`,
 			},
 		},
 		{
@@ -91,7 +90,7 @@ policy_templates:
           - name: api_key
 `,
 			errors: []string{
-				`required var "api_key" in optional group is defined as always required`,
+				`file "manifest.yml" is invalid: required var "api_key" in optional group is defined as always required`,
 			},
 		},
 		{
@@ -113,7 +112,7 @@ policy_templates:
           - name: api_key
 `,
 			errors: []string{
-				`required var "api_key" in optional group is defined as always required`,
+				`file "manifest.yml" is invalid: required var "api_key" in optional group is defined as always required`,
 			},
 		},
 	}
@@ -124,9 +123,84 @@ policy_templates:
 			err := yaml.Unmarshal([]byte(c.manifest), &manifest)
 			require.NoError(t, err)
 
-			fmt.Println(manifest)
+			errors := validateRequiredVarGroupsManifest("manifest.yml", manifest)
+			assert.Len(t, errors, len(c.errors))
+			for _, err := range errors {
+				assert.Contains(t, c.errors, err.Error())
+			}
+		})
+	}
+}
 
-			errors := validateRequiredVarGroups(manifest)
+func TestValidateDataStreamRequiredVarGroups(t *testing.T) {
+	cases := []struct {
+		title    string
+		manifest string
+		errors   []string
+	}{
+		{
+			title: "good",
+			manifest: `
+streams:
+  - vars:
+    - name: user
+    - name: password
+    - name: api_key
+    required_vars:
+      user_password:
+        - name: user
+        - name: password
+      api_key:
+        - name: api_key
+`,
+		},
+		{
+			title: "missing variable",
+			manifest: `
+streams:
+  - required_vars:
+      user_password:
+        - name: user
+        - name: password
+      api_key:
+        - name: api_key
+    vars:
+    - name: user
+    - name: password
+`,
+			errors: []string{
+				`file "manifest.yml" is invalid: required var "api_key" in optional group is not defined`,
+			},
+		},
+		{
+			title: "variable defined as required",
+			manifest: `
+streams:
+  - required_vars:
+      user_password:
+        - name: user
+        - name: password
+      api_key:
+        - name: api_key
+    vars:
+      - name: user
+      - name: password
+      - name: api_key
+        required: true
+`,
+			errors: []string{
+				`file "manifest.yml" is invalid: required var "api_key" in optional group is defined as always required`,
+			},
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.title, func(t *testing.T) {
+			var manifest requiredVarsDataStreamManifest
+			err := yaml.Unmarshal([]byte(c.manifest), &manifest)
+			require.NoError(t, err)
+
+			errors := validateDataStreamRequiredVarGroupsManifest("manifest.yml", manifest)
 			assert.Len(t, errors, len(c.errors))
 			for _, err := range errors {
 				assert.Contains(t, c.errors, err.Error())

@@ -606,6 +606,10 @@ spec:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.3.2
+    patch:
+      - op: remove
+        path: "/properties/streams/items/properties/required_vars"
   - before: 3.2.0
     patch:
       # Does not allow to hide variables in default mode till this version.
