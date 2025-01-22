@@ -54,6 +54,24 @@ policy_templates:
 `,
 		},
 		{
+			title: "variable defined in input",
+			manifest: `
+vars:
+  - name: user
+  - name: password
+policy_templates:
+  - inputs:
+    - vars:
+        - name: api_key
+      required_vars:
+        user_password:
+          - name: user
+          - name: password
+        api_key:
+          - name: api_key
+`,
+		},
+		{
 			title: "missing variable",
 			manifest: `
 vars:
@@ -133,6 +151,20 @@ policy_templates:
 }
 
 func TestValidateDataStreamRequiredVarGroups(t *testing.T) {
+	rawPkgManifest := `
+vars:
+  - name: host
+policy_templates:
+  - name: logs
+    inputs:
+    - type: logfile
+      vars:
+        - name: credentials
+`
+	var pkgManifest requiredVarsManifest
+	err := yaml.Unmarshal([]byte(rawPkgManifest), &pkgManifest)
+	require.NoError(t, err)
+
 	cases := []struct {
 		title    string
 		manifest string
@@ -152,6 +184,43 @@ streams:
         - name: password
       api_key:
         - name: api_key
+`,
+		},
+		{
+			title: "variable defined in manifest",
+			manifest: `
+streams:
+  - vars:
+    - name: user
+    - name: password
+    - name: api_key
+    required_vars:
+      user_password:
+        - name: user
+        - name: password
+      api_key:
+        - name: api_key
+      host:
+        - name: host
+`,
+		},
+		{
+			title: "variable defined in manifest input",
+			manifest: `
+streams:
+  - input: logfile
+    vars:
+    - name: user
+    - name: password
+    - name: api_key
+    required_vars:
+      user_password:
+        - name: user
+        - name: password
+      api_key:
+        - name: api_key
+      credentials:
+        - name: credentials
 `,
 		},
 		{
@@ -200,7 +269,7 @@ streams:
 			err := yaml.Unmarshal([]byte(c.manifest), &manifest)
 			require.NoError(t, err)
 
-			errors := validateDataStreamRequiredVarGroupsManifest("manifest.yml", manifest)
+			errors := validateDataStreamRequiredVarGroupsManifest("manifest.yml", manifest, pkgManifest)
 			assert.Len(t, errors, len(c.errors))
 			for _, err := range errors {
 				assert.Contains(t, c.errors, err.Error())

@@ -7,6 +7,8 @@ streams:
         - name: stream_password
       select:
         - name: my_select
+      token_file:
+        - name: bearer_token_file
     vars:
       - name: stream_password
         type: password

@@ -1,0 +1,32 @@
+title: "Test Data Stream"
+type: logs
+streams:
+  - input: logfile
+    title: Sample logs
+    description: Collect sample logs
+    vars:
+      - name: paths
+        type: text
+        title: Paths
+        multi: true
+        default:
+          - /var/log/*.log
+      - name: username
+        type: text
+        title: Username
+      - name: api_key
+        type: text
+        secret: true
+        required: true
+    required_vars:
+      basic_auth:
+        - name: username
+        - name: password
+      api_key:
+        - name: api_key
+      empty_name:
+        - value: foo
+elasticsearch:
+  index_template:
+    mappings:
+      subobjects: false

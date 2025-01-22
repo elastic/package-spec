@@ -17,7 +17,17 @@ import (
 // ValidateRequiredVarGroups validates lists of optional required variables.
 func ValidateRequiredVarGroups(fsys fspath.FS) specerrors.ValidationErrors {
 	// Validate main manifest.
-	errs := validateRequiredVarGroups(fsys, "manifest.yml")
+	d, err := fs.ReadFile(fsys, "manifest.yml")
+	if err != nil {
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path("manifest.yml"), err)}
+	}
+
+	var manifest requiredVarsManifest
+	err = yaml.Unmarshal(d, &manifest)
+	if err != nil {
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to parse manifest: %w", fsys.Path("manifest.yml"), err)}
+	}
+	errs := validateRequiredVarGroupsManifest(fsys.Path("manifest.yml"), manifest)
 
 	// Validate data stream manifests.
 	dataStreams, err := listDataStreams(fsys)
@@ -25,25 +35,10 @@ func ValidateRequiredVarGroups(fsys fspath.FS) specerrors.ValidationErrors {
 		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("failed to list data streams: %w", err)}
 	}
 	for _, ds := range dataStreams {
-		errs = append(errs, validateDataStreamRequiredVarGroups(fsys, path.Join("data_stream", ds, "manifest.yml"))...)
+		errs = append(errs, validateDataStreamRequiredVarGroups(fsys, path.Join("data_stream", ds, "manifest.yml"), manifest)...)
 	}
 
 	return errs
-}
-
-func validateRequiredVarGroups(fsys fspath.FS, path string) specerrors.ValidationErrors {
-	d, err := fs.ReadFile(fsys, path)
-	if err != nil {
-		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(path), err)}
-	}
-
-	var manifest requiredVarsManifest
-	err = yaml.Unmarshal(d, &manifest)
-	if err != nil {
-		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to parse manifest: %w", fsys.Path(path), err)}
-	}
-
-	return validateRequiredVarGroupsManifest(fsys.Path(path), manifest)
 }
 
 type requiredVarsManifestVar struct {
@@ -56,10 +51,22 @@ type requiredVarsManifest struct {
 	PolicyTemplates []struct {
 		Vars   []requiredVarsManifestVar `yaml:"vars"`
 		Inputs []struct {
+			Type         string                               `yaml:"type"`
 			Vars         []requiredVarsManifestVar            `yaml:"vars"`
 			RequiredVars map[string][]requiredVarsManifestVar `yaml:"required_vars"`
 		} `yaml:"inputs"`
 	} `yaml:"policy_templates"`
+}
+
+func (m requiredVarsManifest) findInputVars(inputType string) []requiredVarsManifestVar {
+	for _, template := range m.PolicyTemplates {
+		for _, input := range template.Inputs {
+			if input.Type == inputType {
+				return input.Vars
+			}
+		}
+	}
+	return nil
 }
 
 func validateRequiredVarGroupsManifest(path string, manifest requiredVarsManifest) specerrors.ValidationErrors {
@@ -79,7 +86,7 @@ func validateRequiredVarGroupsManifest(path string, manifest requiredVarsManifes
 	return errs
 }
 
-func validateDataStreamRequiredVarGroups(fsys fspath.FS, path string) specerrors.ValidationErrors {
+func validateDataStreamRequiredVarGroups(fsys fspath.FS, path string, pkgManifest requiredVarsManifest) specerrors.ValidationErrors {
 	d, err := fs.ReadFile(fsys, path)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(path), err)}
@@ -91,22 +98,26 @@ func validateDataStreamRequiredVarGroups(fsys fspath.FS, path string) specerrors
 		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to parse manifest: %w", fsys.Path(path), err)}
 	}
 
-	return validateDataStreamRequiredVarGroupsManifest(fsys.Path(path), manifest)
+	return validateDataStreamRequiredVarGroupsManifest(fsys.Path(path), manifest, pkgManifest)
 }
 
 type requiredVarsDataStreamManifest struct {
 	Streams []struct {
+		Input        string                               `yaml:"input"`
 		Vars         []requiredVarsManifestVar            `yaml:"vars"`
 		RequiredVars map[string][]requiredVarsManifestVar `yaml:"required_vars"`
 	} `yaml:"streams"`
 }
 
-func validateDataStreamRequiredVarGroupsManifest(path string, manifest requiredVarsDataStreamManifest) specerrors.ValidationErrors {
+func validateDataStreamRequiredVarGroupsManifest(path string, manifest requiredVarsDataStreamManifest, pkgManifest requiredVarsManifest) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 	for _, stream := range manifest.Streams {
+		vars := slices.Clone(stream.Vars)
+		vars = append(vars, pkgManifest.Vars...)
+		vars = append(vars, pkgManifest.findInputVars(stream.Input)...)
 		for _, varGroup := range stream.RequiredVars {
 			errs = append(errs,
-				validateRequiredVarsDefined(path, stream.Vars, varGroup)...)
+				validateRequiredVarsDefined(path, vars, varGroup)...)
 		}
 	}
 	return errs
