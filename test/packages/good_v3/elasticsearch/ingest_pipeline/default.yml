@@ -5,3 +5,4 @@ processors:
 - set:
     field: error.message
     value: '{{ _ingest.on_failure_message }}'
+- terminate:

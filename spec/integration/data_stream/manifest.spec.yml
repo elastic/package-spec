@@ -32,6 +32,28 @@ spec:
             - 1
           - - array
             - 2
+    required_vars:
+      description: Required conditional variables for the package.
+      type: object
+      additionalProperties: false
+      patternProperties:
+        "^[a-zA-Z0-9_]+$":
+          type: array
+          items:
+            minItems: 1
+            type: object
+            required:
+              - name
+            additionalProperties: false
+            properties:
+              name:
+                description: Required variable name
+                type: string
+                examples:
+                  - hosts
+              value:
+                description: Value of the variable, if not present we validate the var's presense
+                $ref: "#/definitions/input_variable_value"
     vars:
       description: Input variables.
       type: array
@@ -521,6 +543,8 @@ spec:
           template_path:
             description: "Path to Elasticsearch index template for stream."
             type: string
+          required_vars:
+            $ref: "#/definitions/required_vars"
           vars:
             $ref: "#/definitions/vars"
           enabled:

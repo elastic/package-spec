@@ -48,6 +48,7 @@ spec:
         # set_security_user: false # Applicable to packages?
         sort: { type: object }
         split: { type: object }
+        terminate: { type: [object, "null"] }
         trim: { type: object }
         uppercase: { type: object }
         urldecode: { type: object }
@@ -109,6 +110,10 @@ spec:
       $ref: "#/definitions/processors"
 
 versions:
+  - before: 3.3.2
+    patch:
+      - op: remove
+        path: /definitions/processor/properties/terminate # remove terminate processor validation
   - before: 3.1.0
     patch:
       - op: remove
