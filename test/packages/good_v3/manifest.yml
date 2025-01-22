@@ -65,7 +65,7 @@ policy_templates:
           host_password: 
             - name: hosts
               value: localhost
-            - name: input_password
+            - name: package_password
           api_key_host: 
             - name: api_key
             - name: hosts
