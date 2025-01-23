@@ -1,16 +1,16 @@
 format_version: 3.3.2
-name: bad_required_vars
-title: "Bad Required Vars"
+name: bad_required_vars_data_streams
+title: "Package with bad required vars in data streams"
 version: 0.0.1
 source:
   license: "Apache-2.0"
-description: "This is a package that disables default policies before being supported."
+description: "This is a test package with bad required vars in data streams"
 type: integration
 categories:
   - custom
 conditions:
   kibana:
-    version: "^8.12.2"
+    version: "^8.17.0"
   elastic:
     subscription: "basic"
 screenshots:
@@ -31,23 +31,6 @@ policy_templates:
       - type: logfile
         title: Collect sample logs from instances
         description: Collecting sample logs
-        required_vars:
-          api_key:
-            - name: api_key
-          password:
-            - name: password
-            - value: some_value
-        vars:
-          - name: api_key
-            type: password
-            title: Some API key
-            show_user: true
-            secret: true
-            required: true
-            hide_in_deployment_modes:
-              # It is not allowed to hide variables in the default deployment mode till 3.2.0.
-              - default
-
 owner:
   github: elastic/ecosystem
   type: elastic
