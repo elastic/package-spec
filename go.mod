@@ -10,7 +10,7 @@ require (
 	github.com/elastic/go-licenser v0.4.2
 	github.com/elastic/gojsonschema v1.2.1
 	github.com/elastic/kbncontent v0.1.4
-	github.com/evanphx/json-patch/v5 v5.9.10
+	github.com/evanphx/json-patch/v5 v5.9.11
 	github.com/go-viper/mapstructure/v2 v2.2.1
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901
 	github.com/otiai10/copy v1.14.1
