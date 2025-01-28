@@ -1,3 +1,5 @@
 - name: decision_id
-  type: text
+  # Checking with a long field because for text fields "store" is enabled by
+  # default since 8.18.
+  type: long
   store: true

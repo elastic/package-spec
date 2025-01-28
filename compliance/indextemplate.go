@@ -21,7 +21,19 @@ type IndexTemplate struct {
 // SimulatedIndexTemplate contains the result of simulating an index template,
 // with the component templates resolved.
 type SimulatedIndexTemplate struct {
+	Settings struct {
+		Index struct {
+			Mapping struct {
+				Source struct {
+					Mode string `json:"mode"`
+				} `json:"source"`
+			} `json:"mapping"`
+		} `json:"index"`
+	} `json:"settings"`
 	Mappings struct {
+		Source struct {
+			Mode string `json:"mode"`
+		} `json:"_source"`
 		Runtime    map[string]MappingProperty `json:"runtime"`
 		Properties map[string]MappingProperty `json:"properties"`
 	} `json:"mappings"`
