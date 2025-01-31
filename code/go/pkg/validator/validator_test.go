@@ -24,11 +24,12 @@ import (
 func TestValidateFile(t *testing.T) {
 	// Workaround for error messages that contain OS-dependant base paths.
 	osTestBasePath := filepath.Join("..", "..", "..", "..", "test", "packages") + string(filepath.Separator)
-
-	tests := map[string]struct {
+	type errorsPerFile struct {
 		invalidPkgFilePath  string
 		expectedErrContains []string
-	}{
+	}
+
+	tests := map[string][]errorsPerFile{
 		"good":                               {},
 		"good_v2":                            {},
 		"good_v3":                            {},
@@ -46,229 +47,309 @@ func TestValidateFile(t *testing.T) {
 		"logs_synthetic_mode":                {},
 		"kibana_configuration_links":         {},
 		"bad_additional_content": {
-			"bad-bad",
-			[]string{
-				"directory name inside package bad_additional_content contains -: bad-bad",
+			{
+				"bad-bad",
+				[]string{
+					"directory name inside package bad_additional_content contains -: bad-bad",
+				},
 			},
 		},
 		"bad_deploy_variants": {
-			"_dev/deploy/variants.yml",
-			[]string{
-				"field (root): default is required",
-				"field variants: Invalid type. Expected: object, given: array",
+			{
+				"_dev/deploy/variants.yml",
+				[]string{
+					"field (root): default is required",
+					"field variants: Invalid type. Expected: object, given: array",
+				},
 			},
 		},
 		"missing_pipeline_dashes": {
-			"data_stream/foo/elasticsearch/ingest_pipeline/default.yml",
-			[]string{
-				"document dashes are required (start the document with '---')",
+			{
+				"data_stream/foo/elasticsearch/ingest_pipeline/default.yml",
+				[]string{
+					"document dashes are required (start the document with '---')",
+				},
 			},
 		},
 		"missing_image_files": {
-			"manifest.yml",
-			[]string{
-				"field screenshots.0.src: relative path is invalid, target doesn't exist or it exceeds the file size limit",
-				"field icons.0.src: relative path is invalid, target doesn't exist or it exceeds the file size limit",
+			{
+				"manifest.yml",
+				[]string{
+					"field screenshots.0.src: relative path is invalid, target doesn't exist or it exceeds the file size limit",
+					"field icons.0.src: relative path is invalid, target doesn't exist or it exceeds the file size limit",
+				},
 			},
 		},
 		"integration_benchmarks": {},
 		"input_template":         {},
 		"input_groups":           {},
 		"input_groups_bad_data_stream": {
-			"manifest.yml",
-			[]string{
-				"field policy_templates.2.data_streams.1: data stream doesn't exist",
+			{
+				"manifest.yml",
+				[]string{
+					"field policy_templates.2.data_streams.1: data stream doesn't exist",
+				},
 			},
 		},
 		"bad_github_owner": {
-			"manifest.yml",
-			[]string{
-				"field owner.github: Does not match pattern '^(([a-zA-Z0-9-_]+)|([a-zA-Z0-9-_]+\\/[a-zA-Z0-9-_]+))$'",
+			{
+				"manifest.yml",
+				[]string{
+					"field owner.github: Does not match pattern '^(([a-zA-Z0-9-_]+)|([a-zA-Z0-9-_]+\\/[a-zA-Z0-9-_]+))$'",
+				},
 			},
 		},
 		"bad_owner_type": {
-			"manifest.yml",
-			[]string{
-				`field owner.type: owner.type must be one of the following: "elastic", "partner", "community"`,
+			{
+				"manifest.yml",
+				[]string{
+					`field owner.type: owner.type must be one of the following: "elastic", "partner", "community"`,
+				},
 			},
 		},
 		"bad_owner_type_missing": {
-			"manifest.yml",
-			[]string{
-				`field owner: type is required`,
+			{
+				"manifest.yml",
+				[]string{
+					`field owner: type is required`,
+				},
 			},
 		},
 		"missing_version": {
-			"manifest.yml",
-			[]string{
-				"package version undefined in the package manifest file",
+			{
+				"manifest.yml",
+				[]string{
+					"package version undefined in the package manifest file",
+				},
 			},
 		},
 		"deploy_custom_agent_invalid_property": {
-			"_dev/deploy/agent/custom-agent.yml",
-			[]string{
-				"field services.docker-custom-agent: Must not be present",
+			{
+				"_dev/deploy/agent/custom-agent.yml",
+				[]string{
+					"field services.docker-custom-agent: Must not be present",
+				},
 			},
 		},
 		"invalid_field_for_version": {
-			"manifest.yml",
-			[]string{
-				"field (root): Additional property license is not allowed",
+			{
+				"manifest.yml",
+				[]string{
+					"field (root): Additional property license is not allowed",
+				},
 			},
 		},
 		"bad_release_tag": {
-			"manifest.yml",
-			[]string{
-				"field (root): Additional property release is not allowed",
+			{
+				"manifest.yml",
+				[]string{
+					"field (root): Additional property release is not allowed",
+				},
 			},
 		},
 		"bad_custom_ilm_policy": {
-			"data_stream/test/manifest.yml",
-			[]string{
-				fmt.Sprintf("field ilm_policy: ILM policy \"logs-bad_custom_ilm_policy.test-notexists\" not found in package, expected definition in \"%sbad_custom_ilm_policy/data_stream/test/elasticsearch/ilm/notexists.json\"", osTestBasePath),
+			{
+				"data_stream/test/manifest.yml",
+				[]string{
+					fmt.Sprintf("field ilm_policy: ILM policy \"logs-bad_custom_ilm_policy.test-notexists\" not found in package, expected definition in \"%sbad_custom_ilm_policy/data_stream/test/elasticsearch/ilm/notexists.json\"", osTestBasePath),
+				},
 			},
 		},
 		"bad_select": {
-			"data_stream/foo_stream/manifest.yml",
-			[]string{
-				"field streams.0.vars.1: options is required",
-				"field streams.0.vars.3: Must not be present",
+			{
+				"data_stream/foo_stream/manifest.yml",
+				[]string{
+					"field streams.0.vars.1: options is required",
+					"field streams.0.vars.3: Must not be present",
+				},
 			},
 		},
 		"bad_skip_ignored_fields": {
-			"data_stream/foo/_dev/test/system/test-default-config.yml",
-			[]string{
-				"field skip_ignored_fields: Invalid type. Expected: array, given: boolean",
+			{
+				"data_stream/foo/_dev/test/system/test-default-config.yml",
+				[]string{
+					"field skip_ignored_fields: Invalid type. Expected: array, given: boolean",
+				},
 			},
 		},
 		"bad_profiling_symbolizer": {
-			"data_stream/example/manifest.yml",
-			[]string{
-				"profiling data type cannot be used in GA packages",
+			{
+				"data_stream/example/manifest.yml",
+				[]string{
+					"profiling data type cannot be used in GA packages",
+				},
 			},
 		},
 		"bad_secret_vars": {
-			"manifest.yml",
-			[]string{
-				"field vars.0: Additional property secret is not allowed",
+			{
+				"manifest.yml",
+				[]string{
+					"field vars.0: Additional property secret is not allowed",
+				},
 			},
 		},
 		"bad_secret_vars_v3": {
-			"manifest.yml",
-			[]string{
-				"field vars.0: variable identified as possible secret, secret parameter required to be set to true or false",
-				"field vars.1: variable identified as possible secret, secret parameter required to be set to true or false",
+			{
+				"manifest.yml",
+				[]string{
+					"field vars.0: variable identified as possible secret, secret parameter required to be set to true or false",
+					"field vars.1: variable identified as possible secret, secret parameter required to be set to true or false",
+				},
 			},
 		},
 		"bad_lifecycle": {
-			"data_stream/test/lifecycle.yml",
-			[]string{
-				"field (root): Additional property max_age is not allowed",
+			{
+				"data_stream/test/lifecycle.yml",
+				[]string{
+					"field (root): Additional property max_age is not allowed",
+				},
 			},
 		},
 		"bad_saved_object_tags": {
-			"kibana/tags.yml",
-			[]string{
-				`field 0.asset_types.11: 0.asset_types.11 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
-				`field 0.asset_types.12: 0.asset_types.12 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
-				`field 1.asset_ids.1: Invalid type. Expected: string, given: integer`,
-				`field 2: text is required`,
-				`field 3: asset_types is required`,
+			{
+				"kibana/tags.yml",
+				[]string{
+					`field 0.asset_types.11: 0.asset_types.11 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
+					`field 0.asset_types.12: 0.asset_types.12 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
+					`field 1.asset_ids.1: Invalid type. Expected: string, given: integer`,
+					`field 2: text is required`,
+					`field 3: asset_types is required`,
+				},
 			},
 		},
 		"bad_dotted_fields": {
-			"manifest.yml",
-			[]string{
-				"field conditions: Additional property elastic.subscription is not allowed",
-				"field conditions: Additional property kibana.version is not allowed",
+			{
+				"manifest.yml",
+				[]string{
+					"field conditions: Additional property elastic.subscription is not allowed",
+					"field conditions: Additional property kibana.version is not allowed",
+				},
 			},
 		},
 		"bad_dangling_object_ids": {
-			"kibana/dashboard/bad_dangling_object_ids-82273ffe-6acc-4f2f-bbee-c1004abba63d.json",
-			[]string{
-				`dangling reference found: bad_dangling_object_ids-8287a5d5-1576-4f3a-83c4-444e9058439c (search) (SVR00003)`,
+			{
+				"kibana/dashboard/bad_dangling_object_ids-82273ffe-6acc-4f2f-bbee-c1004abba63d.json",
+				[]string{
+					`dangling reference found: bad_dangling_object_ids-8287a5d5-1576-4f3a-83c4-444e9058439c (search) (SVR00003)`,
+				},
 			},
 		},
 		"kibana_legacy_visualizations": {
-			"kibana/dashboard/kibana_legacy_visualizations-c36e9b90-596c-11ee-adef-4fe896364076.json",
-			[]string{
-				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"TSVB time series\" (timeseries, TSVB)",
-				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"TSVB gauge\" (gauge, TSVB)",
-				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Aggs-based table\" (table, Aggs-based)",
-				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Aggs-based tag cloud\" (tagcloud, Aggs-based)",
-				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"\" (heatmap, Aggs-based)",
-				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Timelion time series\" (timelion, Timelion)",
+			{
+				"kibana/dashboard/kibana_legacy_visualizations-c36e9b90-596c-11ee-adef-4fe896364076.json",
+				[]string{
+					"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"TSVB time series\" (timeseries, TSVB)",
+					"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"TSVB gauge\" (gauge, TSVB)",
+					"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Aggs-based table\" (table, Aggs-based)",
+					"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Aggs-based tag cloud\" (tagcloud, Aggs-based)",
+					"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"\" (heatmap, Aggs-based)",
+					"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Timelion time series\" (timelion, Timelion)",
+				},
 			},
 		},
 		"bad_deployment_mode": {
-			"manifest.yml",
-			[]string{
-				`field policy_templates.0.deployment_modes: Additional property default is not allowed`,
-				`field policy_templates.0.inputs.0.vars.0.hide_in_deployment_modes.0: policy_templates.0.inputs.0.vars.0.hide_in_deployment_modes.0 must be one of the following: "agentless"`,
+			{
+				"manifest.yml",
+				[]string{
+					`field policy_templates.0.deployment_modes: Additional property default is not allowed`,
+					`field policy_templates.0.inputs.0.vars.0.hide_in_deployment_modes.0: policy_templates.0.inputs.0.vars.0.hide_in_deployment_modes.0 must be one of the following: "agentless"`,
+				},
 			},
 		},
 		"bad_deployment_mode_without_identities": {
-			"manifest.yml",
-			[]string{
-				`field policy_templates.0.deployment_modes.agentless: organization is required`,
-				`field policy_templates.0.deployment_modes.agentless: division is required`,
-				`field policy_templates.0.deployment_modes.agentless: team is required`,
+			{
+				"manifest.yml",
+				[]string{
+					`field policy_templates.0.deployment_modes.agentless: organization is required`,
+					`field policy_templates.0.deployment_modes.agentless: division is required`,
+					`field policy_templates.0.deployment_modes.agentless: team is required`,
+				},
 			},
 		},
 		"bad_deployment_mode_resources": {
-			"manifest.yml",
-			[]string{
-				`field policy_templates.0.deployment_modes.agentless.resources.requests: Additional property disk is not allowed`,
+			{
+				"manifest.yml",
+				[]string{
+					`field policy_templates.0.deployment_modes.agentless.resources.requests: Additional property disk is not allowed`,
+				},
 			},
 		},
 		"bad_input_dataset_vars": {
-			"_dev/test/policy/test-vars.yml",
-			[]string{
-				`field vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
+			{
+				"_dev/test/policy/test-vars.yml",
+				[]string{
+					`field vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
+				},
 			},
 		},
 		"bad_integration_dataset_vars": {
-			"data_stream/datasets/_dev/test/system/test-vars-config.yml",
-			[]string{
-				`field vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
-				`field data_stream.vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
+			{
+				"data_stream/datasets/_dev/test/system/test-vars-config.yml",
+				[]string{
+					`field vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
+					`field data_stream.vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
+				},
 			},
 		},
 		"bad_missing_capability_security_rules": {
-			"manifest.yml",
-			[]string{
-				"found security rule assets in package but security capability is missing",
+			{
+				"manifest.yml",
+				[]string{
+					"found security rule assets in package but security capability is missing",
+				},
 			},
 		},
 		"bad_policy_template_behavior": {
-			"manifest.yml",
-			[]string{
-				"field policy_templates_behavior: policy_templates_behavior must be one of the following: \"all\"",
+			{
+				"manifest.yml",
+				[]string{
+					"field policy_templates_behavior: policy_templates_behavior must be one of the following: \"all\"",
+				},
 			},
 		},
 		"bad_configuration_links": {
-			"manifest.yml",
-			[]string{
-				"field policy_templates.0.configuration_links: Array must have at least 1 items",
-				"field policy_templates.1.configuration_links.0: url is required",
-				"field policy_templates.1.configuration_links.1.url: Does not match pattern '^(http(s)?://|kbn:/)'",
-				"field policy_templates.1.configuration_links.2.url: Does not match pattern '^(http(s)?://|kbn:/)'",
+			{
+				"manifest.yml",
+				[]string{
+					"field policy_templates.0.configuration_links: Array must have at least 1 items",
+					"field policy_templates.1.configuration_links.0: url is required",
+					"field policy_templates.1.configuration_links.1.url: Does not match pattern '^(http(s)?://|kbn:/)'",
+					"field policy_templates.1.configuration_links.2.url: Does not match pattern '^(http(s)?://|kbn:/)'",
+				},
 			},
 		},
 		"bad_required_vars": {
-			"manifest.yml",
-			[]string{
-				`field policy_templates.0.inputs.0.required_vars.password.1: name is required`,
-				`required var "api_key" in optional group is defined as always required`,
-				`required var "password" in optional group is not defined`,
+			{
+				"manifest.yml",
+				[]string{
+					`field policy_templates.0.inputs.0.required_vars.password.1: name is required`,
+					`required var "api_key" in optional group is defined as always required`,
+					`required var "password" in optional group is not defined`,
+				},
 			},
 		},
 		"bad_required_vars_data_streams": {
-			"data_stream/test/manifest.yml",
-			[]string{
-				`field streams.0.required_vars.empty_name.0: name is required`,
-				`required var "api_key" in optional group is defined as always required`,
-				`required var "password" in optional group is not defined`,
+			{
+				"data_stream/test/manifest.yml",
+				[]string{
+					`field streams.0.required_vars.empty_name.0: name is required`,
+					`required var "api_key" in optional group is defined as always required`,
+					`required var "password" in optional group is not defined`,
+				},
+			},
+		},
+		"bad_transform_settings": {
+			{
+				"elasticsearch/transform/bad_index_array/transform.yml",
+				[]string{
+					`field source.index.0: Does not match pattern '^[^,]+$'`,
+				},
+			},
+			{
+				"elasticsearch/transform/bad_index_string/transform.yml",
+				[]string{
+					`field source.index: Does not match pattern '^[^,]+$'`,
+				},
 			},
 		},
 	}
@@ -276,7 +357,6 @@ func TestValidateFile(t *testing.T) {
 	for pkgName, test := range tests {
 		t.Run(pkgName, func(t *testing.T) {
 			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
-			errPrefix := fmt.Sprintf("file \"%s/%s\" is invalid: ", pkgRootPath, test.invalidPkgFilePath)
 
 			errs := ValidateFromPath(pkgRootPath)
 			if verrs, ok := errs.(specerrors.ValidationErrors); ok {
@@ -290,25 +370,50 @@ func TestValidateFile(t *testing.T) {
 				}
 			}
 
-			if test.expectedErrContains == nil {
+			expectedFailures := 0
+			for _, failedFile := range test {
+				if failedFile.expectedErrContains != nil {
+					expectedFailures += len(failedFile.expectedErrContains)
+				}
+			}
+
+			if expectedFailures == 0 {
 				require.NoError(t, errs)
-			} else {
-				require.Error(t, errs)
-				vErrs, ok := errs.(specerrors.ValidationErrors)
-				if ok {
-					assert.Len(t, errs, len(test.expectedErrContains))
-					var errMessages []string
-					for _, vErr := range vErrs {
+				return
+			}
+
+			require.Error(t, errs)
+
+			vErrs, ok := errs.(specerrors.ValidationErrors)
+			if !ok {
+				require.Len(t, test, 1)
+				require.Len(t, test[0].expectedErrContains, 1)
+				require.Equal(t, errs.Error(), test[0].expectedErrContains[0])
+				return
+			}
+
+			require.Len(t, vErrs, expectedFailures)
+
+			for _, failedFile := range test {
+				errPrefix := fmt.Sprintf("file \"%s/%s\" is invalid: ", pkgRootPath, failedFile.invalidPkgFilePath)
+				var errMessages []string
+				for _, vErr := range vErrs {
+					if strings.Contains(vErr.Error(), errPrefix) {
 						errMessages = append(errMessages, vErr.Error())
 					}
-
-					for _, expectedErrMessage := range test.expectedErrContains {
-						expectedErr := errPrefix + expectedErrMessage
-						require.Contains(t, errMessages, expectedErr)
-					}
-					return
 				}
-				require.Equal(t, errs.Error(), test.expectedErrContains[0])
+
+				if failedFile.expectedErrContains == nil {
+					require.Len(t, errMessages, 0)
+					continue
+				}
+
+				require.Len(t, errMessages, len(failedFile.expectedErrContains), "expected %d errors for %s, got %d", len(failedFile.expectedErrContains), failedFile.invalidPkgFilePath, len(errMessages))
+
+				for _, expectedErrMessage := range failedFile.expectedErrContains {
+					expectedErr := errPrefix + expectedErrMessage
+					require.Contains(t, errMessages, expectedErr)
+				}
 			}
 		})
 	}
