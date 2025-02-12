@@ -65,6 +65,15 @@ spec:
       type: file
       contentMediaType: "application/json"
       pattern: '^.+\.json$'
+  - description: Folder containing security AI prompt assets
+    type: folder
+    name: security_ai_prompt
+    required: false
+    contents:
+    - description: A security AI prompt asset file
+      type: file
+      contentMediaType: "application/json"
+      pattern: '^{PACKAGE_NAME}-.+\.json$'
   - description: Folder containing rules
     type: folder
     name: "security_rule"
@@ -135,7 +144,7 @@ spec:
       contentMediaType: "application/json"
       pattern: '^{PACKAGE_NAME}-.+\.json$'
       forbiddenPatterns:
-        - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden 
+        - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
 versions:
   - before: 3.4.0
     patch:
