@@ -10,6 +10,9 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: Introduce siem category
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/807
 - version: 3.3.2
   changes:
     - description: Add support for required conditional groups of variables.
