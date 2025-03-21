@@ -1,6 +1,6 @@
-format_version: 3.4.0
-name: good_content
-title: Good content package
+format_version: 3.3.1
+name: basic_content
+title: Basic content package
 description: >
   This package is a dummy example for packages with the content type.
   These packages contain resources that are useful with data ingested by other integrations.
