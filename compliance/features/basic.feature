@@ -14,6 +14,11 @@ Feature: Basic package types support
     Then there is an index template "logs-spec.input_test" with pattern "logs-spec.input_test-*"
 
   @3.3.0
+  Scenario: Basic content package can be installed
+   Given the "basic_content" package is installed
+   #Then there are no errors.
+
+  @3.4.0
   Scenario: Content package can be installed
    Given the "good_content" package is installed
    #Then there are no errors.
