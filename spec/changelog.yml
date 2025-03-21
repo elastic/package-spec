@@ -10,6 +10,11 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+- version: 3.3.4-next
+  changes:
+    - description: Remove slo assets when spec versions are less than 3.4.0.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/884
 - version: 3.3.3
   changes:
     - description: Introduce siem category.
