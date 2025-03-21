@@ -10,6 +10,11 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+- version: 3.3.4-next
+  changes:
+    - description: Allow security_rule assets in content package.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/885
 - version: 3.3.3
   changes:
     - description: Introduce siem category.
