@@ -2,9 +2,8 @@ format_version: 3.3.1
 name: good_content
 title: Good content package
 description: >
-  This package is a dummy example for packages with the content type.
-  These packages contain resources that are useful with data ingested by other integrations.
-  They are not used to configure data sources.
+  This package is a dummy example for packages with the content type. These packages contain resources that are useful with data ingested by other integrations. They are not used to configure data sources.
+
 version: 1.0.0
 type: content
 source:
