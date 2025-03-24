@@ -20,6 +20,11 @@ import (
 const (
 	apiAgentPolicyPath   = "/api/fleet/agent_policies"
 	apiPackagePolicyPath = "/api/fleet/package_policies"
+
+	apiGetSloPath       = "/s/%s/api/observability/slos"
+	apiGetDashboardPath = "/api/dashboards/dashboard"
+
+	defaultSpace = "default"
 )
 
 type agentPolicyRequest struct {
@@ -281,6 +286,61 @@ func (k *Kibana) createPackagePolicy(agentPolicyID, name, version, templateName,
 	}
 
 	req, err := k.newRequest(http.MethodPost, apiPackagePolicyPath, bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+
+	resp, err := k.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
+	}
+
+	return nil
+}
+
+func (k *Kibana) GetSLO(sloID string) error {
+	apiPath := fmt.Sprintf(apiGetSloPath, defaultSpace)
+	apiPath, err := url.JoinPath(apiPath, sloID)
+	if err != nil {
+		return err
+	}
+	req, err := k.newRequest(http.MethodGet, apiPath, nil)
+	if err != nil {
+		return err
+	}
+
+	resp, err := k.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
+	}
+
+	return nil
+}
+
+func (k *Kibana) GetDashboard(dashboardID string) error {
+	apiPath, err := url.JoinPath(apiGetDashboardPath, dashboardID)
+	if err != nil {
+		return err
+	}
+	req, err := k.newRequest(http.MethodGet, apiPath, nil)
 	if err != nil {
 		return err
 	}
