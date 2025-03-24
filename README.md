@@ -35,12 +35,16 @@ For a quick overview, these are the assets typically found in an Elastic Package
   * Dashboards
   * Visualization
   * Index patterns
+  * Lens
   * ML Modules
   * Map
   * Search
   * Security rules
   * CSP (cloud security posture) rule templates
   * SLOs
+  * Osquery pack assets.
+  * Osquery saved queries.
+  * Tags
 * Other
   * fields.yml
 
@@ -57,10 +61,9 @@ In the spec folder there is be a `spec.yml` file. This file is the entry point f
  specification for a package's contents. It describes the folder structure of packages and expected
 files within these folders (this is point 1. above). The specification is expressed using a schema similar
 to [JSON Schema](https://json-schema.org/), but with a couple of differences:
--- The `type` field can be either `folder` or `file`,
--- A new field, `contents` is introduced to (recursively) describe the contents of folders (i.e. when ty
-pe == folder), and
--- The specification is written as YAML for readability.
+- The `type` field can be either `folder` or `file`,
+- A new field, `contents` is introduced to (recursively) describe the contents of folders (i.e. when type == folder), and
+- The specification is written as YAML for readability.
 
 Expected package files, e.g. `manifest.yml` themselves have a structure to their contents. This structure is described in specification files using JSON schema (this is point 2. above). These specification files are also written as YAML for readability.
 
@@ -84,9 +87,9 @@ files will only be available since, or till a version.
 
 Note that some versions may include a pre-release suffix, `e.g. 1.4.0-alpha1`. This
 indicates that these versions are still under development and may be changed multiple
-times. These versions in development can be used in prerelease versions of
+times. These versions in development can be used in pre-release versions of
 packages, but breaking changes can still occur.
-Once the pre-relase suffix is removed, however, the specification at that version becomes
+Once the pre-release suffix is removed, however, the specification at that version becomes
 immutable. Further changes must follow the process outlined below in _Changing a Specification_.
 
 ## Changing a Specification
