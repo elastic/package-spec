@@ -1,0 +1,41 @@
+{
+    "id": "basic_content-dashboard-abc-1",
+    "type": "dashboard",
+    "attributes": {
+        "description": "",
+        "hits": 0,
+        "panelsJSON": "[]",
+        "title": "[Good Content] Overview",
+        "kibanaSavedObjectMeta": {
+            "searchSourceJSON": {
+                "filter": [
+                    {
+                        "$state": {
+                            "store": "appState"
+                        },
+                        "meta": {
+                            "alias": null,
+                            "disabled": false,
+                            "indexRefName": "kibanaSavedObjectMeta.searchSourceJSON.filter[0].meta.index",
+                            "key": "data_stream.dataset",
+                            "negate": false,
+                            "params": {
+                                "query": "good_content.foo"
+                            },
+                            "type": "phrase"
+                        },
+                        "query": {
+                            "match_phrase": {
+                                "data_stream.dataset": "basic_content.foo"
+                            }
+                        }
+                    }
+                ],
+                "query": {
+                    "language": "kuery",
+                    "query": ""
+                }
+            }
+        }
+    }
+}
