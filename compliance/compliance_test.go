@@ -235,7 +235,7 @@ func thereIsAnSlo(sloID string) error {
 	if err != nil {
 		return err
 	}
-	err = kibana.GetSLO(sloID)
+	err = kibana.MustExistSLO(sloID)
 	if err != nil {
 		return err
 	}
@@ -247,7 +247,7 @@ func thereIsADashboard(dashboardID string) error {
 	if err != nil {
 		return err
 	}
-	err = kibana.GetDashboard(dashboardID)
+	err = kibana.MustExistDashboard(dashboardID)
 	if err != nil {
 		return err
 	}

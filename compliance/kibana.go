@@ -57,8 +57,14 @@ type packagePolicyStream struct {
 	Vars map[string]any `json:"vars,omitempty"`
 }
 
-type packagePolicyResponse struct {
-	Items []json.RawMessage `json:"items"`
+type dashboardResponse struct {
+	Item json.RawMessage `json:"item"`
+}
+
+type sloResponse struct {
+	Description string `json:"description"`
+	ID          string `json:"string"`
+	Enabled     bool   `json:"enabled"`
 }
 
 // Kibana is a kibana client.
@@ -307,59 +313,89 @@ func (k *Kibana) createPackagePolicy(agentPolicyID, name, version, templateName,
 	return nil
 }
 
-func (k *Kibana) GetSLO(sloID string) error {
-	apiPath := fmt.Sprintf(apiGetSloPath, defaultSpace)
-	apiPath, err := url.JoinPath(apiPath, sloID)
+// MustExistSLO checks if an SLO with the given ID exists.
+func (k *Kibana) MustExistSLO(sloID string) error {
+	_, err := k.getSLO(sloID, defaultSpace)
 	if err != nil {
 		return err
 	}
-	req, err := k.newRequest(http.MethodGet, apiPath, nil)
-	if err != nil {
-		return err
-	}
-
-	resp, err := k.client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode >= 400 {
-		respBody, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
-		}
-		return fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
-	}
-
 	return nil
 }
 
-func (k *Kibana) GetDashboard(dashboardID string) error {
-	apiPath, err := url.JoinPath(apiGetDashboardPath, dashboardID)
+func (k *Kibana) getSLO(sloID, space string) (*sloResponse, error) {
+	apiPath := fmt.Sprintf(apiGetSloPath, space)
+	apiPath, err := url.JoinPath(apiPath, sloID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	req, err := k.newRequest(http.MethodGet, apiPath, nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	resp, err := k.client.Do(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
 		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+			return nil, fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
 		}
-		return fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
+		return nil, fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
 	}
 
+	var slo sloResponse
+	err = json.NewDecoder(resp.Body).Decode(&slo)
+	if err != nil {
+		return nil, err
+	}
+
+	return &slo, nil
+}
+
+// MustExistDashboard checks if a dashboard with the given ID exists.
+func (k *Kibana) MustExistDashboard(dashboardID string) error {
+	_, err := k.getDashboard(dashboardID)
+	if err != nil {
+		return err
+	}
 	return nil
+}
+
+func (k *Kibana) getDashboard(dashboardID string) (*dashboardResponse, error) {
+	apiPath, err := url.JoinPath(apiGetDashboardPath, dashboardID)
+	if err != nil {
+		return nil, err
+	}
+	req, err := k.newRequest(http.MethodGet, apiPath, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := k.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return nil, fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
+	}
+
+	var dashboard dashboardResponse
+	err = json.NewDecoder(resp.Body).Decode(&dashboard)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dashboard, nil
 }
 
 func (k *Kibana) newRequest(method string, path string, body io.Reader) (*http.Request, error) {
