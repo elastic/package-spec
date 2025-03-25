@@ -1,11 +1,11 @@
 {
-    "id": "good_content-dashboard-abc-1",
+    "id": "basic_content-dashboard-abc-1",
     "type": "dashboard",
     "attributes": {
         "description": "",
         "hits": 0,
         "panelsJSON": "[]",
-        "title": "Good content overview",
+        "title": "[Good Content] Overview",
         "kibanaSavedObjectMeta": {
             "searchSourceJSON": {
                 "filter": [
@@ -26,7 +26,7 @@
                         },
                         "query": {
                             "match_phrase": {
-                                "data_stream.dataset": "good_content.foo"
+                                "data_stream.dataset": "basic_content.foo"
                             }
                         }
                     }

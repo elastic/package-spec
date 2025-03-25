@@ -10,11 +10,19 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
-- version: 3.3.4-next
+- version: 3.3.5-next
   changes:
     - description: Allow security_rule assets in content package.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/885
+- version: 3.3.4
+  changes:
+    - description: Remove slo assets when spec versions are less than 3.4.0.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/884
+    - description: Run all Kibana validation rules in content packages too.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/884
 - version: 3.3.3
   changes:
     - description: Introduce siem category.

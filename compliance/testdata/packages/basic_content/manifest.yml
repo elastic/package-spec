@@ -1,9 +1,10 @@
-format_version: 3.4.0
-name: good_content
-title: Good content package
+format_version: 3.3.1
+name: basic_content
+title: Basic content package
 description: >
-  This package is a dummy example for packages with the content type. These packages contain resources that are useful with data ingested by other integrations. They are not used to configure data sources.
-
+  This package is a dummy example for packages with the content type.
+  These packages contain resources that are useful with data ingested by other integrations.
+  They are not used to configure data sources.
 version: 1.0.0
 type: content
 source:
@@ -13,8 +14,6 @@ conditions:
     version: '^8.16.0'
   elastic:
     subscription: 'basic'
-    capabilities:
-      - security
 discovery:
   fields:
     - name: process.pid

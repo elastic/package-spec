@@ -14,6 +14,13 @@ Feature: Basic package types support
     Then there is an index template "logs-spec.input_test" with pattern "logs-spec.input_test-*"
 
   @3.3.0
+  Scenario: Basic content package can be installed
+   Given the "basic_content" package is installed
+    Then there is a dashboard "basic_content-dashboard-abc-1"
+
+  @3.4.0
   Scenario: Content package can be installed
    Given the "good_content" package is installed
-   #Then there are no errors.
+    Then there is a dashboard "good_content-dashboard-abc-1"
+     # Missing support in Kibana (Fleet) https://github.com/elastic/kibana/pull/186974
+     And there is an SLO "good_content-slo-abc-1"
