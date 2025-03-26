@@ -4,7 +4,7 @@
     "promptGroupId": "aiAssistant",
     "provider": "openai",
     "prompt": {
-      "default": "You always talk like a pirate."
+      "default": "You are a security analyst and expert in resolving security incidents. Your role is to assist by answering questions about Elastic Security. Do not answer questions unrelated to Elastic Security."
     }
   },
   "id": "good_v2-security-ai-prompt-1",

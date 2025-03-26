@@ -12,7 +12,7 @@
       link: https://github.com/elastic/package-spec/pull/807
     - description: Add kibana/security_ai_prompt to support security AI prompt assets.
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/TODO_UPDATE_LINK_AFTER_OPENING_PR
+      link: https://github.com/elastic/package-spec/pull/871
 - version: 3.3.2
   changes:
     - description: Add support for required conditional groups of variables.
