@@ -6,18 +6,15 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
-	"time"
 )
 
 const (
@@ -77,14 +74,6 @@ type detectionRuleResponse struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Enabled     bool   `json:"enabled"`
-}
-
-type errDetectionRuleNotFound struct {
-	id string
-}
-
-func (e *errDetectionRuleNotFound) Error() string {
-	return fmt.Sprintf("detection rule %s not found", e.id)
 }
 
 // Kibana is a kibana client.
@@ -420,33 +409,14 @@ func (k *Kibana) getDashboard(dashboardID string) (*dashboardResponse, error) {
 
 // MustExistDetectionRule checks if a detection rule with the given ID exists.
 func (k *Kibana) MustExistDetectionRule(detectionRuleID string) error {
-	fmt.Println("Load Prebuilt dectection rules")
 	err := k.loadPrebuiltDetectionRules()
 	if err != nil {
 		return fmt.Errorf("failed to load prebuild detection rules: %w", err)
 	}
 
-	iteration := 0
-	// Detection Rules are not available via API until a few minutes later
-	// This loops repeats the query to get the detection rule until the given timeout
-	passed, err := untilTrue(context.TODO(), func(ctx context.Context) (bool, error) {
-		iteration++
-		var detectionRuleErr *errDetectionRuleNotFound
-		_, err := k.getDetectionRuleID(detectionRuleID)
-		if errors.As(err, &detectionRuleErr) {
-			fmt.Printf("Check %d: rule not found %s\n", iteration, detectionRuleErr.id)
-			return false, nil
-		}
-		if err != nil {
-			return false, err
-		}
-		return true, nil
-	}, 5*time.Second, 5*time.Minute)
+	_, err = k.getDetectionRuleID(detectionRuleID)
 	if err != nil {
 		return err
-	}
-	if !passed {
-		return fmt.Errorf("detection rule_id not found: %s", detectionRuleID)
 	}
 	return nil
 }
@@ -494,10 +464,6 @@ func (k *Kibana) getDetectionRuleID(detectionRuleID string) (*detectionRuleRespo
 		return nil, err
 	}
 	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusNotFound {
-		return nil, &errDetectionRuleNotFound{detectionRuleID}
-	}
 
 	if resp.StatusCode >= 400 {
 		respBody, err := io.ReadAll(resp.Body)
