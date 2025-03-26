@@ -409,19 +409,14 @@ func (k *Kibana) getDashboard(dashboardID string) (*dashboardResponse, error) {
 
 // MustExistDetectionRule checks if a detection rule with the given ID exists.
 func (k *Kibana) MustExistDetectionRule(detectionRuleID string) error {
-	err := k.loadPrebuiltDetectionRules()
-	if err != nil {
-		return fmt.Errorf("failed to load prebuild detection rules: %w", err)
-	}
-
-	_, err = k.getDetectionRuleID(detectionRuleID)
+	_, err := k.getDetectionRuleID(detectionRuleID)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (k *Kibana) loadPrebuiltDetectionRules() error {
+func (k *Kibana) LoadPrebuiltDetectionRules() error {
 	req, err := k.newRequest(http.MethodPut, apiLoadPrebuiltDetectionRulesPath, nil)
 	if err != nil {
 		return err
