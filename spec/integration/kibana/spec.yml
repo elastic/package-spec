@@ -149,11 +149,9 @@ versions:
   - before: 3.4.0
     patch:
       - op: remove
-        path: "/contents/13" # remove SLO definitions
-  - before: 3.4.0
-    patch:
+        path: "/contents/14" # remove AI prompt definitions
       - op: remove
-        path: "/contents/6" # remove AI prompt definitions
+        path: "/contents/13" # remove SLO definitions
   - before: 2.10.0
     patch:
       - op: remove
