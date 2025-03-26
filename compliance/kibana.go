@@ -416,6 +416,7 @@ func (k *Kibana) MustExistDetectionRule(detectionRuleID string) error {
 	return nil
 }
 
+// LoadPrebuiltDetectionRules retrieves rule statuses and loads Elastic prebuilt detection rules.
 func (k *Kibana) LoadPrebuiltDetectionRules() error {
 	req, err := k.newRequest(http.MethodPut, apiLoadPrebuiltDetectionRulesPath, nil)
 	if err != nil {
