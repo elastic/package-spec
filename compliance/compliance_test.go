@@ -230,6 +230,30 @@ func indexTemplateIsConfiguredFor(indexTemplateName, option string) error {
 	return godog.ErrPending
 }
 
+func thereIsAnSlo(sloID string) error {
+	kibana, err := NewKibanaClient()
+	if err != nil {
+		return err
+	}
+	err = kibana.MustExistSLO(sloID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func thereIsADashboard(dashboardID string) error {
+	kibana, err := NewKibanaClient()
+	if err != nil {
+		return err
+	}
+	err = kibana.MustExistDashboard(dashboardID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
 		skipped := slices.ContainsFunc(sc.Tags, func(elem *messages.PickleTag) bool {
@@ -249,4 +273,6 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^there is a transform "([^"]*)"$`, thereIsATransform)
 	ctx.Step(`^there is a transform alias "([^"]*)"$`, thereIsATransformAlias)
 	ctx.Step(`^index template "([^"]*)" is configured for "([^"]*)"$`, indexTemplateIsConfiguredFor)
+	ctx.Step(`^there is an SLO "([^"]*)"$`, thereIsAnSlo)
+	ctx.Step(`^there is a dashboard "([^"]*)"$`, thereIsADashboard)
 }

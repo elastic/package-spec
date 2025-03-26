@@ -8,14 +8,14 @@ require (
 	github.com/Masterminds/semver/v3 v3.3.1
 	github.com/cucumber/godog v0.15.0
 	github.com/cucumber/messages/go/v21 v21.0.1
-	github.com/elastic/elastic-package v0.109.1
-	github.com/elastic/go-elasticsearch/v8 v8.17.0
+	github.com/elastic/elastic-package v0.110.2
+	github.com/elastic/go-elasticsearch/v8 v8.17.1
 	github.com/elastic/go-licenser v0.4.2
 	github.com/elastic/package-spec/v3 v3.3.2
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
-	gotest.tools/gotestsum v1.12.0
+	gotest.tools/gotestsum v1.12.1
 )
 
 require (
@@ -28,9 +28,9 @@ require (
 	github.com/PaesslerAG/gval v1.2.1 // indirect
 	github.com/PaesslerAG/jsonpath v0.1.1 // indirect
 	github.com/Pallinder/go-randomdata v1.2.0 // indirect
-	github.com/ProtonMail/go-crypto v1.1.4 // indirect
+	github.com/ProtonMail/go-crypto v1.1.6 // indirect
 	github.com/ProtonMail/go-mime v0.0.0-20230322103455-7d82a3887f2f // indirect
-	github.com/ProtonMail/gopenpgp/v2 v2.8.2 // indirect
+	github.com/ProtonMail/gopenpgp/v2 v2.8.3 // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/aymerick/raymond v2.0.2+incompatible // indirect
@@ -47,7 +47,7 @@ require (
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/elastic/elastic-integration-corpus-generator-tool v0.10.0 // indirect
-	github.com/elastic/elastic-transport-go/v8 v8.6.0 // indirect
+	github.com/elastic/elastic-transport-go/v8 v8.6.1 // indirect
 	github.com/elastic/go-elasticsearch/v7 v7.17.10 // indirect
 	github.com/elastic/go-resource v0.2.0 // indirect
 	github.com/elastic/go-ucfg v0.8.8 // indirect
@@ -58,7 +58,7 @@ require (
 	github.com/evanphx/json-patch/v5 v5.9.11 // indirect
 	github.com/exponent-io/jsonpath v0.0.0-20210407135951-1de76d718b3f // indirect
 	github.com/fatih/color v1.18.0 // indirect
-	github.com/fsnotify/fsnotify v1.7.0 // indirect
+	github.com/fsnotify/fsnotify v1.8.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
 	github.com/go-errors/errors v1.4.2 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
@@ -76,7 +76,7 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/btree v1.1.2 // indirect
 	github.com/google/gnostic-models v0.6.8 // indirect
-	github.com/google/go-cmp v0.6.0 // indirect
+	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-github/v32 v32.1.0 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
@@ -136,8 +136,8 @@ require (
 	github.com/shopspring/decimal v1.4.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.7.0 // indirect
-	github.com/spf13/cobra v1.8.1 // indirect
-	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/spf13/cobra v1.9.1 // indirect
+	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
@@ -152,31 +152,31 @@ require (
 	go.opentelemetry.io/otel v1.28.0 // indirect
 	go.opentelemetry.io/otel/metric v1.28.0 // indirect
 	go.opentelemetry.io/otel/trace v1.28.0 // indirect
-	golang.org/x/crypto v0.32.0 // indirect
-	golang.org/x/mod v0.22.0 // indirect
-	golang.org/x/net v0.34.0 // indirect
+	golang.org/x/crypto v0.33.0 // indirect
+	golang.org/x/mod v0.23.0 // indirect
+	golang.org/x/net v0.35.0 // indirect
 	golang.org/x/oauth2 v0.23.0 // indirect
-	golang.org/x/sync v0.10.0 // indirect
-	golang.org/x/sys v0.29.0 // indirect
-	golang.org/x/term v0.28.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/sync v0.11.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/term v0.29.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/time v0.7.0 // indirect
-	golang.org/x/tools v0.29.0 // indirect
+	golang.org/x/tools v0.30.0 // indirect
 	google.golang.org/protobuf v1.35.1 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	helm.sh/helm/v3 v3.17.0 // indirect
-	k8s.io/api v0.32.1 // indirect
-	k8s.io/apiextensions-apiserver v0.32.0 // indirect
-	k8s.io/apimachinery v0.32.1 // indirect
-	k8s.io/cli-runtime v0.32.1 // indirect
-	k8s.io/client-go v0.32.1 // indirect
-	k8s.io/component-base v0.32.0 // indirect
+	helm.sh/helm/v3 v3.17.1 // indirect
+	k8s.io/api v0.32.2 // indirect
+	k8s.io/apiextensions-apiserver v0.32.1 // indirect
+	k8s.io/apimachinery v0.32.2 // indirect
+	k8s.io/cli-runtime v0.32.2 // indirect
+	k8s.io/client-go v0.32.2 // indirect
+	k8s.io/component-base v0.32.1 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20241105132330-32ad38e42d3f // indirect
-	k8s.io/kubectl v0.32.0 // indirect
+	k8s.io/kubectl v0.32.1 // indirect
 	k8s.io/utils v0.0.0-20241104100929-3ea5e8cea738 // indirect
 	sigs.k8s.io/json v0.0.0-20241010143419-9aa6b5e7a4b3 // indirect
 	sigs.k8s.io/kustomize/api v0.18.0 // indirect

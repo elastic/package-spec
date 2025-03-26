@@ -13,6 +13,19 @@
     - description: Add kibana/security_ai_prompt to support security AI prompt assets.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/871
+- version: 3.3.4
+  changes:
+    - description: Remove slo assets when spec versions are less than 3.4.0.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/884
+    - description: Run all Kibana validation rules in content packages too.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/884
+- version: 3.3.3
+  changes:
+    - description: Introduce siem category.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/880
 - version: 3.3.2
   changes:
     - description: Add support for required conditional groups of variables.

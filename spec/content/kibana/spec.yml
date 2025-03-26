@@ -29,3 +29,8 @@ spec:
       pattern: '^{PACKAGE_NAME}-.+\.json$'
       forbiddenPatterns:
         - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
+versions:
+  - before: 3.4.0
+    patch:
+      - op: remove
+        path: "/contents/2" # remove SLO definitions
