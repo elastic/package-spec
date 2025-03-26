@@ -418,7 +418,7 @@ func (k *Kibana) getDashboard(dashboardID string) (*dashboardResponse, error) {
 	return &dashboard, nil
 }
 
-// MustExistDectionRule checks if a detection rule with the given ID exists.
+// MustExistDetectionRule checks if a detection rule with the given ID exists.
 func (k *Kibana) MustExistDetectionRule(detectionRuleID string) error {
 	fmt.Println("Load Prebuilt dectection rules")
 	err := k.loadPrebuiltDetectionRules()
@@ -430,7 +430,7 @@ func (k *Kibana) MustExistDetectionRule(detectionRuleID string) error {
 	// Detection Rules are not available via API until a few minutes later
 	// This loops repeats the query to get the detection rule until the given timeout
 	passed, err := untilTrue(context.TODO(), func(ctx context.Context) (bool, error) {
-		iteration += 1
+		iteration++
 		var detectionRuleErr *errDetectionRuleNotFound
 		_, err := k.getDetectionRuleID(detectionRuleID)
 		if errors.As(err, &detectionRuleErr) {
