@@ -14,6 +14,8 @@ conditions:
     version: '^8.16.0'
   elastic:
     subscription: 'basic'
+    capabilities:
+      - security
 discovery:
   fields:
     - name: process.pid

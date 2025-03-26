@@ -21,8 +21,10 @@ const (
 	apiAgentPolicyPath   = "/api/fleet/agent_policies"
 	apiPackagePolicyPath = "/api/fleet/package_policies"
 
-	apiGetSloPath       = "/s/%s/api/observability/slos"
-	apiGetDashboardPath = "/api/dashboards/dashboard"
+	apiGetSloPath                     = "/s/%s/api/observability/slos"
+	apiGetDashboardPath               = "/api/dashboards/dashboard"
+	apiGetDetecionRulePath            = "/api/detection_engine/rules"
+	apiLoadPrebuiltDetectionRulesPath = "/api/detection_engine/rules/prepackaged"
 
 	defaultSpace = "default"
 )
@@ -63,7 +65,14 @@ type dashboardResponse struct {
 
 type sloResponse struct {
 	Description string `json:"description"`
-	ID          string `json:"string"`
+	ID          string `json:"id"`
+	Enabled     bool   `json:"enabled"`
+}
+
+type detectionRuleResponse struct {
+	Description string `json:"description"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
 	Enabled     bool   `json:"enabled"`
 }
 
@@ -398,13 +407,85 @@ func (k *Kibana) getDashboard(dashboardID string) (*dashboardResponse, error) {
 	return &dashboard, nil
 }
 
-func (k *Kibana) newRequest(method string, path string, body io.Reader) (*http.Request, error) {
-	url, err := url.JoinPath(k.Host, path)
+// MustExistDetectionRule checks if a detection rule with the given ID exists.
+func (k *Kibana) MustExistDetectionRule(detectionRuleID string) error {
+	_, err := k.getDetectionRuleID(detectionRuleID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// LoadPrebuiltDetectionRules retrieves rule statuses and loads Elastic prebuilt detection rules.
+func (k *Kibana) LoadPrebuiltDetectionRules() error {
+	req, err := k.newRequest(http.MethodPut, apiLoadPrebuiltDetectionRulesPath, nil)
+	if err != nil {
+		return err
+	}
+
+	resp, err := k.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
+	}
+
+	return nil
+
+}
+
+func (k *Kibana) getDetectionRuleID(detectionRuleID string) (*detectionRuleResponse, error) {
+	apiPath, err := url.Parse(apiGetDetecionRulePath)
+	if err != nil {
+		return nil, err
+	}
+	req, err := k.newRequest(http.MethodGet, apiPath.String(), nil)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest(method, url, body)
+	params := map[string]string{
+		"rule_id": detectionRuleID,
+	}
+	req = addRequestParams(req, params)
+
+	resp, err := k.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return nil, fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
+	}
+
+	var detectionRule detectionRuleResponse
+	err = json.NewDecoder(resp.Body).Decode(&detectionRule)
+	if err != nil {
+		return nil, err
+	}
+
+	return &detectionRule, nil
+}
+
+func (k *Kibana) newRequest(method string, path string, body io.Reader) (*http.Request, error) {
+	urlPath, err := url.JoinPath(k.Host, path)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(method, urlPath, body)
 	if err != nil {
 		return nil, err
 	}
@@ -414,4 +495,14 @@ func (k *Kibana) newRequest(method string, path string, body io.Reader) (*http.R
 	req.Header.Set("kbn-xsrf", "package-spec")
 
 	return req, nil
+
+}
+
+func addRequestParams(request *http.Request, params map[string]string) *http.Request {
+	values := request.URL.Query()
+	for key, value := range params {
+		values.Add(key, value)
+	}
+	request.URL.RawQuery = values.Encode()
+	return request
 }
