@@ -446,14 +446,15 @@ func (k *Kibana) getDetectionRuleID(detectionRuleID string) (*detectionRuleRespo
 	if err != nil {
 		return nil, err
 	}
-	params := map[string]string{
-		"rule_id": detectionRuleID,
-	}
-
-	req, err := k.newRequestWithQueryParams(http.MethodGet, apiPath.String(), params, nil)
+	req, err := k.newRequest(http.MethodGet, apiPath.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
+	params := map[string]string{
+		"rule_id": detectionRuleID,
+	}
+	req = addRequestParams(req, params)
 
 	resp, err := k.client.Do(req)
 	if err != nil {
@@ -479,26 +480,12 @@ func (k *Kibana) getDetectionRuleID(detectionRuleID string) (*detectionRuleRespo
 }
 
 func (k *Kibana) newRequest(method string, path string, body io.Reader) (*http.Request, error) {
-	return k.newRequestWithQueryParams(method, path, map[string]string{}, body)
-}
-
-func (k *Kibana) newRequestWithQueryParams(method string, path string, queryParams map[string]string, body io.Reader) (*http.Request, error) {
 	urlPath, err := url.JoinPath(k.Host, path)
 	if err != nil {
 		return nil, err
 	}
 
-	requestPath, err := url.Parse(urlPath)
-	if err != nil {
-		return nil, err
-	}
-	params := url.Values{}
-	for k, v := range queryParams {
-		params.Add(k, v)
-	}
-	requestPath.RawQuery = params.Encode()
-
-	req, err := http.NewRequest(method, requestPath.String(), body)
+	req, err := http.NewRequest(method, urlPath, body)
 	if err != nil {
 		return nil, err
 	}
@@ -509,4 +496,13 @@ func (k *Kibana) newRequestWithQueryParams(method string, path string, queryPara
 
 	return req, nil
 
+}
+
+func addRequestParams(request *http.Request, params map[string]string) *http.Request {
+	values := request.URL.Query()
+	for key, value := range params {
+		values.Add(key, value)
+	}
+	request.URL.RawQuery = values.Encode()
+	return request
 }
