@@ -17,6 +17,7 @@ Feature: Basic package types support
   Scenario: Basic content package can be installed
    Given the "basic_content" package is installed
     Then there is a dashboard "basic_content-dashboard-abc-1"
+     And there is a detection rule "12cea9e9-5766-474d-a9dc-34ef7c7677c7"
 
   @3.4.0
   Scenario: Content package can be installed
@@ -24,3 +25,4 @@ Feature: Basic package types support
     Then there is a dashboard "good_content-dashboard-abc-1"
      # Missing support in Kibana (Fleet) https://github.com/elastic/kibana/pull/186974
      And there is an SLO "good_content-slo-abc-1"
+     And there is a detection rule "12cea9e9-5766-474d-a9dc-34ef7c7677c6"

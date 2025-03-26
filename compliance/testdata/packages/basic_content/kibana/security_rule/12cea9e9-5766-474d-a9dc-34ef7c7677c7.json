@@ -22,7 +22,7 @@
             "https://developer.okta.com/docs/reference/api/event-types/"
         ],
         "risk_score": 21,
-        "rule_id": "12cea9e9-5766-474d-a9dc-34ef7c7677c6",
+        "rule_id": "12cea9e9-5766-474d-a9dc-34ef7c7677c7",
         "severity": "low",
         "tags": [
             "Elastic",
@@ -36,6 +36,6 @@
         "type": "query",
         "version": 5
     },
-    "id": "12cea9e9-5766-474d-a9dc-34ef7c7677c6",
+    "id": "12cea9e9-5766-474d-a9dc-34ef7c7677c7",
     "type": "security-rule"
 }
