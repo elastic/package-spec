@@ -29,6 +29,15 @@ spec:
       pattern: '^{PACKAGE_NAME}-.+\.json$'
       forbiddenPatterns:
         - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
+  - description: Folder containing rules
+    type: folder
+    name: "security_rule"
+    required: false
+    contents:
+    - description: An individual rule file for the detection engine
+      type: file
+      contentMediaType: "application/json"
+      pattern: '^.+\.json$'
 versions:
   - before: 3.4.0
     patch:
