@@ -7,8 +7,12 @@ spec:
     required: true
     additionalContents: false
     contents:
-    - description: Folder containing agent stream definitions
+    - description: Config template file for inputs defined in the policy_templates section of the top level manifest
       type: file
       sizeLimit: 2MB
       pattern: '^.+.yml.hbs$'
-      required: true
+      required: false
+    - description: Link to a config template file for inputs defined in the policy_templates section of the top level manifest
+      type: file
+      pattern: '^.+.yml.hbs.link$'
+      required: false

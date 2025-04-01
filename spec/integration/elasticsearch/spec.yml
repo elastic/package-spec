@@ -30,6 +30,10 @@ spec:
           contentMediaType: "application/json"
           required: false
           $ref: "./pipeline.spec.yml"
+        - description: Link to ingest pipeline definition
+          type: file
+          pattern: '^.+\.(yml|json).link$'
+          required: false
     - description: Folder containing Elasticsearch Transforms
       # https://www.elastic.co/guide/en/elasticsearch/reference/current/transforms.html
       type: folder

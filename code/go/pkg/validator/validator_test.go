@@ -813,6 +813,12 @@ func TestValidateForbiddenDataStreamName(t *testing.T) {
 	}
 }
 
+func TestSharedFolderAndIgnoreLinks(t *testing.T) {
+	pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", "with_links")
+	errs := ValidateFromPath(pkgRootPath)
+	require.NoError(t, errs)
+}
+
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {
 	pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 

@@ -11,6 +11,7 @@ import (
 	"io/fs"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 
 	"gopkg.in/yaml.v3"
@@ -214,6 +215,9 @@ func readFieldsFolder(fsys fspath.FS, fieldsDir string) ([]string, error) {
 	}
 
 	for _, f := range fs {
+		if filepath.Ext(f.Name()) != ".yml" && filepath.Ext(f.Name()) != ".yaml" {
+			continue
+		}
 		fieldsFiles = append(fieldsFiles, path.Join(fieldsDir, f.Name()))
 	}
 	return fieldsFiles, nil

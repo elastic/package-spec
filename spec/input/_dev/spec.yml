@@ -17,3 +17,8 @@ spec:
       name: test
       required: false
       $ref: "./test/spec.yml"
+    - description: Folder containing shared files.
+      type: folder
+      name: shared
+      required: false
+      additionalContents: true
