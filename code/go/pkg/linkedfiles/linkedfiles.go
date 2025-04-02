@@ -20,6 +20,8 @@ import (
 const LinkExtension = ".link"
 
 type Link struct {
+	root *os.Root
+
 	LinkFilePath string
 	LinkChecksum string
 
@@ -33,6 +35,7 @@ type Link struct {
 
 func newLinkedFile(root *os.Root, linkFilePath string) (Link, error) {
 	var l Link
+	l.root = root
 	firstLine, err := readFirstLine(root, linkFilePath)
 	if err != nil {
 		return Link{}, err
@@ -97,7 +100,7 @@ func (l *Link) UpdateChecksum() (bool, error) {
 		return false, fmt.Errorf("checksum is empty for file %v", l.IncludedFilePath)
 	}
 	newContent := fmt.Sprintf("%v %v", filepath.ToSlash(l.IncludedFilePath), l.IncludedFileContentsChecksum)
-	if err := WriteFile(l.LinkFilePath, []byte(newContent)); err != nil {
+	if err := WriteFileToRoot(l.root, l.LinkFilePath, []byte(newContent)); err != nil {
 		return false, fmt.Errorf("could not update checksum for file %v: %w", l.LinkFilePath, err)
 	}
 	l.LinkChecksum = l.IncludedFileContentsChecksum
@@ -179,9 +182,9 @@ func CopyFileFromRoot(root *os.Root, from, to string) error {
 	return err
 }
 
-func WriteFile(to string, b []byte) error {
-	to = filepath.FromSlash(to)
-	if _, err := os.Stat(filepath.Dir(to)); os.IsNotExist(err) {
+func WriteFileToRoot(root *os.Root, to string, b []byte) error {
+	to = filepath.Join(root.Name(), filepath.FromSlash(to))
+	if _, err := root.Stat(filepath.Dir(to)); os.IsNotExist(err) {
 		if err := os.MkdirAll(filepath.Dir(to), 0700); err != nil {
 			return err
 		}

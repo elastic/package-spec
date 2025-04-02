@@ -19,7 +19,7 @@ func TestLinkUpdateChecksum(t *testing.T) {
 
 	outdatedFile, err := newLinkedFile(root, "code/go/pkg/linkedfiles/testdata/links/outdated.yml.link")
 	t.Cleanup(func() {
-		_ = WriteFile(outdatedFile.LinkFilePath, []byte(outdatedFile.IncludedFilePath))
+		_ = WriteFileToRoot(root, outdatedFile.LinkFilePath, []byte(outdatedFile.IncludedFilePath))
 	})
 	assert.NoError(t, err)
 	assert.False(t, outdatedFile.UpToDate)
