@@ -17,8 +17,13 @@ import (
 	"strings"
 )
 
+// LinkExtension is the file extension for linked files.
 const LinkExtension = ".link"
 
+// A Link represents a linked file.
+// It contains the path to the link file, the checksum of the linked file,
+// the path to the target file, and the checksum of the included file contents.
+// It also contains a boolean indicating whether the link is up to date.
 type Link struct {
 	root *os.Root
 
@@ -122,7 +127,7 @@ func (l *Link) ReplaceTargetFilePathDirectory(fromDir, toDir string) {
 	)
 }
 
-// ListLinkedFiles function returns a slice of Link structs representing linked files.
+// ListLinkedFilesInRoot function returns a slice of Link structs representing linked files.
 func ListLinkedFilesInRoot(root *os.Root, fromDir string) ([]Link, error) {
 	var linkFiles []string
 	if err := filepath.Walk(
@@ -157,6 +162,7 @@ func ListLinkedFilesInRoot(root *os.Root, fromDir string) ([]Link, error) {
 	return links, nil
 }
 
+// CopyFileFromRoot function copies a file from to to inside the root.
 func CopyFileFromRoot(root *os.Root, from, to string) error {
 	from = filepath.FromSlash(from)
 	source, err := root.Open(from)
@@ -182,6 +188,7 @@ func CopyFileFromRoot(root *os.Root, from, to string) error {
 	return err
 }
 
+// WriteFileToRoot function writes a byte slice to a file inside the root.
 func WriteFileToRoot(root *os.Root, to string, b []byte) error {
 	to = filepath.Join(root.Name(), filepath.FromSlash(to))
 	if _, err := root.Stat(filepath.Dir(to)); os.IsNotExist(err) {

@@ -13,6 +13,9 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// FindRepositoryRoot finds the root of the repository by looking for the
+// ".git" directory in the current working directory or its parent directories.
+// It returns the root directory as an *os.Root object.
 func FindRepositoryRoot() (*os.Root, error) {
 	rootPath, err := FindRepositoryRootDirectory()
 	if err != nil {
@@ -28,6 +31,9 @@ func FindRepositoryRoot() (*os.Root, error) {
 	return dirRoot, nil
 }
 
+// FindRepositoryRootDirectory finds the root directory of the repository by
+// looking for the ".git" directory in the current working directory or its
+// parent directories. It returns the root directory as a string.
 func FindRepositoryRootDirectory() (string, error) {
 	workDir, err := os.Getwd()
 	if err != nil {
