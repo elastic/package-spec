@@ -163,8 +163,9 @@ func CopyFileFromRoot(root *os.Root, from, to string) error {
 	defer source.Close()
 
 	to = filepath.FromSlash(to)
-	if _, err := os.Stat(filepath.Dir(to)); os.IsNotExist(err) {
-		if err := os.MkdirAll(filepath.Dir(to), 0700); err != nil {
+	if _, err := root.Stat(filepath.Dir(to)); os.IsNotExist(err) {
+		dir := filepath.Join(root.Name(), filepath.Dir(to))
+		if err := os.MkdirAll(dir, 0700); err != nil {
 			return err
 		}
 	}
