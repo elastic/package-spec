@@ -254,6 +254,30 @@ func thereIsADashboard(dashboardID string) error {
 	return nil
 }
 
+func thereIsADetectionRule(detectionRuleID string) error {
+	kibana, err := NewKibanaClient()
+	if err != nil {
+		return err
+	}
+	err = kibana.MustExistDetectionRule(detectionRuleID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func prebuiltDetectionRulesAreLoaded() error {
+	kibana, err := NewKibanaClient()
+	if err != nil {
+		return err
+	}
+	err = kibana.LoadPrebuiltDetectionRules()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
 		skipped := slices.ContainsFunc(sc.Tags, func(elem *messages.PickleTag) bool {
@@ -275,4 +299,6 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^index template "([^"]*)" is configured for "([^"]*)"$`, indexTemplateIsConfiguredFor)
 	ctx.Step(`^there is an SLO "([^"]*)"$`, thereIsAnSlo)
 	ctx.Step(`^there is a dashboard "([^"]*)"$`, thereIsADashboard)
+	ctx.Step(`^there is a detection rule "([^"]*)"$`, thereIsADetectionRule)
+	ctx.Step(`^prebuilt detection rules are loaded$`, prebuiltDetectionRulesAreLoaded)
 }
