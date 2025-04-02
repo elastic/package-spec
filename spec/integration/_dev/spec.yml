@@ -26,4 +26,4 @@ spec:
       type: folder
       name: shared
       required: false
-      additionalContents: true
+      $ref: "./shared/spec.yml"

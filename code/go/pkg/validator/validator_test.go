@@ -271,6 +271,7 @@ func TestValidateFile(t *testing.T) {
 				`required var "password" in optional group is not defined`,
 			},
 		},
+		"with_links": {},
 	}
 
 	for pkgName, test := range tests {
@@ -811,12 +812,6 @@ func TestValidateForbiddenDataStreamName(t *testing.T) {
 	for _, foundError := range errs {
 		assert.Contains(t, expectedErrorMessages, foundError.Error())
 	}
-}
-
-func TestSharedFolderAndIgnoreLinks(t *testing.T) {
-	pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", "with_links")
-	errs := ValidateFromPath(pkgRootPath)
-	require.NoError(t, errs)
 }
 
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {

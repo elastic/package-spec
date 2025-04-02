@@ -11,7 +11,7 @@ spec:
       type: file
       sizeLimit: 2MB
       pattern: '^.+.yml.hbs$'
-      required: false
+      required: true
     - description: Link to a config template file for inputs defined in the policy_templates section of the top level manifest
       type: file
       pattern: '^.+.yml.hbs.link$'
