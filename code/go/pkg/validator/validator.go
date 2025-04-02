@@ -10,14 +10,31 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"path/filepath"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
 	"github.com/elastic/package-spec/v3/code/go/internal/validator"
+	"github.com/elastic/package-spec/v3/code/go/pkg/linkedfiles"
 )
 
 // ValidateFromPath validates a package located at the given path against the
 // appropriate specification and returns any errors.
 func ValidateFromPath(packageRootPath string) error {
+	root, err := linkedfiles.FindRepositoryRoot()
+	if err != nil {
+		return err
+	}
+	pkgPath, _ := filepath.Abs(packageRootPath)
+	pkgPath, _ = filepath.Rel(root.Name(), pkgPath)
+	links, err := linkedfiles.IncludeLinkedFiles(root, pkgPath, "")
+	if err != nil {
+		return err
+	}
+	defer func() {
+		for _, link := range links {
+			_ = root.Remove(link.TargetFilePath)
+		}
+	}()
 	return ValidateFromFS(packageRootPath, os.DirFS(packageRootPath))
 }
 
