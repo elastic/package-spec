@@ -5,6 +5,7 @@
 package semantic
 
 import (
+	"errors"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -34,7 +35,7 @@ func (a *anyOfCondition) validate(fsys fspath.FS) specerrors.ValidationErrors {
 	}
 
 	for _, dataStream := range dataStreams {
-		path := filepath.Join("data_stream", dataStream, a.path)
+		path := filepath.ToSlash(filepath.Join("data_stream", dataStream, a.path))
 		err := a.validatePath(fsys, path)
 		if err != nil {
 			errs = append(errs, specerrors.NewStructuredErrorf("data stream %q: %w", dataStream, err))
@@ -50,7 +51,7 @@ func (a *anyOfCondition) validate(fsys fspath.FS) specerrors.ValidationErrors {
 func (a *anyOfCondition) validatePath(fsys fspath.FS, path string) specerrors.ValidationError {
 	files, err := fs.ReadDir(fsys, path)
 	if err != nil {
-		if !os.IsNotExist(err) {
+		if !errors.Is(err, os.ErrNotExist) {
 			return specerrors.NewStructuredError(err, specerrors.UnassignedCode)
 		}
 		return nil
@@ -78,10 +79,10 @@ func (a *anyOfCondition) validatePath(fsys fspath.FS, path string) specerrors.Va
 // - elasticsearch/ingest_pipeline
 func ValidateAnyOfRequiredContents(fsys fspath.FS) specerrors.ValidationErrors {
 	conditions := []anyOfCondition{
-		{path: filepath.Join("agent", "input"), anyOfPatterns: []string{"*.yml.hbs", "*.yml.hbs.link"}},
-		{path: filepath.Join("agent", "stream"), anyOfPatterns: []string{"*.yml.hbs", "*.yml.hbs.link"}},
+		{path: filepath.ToSlash(filepath.Join("agent", "input")), anyOfPatterns: []string{"*.yml.hbs", "*.yml.hbs.link"}},
+		{path: filepath.ToSlash(filepath.Join("agent", "stream")), anyOfPatterns: []string{"*.yml.hbs", "*.yml.hbs.link"}},
 		{path: "fields", anyOfPatterns: []string{"*.yml", "*.yml.link"}},
-		{path: filepath.Join("elasticsearch", "ingest_pipeline"), anyOfPatterns: []string{"*.yml", "*.json", "*.yml.link", "*.json.link"}},
+		{path: filepath.ToSlash(filepath.Join("elasticsearch", "ingest_pipeline")), anyOfPatterns: []string{"*.yml", "*.json", "*.yml.link", "*.json.link"}},
 	}
 
 	var errs specerrors.ValidationErrors
