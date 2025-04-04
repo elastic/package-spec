@@ -13,12 +13,15 @@ import (
 
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
 	"github.com/elastic/package-spec/v3/code/go/internal/validator"
+	"github.com/elastic/package-spec/v3/code/go/pkg/linkedfiles"
 )
 
 // ValidateFromPath validates a package located at the given path against the
 // appropriate specification and returns any errors.
 func ValidateFromPath(packageRootPath string) error {
-	return ValidateFromFS(packageRootPath, os.DirFS(packageRootPath))
+	// We wrap the fs.FS with a linkedfiles.LinksFS to handle linked files.
+	linksFS := linkedfiles.NewLinksFS(packageRootPath, os.DirFS(packageRootPath))
+	return ValidateFromFS(packageRootPath, linksFS)
 }
 
 // ValidateFromZip validates a package on its zip format.

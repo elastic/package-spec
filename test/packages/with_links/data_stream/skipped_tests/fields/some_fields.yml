@@ -1,0 +1,28 @@
+- name: source
+  title: Source
+  group: 2
+  type: group
+  fields:
+    - name: geo.city_name
+      level: core
+      type: keyword
+      description: City name.
+      ignore_above: 1024
+    - name: geo.location
+      level: core
+      type: geo_point
+      description: Longitude and latitude.
+    - name: geo.region_iso_code
+      level: core
+      type: keyword
+      description: Region ISO code.
+      ignore_above: 1024
+    - name: geo.region_name
+      level: core
+      type: keyword
+      description: Region name.
+      ignore_above: 1024
+- name: foobar
+  type: text
+  description: A field with a pattern defined
+  pattern: '^[a-zA-Z]$'

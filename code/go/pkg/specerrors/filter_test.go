@@ -15,14 +15,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createValidationErrors(messages []string) ValidationErrors {
-	var allErrors ValidationErrors
-	for _, m := range messages {
-		allErrors = append(allErrors, NewStructuredErrorf(m))
-	}
-	return allErrors
-}
-
 func createValidationError(message, code string) ValidationError {
 	return NewStructuredError(errors.New(message), code)
 }
