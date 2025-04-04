@@ -7,6 +7,7 @@ package linkedfiles
 import (
 	"fmt"
 	"io/fs"
+	"os"
 	"path/filepath"
 )
 
@@ -40,5 +41,6 @@ func (lfs *LinksFS) Open(name string) (fs.File, error) {
 	if !l.UpToDate {
 		return nil, fmt.Errorf("linked file %s is not up to date", name)
 	}
-	return lfs.inner.Open(filepath.Join(filepath.Dir(name), l.IncludedFilePath))
+	includedPath := filepath.Join(lfs.workDir, filepath.Dir(name), l.IncludedFilePath)
+	return os.Open(includedPath)
 }
