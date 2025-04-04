@@ -12,7 +12,7 @@ import (
 
 var _ fs.FS = (*LinksFS)(nil)
 
-// LinkFS is a filesystem that handles linked files.
+// LinksFS is a filesystem that handles linked files.
 // It wraps another filesystem and checks for linked files with the ".link" extension.
 // If a linked file is found, it reads the link file to determine the target file
 // and its checksum. If the target file is up to date, it returns the target file.
