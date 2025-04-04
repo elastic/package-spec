@@ -79,10 +79,10 @@ func (a *anyOfCondition) validatePath(fsys fspath.FS, path string) specerrors.Va
 // - elasticsearch/ingest_pipeline
 func ValidateAnyOfRequiredContents(fsys fspath.FS) specerrors.ValidationErrors {
 	conditions := []anyOfCondition{
-		{path: filepath.ToSlash(filepath.Join("agent", "input")), anyOfPatterns: []string{"*.yml.hbs", "*.yml.hbs.link"}},
-		{path: filepath.ToSlash(filepath.Join("agent", "stream")), anyOfPatterns: []string{"*.yml.hbs", "*.yml.hbs.link"}},
+		{path: "agent/input", anyOfPatterns: []string{"*.yml.hbs", "*.yml.hbs.link"}},
+		{path: "agent/stream", anyOfPatterns: []string{"*.yml.hbs", "*.yml.hbs.link"}},
 		{path: "fields", anyOfPatterns: []string{"*.yml", "*.yml.link"}},
-		{path: filepath.ToSlash(filepath.Join("elasticsearch", "ingest_pipeline")), anyOfPatterns: []string{"*.yml", "*.json", "*.yml.link", "*.json.link"}},
+		{path: "elasticsearch/ingest_pipeline", anyOfPatterns: []string{"*.yml", "*.json", "*.yml.link", "*.json.link"}},
 	}
 
 	var errs specerrors.ValidationErrors
