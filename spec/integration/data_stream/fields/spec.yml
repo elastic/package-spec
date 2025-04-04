@@ -9,5 +9,5 @@ spec:
     $ref: "./fields.spec.yml"
   - description: Link to fields definition
     type: file
-    pattern: '^[a-z0-9][a-z0-9_-]+[a-z0-9]\.yml.link$'
+    pattern: '^[a-z0-9][a-z0-9_-]+[a-z0-9]\.yml\.link$'
     required: false

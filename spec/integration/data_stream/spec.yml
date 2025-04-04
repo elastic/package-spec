@@ -70,7 +70,7 @@ spec:
           $ref: "../../integration/elasticsearch/pipeline.spec.yml"
         - description: Link to ingest pipeline definition
           type: file
-          pattern: '^.+\.(yml|json).link$'
+          pattern: '^.+\.(yml|json)\.link$'
           required: false
     - description: Sample event file
       type: file
