@@ -3,12 +3,12 @@ spec:
   contents:
     - description: Configuration of test case in yaml format.
       type: file
-      pattern: '^test-[a-z0-9_.-]+.yml$'
+      pattern: '^test-[a-z0-9_.-]+\.yml$'
       contentMediaType: "application/x-yaml"
       required: false
       $ref: "./config.spec.yml"
     - description: Expected policy for a test case.
       type: file
-      pattern: '^test-[a-z0-9_.-]+.expected$'
+      pattern: '^test-[a-z0-9_.-]+\.expected$'
       contentMediaType: "application/x-yaml"
       required: false
