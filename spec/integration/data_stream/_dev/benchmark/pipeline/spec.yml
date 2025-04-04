@@ -13,7 +13,7 @@ spec:
       required: false
     - description: Configuration for a benchmark
       type: file
-      pattern: '^config.yml$'
+      name: 'config.yml'
       contentMediaType: "application/x-yaml"
       required: false
       $ref: "./config.spec.yml"
