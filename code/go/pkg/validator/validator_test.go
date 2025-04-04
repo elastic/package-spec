@@ -814,6 +814,41 @@ func TestValidateForbiddenDataStreamName(t *testing.T) {
 	}
 }
 
+func TestValidateAnyOfContents(t *testing.T) {
+	tests := map[string][]string{
+		"missing_required_files": {
+			"item [.keep] is not allowed in folder [../../../../test/packages/missing_required_files/agent/input]",
+			"item [.keep] is not allowed in folder [../../../../test/packages/missing_required_files/data_stream/foo/agent/stream]",
+			"item [.keep] is not allowed in folder [../../../../test/packages/missing_required_files/data_stream/foo/elasticsearch/ingest_pipeline]",
+			"item [.keep] is not allowed in folder [../../../../test/packages/missing_required_files/data_stream/foo/fields]",
+			`path "agent/input": no file matching any of the patterns [*.yml.hbs *.yml.hbs.link] found in agent/input`,
+			`data stream "foo": no file matching any of the patterns [*.yml.hbs *.yml.hbs.link] found in data_stream/foo/agent/stream`,
+			`data stream "foo": no file matching any of the patterns [*.yml *.yml.link] found in data_stream/foo/fields`,
+			`path "elasticsearch/ingest_pipeline": no file matching any of the patterns [*.yml *.json *.yml.link *.json.link] found in elasticsearch/ingest_pipeline`,
+			`data stream "foo": no file matching any of the patterns [*.yml *.json *.yml.link *.json.link] found in data_stream/foo/elasticsearch/ingest_pipeline`,
+		},
+	}
+
+	for pkgName, expectedErrorMessages := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			err := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			if len(expectedErrorMessages) == 0 {
+				assert.NoError(t, err)
+				return
+			}
+			assert.Error(t, err)
+
+			errs, ok := err.(specerrors.ValidationErrors)
+			require.True(t, ok)
+			assert.Len(t, errs, len(expectedErrorMessages))
+
+			for _, foundError := range errs {
+				require.Contains(t, expectedErrorMessages, foundError.Error())
+			}
+		})
+	}
+}
+
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {
 	pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 
