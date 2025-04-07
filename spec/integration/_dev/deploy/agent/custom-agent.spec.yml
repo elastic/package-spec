@@ -19,7 +19,7 @@ spec:
     version:
       description: Docker Compose version
       type: string
-      pattern: '^2.3$'
+      pattern: '^2\.3$'
     volumes:
       description: Docker Compose volume declaration
       type: object

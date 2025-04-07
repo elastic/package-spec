@@ -39,7 +39,7 @@ spec:
           type: file
           required: true
           contentMediaType: "application/x-yaml"
-          pattern: '^transform\.yml$'
+          name: 'transform.yml'
           $ref: "./transform.spec.yml"
         - description: A transform's manifest file
           type: file

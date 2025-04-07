@@ -9,5 +9,5 @@ spec:
   - description: Other README files (can be used by policy templates)
     type: file
     contentMediaType: "text/markdown"
-    pattern: '^.+.md'
+    pattern: '^.+\.md'
     required: false

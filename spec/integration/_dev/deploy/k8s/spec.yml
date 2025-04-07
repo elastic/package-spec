@@ -2,7 +2,7 @@ spec:
   additionalContents: false
   contents:
     - description: Kubernetes resource definition
-      pattern: '^*.yaml$'
+      pattern: '^.*\.yaml$'
       type: file
       contentMediaType: "application/x-yaml"
       required: false

@@ -10,5 +10,5 @@ spec:
     - description: Folder containing agent stream definitions
       type: file
       sizeLimit: 2MB
-      pattern: '^.+.yml.hbs$'
+      pattern: '^.+\.yml\.hbs$'
       required: true

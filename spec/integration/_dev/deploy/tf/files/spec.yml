@@ -4,19 +4,19 @@ spec:
   - description: Log / conf files to add into terraform resources
     type: file
     contentMediaType: "text/plain"
-    pattern: '^*.(log|conf)$'
+    pattern: '^.*\.(log|conf)$'
     required: false
   - description: YAML files to add into terraform resources
     type: file
     contentMediaType: "application/x-yaml"
-    pattern: ^*.(yml|yaml)$
+    pattern: '^.*\.(yml|yaml)$'
     required: false
   - description: JSON files to add into terraform resources
     type: file
     contentMediaType: "application/json"
-    pattern: '^*.json$'
+    pattern: '^.*\.json$'
     required: false
   - description: Parquet files to add into terraform resources
     type: file
-    pattern: '^*.parquet$'
+    pattern: '^.*\.parquet$'
     required: false
