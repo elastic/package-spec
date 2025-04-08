@@ -13,7 +13,7 @@
     - description: Add kibana/security_ai_prompt to support security AI prompt assets.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/871
-- version: 3.3.5-next
+- version: 3.3.5
   changes:
     - description: Allow security_rule assets in content package.
       type: enhancement
