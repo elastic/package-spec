@@ -30,7 +30,8 @@ type Link struct {
 	UpToDate bool
 }
 
-func newLinkedFile(linkFilePath string) (Link, error) {
+// NewLinkedFile creates a new Link from the given link file path.
+func NewLinkedFile(linkFilePath string) (Link, error) {
 	var l Link
 	firstLine, err := readFirstLine(linkFilePath)
 	if err != nil {

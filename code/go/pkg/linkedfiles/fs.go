@@ -35,7 +35,7 @@ func (lfs *LinksFS) Open(name string) (fs.File, error) {
 		return lfs.inner.Open(name)
 	}
 	pathName := filepath.Join(lfs.workDir, name)
-	l, err := newLinkedFile(pathName)
+	l, err := NewLinkedFile(pathName)
 	if err != nil {
 		return nil, err
 	}
