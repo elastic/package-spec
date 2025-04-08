@@ -20,4 +20,4 @@ spec:
     - description: Folder containing shared files.
       type: folder
       name: shared
-      $ref: "./shared/spec.yml"
+      $ref: "../../integration/spec.yml"
