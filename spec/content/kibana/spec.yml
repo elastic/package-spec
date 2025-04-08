@@ -29,6 +29,15 @@ spec:
       pattern: '^{PACKAGE_NAME}-.+\.json$'
       forbiddenPatterns:
         - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
+  - description: Folder containing security AI prompt assets
+    type: folder
+    name: "security_ai_prompt"
+    required: false
+    contents:
+      - description: A security AI prompt asset file
+        type: file
+        contentMediaType: "application/json"
+        pattern: '^{PACKAGE_NAME}-.+\.json$'
   - description: Folder containing rules
     type: folder
     name: "security_rule"
@@ -41,5 +50,7 @@ spec:
 versions:
   - before: 3.4.0
     patch:
+      - op: remove
+        path: "/contents/3" # remove AI prompt definitions
       - op: remove
         path: "/contents/2" # remove SLO definitions

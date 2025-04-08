@@ -10,6 +10,9 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: Add kibana/security_ai_prompt to support security AI prompt assets.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/871
 - version: 3.3.5-next
   changes:
     - description: Allow security_rule assets in content package.
@@ -21,6 +24,9 @@
     - description: Add support for *.link files in agent, pipelines, and fields folders.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/888
+    - description: Fix regexes used for paths and names in package files.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/889
 - version: 3.3.4
   changes:
     - description: Remove slo assets when spec versions are less than 3.4.0.
