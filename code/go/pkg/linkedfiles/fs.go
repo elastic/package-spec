@@ -30,7 +30,8 @@ func NewLinksFS(workDir string, inner fs.FS) *LinksFS {
 
 // Open opens a file in the filesystem.
 func (lfs *LinksFS) Open(name string) (fs.File, error) {
-	if filepath.Ext(name) != LinkExtension {
+	const linkExtension = ".link"
+	if filepath.Ext(name) != linkExtension {
 		return lfs.inner.Open(name)
 	}
 	pathName := filepath.Join(lfs.workDir, name)

@@ -16,9 +16,6 @@ import (
 	"strings"
 )
 
-// LinkExtension is the file extension for linked files.
-const LinkExtension = ".link"
-
 // A Link represents a linked file.
 // It contains the path to the link file, the checksum of the linked file,
 // the path to the target file, and the checksum of the included file contents.
