@@ -34,12 +34,17 @@ add_bin_path(){
 }
 
 with_go() {
+    local version=${1:-""}
     create_bin_folder
     check_platform_architecture
 
     retry 5 curl -sL -o "${WORKSPACE}/bin/gvm" "https://github.com/andrewkroh/gvm/releases/download/${SETUP_GVM_VERSION}/gvm-${platform_type_lowercase}-${arch_type}"
     chmod +x "${WORKSPACE}/bin/gvm"
-    eval "$(gvm "$(cat .go-version)")"
+    if [[ "${version}" == "" ]]; then
+        eval "$(gvm "$(cat .go-version)")"
+    else 
+        eval "$(gvm "${version}")"
+    fi
     go version
     which go
     PATH="$(go env GOPATH)/bin:${PATH}"
