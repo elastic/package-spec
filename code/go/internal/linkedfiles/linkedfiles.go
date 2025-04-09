@@ -45,7 +45,7 @@ func NewLinkedFile(linkFilePath string) (Link, error) {
 		l.LinkChecksum = fields[1]
 	}
 
-	pathName := filepath.Join(filepath.Dir(linkFilePath), l.IncludedFilePath)
+	pathName := filepath.Join(filepath.Dir(linkFilePath), filepath.FromSlash(l.IncludedFilePath))
 	cs, err := getLinkedFileChecksum(pathName)
 	if err != nil {
 		return Link{}, fmt.Errorf("could not collect file %v: %w", l.IncludedFilePath, err)
