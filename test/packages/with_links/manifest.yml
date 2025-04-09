@@ -1,6 +1,6 @@
 format_version: 1.0.0
-name: good
-title: Good package
+name: with_links
+title: Package with links
 description: This package is good.
 version: 1.0.0
 type: integration

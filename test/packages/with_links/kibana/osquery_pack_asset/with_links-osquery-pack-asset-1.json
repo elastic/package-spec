@@ -129,7 +129,7 @@
         ]
     },
     "coreMigrationVersion": "8.2.0",
-    "id": "good-osquery-pack-asset-1",
+    "id": "with_links-osquery-pack-asset-1",
     "references": [],
     "type": "osquery-pack-asset"
 }
