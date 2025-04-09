@@ -57,6 +57,9 @@ type ItemSpec interface {
 	// DevelopmentFolder returns true if the item is inside a development folder.
 	DevelopmentFolder() bool
 
+	// AllowLink returns true if the item allows links.
+	AllowLink() bool
+
 	// ForbiddenPatterns returns the list of forbidden patterns for the name of this item.
 	ForbiddenPatterns() []string
 

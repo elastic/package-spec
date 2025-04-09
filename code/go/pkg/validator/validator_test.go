@@ -17,6 +17,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
 	"github.com/elastic/package-spec/v3/code/go/internal/validator/common"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
@@ -271,6 +272,7 @@ func TestValidateFile(t *testing.T) {
 				`required var "password" in optional group is not defined`,
 			},
 		},
+		"with_links": {},
 	}
 
 	for pkgName, test := range tests {
@@ -811,6 +813,19 @@ func TestValidateForbiddenDataStreamName(t *testing.T) {
 	for _, foundError := range errs {
 		assert.Contains(t, expectedErrorMessages, foundError.Error())
 	}
+}
+
+func TestLinksAreBlocked(t *testing.T) {
+	err := ValidateFromFS("test-package", newMockFS().WithLink())
+	errs, ok := err.(specerrors.ValidationErrors)
+	require.True(t, ok)
+	for _, err := range errs {
+		// we want at least one error indicating links are blocked
+		if errors.Is(err, linkedfiles.ErrUnsupportedLinkFile) {
+			return
+		}
+	}
+	t.Error("links should not be allowed in package")
 }
 
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {

@@ -22,6 +22,7 @@ spec:
           # TODO Determine if special handling of `---` is required (issue: https://github.com/elastic/package-spec/pull/54)
           contentMediaType: "application/x-yaml; require-document-dashes=true"
           required: false
+          allowLink: true
           $ref: "./pipeline.spec.yml"
         - description: Supporting ingest pipeline definitions in JSON
           type: file
@@ -29,6 +30,7 @@ spec:
           pattern: '^.+\.json$'
           contentMediaType: "application/json"
           required: false
+          allowLink: true
           $ref: "./pipeline.spec.yml"
     - description: Folder containing Elasticsearch Transforms
       # https://www.elastic.co/guide/en/elasticsearch/reference/current/transforms.html

@@ -81,6 +81,11 @@ func (s *ItemSpec) DevelopmentFolder() bool {
 	return s.itemSpec.DevelopmentFolder
 }
 
+// AllowLink returns true if the item allows links.
+func (s *ItemSpec) AllowLink() bool {
+	return s.itemSpec.AllowLink
+}
+
 // ForbiddenPatterns returns the list of forbidden patterns for the name of this item.
 func (s *ItemSpec) ForbiddenPatterns() []string {
 	return s.itemSpec.ForbiddenPatterns
@@ -135,6 +140,7 @@ type folderItemSpec struct {
 	AdditionalContents bool              `json:"additionalContents" yaml:"additionalContents"`
 	Contents           []*folderItemSpec `json:"contents" yaml:"contents"`
 	DevelopmentFolder  bool              `json:"developmentFolder" yaml:"developmentFolder"`
+	AllowLink          bool              `json:"allowLink" yaml:"allowLink"`
 
 	// As it is required to be inline both in yaml and json, this struct must be public embedded field
 	SpecLimits `yaml:",inline"`

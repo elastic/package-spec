@@ -6,4 +6,5 @@ spec:
     pattern: '^[a-z0-9][a-z0-9_-]+[a-z0-9]\.yml$'
     required: true
     contentMediaType: "application/x-yaml"
+    allowLink: true
     $ref: "./fields.spec.yml"

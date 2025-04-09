@@ -11,6 +11,7 @@ import (
 	"io/fs"
 	"os"
 
+	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
 	"github.com/elastic/package-spec/v3/code/go/internal/validator"
 )
@@ -18,7 +19,9 @@ import (
 // ValidateFromPath validates a package located at the given path against the
 // appropriate specification and returns any errors.
 func ValidateFromPath(packageRootPath string) error {
-	return ValidateFromFS(packageRootPath, os.DirFS(packageRootPath))
+	// We wrap the fs.FS with a linkedfiles.LinksFS to handle linked files.
+	linksFS := linkedfiles.NewFS(packageRootPath, os.DirFS(packageRootPath))
+	return ValidateFromFS(packageRootPath, linksFS)
 }
 
 // ValidateFromZip validates a package on its zip format.
@@ -46,8 +49,13 @@ func ValidateFromZip(packagePath string) error {
 }
 
 // ValidateFromFS validates a package against the appropiate specification and returns any errors.
-// Package files are obtained throug the given filesystem.
+// Package files are obtained through the given filesystem.
 func ValidateFromFS(location string, fsys fs.FS) error {
+	// If we are not explicitly using the linkedfiles.FS, we wrap fsys with
+	// a linkedfiles.BlockFS to block the use of linked files.
+	if _, ok := fsys.(*linkedfiles.FS); !ok {
+		fsys = linkedfiles.NewBlockFS(fsys)
+	}
 	pkg, err := packages.NewPackageFromFS(location, fsys)
 	if err != nil {
 		return err
@@ -62,7 +70,7 @@ func ValidateFromFS(location string, fsys fs.FS) error {
 		return err
 	}
 
-	if errs := spec.ValidatePackage(*pkg); errs != nil && len(errs) > 0 {
+	if errs := spec.ValidatePackage(*pkg); len(errs) > 0 {
 		return errs
 	}
 

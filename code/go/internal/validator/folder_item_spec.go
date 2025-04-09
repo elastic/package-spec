@@ -16,13 +16,15 @@ import (
 func matchingFileExists(spec spectypes.ItemSpec, files []fs.DirEntry) (bool, error) {
 	if spec.Name() != "" {
 		for _, file := range files {
-			if file.Name() == spec.Name() {
+			_, fileName := checkLink(file.Name())
+			if fileName == spec.Name() {
 				return spec.IsDir() == file.IsDir(), nil
 			}
 		}
 	} else if spec.Pattern() != "" {
 		for _, file := range files {
-			isMatch, err := regexp.MatchString(spec.Pattern(), file.Name())
+			_, fileName := checkLink(file.Name())
+			isMatch, err := regexp.MatchString(spec.Pattern(), fileName)
 			if err != nil {
 				return false, fmt.Errorf("invalid folder item spec pattern: %w", err)
 			}

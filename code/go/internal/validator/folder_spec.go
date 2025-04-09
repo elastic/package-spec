@@ -190,6 +190,7 @@ func (v *validator) Validate() specerrors.ValidationErrors {
 }
 
 func (v *validator) findItemSpec(folderItemName string) (spectypes.ItemSpec, error) {
+	isLink, folderItemName := checkLink(folderItemName)
 	for _, itemSpec := range v.spec.Contents() {
 		if itemSpec.Name() != "" && itemSpec.Name() == folderItemName {
 			return itemSpec, nil
@@ -213,6 +214,9 @@ func (v *validator) findItemSpec(folderItemName string) (spectypes.ItemSpec, err
 				}
 
 				if !isForbidden {
+					if isLink && !itemSpec.AllowLink() {
+						return nil, fmt.Errorf("item [%s] is a link but is not allowed", folderItemName)
+					}
 					return itemSpec, nil
 				}
 			}
@@ -221,4 +225,14 @@ func (v *validator) findItemSpec(folderItemName string) (spectypes.ItemSpec, err
 
 	// No item spec found
 	return nil, nil
+}
+
+// checkLink checks if an item is a link and returns the item name without the
+// ".link" suffix if it is a link.
+func checkLink(itemName string) (bool, string) {
+	const linkExtension = ".link"
+	if strings.HasSuffix(itemName, linkExtension) {
+		return true, strings.TrimSuffix(itemName, linkExtension)
+	}
+	return false, itemName
 }

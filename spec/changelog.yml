@@ -13,6 +13,14 @@
     - description: Add kibana/security_ai_prompt to support security AI prompt assets.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/871
+- version: 3.3.6-next
+  changes:
+    - description: Add support for _dev/shared folder.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/888
+    - description: Add support for *.link files in agent, pipelines, and fields folders.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/888
 - version: 3.3.5
   changes:
     - description: Allow security_rule assets in content package.

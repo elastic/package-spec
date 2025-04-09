@@ -12,3 +12,4 @@ spec:
       sizeLimit: 2MB
       pattern: '^.+\.yml\.hbs$'
       required: true
+      allowLink: true
