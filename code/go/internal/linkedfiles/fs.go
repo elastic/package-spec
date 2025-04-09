@@ -15,9 +15,10 @@ import (
 const linkExtension = ".link"
 
 var (
-	_                      fs.FS = (*FS)(nil)
-	_                      fs.FS = (*BlockFS)(nil)
-	ErrUnsupportedLinkFile       = errors.New("linked files are not supported in this filesystem")
+	_ fs.FS = (*FS)(nil)
+	_ fs.FS = (*BlockFS)(nil)
+	// ErrUnsupportedLinkFile is returned when a linked file is not supported.
+	ErrUnsupportedLinkFile = errors.New("linked files are not supported in this filesystem")
 )
 
 // FS is a filesystem that handles linked files.
@@ -30,7 +31,7 @@ type FS struct {
 	inner   fs.FS
 }
 
-// NewFS creates a new LinksFS.
+// NewFS creates a new FS.
 func NewFS(workDir string, inner fs.FS) *FS {
 	return &FS{workDir: workDir, inner: inner}
 }
@@ -57,7 +58,7 @@ type BlockFS struct {
 	inner fs.FS
 }
 
-// NewFS creates a new LinksFS.
+// NewBlockFS creates a new BlockFS.
 func NewBlockFS(inner fs.FS) *BlockFS {
 	return &BlockFS{inner: inner}
 }
