@@ -9,7 +9,7 @@ if [[ "${CI:-"false"}" == "true" ]]; then
     add_bin_path
 
     echo "--- Install Go :go:"
-    with_go "1.24.2"
+    with_go
 
     echo "--- Install docker-compose"
     with_docker_compose
