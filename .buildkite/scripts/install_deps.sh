@@ -44,10 +44,6 @@ with_go() {
     which go
     PATH="$(go env GOPATH)/bin:${PATH}"
     export PATH
-
-    # Allow the use of go.mod toolchains, given that we have multiple go.mods in the repository.
-    export GOTOOLCHAIN='auto'
-    go env
 }
 
 with_github_cli() {
