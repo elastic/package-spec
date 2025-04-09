@@ -4,6 +4,9 @@ env:
   GH_CLI_VERSION: "2.29.0"
   JQ_VERSION: "1.7"
 
+  # Allow the use of go.mod toolchains, given that we have multiple go.mods in the repository.
+  GOTOOLCHAIN: "auto"
+
 steps:
   - label: ":go: Run check-static"
     key: check
