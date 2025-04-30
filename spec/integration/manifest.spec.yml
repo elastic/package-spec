@@ -562,6 +562,10 @@ spec:
               type: array
               items:
                 type: string
+    allowed_in_fedramp_high:
+      type: boolean
+      description: A flag which indicates if this integration is allowed in our ECH FedRAMP High product offering.
+      default: true
   required:
     - format_version
     - name
