@@ -564,7 +564,7 @@ spec:
                 type: string
     allowed_in_fedramp_high:
       type: boolean
-      description: A flag which indicates if this integration is allowed in our ECH FedRAMP High product offering.
+      description: Indicate if this package is capable of satisfying FIPS requirements. Set to false if it uses any input that cannot be configured to use FIPS cryptography.
       default: true
   required:
     - format_version
