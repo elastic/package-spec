@@ -2,7 +2,7 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 3.4.0-next
+- version: 3.5.0-next
   changes:
     - description: Add support for `slo` assets.
       type: enhancement
@@ -10,11 +10,11 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+- version: 3.4.0
+  changes:
     - description: Add kibana/security_ai_prompt to support security AI prompt assets.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/871
-- version: 3.3.6-next
-  changes:
     - description: Add support for _dev/shared folder.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/888
