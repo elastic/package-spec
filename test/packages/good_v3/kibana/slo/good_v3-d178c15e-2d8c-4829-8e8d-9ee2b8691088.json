@@ -1,7 +1,8 @@
 {
   "attributes": {
+    "id": "d178c15e-2d8c-4829-8e8d-9ee2b8691088",
     "name": "Admin Console Availability",
-    "description": "",
+    "description": "Availability of the Admin Console",
     "indicator": {
       "type": "sli.kql.custom",
       "params": {
@@ -20,10 +21,11 @@
     "objective": {
       "target": 0.99
     },
-    "tags": [],
-    "groupBy": "url.domain"
+    "tags": ["us-east-1", "production"],
+    "groupBy": ["host.name", "url.domain"],
+    "isTemplate": true
   },
-  "id": "good_v3-slo-abc-1",
+  "id": "d178c15e-2d8c-4829-8e8d-9ee2b8691088",
   "references": [],
   "type": "slo"
 }
