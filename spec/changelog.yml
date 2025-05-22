@@ -13,6 +13,9 @@
     - description: Add kibana/security_ai_prompt to support security AI prompt assets.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/871
+    - description: Add kibana/security_labs_content to support Security Labs assets.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/871
 - version: 3.3.6-next
   changes:
     - description: Add support for _dev/shared folder.

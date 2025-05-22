@@ -38,6 +38,15 @@ spec:
         type: file
         contentMediaType: "application/json"
         pattern: '^{PACKAGE_NAME}-.+\.json$'
+  - description: Folder containing security Security Labs assets
+    type: folder
+    name: "security_labs_content"
+    required: false
+    contents:
+      - description: A Security Labs asset
+        type: file
+        contentMediaType: "application/json"
+        pattern: '^{PACKAGE_NAME}-.+\.json$'
   - description: Folder containing rules
     type: folder
     name: "security_rule"
