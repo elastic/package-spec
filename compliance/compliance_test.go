@@ -279,7 +279,15 @@ func prebuiltDetectionRulesAreLoaded() error {
 }
 
 func thereIsASecurityAIPrompt(promptID string) error {
-	return godog.ErrPending
+	kibana, err := NewKibanaClient()
+	if err != nil {
+		return err
+	}
+	err = kibana.MustExistSavedObject("security-ai-prompt", promptID)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func InitializeScenario(ctx *godog.ScenarioContext) {
