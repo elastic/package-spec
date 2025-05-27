@@ -25,6 +25,7 @@ const (
 	apiGetDashboardPath               = "/api/dashboards/dashboard"
 	apiGetDetecionRulePath            = "/api/detection_engine/rules"
 	apiLoadPrebuiltDetectionRulesPath = "/api/detection_engine/rules/prepackaged"
+	apiSavedObjects                   = "/api/saved_objects"
 
 	defaultSpace = "default"
 )
@@ -477,6 +478,34 @@ func (k *Kibana) getDetectionRuleID(detectionRuleID string) (*detectionRuleRespo
 	}
 
 	return &detectionRule, nil
+}
+
+// MustExistSavedObject checks if a saved object with the given type and id exists.
+func (k *Kibana) MustExistSavedObject(soType, id string) error {
+	apiPath, err := url.JoinPath(apiSavedObjects, soType, id)
+	if err != nil {
+		return err
+	}
+	req, err := k.newRequest(http.MethodGet, apiPath, nil)
+	if err != nil {
+		return err
+	}
+
+	resp, err := k.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
+	}
+
+	return nil
 }
 
 func (k *Kibana) newRequest(method string, path string, body io.Reader) (*http.Request, error) {
