@@ -22,7 +22,7 @@ const (
 	apiPackagePolicyPath = "/api/fleet/package_policies"
 
 	apiGetSloPath                     = "/s/%s/api/observability/slos"
-	apiGetDashboardPath               = "/api/dashboards/dashboard"
+	apiGetSavedObjectPath             = "/api/saved_objects/%s"
 	apiGetDetecionRulePath            = "/api/detection_engine/rules"
 	apiLoadPrebuiltDetectionRulesPath = "/api/detection_engine/rules/prepackaged"
 	apiSavedObjects                   = "/api/saved_objects"
@@ -376,10 +376,16 @@ func (k *Kibana) MustExistDashboard(dashboardID string) error {
 }
 
 func (k *Kibana) getDashboard(dashboardID string) (*dashboardResponse, error) {
-	apiPath, err := url.JoinPath(apiGetDashboardPath, dashboardID)
+	// Before it was used /api/dashboards/dashboard/{dashboardID} endpoint but it is in
+	// technical preview and it is not available in all Kibana versions by default.
+	// Related to https://github.com/elastic/kibana/pull/223262
+	// Use instead Saved Objects API to get the dashboard.
+	apiDashboardPath := fmt.Sprintf(apiGetSavedObjectPath, "dashboard")
+	apiPath, err := url.JoinPath(apiDashboardPath, dashboardID)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := k.newRequest(http.MethodGet, apiPath, nil)
 	if err != nil {
 		return nil, err
