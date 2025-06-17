@@ -377,9 +377,9 @@ func (k *Kibana) MustExistDashboard(dashboardID string) error {
 }
 
 func (k *Kibana) getDashboard(dashboardID string) (*dashboardResponse, error) {
-	// It was used /api/dashboards/dashboard/{dashboardID} endpoint but in 9.1.0 and
+	// It was used /api/dashboards/dashboard/{dashboardID} endpoint, but in 9.1.0 and
 	// 8.19.0 stack versions, this API endpoint is in technical preview and it has
-	// been set as internal.
+	// been set as internal. This means that it required to add some query parameters.
 	// Related to https://github.com/elastic/kibana/pull/223262
 	apiPath, err := url.JoinPath(apiGetDashboardPath, dashboardID)
 	if err != nil {
@@ -396,7 +396,7 @@ func (k *Kibana) getDashboard(dashboardID string) (*dashboardResponse, error) {
 	// 	return nil, fmt.Errorf("failed to get Kibana version: %w", err)
 	// }
 
-	addRequestParams(req, map[string]string{"elasticInternalOrigin": "true"})
+	addRequestParams(req, map[string]string{"elasticInternalOrigin": "true", "apiVersion": "1"})
 	//if !kibanaVersion.LessThan(semver.MustParse("9.1.0")) {
 	//	// Related to https://github.com/elastic/kibana/pull/223262
 	//	// Required to add this query parameter as this API endpoint is in Technical preview for now.
