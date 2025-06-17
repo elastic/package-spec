@@ -402,11 +402,11 @@ func (k *Kibana) getDashboard(dashboardID string) (*dashboardResponse, error) {
 	if !kibanaVersion.LessThan(semver.MustParse("9.1.0")) {
 		// Related to https://github.com/elastic/kibana/pull/223262
 		// Required to add this query parameter as this API endpoint is in Technical preview for now.
-		addRequestParams(req, map[string]string{"elasticInternalOrigin": "true"})
+		addRequestParams(req, map[string]string{"elasticInternalOrigin": "true", "apiVersion": "1"})
 	}
 	// Required when this PR is merged: https://github.com/elastic/kibana/pull/224060
 	// if !kibanaVersion.LessThan(semver.MustParse("8.19.0")) && kibanaVersion.LessThan(semver.MustParse("9.0.0")) {
-	// 	addRequestParams(req, map[string]string{"elasticInternalOrigin": "true"})
+	// 	addRequestParams(req, map[string]string{"elasticInternalOrigin": "true", "apiVersion": "1"})
 	// }
 
 	resp, err := k.client.Do(req)
