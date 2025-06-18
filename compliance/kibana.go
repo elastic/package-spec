@@ -11,13 +11,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
-
-	"github.com/Masterminds/semver/v3"
 )
 
 const (
@@ -25,7 +22,7 @@ const (
 	apiPackagePolicyPath = "/api/fleet/package_policies"
 
 	apiGetSloPath                     = "/s/%s/api/observability/slos"
-	apiGetDashboardPath               = "/api/dashboards/dashboard"
+	apiExportSavedObjectPath          = "/api/saved_objects/_export"
 	apiGetDetecionRulePath            = "/api/detection_engine/rules"
 	apiLoadPrebuiltDetectionRulesPath = "/api/detection_engine/rules/prepackaged"
 	apiSavedObjects                   = "/api/saved_objects"
@@ -65,7 +62,14 @@ type packagePolicyStream struct {
 }
 
 type dashboardResponse struct {
-	Item json.RawMessage `json:"item"`
+	Attributes struct {
+		KibanaSavedObjectMeta struct {
+			SearchSourceJSON string `json:"searchSourceJSON"`
+		} `json:"kibanaSavedObjectMeta"`
+		Title string `json:"title"`
+	} `json:"attributes"`
+	ID   string `json:"id"`
+	Type string `json:"type"`
 }
 
 type sloResponse struct {
@@ -380,34 +384,12 @@ func (k *Kibana) MustExistDashboard(dashboardID string) error {
 }
 
 func (k *Kibana) getDashboard(dashboardID string) (*dashboardResponse, error) {
-	// Before it was used /api/dashboards/dashboard/{dashboardID} endpoint but it is in
-	// technical preview and it is not available in all Kibana versions by default.
-	// Related to https://github.com/elastic/kibana/pull/223262
-	// Use instead Saved Objects API to get the dashboard.
-	apiPath, err := url.JoinPath(apiGetDashboardPath, dashboardID)
+	// Use the export API to retrieve the given dashboard given its "id".
+	body := fmt.Sprintf(`{"objects": [{"id": "%s", "type": "dashboard"}],"excludeExportDetails":true,"includeReferencesDeep":false}`, dashboardID)
+	req, err := k.newRequest(http.MethodPost, apiExportSavedObjectPath, strings.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
-	log.Println("Using API path:", apiPath)
-
-	req, err := k.newRequest(http.MethodGet, apiPath, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	kibanaVersion, err := k.version()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get Kibana version: %w", err)
-	}
-	if !kibanaVersion.LessThan(semver.MustParse("9.1.0")) {
-		// Related to https://github.com/elastic/kibana/pull/223262
-		// Required to add this query parameter as this API endpoint is in Technical preview for now.
-		addRequestParams(req, map[string]string{"elasticInternalOrigin": "true", "apiVersion": "1"})
-	}
-	// Required when this PR is merged: https://github.com/elastic/kibana/pull/224060
-	// if !kibanaVersion.LessThan(semver.MustParse("8.19.0")) && kibanaVersion.LessThan(semver.MustParse("9.0.0")) {
-	// 	addRequestParams(req, map[string]string{"elasticInternalOrigin": "true", "apiVersion": "1"})
-	// }
 
 	resp, err := k.client.Do(req)
 	if err != nil {
@@ -430,48 +412,6 @@ func (k *Kibana) getDashboard(dashboardID string) (*dashboardResponse, error) {
 	}
 
 	return &dashboard, nil
-}
-
-func (k *Kibana) version() (*semver.Version, error) {
-	// This function is a placeholder for any version-specific logic.
-	// Currently, it just returns the version as is.
-	type response struct {
-		Version struct {
-			Number string `json:"number"`
-		} `json:"version"`
-	}
-
-	req, err := k.newRequest(http.MethodGet, apiStatusPath, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	resp, err := k.client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		respBody, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
-		}
-		return nil, fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
-	}
-
-	var statusResponse response
-	err = json.NewDecoder(resp.Body).Decode(&statusResponse)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
-	}
-
-	version, err := semver.NewVersion(statusResponse.Version.Number)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse Kibana version: %w", err)
-	}
-
-	return version, nil
 }
 
 // MustExistDetectionRule checks if a detection rule with the given ID exists.
