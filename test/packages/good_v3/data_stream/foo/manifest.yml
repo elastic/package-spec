@@ -63,6 +63,7 @@ elasticsearch:
           dimension_fields:
             limit: 32
       number_of_shards: 1
+      refresh_interval: 1s
     mappings:
       dynamic: strict
       dynamic_templates:
