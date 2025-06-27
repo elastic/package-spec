@@ -280,6 +280,13 @@ spec:
               type: integer
               minimum: 1
               default: 1
+            refresh_interval:
+              description: >
+                The interval at which the index is refreshed. A lower value means that
+                documents are searchable sooner, but it can impact indexing performance.
+                Set to `-1` to disable automatic refreshes.
+              type: string
+              default: 1s
         mappings:
           description: Mappings section of index template
           type: object
