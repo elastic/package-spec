@@ -44,6 +44,7 @@ policy_templates:
           requests:
             memory: 1024M
             cpu: "0.5"
+    fips_compatible: false
     configuration_links:
       - title: View Agents
         url: "kbn:/app/fleet/agents"
