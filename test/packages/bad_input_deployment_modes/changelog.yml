@@ -2,4 +2,4 @@
   changes:
     - description: Initial version
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/1 #FIXME
+      link: https://github.com/elastic/package-spec/pull/915
