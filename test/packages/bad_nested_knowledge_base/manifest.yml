@@ -7,3 +7,6 @@ description: >-
   Used to verify that the nested directory validation works correctly.
 type: integration
 format_version: 2.0.0
+owner:
+  github: elastic/integrations
+  type: elastic
