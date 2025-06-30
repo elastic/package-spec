@@ -23,6 +23,8 @@ import (
 )
 
 func TestValidateNestedDir(t *testing.T) {
+	// Workaround for error messages that contain OS-dependant base paths.
+	osTestBasePath := filepath.Join("..", "..", "..", "..", "test", "packages") + string(filepath.Separator)
 
 	tests := map[string]struct {
 		invalidPkgFilePath  string
@@ -31,7 +33,7 @@ func TestValidateNestedDir(t *testing.T) {
 		"bad_nested_knowledge_base": {
             "kibana/knowledge_base/nested_dir",
             []string{
-                "item [nested_dir] is not allowed in folder [../../../../test/packages/bad_nested_knowledge_base/kibana/knowledge_base]",
+				fmt.Sprintf("item [nested_dir] is not allowed in folder [%s]", osTestBasePath+"bad_nested_knowledge_base/kibana/knowledge_base"),
             },
 		},	
 	}
