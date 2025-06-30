@@ -274,10 +274,10 @@ func TestValidateFile(t *testing.T) {
 		},
 		"with_links": {},
 		"bad_nested_knowledge_base": {
-			"kibana/knowledge_base/nested_dir",
-			[]string{
-				"item [nested_dir] is not allowed in folder [../../../../test/packages/bad_nested_knowledge_base/kibana/knowledge_base]",
-			},
+            invalidPkgFilePath: "kibana/knowledge_base/nested_dir",
+            expectedErrContains: []string{
+                fmt.Sprintf("file \"../../../../test/packages/bad_nested_knowledge_base/kibana/knowledge_base/nested_dir\" is invalid: item [nested_dir] is not allowed in folder [../../../../test/packages/bad_nested_knowledge_base/kibana/knowledge_base]"),
+            },
 		},
 	}
 
