@@ -278,6 +278,7 @@ func TestValidateFile(t *testing.T) {
             expectedErrContains: []string{
                 fmt.Sprintf("found folder in path %sbad_nested_knowledge_base/kibana/knowledge_base/nested_dir", osTestBasePath),
             },
+		},
 	}
 
 	for pkgName, test := range tests {
