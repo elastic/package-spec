@@ -272,6 +272,14 @@ func TestValidateFile(t *testing.T) {
 				`required var "password" in optional group is not defined`,
 			},
 		},
+		"bad_input_deployment_modes": {
+			"manifest.yml",
+			[]string{
+				`field policy_templates.0.inputs.0.deployment_modes.0: policy_templates.0.inputs.0.deployment_modes.0 must be one of the following: "default", "agentless"`,
+				`field policy_templates.0.inputs.1.deployment_modes: Array must have at least 1 items`,
+				`field policy_templates.0.inputs.2.deployment_modes: array items[0,1] must be unique`,
+			},
+		},
 		"with_links": {},
 	}
 

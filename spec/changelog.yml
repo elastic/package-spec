@@ -10,6 +10,9 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: Add definition for input-level deployment modes.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1 #FIXME
 - version: 3.4.0
   changes:
     - description: Add kibana/security_ai_prompt to support security AI prompt assets.
