@@ -10,6 +10,9 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: Add support for `knowledge_base` directory to store markdown files for AI assistant context.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/XXX
 - version: 3.4.0
   changes:
     - description: Add kibana/security_ai_prompt to support security AI prompt assets.
@@ -208,7 +211,7 @@
     - description: Using non-GA versions of the spec in GA packages produces a filterable validation error instead of a warning
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/627
-    - description: 'Allow to set index: false in dynamic templates defined in data stream manifests'
+    - description: "Allow to set index: false in dynamic templates defined in data stream manifests"
       type: enhancement
       link: https://github.com/elastic/package-spec/issues/650
     - description: Validate that data streams with time series enabled have configured dimensions
@@ -706,7 +709,7 @@
     - description: Add `hidden` fields to data stream manifest file.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/91
-    - description: 'Revert: Allow `condition` under inputs.'
+    - description: "Revert: Allow `condition` under inputs."
       type: bugfix
       link: https://github.com/elastic/package-spec/pull/93
     - description: Support `lens` Kibana type.
