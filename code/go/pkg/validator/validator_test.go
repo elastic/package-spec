@@ -276,7 +276,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_nested_knowledge_base": {
             invalidPkgFilePath: "kibana/knowledge_base/nested_dir",
             expectedErrContains: []string{
-                fmt.Sprintf("found folder in path %sbad_nested_knowledge_base/kibana/knowledge_base/nested_dir", osTestBasePath),
+                fmt.Sprintf("item [nested_dir] is not allowed in folder [../../../../test/packages/bad_nested_knowledge_base/kibana/knowledge_base]"),
             },
 		},
 	}
