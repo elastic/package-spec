@@ -23,8 +23,6 @@ import (
 )
 
 func TestValidateNestedDir(t *testing.T) {
-	// Workaround for error messages that contain OS-dependant base paths.
-	osTestBasePath := filepath.Join("..", "..", "..", "..", "test", "packages") + string(filepath.Separator)
 
 	tests := map[string]struct {
 		invalidPkgFilePath  string
