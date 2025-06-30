@@ -274,17 +274,17 @@ func TestValidateFile(t *testing.T) {
 		},
 		"with_links": {},
 		"bad_nested_knowledge_base": {
-            invalidPkgFilePath: "kibana/knowledge_base/nested_dir",
-            expectedErrContains: []string{
-                fmt.Sprintf("item [nested_dir] is not allowed in folder [../../../../test/packages/bad_nested_knowledge_base/kibana/knowledge_base]"),
+            "kibana/knowledge_base/nested_dir",
+            []string{
+                "item [nested_dir] is not allowed in folder [../../../../test/packages/bad_nested_knowledge_base/kibana/knowledge_base]",
             },
-		},
+		},	
 	}
 
 	for pkgName, test := range tests {
 		t.Run(pkgName, func(t *testing.T) {
 			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
-			// errPrefix := fmt.Sprintf("file \"%s/%s\" is invalid: ", pkgRootPath, test.invalidPkgFilePath)
+			errPrefix := fmt.Sprintf("file \"%s/%s\" is invalid: ", pkgRootPath, test.invalidPkgFilePath)
 
 			errs := ValidateFromPath(pkgRootPath)
 			if verrs, ok := errs.(specerrors.ValidationErrors); ok {
@@ -311,7 +311,8 @@ func TestValidateFile(t *testing.T) {
 					}
 
 					for _, expectedErrMessage := range test.expectedErrContains {
-						require.Contains(t, errMessages, expectedErrMessage)
+						expectedErr := errPrefix + expectedErrMessage
+						require.Contains(t, errMessages, expectedErr)
 					}
 					return
 				}
