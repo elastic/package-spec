@@ -2,6 +2,14 @@
 
 set -euo pipefail
 
+cleanup() {
+    local r=$?
+    elastic-package stack down
+    exit "$r"
+}
+
+trap cleanup EXIT
+
 WORKSPACE="$(pwd)"
 
 if [[ "${CI:-"false"}" == "true" ]]; then
