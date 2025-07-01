@@ -1,0 +1,18 @@
+spec:
+  additionalContents: false
+  contents:
+    - description: Folder containing AI assistant knowledge base content in markdown format
+      type: folder
+      name: knowledge_base
+      required: false
+      contents:
+        - description: A markdown file containing AI assistant context
+          type: file
+          contentMediaType: "text/markdown"
+          pattern: '^.+\.md$'
+      additionalContents: false # Disallows nested directories
+versions:
+  - before: 3.4.0
+    patch:
+      - op: remove
+        path: "/contents/0" # remove knowledge base definitions
