@@ -318,7 +318,6 @@ func TestValidateFile(t *testing.T) {
 }
 
 func TestValidateItemNotAllowed(t *testing.T) {
-	osTestBasePath := filepath.Join("..", "..", "..", "..", "test", "packages")
 	tests := map[string]map[string][]string{
 		"wrong_kibana_filename": {
 			"kibana/dashboard": []string{
@@ -339,6 +338,8 @@ func TestValidateItemNotAllowed(t *testing.T) {
 				"defa1bcc-1ab6-4069-adec-8c997b069a5e.json",
 				"another-package-visualization.json",
 			},
+		},
+		"bad_nested_knowledge_base": {
 			"kibana/knowledge_base/nested_dir" : []string{
 				fmt.Sprintf("item [nested_dir] is not allowed in folder [%s]", osTestBasePath+"bad_nested_knowledge_base/kibana/knowledge_base"),
 			},
