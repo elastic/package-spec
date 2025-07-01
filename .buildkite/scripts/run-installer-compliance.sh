@@ -4,8 +4,12 @@ set -euo pipefail
 
 cleanup() {
     local r=$?
+
     local elastic_package="go run github.com/elastic/elastic-package"
+    pushd "${WORKSPACE}/compliance" > /dev/null
     $elastic_package stack down
+    popd > /dev/null
+
     exit "$r"
 }
 
