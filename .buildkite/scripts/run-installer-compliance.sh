@@ -4,7 +4,8 @@ set -euo pipefail
 
 cleanup() {
     local r=$?
-    elastic-package stack down
+    local elastic_package="go run github.com/elastic/elastic-package"
+    $elastic_package stack down
     exit "$r"
 }
 
