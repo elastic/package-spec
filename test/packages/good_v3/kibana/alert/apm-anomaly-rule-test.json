@@ -1,0 +1,39 @@
+{
+  "id": "apm-anomaly-rule-test",
+  "type": "alert",
+  "attributes": {
+    "name": "APM Anomaly rule test",
+    "tags": ["Testing"],
+    "enabled": false,
+    "alertTypeId": "apm.anomaly",
+    "legacyId": null,
+    "consumer": "alerts",
+    "schedule": {
+      "interval": "1m"
+    },
+    "params": {
+      "windowSize": 30,
+      "windowUnit": "m",
+      "anomalySeverityType": "critical",
+      "anomalyDetectorTypes": ["txLatency", "txThroughput", "txFailureRate"],
+      "environment": "ENVIRONMENT_ALL"
+    },
+    "muteAll": false,
+    "mutedInstanceIds": [],
+    "alertDelay": {
+      "active": 1
+    },
+    "executionStatus": {
+      "status": "ok",
+      "lastExecutionDate": "2025-07-01T21:13:10.639Z"
+    },
+    "actions": [],
+    "revision": 0,
+    "createdBy": "elastic",
+    "updatedBy": "elastic",
+    "createdAt": "2025-06-30T21:17:41.234Z",
+    "updatedAt": "2025-06-30T21:17:41.234Z"
+  },
+  "coreMigrationVersion": "8.8.0",
+  "typeMigrationVersion": "10.6.0"
+}

@@ -83,6 +83,15 @@ spec:
       type: file
       contentMediaType: "application/json"
       pattern: '^.+\.json$'
+  - description: Folder containing alerting rules
+    type: folder
+    name: "alert"
+    required: false
+    contents:
+    - description: An individual alerting rule file
+      type: file
+      contentMediaType: "application/json"
+      pattern: '^.+\.json$'
   - description: Folder containing ML module assets
     type: folder
     name: ml_module
