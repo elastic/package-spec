@@ -273,6 +273,13 @@ func TestValidateFile(t *testing.T) {
 			},
 		},
 		"with_links": {},
+		"bad_discovery_fields": {
+			"manifest.yml",
+			[]string{
+				"field discovery.fields.0.name: Invalid type. Expected: string, given: integer",
+				"field discovery.fields.1: name is required",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
