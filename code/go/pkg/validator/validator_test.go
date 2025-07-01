@@ -339,8 +339,7 @@ func TestValidateItemNotAllowed(t *testing.T) {
 				"another-package-visualization.json",
 			},
 			"bad_nested_knowledge_base": {
-				"kibana/knowledge_base/nested_dir",
-				[]string{
+				"kibana/knowledge_base/nested_dir" : []string{
 					fmt.Sprintf("item [nested_dir] is not allowed in folder [%s]", osTestBasePath+"bad_nested_knowledge_base/kibana/knowledge_base"),
 				},
 			},
