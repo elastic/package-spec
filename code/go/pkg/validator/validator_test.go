@@ -318,6 +318,7 @@ func TestValidateFile(t *testing.T) {
 }
 
 func TestValidateItemNotAllowed(t *testing.T) {
+	osTestBasePath := filepath.Join("..", "..", "..", "..", "test", "packages")
 	tests := map[string]map[string][]string{
 		"wrong_kibana_filename": {
 			"kibana/dashboard": []string{
