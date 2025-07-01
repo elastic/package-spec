@@ -22,62 +22,6 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
-func TestValidateNestedDir(t *testing.T) {
-	// Workaround for error messages that contain OS-dependant base paths.
-	osTestBasePath := filepath.Join("..", "..", "..", "..", "test", "packages") + string(filepath.Separator)
-
-	tests := map[string]struct {
-		invalidPkgFilePath  string
-		expectedErrContains []string
-	}{
-		"bad_nested_knowledge_base": {
-            "kibana/knowledge_base/nested_dir",
-            []string{
-				fmt.Sprintf("item [nested_dir] is not allowed in folder [%s]", osTestBasePath+"bad_nested_knowledge_base/kibana/knowledge_base"),
-            },
-		},	
-	}
-
-	for pkgName, test := range tests {
-		t.Run(pkgName, func(t *testing.T) {
-			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
-
-
-			errs := ValidateFromPath(pkgRootPath)
-			if verrs, ok := errs.(specerrors.ValidationErrors); ok {
-				filterConfig, err := specerrors.LoadConfigFilter(os.DirFS(pkgRootPath))
-				if !errors.Is(err, os.ErrNotExist) {
-					filter := specerrors.NewFilter(filterConfig)
-					result, err := filter.Run(verrs)
-					require.NoError(t, err)
-					assert.Empty(t, result.UnusedProcessors, "There are unused exclusion checks in the validation.yml file")
-					errs = result.Processed
-				}
-			}
-
-			if test.expectedErrContains == nil {
-				require.NoError(t, errs)
-			} else {
-				require.Error(t, errs)
-				vErrs, ok := errs.(specerrors.ValidationErrors)
-				if ok {
-					assert.Len(t, errs, len(test.expectedErrContains))
-					var errMessages []string
-					for _, vErr := range vErrs {
-						errMessages = append(errMessages, vErr.Error())
-					}
-
-					for _, expectedErrMessage := range test.expectedErrContains {
-						require.Contains(t, errMessages, expectedErrMessage)
-					}
-					return
-				}
-				require.Equal(t, errs.Error(), test.expectedErrContains[0])
-			}
-		})
-	}
-}
-
 func TestValidateFile(t *testing.T) {
 	// Workaround for error messages that contain OS-dependant base paths.
 	osTestBasePath := filepath.Join("..", "..", "..", "..", "test", "packages") + string(filepath.Separator)
@@ -393,6 +337,12 @@ func TestValidateItemNotAllowed(t *testing.T) {
 			"kibana/visualization": []string{
 				"defa1bcc-1ab6-4069-adec-8c997b069a5e.json",
 				"another-package-visualization.json",
+			},
+			"bad_nested_knowledge_base": {
+				"kibana/knowledge_base/nested_dir",
+				[]string{
+					fmt.Sprintf("item [nested_dir] is not allowed in folder [%s]", osTestBasePath+"bad_nested_knowledge_base/kibana/knowledge_base"),
+				},
 			},
 		},
 	}
