@@ -71,6 +71,8 @@ spec:
             $ref: "../integration/manifest.spec.yml#/definitions/deployment_modes"
           configuration_links:
             $ref: "../integration/manifest.spec.yml#/definitions/configuration_links"
+          fips_compatible:
+            $ref: "../integration/manifest.spec.yml#/definitions/fips_compatible"
           icons:
             $ref: "../integration/manifest.spec.yml#/definitions/icons"
           screenshots:
