@@ -536,13 +536,13 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 		"custom_logs": []string{
 			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
 		},
-		"httpjson_input": []string{
+		"httpjson_input": {
 			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
 		},
-		"sql_input": []string{
+		"sql_input": {
 			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
 		},
-		"bad_runtime_kibana_version": []string{
+		"bad_runtime_kibana_version": {
 			"conditions.kibana.version must be ^8.10.0 or greater to include runtime fields",
 		},
 	}
@@ -578,12 +578,12 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 
 func TestValidateWarnings(t *testing.T) {
 	tests := map[string][]string{
-		"good":    []string{},
-		"good_v2": []string{},
-		"visualizations_by_reference": []string{
+		"good":    {},
+		"good_v2": {},
+		"visualizations_by_reference": {
 			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens) (SVR00004)",
 		},
-		"bad_saved_object_tags_kibana_version": []string{
+		"bad_saved_object_tags_kibana_version": {
 			"conditions.kibana.version must be ^8.10.0 or greater to include saved object tags file: kibana/tags.yml (SVR00005)",
 		},
 	}
@@ -704,18 +704,18 @@ func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
 
 func TestValidateRoutingRules(t *testing.T) {
 	tests := map[string][]string{
-		"good":    []string{},
-		"good_v2": []string{},
-		"bad_routing_rules": []string{
+		"good":    {},
+		"good_v2": {},
+		"bad_routing_rules": {
 			`routing rules defined in data stream "rules" but dataset field is missing: dataset field is required in manifest for data stream "rules"`,
 		},
-		"bad_routing_rules_wrong_spec": []string{
+		"bad_routing_rules_wrong_spec": {
 			`item [routing_rules.yml] is not allowed in folder [../../../../test/packages/bad_routing_rules_wrong_spec/data_stream/rules]`,
 		},
-		"bad_routing_rules_missing_if": []string{
+		"bad_routing_rules_missing_if": {
 			`file "../../../../test/packages/bad_routing_rules_missing_if/data_stream/rules/routing_rules.yml" is invalid: field 0.rules.0: if is required`,
 		},
-		"bad_routing_rules_missing_target_dataset": []string{
+		"bad_routing_rules_missing_target_dataset": {
 			`file "../../../../test/packages/bad_routing_rules_missing_target_dataset/data_stream/rules/routing_rules.yml" is invalid: field 0.rules.0: target_dataset is required`,
 		},
 	}
