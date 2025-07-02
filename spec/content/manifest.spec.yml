@@ -27,6 +27,7 @@ spec:
                   An optional expected value for the "name" field.
                 oneOf:
                 - type: string
+                  minLength: 1
                 - type: number
                 - type: boolean
                 examples:

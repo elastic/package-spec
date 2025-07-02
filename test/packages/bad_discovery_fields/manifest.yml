@@ -17,6 +17,8 @@ discovery:
   fields:
     - name: 12345
     - value: nginx.access
+    - name: event.dataset
+      value: ""
 screenshots:
   - src: /img/sample-screenshot.png
     title: Sample screenshot
