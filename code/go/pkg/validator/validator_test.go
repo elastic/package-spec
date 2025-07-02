@@ -531,10 +531,10 @@ func TestValidateDuplicatedFields(t *testing.T) {
 
 func TestValidateMinimumKibanaVersions(t *testing.T) {
 	tests := map[string][]string{
-		"good":       []string{},
-		"good_input": []string{},
-		"good_v2":    []string{},
-		"custom_logs": []string{
+		"good":       {},
+		"good_input": {},
+		"good_v2":    {},
+		"custom_logs": {
 			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
 		},
 		"httpjson_input": {
