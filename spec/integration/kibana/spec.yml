@@ -152,7 +152,7 @@ versions:
       - op: remove
         path: "/contents/13" # remove SLO definitions
       - op: remove
-        path: "/contents/14" # remove knowledge base definitions
+        path: "/contents/13" # remove knowledge base definitions
   - before: 2.10.0
     patch:
       - op: remove
