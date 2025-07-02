@@ -11,11 +11,3 @@ spec:
           contentMediaType: "text/markdown"
           pattern: '^.+\.md$'
       additionalContents: false # Disallows nested directories
-
-
-versions:
-  - before: 3.5.0
-    patch:
-      - op: remove
-        path: "/contents/0" # remove knowledge base definitions
-  
