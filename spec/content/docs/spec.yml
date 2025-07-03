@@ -11,3 +11,4 @@ spec:
           contentMediaType: "text/markdown"
           pattern: '^.+\.md$'
       additionalContents: false # Disallows nested directories
+

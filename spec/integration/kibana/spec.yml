@@ -135,17 +135,7 @@ spec:
       contentMediaType: "application/json"
       pattern: '^{PACKAGE_NAME}-.+\.json$'
       forbiddenPatterns:
-        - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden 
-  - description: Folder containing AI assistant knowledge base content in markdown format
-    type: folder
-    name: knowledge_base
-    required: false
-    contents:
-      - description: A markdown file containing AI assistant context
-        type: file
-        contentMediaType: "text/markdown"
-        pattern: '^.+\.md$'
-    additionalContents: false # Disallows nested directories
+        - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
 versions:
   - before: 3.5.0
     patch:

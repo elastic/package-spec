@@ -340,7 +340,7 @@ func TestValidateItemNotAllowed(t *testing.T) {
 			},
 		},
 		"bad_nested_knowledge_base": {
-			"kibana/knowledge_base" : []string{
+			"docs/knowledge_base" : []string{
 				"nested_dir",
 			},
 		},
