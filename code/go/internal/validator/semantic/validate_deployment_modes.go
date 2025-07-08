@@ -28,7 +28,7 @@ func ValidateDeploymentModes(fsys fspath.FS) specerrors.ValidationErrors {
 			Name            string `yaml:"name"`
 			DeploymentModes struct {
 				Default struct {
-					Enabled bool `yaml:"enabled"`
+					Enabled *bool `yaml:"enabled"` // Use pointer to detect if field was set, default is true
 				} `yaml:"default"`
 				Agentless struct {
 					Enabled bool `yaml:"enabled"`
@@ -50,7 +50,8 @@ func ValidateDeploymentModes(fsys fspath.FS) specerrors.ValidationErrors {
 	for _, template := range manifest.PolicyTemplates {
 		// Collect enabled deployment modes for this policy template
 		enabledModes := []string{}
-		if template.DeploymentModes.Default.Enabled {
+		// Default mode is enabled by default, unless explicitly disabled
+		if template.DeploymentModes.Default.Enabled == nil || *template.DeploymentModes.Default.Enabled {
 			enabledModes = append(enabledModes, "default")
 		}
 		if template.DeploymentModes.Agentless.Enabled {

@@ -66,8 +66,6 @@ policy_templates:
 policy_templates:
   - name: test
     deployment_modes:
-      default:
-        enabled: true
       agentless:
         enabled: true
         organization: elastic
@@ -87,8 +85,6 @@ policy_templates:
 policy_templates:
   - name: test
     deployment_modes:
-      default:
-        enabled: true
       agentless:
         enabled: true
         organization: elastic
@@ -108,8 +104,6 @@ policy_templates:
 policy_templates:
   - name: test
     deployment_modes:
-      default:
-        enabled: true
       agentless:
         enabled: true
         organization: elastic
@@ -140,14 +134,13 @@ policy_templates:
 			manifestYAML: `
 policy_templates:
   - name: test1
-    deployment_modes:
-      default:
-        enabled: true
     inputs:
       - type: httpjson
         deployment_modes: ['default']
   - name: test2
     deployment_modes:
+      default:
+        enabled: false
       agentless:
         enabled: true
         organization: elastic
