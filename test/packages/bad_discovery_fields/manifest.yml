@@ -21,6 +21,8 @@ discovery:
       value: ""
   datasets:
     - name: 12345
+    - name: dataset.foo
+      foo: bar
 screenshots:
   - src: /img/sample-screenshot.png
     title: Sample screenshot

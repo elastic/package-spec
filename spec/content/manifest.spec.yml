@@ -18,6 +18,7 @@ spec:
           type: array
           items:
             type: object
+            additionalProperties: false
             properties:
               name:
                 description: Name of the dataset.
