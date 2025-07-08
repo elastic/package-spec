@@ -27,6 +27,9 @@ discovery:
       value: 12345
     - name: test.boolean
       value: true
+  datasets:
+    - name: nginx.stubstatus
+    - name: nginx.error
 screenshots:
   - src: /img/kibana-system.png
     title: kibana system

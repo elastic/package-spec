@@ -26,6 +26,9 @@ discovery:
       value: 12345
     - name: test.boolean
       value: true
+  datasets:
+    - name: good_content.logs
+    - name: good_content.metrics
 screenshots:
   - src: /img/kibana-system.png
     title: kibana system

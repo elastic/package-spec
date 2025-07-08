@@ -13,6 +13,17 @@ spec:
       type: object
       additionalProperties: false
       properties:
+        datasets:
+          description: Description of the datasets this package can be used with.
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                description: Name of the dataset.
+                type: string
+            required:
+              - name
         fields:
           description: Description of the fields this package can be used with.
           type: array

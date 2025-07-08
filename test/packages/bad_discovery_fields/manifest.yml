@@ -19,6 +19,8 @@ discovery:
     - value: nginx.access
     - name: event.dataset
       value: ""
+  datasets:
+    - name: 12345
 screenshots:
   - src: /img/sample-screenshot.png
     title: Sample screenshot
