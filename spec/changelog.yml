@@ -18,6 +18,9 @@
     - description: Add support to define an optional value for discovery fields.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/917
+    - description: Add support for discovery content packages based on datasets.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/922
 - version: 3.4.0
   changes:
     - description: Add kibana/security_ai_prompt to support security AI prompt assets.
