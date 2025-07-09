@@ -1,4 +1,4 @@
-format_version: 3.5.0
+format_version: 3.4.1
 name: bad_input_deployment_modes
 title: Bad input deployment modes
 description: Test package with invalid deployment_modes on inputs

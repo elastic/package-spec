@@ -10,9 +10,6 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
-    - description: Add definition for input-level deployment modes.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/915
 - version: 3.4.1-next
   changes:
     - description: Add fips_compatible boolean flag for input package policy templates.
@@ -21,6 +18,9 @@
     - description: Add support to define an optional value for discovery fields.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/917
+    - description: Add definition for input-level deployment modes.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/915
 - version: 3.4.0
   changes:
     - description: Add kibana/security_ai_prompt to support security AI prompt assets.
