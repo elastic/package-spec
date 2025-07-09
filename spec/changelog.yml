@@ -15,9 +15,6 @@
     - description: Add fips_compatible boolean flag for input package policy templates.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/914
-    - description: Add support to define an optional value for discovery fields.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/917
     - description: Add definition for input-level deployment modes.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/915
