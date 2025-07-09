@@ -14,7 +14,7 @@ spec:
       additionalProperties: false
       properties:
         datasets:
-          description: Description of the datasets this package can be used with.
+          description: List of the datasets this package can be used with. For a package to be used with an index, the `data_stream.dataset` field of this index should be one of the datasets listed here.
           type: array
           items:
             type: object
@@ -26,7 +26,7 @@ spec:
             required:
               - name
         fields:
-          description: Description of the fields this package can be used with.
+          description: List of fields this package expects to find in an index. For a package to be used with an index, the index should contain all the fields listed here.
           type: array
           items:
             type: object
