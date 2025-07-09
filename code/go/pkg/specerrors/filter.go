@@ -67,7 +67,20 @@ func (r *Filter) AddProcessors(items []Processor) {
 
 // ConfigFilter represents the linter configuration file
 type ConfigFilter struct {
-	Errors Processors `yaml:"errors"`
+	Errors                Processors            `yaml:"errors"`
+	DocsStructureEnforced DocsStructureEnforced `yaml:"docs_structure_enforced"`
+}
+
+// DocsStructureEnforced forces documentation to follow a specific structure, with specific sections and titles.
+type DocsStructureEnforced struct {
+	Enabled bool   `yaml:"enabled"`
+	Skip    []Skip `yaml:"skip"`
+}
+
+// Skip represents a section that can be skipped in the enforced documentation structure
+type Skip struct {
+	Title  string `yaml:"title"`
+	Reason string `yaml:"reason"`
 }
 
 // Processors represents the list of processors in the configuration file
