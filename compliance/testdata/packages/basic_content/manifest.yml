@@ -19,14 +19,6 @@ conditions:
 discovery:
   fields:
     - name: process.pid
-    - name: event.dataset
-      value: nginx.access
-    - name: event.dataset
-      value: nginx.error
-    - name: process.owner.id
-      value: 12345
-    - name: test.boolean
-      value: true
   datasets:
     - name: nginx.stubstatus
     - name: nginx.error

@@ -35,18 +35,6 @@ spec:
               name:
                 description: Name of the field.
                 type: string
-              value:
-                description: >
-                  An optional expected value for the "name" field.
-                oneOf:
-                - type: string
-                  minLength: 1
-                - type: number
-                - type: boolean
-                examples:
-                - "nginx.access"
-                - true
-                - 12345
             required:
               - name
   properties:

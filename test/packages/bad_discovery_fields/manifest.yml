@@ -16,11 +16,8 @@ conditions:
 discovery:
   fields:
     - name: 12345
-    - name: myfield
-      foo: bar
+    - {}
     - value: nginx.access
-    - name: event.dataset
-      value: ""
   datasets:
     - name: 12345
     - name: dataset.foo
