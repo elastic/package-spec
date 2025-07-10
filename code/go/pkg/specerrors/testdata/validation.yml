@@ -4,6 +4,7 @@ errors:
     - CODE02
 docs_structure_enforced:
   enabled: true
+  version: 1
   skip: 
     - title: "overview"
       reason: "This package does not have an overview section in the readme." 

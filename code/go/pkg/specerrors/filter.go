@@ -74,6 +74,7 @@ type ConfigFilter struct {
 // DocsStructureEnforced forces documentation to follow a specific structure, with specific sections and titles.
 type DocsStructureEnforced struct {
 	Enabled bool   `yaml:"enabled"`
+	Version int    `yaml:"version"`
 	Skip    []Skip `yaml:"skip"`
 }
 
