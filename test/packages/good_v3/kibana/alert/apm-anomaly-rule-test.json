@@ -2,7 +2,7 @@
   "id": "apm-anomaly-rule-test",
   "type": "alert",
   "template": {
-    "name": "APM Anomaly rule test 1",
+    "name": "APM Anomaly rule test",
     "enabled": false,
     "consumer": "alerts",
     "alert_delay": {
