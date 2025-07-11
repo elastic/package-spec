@@ -1,0 +1,24 @@
+{
+  "id": "apm-anomaly-rule-test",
+  "type": "alert",
+  "template": {
+    "name": "APM Anomaly rule test",
+    "enabled": false,
+    "consumer": "alerts",
+    "alert_delay": {
+      "active": 1
+    },
+    "rule_type_id": "apm.anomaly",
+    "schedule": {
+      "interval": "1m"
+    },
+    "tags": ["Testing"],
+    "params": {
+      "windowSize": 30,
+      "windowUnit": "m",
+      "anomalySeverityType": "critical",
+      "anomalyDetectorTypes": ["txLatency", "txThroughput", "txFailureRate"],
+      "environment": "ENVIRONMENT_ALL"
+    }
+  }
+}
