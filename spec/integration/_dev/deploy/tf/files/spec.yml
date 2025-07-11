@@ -22,6 +22,7 @@ spec:
     required: false
   - description: Csv files to add into terraform resources
     type: file
+    contentMediaType: "text/csv"
     pattern: '^.*\.csv$'
     required: false
   - description: Gzipped files to add into terraform resources

@@ -2,11 +2,6 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 3.5.1-next
-  changes:
-    - description: Added support for '*.csv' and '*.gz' file patterns in terraform deployer spec.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/926
 - version: 3.5.0-next
   changes:
     - description: Add support for `slo` assets.
@@ -26,6 +21,9 @@
     - description: Disallow to add additional properties in discovery.fields.
       type: bugfix
       link: https://github.com/elastic/package-spec/pull/922
+    - description: Added support for '*.csv' and '*.gz' file patterns in terraform deployer spec.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/926
 - version: 3.4.0
   changes:
     - description: Add kibana/security_ai_prompt to support security AI prompt assets.
