@@ -20,3 +20,11 @@ spec:
     type: file
     pattern: '^.*\.parquet$'
     required: false
+  - description: Csv files to add into terraform resources
+    type: file
+    pattern: '^.*\.csv$'
+    required: false
+  - description: Gzipped files to add into terraform resources
+    type: file
+    pattern: '^.*\.gz$'
+    required: false
