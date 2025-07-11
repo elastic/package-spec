@@ -21,6 +21,9 @@
     - description: Disallow to add additional properties in discovery.fields.
       type: bugfix
       link: https://github.com/elastic/package-spec/pull/922
+    - description: Added support for '*.csv' and '*.gz' file patterns in terraform deployer spec.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/926
 - version: 3.4.0
   changes:
     - description: Add kibana/security_ai_prompt to support security AI prompt assets.

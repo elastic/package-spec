@@ -27,6 +27,7 @@ func validateContentType(fsys fs.FS, path string, contentType spectypes.ContentT
 	case "application/json":
 	case "text/markdown":
 	case "text/plain":
+	case "text/csv":
 	default:
 		return fmt.Errorf("unsupported media type (%s)", contentType)
 	}
