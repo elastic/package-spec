@@ -16,11 +16,11 @@
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/914
     - description: Add support for discovery content packages based on datasets.
-      type: enhancement     
+      type: enhancement
       link: https://github.com/elastic/package-spec/pull/922
     - description: Disallow to add additional properties in discovery.fields.
       type: bugfix
-      link: https://github.com/elastic/package-spec/pull/917
+      link: https://github.com/elastic/package-spec/pull/922
     - description: Added support for '*.csv' and '*.gz' file patterns in terraform deployer spec.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/926
