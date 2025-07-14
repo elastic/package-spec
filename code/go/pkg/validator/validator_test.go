@@ -349,6 +349,7 @@ func TestValidateItemNotAllowed(t *testing.T) {
 		"bad_nested_knowledge_base": {
 			"docs/knowledge_base" : []string{
 				"nested_dir",
+				"file.txt",
 			},
 		},
 	}
