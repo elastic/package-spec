@@ -18,6 +18,9 @@ conditions:
 discovery:
   fields:
     - name: process.pid
+  datasets:
+    - name: good_content.logs
+    - name: good_content.metrics
 screenshots:
   - src: /img/kibana-system.png
     title: kibana system
