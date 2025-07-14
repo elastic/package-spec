@@ -278,7 +278,10 @@ func TestValidateFile(t *testing.T) {
 			[]string{
 				"field discovery.fields.0.name: Invalid type. Expected: string, given: integer",
 				"field discovery.fields.1: name is required",
-				"field discovery.fields.2.value: String length must be greater than or equal to 1",
+				"field discovery.fields.2: name is required",
+				"field discovery.fields.2: Additional property value is not allowed",
+				"field discovery.datasets.0.name: Invalid type. Expected: string, given: integer",
+				"field discovery.datasets.1: Additional property foo is not allowed",
 			},
 		},
 	}

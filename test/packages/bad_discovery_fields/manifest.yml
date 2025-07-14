@@ -16,9 +16,12 @@ conditions:
 discovery:
   fields:
     - name: 12345
+    - {}
     - value: nginx.access
-    - name: event.dataset
-      value: ""
+  datasets:
+    - name: 12345
+    - name: dataset.foo
+      foo: bar
 screenshots:
   - src: /img/sample-screenshot.png
     title: Sample screenshot
