@@ -152,6 +152,40 @@ policy_templates:
 `,
 			expectedErrs: nil,
 		},
+		{
+			title: "invalid - input specifies unsupported deployment mode",
+			manifestYAML: `
+policy_templates:
+  - name: test
+    deployment_modes:
+      default:
+        enabled: true
+    inputs:
+      - type: httpjson
+        deployment_modes: ['agentless']  # agentless is disabled by default
+`,
+			expectedErrs: []string{
+				`policy template "test" enables deployment mode "default" but no input supports this mode`,
+				`input "httpjson" in policy template "test" specifies unsupported deployment mode "agentless"`,
+			},
+		},
+		{
+			title: "invalid - input specifies multiple unsupported deployment modes",
+			manifestYAML: `
+policy_templates:
+  - name: test
+    deployment_modes:
+      default:
+        enabled: false
+    inputs:
+      - type: httpjson
+        deployment_modes: ['default', 'agentless']  # both disabled
+`,
+			expectedErrs: []string{
+				`input "httpjson" in policy template "test" specifies unsupported deployment mode "default"`,
+				`input "httpjson" in policy template "test" specifies unsupported deployment mode "agentless"`,
+			},
+		},
 	}
 
 	for _, c := range cases {

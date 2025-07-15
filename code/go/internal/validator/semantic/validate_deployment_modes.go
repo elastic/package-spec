@@ -84,6 +84,28 @@ func ValidateDeploymentModes(fsys fspath.FS) specerrors.ValidationErrors {
 				errs = append(errs, specerrors.NewStructuredError(err, specerrors.UnassignedCode))
 			}
 		}
+
+		// Check that input deployment modes are supported by the policy template
+		for _, input := range template.Inputs {
+			// If deployment_modes field was not specified, input supports all modes
+			if input.DeploymentModes == nil {
+				continue
+			}
+			// Check if the input has any deployment modes that are not enabled by the policy template
+			for _, mode := range *input.DeploymentModes {
+				found := false
+				for _, enabledMode := range enabledModes {
+					if mode == enabledMode {
+						found = true
+						break
+					}
+				}
+				if !found {
+					err := fmt.Errorf("file \"%s\" is invalid: input \"%s\" in policy template \"%s\" specifies unsupported deployment mode \"%s\"", fsys.Path(manifestPath), input.Type, template.Name, mode)
+					errs = append(errs, specerrors.NewStructuredError(err, specerrors.UnassignedCode))
+				}
+			}
+		}
 	}
 
 	return errs
