@@ -15,9 +15,18 @@
     - description: Add fips_compatible boolean flag for input package policy templates.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/914
-    - description: Add support to define an optional value for discovery fields.
+    - description: Add support for discovery content packages based on datasets.
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/917
+      link: https://github.com/elastic/package-spec/pull/922
+    - description: Disallow to add additional properties in discovery.fields.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/922
+    - description: Added support for '*.csv' and '*.gz' file patterns in terraform deployer spec.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/926
+    - description: Add support for `knowledge_base` directory under docs to store markdown files for AI assistant context.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/916
     - description: Add optional docs_structure_enforced parameter to validation.yml.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/924

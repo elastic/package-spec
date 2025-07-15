@@ -13,27 +13,28 @@ spec:
       type: object
       additionalProperties: false
       properties:
-        fields:
-          description: Description of the fields this package can be used with.
+        datasets:
+          description: List of the datasets this package can be used with. For a package to be used with an index, the `data_stream.dataset` field of this index should be one of the datasets listed here.
           type: array
           items:
             type: object
+            additionalProperties: false
+            properties:
+              name:
+                description: Name of the dataset.
+                type: string
+            required:
+              - name
+        fields:
+          description: List of fields this package expects to find in an index. For a package to be used with an index, the index should contain all the fields listed here.
+          type: array
+          items:
+            type: object
+            additionalProperties: false
             properties:
               name:
                 description: Name of the field.
                 type: string
-              value:
-                description: >
-                  An optional expected value for the "name" field.
-                oneOf:
-                - type: string
-                  minLength: 1
-                - type: number
-                - type: boolean
-                examples:
-                - "nginx.access"
-                - true
-                - 12345
             required:
               - name
   properties:
