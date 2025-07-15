@@ -24,6 +24,9 @@
     - description: Added support for '*.csv' and '*.gz' file patterns in terraform deployer spec.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/926
+    - description: Add support for `knowledge_base` directory under docs to store markdown files for AI assistant context.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/916
     - description: Add definition for input-level deployment modes.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/915

@@ -360,6 +360,12 @@ func TestValidateItemNotAllowed(t *testing.T) {
 				"another-package-visualization.json",
 			},
 		},
+		"bad_nested_knowledge_base": {
+			"docs/knowledge_base" : []string{
+				"nested_dir",
+				"file.txt",
+			},
+		},
 	}
 
 	for pkgName, invalidItemsPerFolder := range tests {
