@@ -10,7 +10,7 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
-- version: 3.4.1-next
+- version: 3.4.1
   changes:
     - description: Add fips_compatible boolean flag for input package policy templates.
       type: enhancement
