@@ -27,6 +27,9 @@
     - description: Add support for `knowledge_base` directory under docs to store markdown files for AI assistant context.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/916
+    - description: Add definition for input-level deployment modes.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/915
 - version: 3.4.0
   changes:
     - description: Add kibana/security_ai_prompt to support security AI prompt assets.
