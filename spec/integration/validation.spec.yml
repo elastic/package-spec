@@ -18,3 +18,26 @@ spec:
             type: string
             examples:
               - SVR00001
+    docs_structure_enforced:
+      description: "Rules to manage the documentation structure"
+      type: object
+      additionalProperties: false
+      properties:
+        enabled:
+          description: "Whether the documentation structure is enforced"
+          type: boolean
+          default: true
+        version:
+          description: "Version of the documentation structure"
+          type: integer
+          default: 1
+        skip:
+          description: "List of sections to skip in the documentation validation"
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              reason:
+                type: string
