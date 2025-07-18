@@ -1,5 +1,6 @@
 {
   "attributes": {
+    "id": "775347dd-c11f-42ef-8d69-3ab8d39a9a67",
     "name": "Admin Console Availability",
     "description": "",
     "indicator": {
@@ -21,9 +22,10 @@
       "target": 0.99
     },
     "tags": [],
-    "groupBy": "url.domain"
+    "groupBy": ["url.domain"],
+    "isTemplate": true
   },
-  "id": "good_content-slo-abc-1",
+  "id": "775347dd-c11f-42ef-8d69-3ab8d39a9a67",
   "references": [],
   "type": "slo"
 }
