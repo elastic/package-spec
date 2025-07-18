@@ -149,8 +149,8 @@ versions:
   - before: 3.5.0
     patch:
       - op: remove
-        path: "/contents/13" # remove SLO definitions
+        path: "/contents/14" # remove SLO definitions
   - before: 2.10.0
     patch:
       - op: remove
-        path: "/contents/12" # remove tags definition
+        path: "/contents/13" # remove tags definition
