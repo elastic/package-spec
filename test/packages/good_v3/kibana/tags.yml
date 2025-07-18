@@ -1,5 +1,6 @@
 - text: Foo
   asset_types:
+    - alert
     - dashboard
     - visualization
     - search
@@ -15,6 +16,7 @@
   asset_ids:
     - id1
     - id2
+    - apm-anomaly-rule-test
 - text: myCustomTag
   asset_types:
     - dashboard
