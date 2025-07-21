@@ -104,7 +104,7 @@ update_dependency() {
     # allow not to commit if there are no changes
     # previous execution could fail and just pushed the branch but PR is not created
     if ! git diff-index --quiet HEAD ; then
-        git commit -m "Test elastic-package from PR ${BUILDKITE_PULL_REQUEST} - ${GITHUB_PR_HEAD_SHA}"
+        git commit -m "Test package-spec from PR ${BUILDKITE_PULL_REQUEST} - ${GITHUB_PR_HEAD_SHA}"
     fi
 
     echo ""
