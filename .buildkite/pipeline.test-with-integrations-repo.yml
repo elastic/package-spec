@@ -30,6 +30,7 @@ steps:
       GITHUB_EMAIL: "elasticmachine@elastic.co"
       GITHUB_USERNAME: "elastic-vault-github-plugin-prod"
     plugins:
+      # Required to push branches, create PRs and post comments on PRs
       - elastic/vault-github-token#v0.1.0:
     agents:
       provider: "gcp"
