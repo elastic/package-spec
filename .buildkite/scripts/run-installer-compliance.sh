@@ -44,13 +44,13 @@ function start_stack() {
     local elastic_package="go run github.com/elastic/elastic-package"
 
     cd compliance
-    $elastic_package stack up -d --version $stack_version
+    $elastic_package stack up -d --version "$stack_version"
     eval $($elastic_package stack shellinit)
     cd -
 }
 
 echo "--- Start local Elastic Stack $STACK_VERSION with elastic-package"
-start_stack $STACK_VERSION
+start_stack "$STACK_VERSION"
 
 echo "--- Check compliance with Package Spec $SPEC_VERSION"
-TEST_SPEC_VERSION=$SPEC_VERSION TEST_SPEC_JUNIT=report-$STACK_VERSION-$SPEC_VERSION.xml make -C compliance test
+TEST_SPEC_VERSION="$SPEC_VERSION" TEST_SPEC_JUNIT="report-$STACK_VERSION-$SPEC_VERSION.xml" make -C compliance test
