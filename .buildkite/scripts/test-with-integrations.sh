@@ -95,7 +95,7 @@ update_dependency() {
     local source_dep="github.com/${GITHUB_PR_BASE_OWNER}/${GITHUB_PR_BASE_REPO}${VERSION_DEP}"
     local target_dep="github.com/${GITHUB_PR_OWNER}/${GITHUB_PR_REPO}${VERSION_DEP}@${GITHUB_PR_HEAD_SHA}"
 
-    go mod edit -replace ${source_dep}=${target_dep}
+    go mod edit -replace "${source_dep}=${target_dep}"
     go mod tidy
 
     git add go.mod
