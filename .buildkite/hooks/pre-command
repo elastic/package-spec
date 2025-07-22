@@ -4,17 +4,8 @@ source .buildkite/scripts/tooling.sh
 
 set -euo pipefail
 
-GO_VERSION=$(cat .go-version)
-export GO_VERSION
-
 # Secrets must be redacted
 # https://buildkite.com/docs/pipelines/managing-log-output#redacted-environment-variables
 
-if [[ "$BUILDKITE_PIPELINE_SLUG" == "package-spec-test-with-integrations" && "$BUILDKITE_STEP_KEY" == "pr-integrations" ]]; then
-    # required to set the git commit information
-    GITHUB_USERNAME_SECRET="elasticmachine"
-    export GITHUB_USERNAME_SECRET=$GITHUB_USERNAME_SECRET
-    export GITHUB_EMAIL_SECRET="elasticmachine@elastic.co"
-    # required by `gh` commands
-    export GITHUB_TOKEN=$VAULT_GITHUB_TOKEN
-fi
+GO_VERSION=$(cat .go-version)
+export GO_VERSION
