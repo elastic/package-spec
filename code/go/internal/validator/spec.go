@@ -215,6 +215,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateCapabilitiesRequired, since: semver.MustParse("2.10.0")}, // capabilities definition was added in spec version 2.10.0
 		{fn: semantic.ValidateRequiredVarGroups},
 		{fn: semantic.ValidateDocsStructure},
+		{fn: semantic.ValidateDeploymentModes, types: []string{"integration"}},
 	}
 
 	var validationRules validationRules

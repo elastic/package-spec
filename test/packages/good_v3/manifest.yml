@@ -61,6 +61,7 @@ policy_templates:
       - type: apache/metrics
         title: Collect metrics from Apache instances
         description: Collecting Apache status metrics
+        deployment_modes: ['default', 'agentless']
         multi: false
         required_vars:
           host_password: 
@@ -93,6 +94,17 @@ policy_templates:
               - http://127.0.0.1
             hide_in_deployment_modes:
               - agentless
+      - type: httpjson
+        title: Collect data via HTTP JSON API
+        description: Collecting data from HTTP JSON API (default only)
+        deployment_modes: ['default']
+        multi: false
+        vars:
+          - name: url
+            type: url
+            title: API URL
+            show_user: true
+            required: true
   - name: apache-agentless
     title: Apache logs and metrics in agentless
     description: Collect logs and metrics from Apache instances in agentless
@@ -126,6 +138,17 @@ policy_templates:
             show_user: true
             default:
               - http://127.0.0.1
+      - type: aws/s3
+        title: Collect S3 logs (agentless only)
+        description: Collecting logs from AWS S3 in agentless mode
+        deployment_modes: ['agentless']
+        multi: false
+        vars:
+          - name: bucket_name
+            type: text
+            title: S3 Bucket Name
+            show_user: true
+            required: true
 owner:
   github: elastic/foobar
   type: elastic
