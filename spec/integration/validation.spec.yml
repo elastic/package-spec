@@ -26,7 +26,7 @@ spec:
         enabled:
           description: "Whether the documentation structure is enforced"
           type: boolean
-          default: true
+          default: false
         version:
           description: "Version of the documentation structure"
           type: integer

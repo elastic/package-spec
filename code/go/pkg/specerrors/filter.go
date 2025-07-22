@@ -73,13 +73,13 @@ type ConfigFilter struct {
 
 // DocsStructureEnforced forces documentation to follow a specific structure, with specific sections and titles.
 type DocsStructureEnforced struct {
-	Enabled bool   `yaml:"enabled"`
-	Version int    `yaml:"version"`
-	Skip    []Skip `yaml:"skip"`
+	Enabled           bool                `yaml:"enabled"`
+	Version           int                 `yaml:"version"`
+	DocsStructureSkip []DocsStructureSkip `yaml:"skip"`
 }
 
-// Skip represents a section that can be skipped in the enforced documentation structure
-type Skip struct {
+// DocsStructureSkip represents a section that can be skipped in the enforced documentation structure
+type DocsStructureSkip struct {
 	Title  string `yaml:"title"`
 	Reason string `yaml:"reason"`
 }

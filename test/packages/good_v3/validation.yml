@@ -1,11 +1,3 @@
 errors:
   exclude_checks:
     - PSR00001 # Allow to use unreleased features in GA package.
-docs_structure_enforced:
-  enabled: true
-  version: 1
-  skip: 
-    - title: "overview"
-      reason: "This package does not have an overview section in the readme." 
-    - title: "setup"
-      reason: "This package does not have a setup section in the readme." 

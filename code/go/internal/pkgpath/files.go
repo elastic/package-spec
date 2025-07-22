@@ -84,3 +84,12 @@ func (f File) Values(path string) (interface{}, error) {
 func (f File) Path() string {
 	return f.path
 }
+
+func (f File) ReadAll() ([]byte, error) {
+	r, err := f.fsys.Open(f.path)
+	if err != nil {
+		return nil, err
+	}
+	defer r.Close()
+	return fs.ReadFile(f.fsys, f.path)
+}
