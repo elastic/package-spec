@@ -1,3 +1,7 @@
+// Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
+// or more contributor license agreements. Licensed under the Elastic License;
+// you may not use this file except in compliance with the Elastic License.
+
 package semantic
 
 import (
@@ -16,8 +20,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// DocsValidationError represents a collection of validation errors for documentation files.
 type DocsValidationError []error
 
+// Error implements the error interface for DocsValidationError.
 func (dve DocsValidationError) Error() string {
 	var out string
 	for _, err := range dve {
@@ -26,16 +32,19 @@ func (dve DocsValidationError) Error() string {
 	return out
 }
 
+// EnforcedSections represents the enforced documentation structure configuration.
 type EnforcedSections struct {
 	Version  string    `yaml:"version"`
 	Sections []Section `yaml:"enforced_sections"`
 }
 
+// Section represents a section in the enforced documentation structure.
 type Section struct {
 	Name        string `yaml:"name"`
 	Description string `yaml:"description"`
 }
 
+// ValidateDocsStructure validates the structure of documentation files against enforced sections.
 func ValidateDocsStructure(fsys fspath.FS) specerrors.ValidationErrors {
 	config, err := shouldValidateDocsStructure(fsys)
 	if err != nil {
