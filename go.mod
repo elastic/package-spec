@@ -16,6 +16,7 @@ require (
 	github.com/otiai10/copy v1.14.1
 	github.com/stretchr/testify v1.10.0
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415
+	github.com/yuin/goldmark v1.7.12
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
 	gopkg.in/yaml.v3 v3.0.1
 	gotest.tools/gotestsum v1.12.3
@@ -37,7 +38,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
-	github.com/yuin/goldmark v1.7.12
 	golang.org/x/mod v0.25.0 // indirect
 	golang.org/x/sync v0.15.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
