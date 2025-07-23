@@ -102,6 +102,12 @@ func TestValidateDocsStructure(t *testing.T) {
 				specerrors.NewStructuredError(
 					fmt.Errorf("\nmissing required section 'Overview' in file 'README_part1.md'\nmissing required section 'How do I deploy this integration?' in file 'README_part2.md'"), specerrors.UnassignedCode)},
 		},
+		{
+			name:          "No validation test",
+			pkgRoot:       "../../../../../test/packages/good_v3",
+			expectError:   false,
+			expectedError: nil,
+		},
 	}
 
 	for _, tt := range tests {
