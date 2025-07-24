@@ -87,10 +87,5 @@ func (f File) Path() string {
 
 // ReadAll reads and returns the entire contents of the file.
 func (f File) ReadAll() ([]byte, error) {
-	r, err := f.fsys.Open(f.path)
-	if err != nil {
-		return nil, err
-	}
-	defer r.Close()
 	return fs.ReadFile(f.fsys, f.path)
 }

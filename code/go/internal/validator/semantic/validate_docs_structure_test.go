@@ -36,7 +36,7 @@ func TestValidateDocsStructureContent(t *testing.T) {
 			content:          []byte("# Overview\n\n# Usage\n"),
 			enforcedSections: []string{"Installation"},
 			expectError:      true,
-			expectedError:    DocsValidationError{fmt.Errorf("missing required section 'Installation' in file 'missing_section.md'")},
+			expectedError:    fmt.Errorf("missing required section 'Installation' in file 'missing_section.md'"),
 		},
 	}
 
@@ -100,7 +100,7 @@ func TestValidateDocsStructure(t *testing.T) {
 			expectError: true,
 			expectedError: specerrors.ValidationErrors{
 				specerrors.NewStructuredError(
-					fmt.Errorf("\nmissing required section 'Overview' in file 'README_part1.md'\nmissing required section 'How do I deploy this integration?' in file 'README_part2.md'"), specerrors.UnassignedCode)},
+					fmt.Errorf("missing required section 'Overview' in file 'README_part1.md'\nmissing required section 'How do I deploy this integration?' in file 'README_part2.md'"), specerrors.UnassignedCode)},
 		},
 		{
 			name:          "No validation test",
@@ -123,19 +123,22 @@ func TestLoadSectionsFromConfig(t *testing.T) {
 		name           string
 		version        string
 		expectedResult []string
+		expectError    bool
 		expectedError  error
 	}{
 		{
 			name:           "Valid version",
 			version:        "1",
 			expectedResult: []string{"Overview", "What data does this integration collect?", "What do I need to use this integration?", "How do I deploy this integration?", "Troubleshooting", "Performance and scaling"},
+			expectError:    false,
 			expectedError:  nil,
 		},
 		{
 			name:           "Invalid version",
 			version:        "9999",
 			expectedResult: nil,
-			expectedError:  fmt.Errorf("unsupported version: 9999"),
+			expectError:    true,
+			expectedError:  fmt.Errorf("failed to read schema file: open enforced_sections_v9999.yml: file does not exist"),
 		},
 	}
 
@@ -143,7 +146,7 @@ func TestLoadSectionsFromConfig(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			actualResult, err := loadSectionsFromConfig(tt.version)
 			assert.Equal(t, tt.expectedResult, actualResult, "Result does not match expected")
-			assert.Equal(t, tt.expectedError, err, "Error does not match expected")
+			assert.True(t, compareErrors(tt.expectError, tt.expectedError, err), "Error does not match expected")
 		})
 	}
 }

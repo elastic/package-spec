@@ -1,4 +1,3 @@
-version: "1"
 enforced_sections:
   - name: "Overview"
     description: "A brief introduction to the package, its purpose, and key features."

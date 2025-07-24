@@ -5,6 +5,7 @@
 package semantic
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"path"
@@ -20,21 +21,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// DocsValidationError represents a collection of validation errors for documentation files.
-type DocsValidationError []error
-
-// Error implements the error interface for DocsValidationError.
-func (dve DocsValidationError) Error() string {
-	var out string
-	for _, err := range dve {
-		out += "\n" + err.Error()
-	}
-	return out
-}
-
 // EnforcedSections represents the enforced documentation structure configuration.
 type EnforcedSections struct {
-	Version  string    `yaml:"version"`
 	Sections []Section `yaml:"enforced_sections"`
 }
 
@@ -134,13 +122,7 @@ func contains(slice []specerrors.DocsStructureSkip, item string) bool {
 }
 
 func loadSectionsFromConfig(version string) ([]string, error) {
-	var schemaPath string
-	switch version {
-	case "1":
-		schemaPath = "enforced_sections_v1.yml"
-	default:
-		return nil, fmt.Errorf("unsupported version: %s", version)
-	}
+	schemaPath := fmt.Sprintf("enforced_sections_v%s.yml", version)
 
 	data, err := fs.ReadFile(spec.DocsFS(), schemaPath)
 
@@ -151,10 +133,6 @@ func loadSectionsFromConfig(version string) ([]string, error) {
 	var spec EnforcedSections
 	if err := yaml.Unmarshal(data, &spec); err != nil {
 		return nil, fmt.Errorf("invalid schema YAML: %w", err)
-	}
-
-	if spec.Version != version {
-		return nil, fmt.Errorf("schema version mismatch: got %s, expected %s", spec.Version, version)
 	}
 
 	sections := make([]string, 0, len(spec.Sections))
@@ -168,7 +146,7 @@ func loadSectionsFromConfig(version string) ([]string, error) {
 }
 
 func validateReadmeStructure(fsys fspath.FS, enforcedSections []string) error {
-	var errs DocsValidationError
+	var errs []error
 	files, err := pkgpath.Files(fsys, "docs/*.md")
 	if err != nil {
 		return fmt.Errorf("docs folder %s not found: %w", "docs/*.md", err)
@@ -178,17 +156,18 @@ func validateReadmeStructure(fsys fspath.FS, enforcedSections []string) error {
 	}
 
 	for _, file := range files {
-		if !file.IsDir() {
-			fullPath := path.Join("docs", file.Name())
-			content, err := fs.ReadFile(fsys, fullPath)
-			if err != nil {
-				errs = append(errs, fmt.Errorf("failed to read file %s: %w", fullPath, err))
-			}
+		if file.IsDir() {
+			continue
+		}
+		fullPath := path.Join("docs", file.Name())
+		content, err := file.ReadAll()
+		if err != nil {
+			errs = append(errs, fmt.Errorf("failed to read file %s: %w", fullPath, err))
+		}
 
-			validationErr := validateDocsStructureContent(content, enforcedSections, file.Name())
-			if validationErr != nil {
-				errs = append(errs, validationErr...)
-			}
+		validationErr := validateDocsStructureContent(content, enforcedSections, file.Name())
+		if validationErr != nil {
+			errs = append(errs, validationErr)
 		}
 	}
 
@@ -196,12 +175,12 @@ func validateReadmeStructure(fsys fspath.FS, enforcedSections []string) error {
 		return nil
 	}
 
-	return errs
+	return errors.Join(errs...)
 }
 
 // validateDocsStructureContent validates the content of a documentation file against enforced sections.
-func validateDocsStructureContent(content []byte, enforcedSections []string, filename string) DocsValidationError {
-	var errs DocsValidationError
+func validateDocsStructureContent(content []byte, enforcedSections []string, filename string) error {
+	var errs []error
 	md := goldmark.New()
 	reader := text.NewReader(content)
 	doc := md.Parser().Parse(reader)
@@ -224,7 +203,8 @@ func validateDocsStructureContent(content []byte, enforcedSections []string, fil
 			errs = append(errs, fmt.Errorf("missing required section '%s' in file '%s'", header, filename))
 		}
 	}
-	return errs
+
+	return errors.Join(errs...)
 }
 
 // extractHeadingText extracts the text content from a heading node in the AST.
