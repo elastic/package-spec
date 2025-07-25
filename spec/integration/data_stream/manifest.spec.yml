@@ -653,6 +653,12 @@ versions:
         path: /definitions/vars/items/properties/min_duration
       - op: remove
         path: /definitions/vars/items/allOf/2
+  - before: 3.4.2
+    patch:
+      - op: remove
+        path: "/properties/index_mode/enum/1" # Remove "lookup" index mode, as it is not supported by the package spec.
+      - op: remove
+        path: "/properties/index_mode/examples/1" # Remove "lookup" index mode, as it is not supported by the package spec.
   - before: 3.3.2
     patch:
       - op: remove

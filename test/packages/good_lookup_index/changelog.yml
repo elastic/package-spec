@@ -1,6 +1,5 @@
 # newer versions go on top
 - version: 0.1.4
   changes:
-    - description: "Consistent naming of `datastream`. Add `| LIMIT 5000` to ESQL top query to cater for large organisations."
+    - description: "initital"
       type: bugfix
-      link: https://github.com/elastic/integrations/pull/14545 
