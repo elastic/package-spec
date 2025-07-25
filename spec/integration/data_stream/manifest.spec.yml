@@ -568,8 +568,10 @@ spec:
           type: string
           enum:
           - "time_series" # Enables time series data streams https://www.elastic.co/guide/en/elasticsearch/reference/master/tsds.html
+          - "lookup" # Enables ES|QL LOOKUP JOIN https://www.elastic.co/docs/reference/query-languages/esql/esql-lookup-join 
           examples:
           - "time_series"
+          - "lookup"
         index_template:
           $ref: "#/definitions/elasticsearch_index_template"
         privileges:
