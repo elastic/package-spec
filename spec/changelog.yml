@@ -6,7 +6,7 @@
   changes:
     - description: Add support for lookup indices.
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/
+      link: https://github.com/elastic/package-spec/pull/936
 - version: 3.5.0-next
   changes:
     - description: Add support for `slo` assets.
