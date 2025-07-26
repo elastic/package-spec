@@ -2,6 +2,11 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
+- version: 3.5.1-next
+  changes:
+    - description: Introduce asset_inventory category
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/938
 - version: 3.5.0-next
   changes:
     - description: Add support for `slo` assets.
@@ -30,9 +35,6 @@
     - description: Add definition for input-level deployment modes.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/915
-    - description: Introduce asset_inventory category
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/938
 - version: 3.4.0
   changes:
     - description: Add kibana/security_ai_prompt to support security AI prompt assets.
