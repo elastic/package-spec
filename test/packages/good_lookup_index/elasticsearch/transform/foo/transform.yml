@@ -1,7 +1,7 @@
 description: "Test transform that always runs and creates an index."
 source:
   index:
-    - "*"
+    - ".ds-.logs-elasticsearch.deprecation-default-*"
 dest:
   index: test-dest-index
 frequency: 1m
