@@ -4,14 +4,28 @@
 spec:
   type: object
   additionalProperties: false
-  definitions:
-    index_template:
-      $ref: "../../data_stream/manifest.spec.yml#/properties/elasticsearch/properties/index_template"
   properties:
     destination_index_template:
       description: Elasticsearch index template for the transform's destination index
-      $ref: "#/definitions/index_template"
-      required: false
+      allOf:
+        - $ref: "../../data_stream/manifest.spec.yml#/properties/elasticsearch/properties/index_template"
+        - type: object
+          properties:
+            settings:
+              type: object
+              properties:
+                index:
+                  type: object
+                  properties:
+                    mode:
+                      description: >
+                        Mode of the index, can be `standard`, `time_series` or `lookup`.
+                        The `lookup` mode is used for data streams that are used as lookup indices.
+                      type: string
+                      enum:
+                        - standard
+                        - time_series
+                        - lookup
     start:
       description: Determines if the transform will be started upon installation
       type: boolean

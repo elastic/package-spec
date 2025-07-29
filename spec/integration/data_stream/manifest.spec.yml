@@ -232,13 +232,13 @@ spec:
               type: object
               additionalProperties: false
               properties:
-                mode: 
+                mode:
                   description: >
                     Mode of the index, can be `standard`, `time_series` or `lookup`.
                     The `lookup` mode is used for data streams that are used as lookup indices.
                   type: string
                   enum:
-                    - standard
+                    - standard   
                     - time_series
                     - lookup
                 codec:
@@ -577,10 +577,8 @@ spec:
           type: string
           enum:
           - "time_series" # Enables time series data streams https://www.elastic.co/guide/en/elasticsearch/reference/master/tsds.html
-          - "lookup" # Enables ES|QL LOOKUP JOIN https://www.elastic.co/docs/reference/query-languages/esql/esql-lookup-join 
           examples:
           - "time_series"
-          - "lookup"
         index_template:
           $ref: "#/definitions/elasticsearch_index_template"
         privileges:
@@ -620,9 +618,8 @@ versions:
   - before: 3.4.2
     patch:
       - op: remove
-        path: "/properties/elasticsearch/properties/index_mode/enum/1" # Remove "lookup" index mode, as it is not supported by the package spec.
-      - op: remove
-        path: "/properties/elasticsearch/properties/index_mode/examples/1" # Remove "lookup" index mode, as it is not supported by the package spec.
+        path: "/definitions/elasticsearch_index_template/properties/settings/properties/index/properties/mode/enum"
+        value: "lookup"
   - before: 3.3.2
     patch:
       - op: remove
