@@ -72,6 +72,7 @@ spec:
           - network_security
           - notification
           - observability
+          - opentelemetry
           - os_system
           - process_manager
           - productivity
