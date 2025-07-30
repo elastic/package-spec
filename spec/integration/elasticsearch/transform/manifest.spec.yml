@@ -23,8 +23,6 @@ spec:
                         The `lookup` mode is used for data streams that are used as lookup indices.
                       type: string
                       enum:
-                        - standard
-                        - time_series
                         - lookup
     start:
       description: Determines if the transform will be started upon installation
