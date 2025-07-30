@@ -232,15 +232,6 @@ spec:
               type: object
               additionalProperties: false
               properties:
-                mode:
-                  description: >
-                    Mode of the index, can be `standard`, `time_series` or `lookup`.
-                    The `lookup` mode is used for data streams that are used as lookup indices.
-                  type: string
-                  enum:
-                    - standard   
-                    - time_series
-                    - lookup
                 codec:
                   description: >
                     Type of compression to use. The default is to use LZ4, `best_compression` uses DEFLATE,
