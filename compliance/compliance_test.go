@@ -225,6 +225,12 @@ func indexTemplateIsConfiguredFor(indexTemplateName, option string) error {
 			return nil
 		}
 		return errors.New("synthetic source mode is not enabled")
+
+	case "lookup index mode":
+		if indexTemplate.Settings.Index.Mode == "lookup" {
+			return nil
+		}
+		return errors.New("lookup mode is not enabled")
 	}
 
 	return godog.ErrPending

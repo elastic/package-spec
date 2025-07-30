@@ -23,6 +23,7 @@ type IndexTemplate struct {
 type SimulatedIndexTemplate struct {
 	Settings struct {
 		Index struct {
+			Mode    string `json:"mode"`
 			Mapping struct {
 				Source struct {
 					Mode string `json:"mode"`
