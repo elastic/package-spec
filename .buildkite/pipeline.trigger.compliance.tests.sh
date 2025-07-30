@@ -39,12 +39,14 @@ cat <<EOF
       - wait: ~
         continue_on_failure: true
       - label: ":junit: Annotate compliance test results"
+        agents:
+          # requires at least "bash", "curl" and "git"
+          image: "ruby:3.4.5-bookworm"
         plugins:
-          - junit-annotate#v2.5.0:
+          - junit-annotate#v2.7.0:
               artifacts: "compliance/report-*.xml"
               context: "compliance"
               report-skipped: true
               always-annotate: true
-        agents:
-          provider: "gcp"
+              run-in-docker: false
 EOF
