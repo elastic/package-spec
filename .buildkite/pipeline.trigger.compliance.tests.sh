@@ -41,7 +41,7 @@ cat <<EOF
       - label: ":junit: Annotate compliance test results"
         agents:
           # requires at least "bash", "curl" and "git"
-          image: "ruby:3.4.5-bookworm"
+          image: "docker.elastic.co/ci-agent-images/buildkite-junit-annotate:1.0"
         plugins:
           - junit-annotate#v2.7.0:
               artifacts: "compliance/report-*.xml"
