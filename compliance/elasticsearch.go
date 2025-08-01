@@ -15,7 +15,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/elastic/go-elasticsearch/v9"
 )
 
 // Elasticsearch is an elasticsearch client.
