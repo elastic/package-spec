@@ -7,7 +7,7 @@ require (
 	github.com/cucumber/godog v0.15.1
 	github.com/cucumber/messages/go/v21 v21.0.1
 	github.com/elastic/elastic-package v0.113.0
-	github.com/elastic/go-elasticsearch/v8 v8.18.1
+	github.com/elastic/go-elasticsearch/v8 v8.19.0
 	github.com/elastic/go-licenser v0.4.2
 	github.com/elastic/package-spec/v3 v3.4.1
 	github.com/stretchr/testify v1.10.0
