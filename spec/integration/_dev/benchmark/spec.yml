@@ -14,7 +14,7 @@ spec:
           $ref: "./deploy/spec.yml"
         - description: A folder containing resources used by one or more benchmarks.
           type: folder
-          pattern: '^[a-z0-9]+-benchmark$'
+          pattern: '^[a-z0-9]+([a-z0-9_]*[a-z0-9])?-benchmark$'
           additionalContents: true
           required: false
         - description: A system benchmark scenario.
@@ -35,7 +35,7 @@ spec:
           $ref: "./deploy/spec.yml"
         - description: A folder containing resources used by one or more benchmarks.
           type: folder
-          pattern: '^[a-z0-9]+-benchmark$'
+          pattern: '^[a-z0-9]+([a-z0-9_]*[a-z0-9])?-benchmark$'
           additionalContents: false
           required: false
           contents:
