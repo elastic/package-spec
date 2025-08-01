@@ -12,6 +12,11 @@
       link: https://github.com/elastic/package-spec/pull/807
 - version: 3.4.1
   changes:
+    - description: Allow to use underscores in benchmark file names.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/945
+- version: 3.4.1
+  changes:
     - description: Add fips_compatible boolean flag for input package policy templates.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/914
