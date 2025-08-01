@@ -32,6 +32,9 @@
     - description: Add support for `knowledge_base` directory under docs to store markdown files for AI assistant context.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/916
+    - description: Add optional docs_structure_enforced parameter to validation.yml.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/924
     - description: Add definition for input-level deployment modes.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/915

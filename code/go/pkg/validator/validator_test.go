@@ -607,6 +607,10 @@ func TestValidateWarnings(t *testing.T) {
 		"bad_saved_object_tags_kibana_version": {
 			"conditions.kibana.version must be ^8.10.0 or greater to include saved object tags file: kibana/tags.yml (SVR00005)",
 		},
+		"bad_readme_structure": {
+			"missing required section 'Overview' in file 'README_part1.md'\nmissing required section 'How do I deploy this integration?' in file 'README_part2.md'",
+		},
+		"good_readme_structure": {},
 	}
 	if err := common.EnableWarningsAsErrors(); err != nil {
 		require.NoError(t, err)

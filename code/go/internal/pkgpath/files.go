@@ -84,3 +84,8 @@ func (f File) Values(path string) (interface{}, error) {
 func (f File) Path() string {
 	return f.path
 }
+
+// ReadAll reads and returns the entire contents of the file.
+func (f File) ReadAll() ([]byte, error) {
+	return fs.ReadFile(f.fsys, f.path)
+}

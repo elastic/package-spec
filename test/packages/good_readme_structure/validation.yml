@@ -1,0 +1,9 @@
+errors:
+  exclude_checks:
+    - SVR00005 # Kibana version for saved tags.
+docs_structure_enforced:
+  enabled: true
+  version: 1
+  skip:
+    - title: "Overview"
+      reason: "This section is not enforced in the package validation."
