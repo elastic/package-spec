@@ -12,6 +12,9 @@
       link: https://github.com/elastic/package-spec/pull/807
 - version: 3.4.2-next
   changes:
+    - description: Allow to use underscores in benchmark file names.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/945
     - description: Introduce asset_inventory category
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/938
