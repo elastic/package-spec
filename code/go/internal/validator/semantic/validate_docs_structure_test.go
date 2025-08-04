@@ -8,9 +8,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestValidateDocsStructureContent(t *testing.T) {
