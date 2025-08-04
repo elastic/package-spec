@@ -11,14 +11,15 @@ import (
 	"path"
 	"strings"
 
-	spec "github.com/elastic/package-spec/v3"
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
-	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/text"
 	"gopkg.in/yaml.v3"
+	
+	spec "github.com/elastic/package-spec/v3"
+	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
+	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // EnforcedSections represents the enforced documentation structure configuration.
