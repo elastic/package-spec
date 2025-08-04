@@ -32,6 +32,8 @@ spec:
           - application_observability
           # Application search and retrieval systems
           - app_search
+          # Asset management and inventory systems
+          - asset_inventory
           # Linux audit daemon monitoring
           - auditd
           # Identity and access verification systems
