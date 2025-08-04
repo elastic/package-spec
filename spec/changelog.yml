@@ -10,9 +10,6 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
-    - description: Add description to the categories
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/937
 - version: 3.4.2-next
   changes:
     - description: Allow to use underscores in benchmark file names.
