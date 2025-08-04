@@ -30,6 +30,8 @@ spec:
           - analytics_engine
           # Monitoring and observability for applications
           - application_observability
+          # Application search and retrieval systems
+          - app_search
           # Linux audit daemon monitoring
           - auditd
           # Identity and access verification systems
@@ -50,8 +52,16 @@ spec:
           - config_management
           # General connection interfaces
           - connector
+          # Client libraries for connecting to services
+          - connector_client
+          # Connector packages for specific integrations
+          - connector_package
           # Container technologies like Docker
           - containers
+          # Content management systems and platforms
+          - content_source
+          # Web crawling and scraping tools
+          - crawler
           # Password and credential management systems
           - credential_management
           # Customer relationship management systems
@@ -68,10 +78,14 @@ spec:
           - dns_security
           # Endpoint detection and response/extended detection and response
           - edr_xdr
+          # Elastic search SDK
+          - elasticsearch_sdk
           # Elastic Stack components
           - elastic_stack
           # Email protection and filtering
           - email_security
+          # Enterprise search solutions
+          - enterprise_search
           # Network firewall monitoring and management
           - firewall_security
           # Google Cloud Platform integrations
@@ -86,16 +100,24 @@ spec:
           - java_observability
           # Container orchestration platform
           - kubernetes
+          # Language-specific client libraries
+          - language_client
+          # Programming languages and their ecosystems
+          - languages
           # Traffic distribution systems
           - load_balancer
           # Message broker and queue systems
           - message_queue
           # System and service monitoring
           - monitoring
+          # Native search capabilities
+          - native_search
           # Network infrastructure and services
           - network
           # Network protection and monitoring
           - network_security
+          # Notification systems and services
+          - notification
           # Metrics, logs, and traces collection
           - observability
           # Operating system monitoring
@@ -108,14 +130,22 @@ spec:
           - productivity_security
           # Proxy server protection and monitoring
           - proxy_security
+          # SDK for search and data retrieval
+          - sdk_search
           # General security tools and systems
           - security
           # Security information and event management
           - siem
           # Real-time data stream processing
           - stream_processing
+          # Support and ticketing systems
+          - support
           # Threat intelligence platforms
           - threat_intel
+          # Ticketing and issue tracking systems
+          - ticketing
+          # Version control systems and tools
+          - version_control
           # Virtual machine technologies
           - virtualization
           # Virtual private network security
@@ -128,6 +158,8 @@ spec:
           - web_application_firewall
           # IBM WebSphere application server
           - websphere
+          # Workplace search solutions
+          - workplace_search
         examples:
           - web
     conditions:
