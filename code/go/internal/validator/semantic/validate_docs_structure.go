@@ -9,13 +9,14 @@ import (
 	"fmt"
 	"io/fs"
 	"path"
+	"slices"
 	"strings"
 
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/text"
 	"gopkg.in/yaml.v3"
-	
+
 	spec "github.com/elastic/package-spec/v3"
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
@@ -104,10 +105,11 @@ func readDocsStructureEnforcedConfig(fsys fspath.FS, config *specerrors.DocsStru
 
 	var sections []string
 	for _, section := range defaultSections {
-		if contains(config.DocsStructureSkip, section) {
-			continue
+		if !slices.ContainsFunc(config.DocsStructureSkip, func(s specerrors.DocsStructureSkip) bool {
+			return s.Title == section
+		}) {
+			sections = append(sections, section)
 		}
-		sections = append(sections, section)
 	}
 
 	return sections, nil
