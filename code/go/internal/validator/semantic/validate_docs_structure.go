@@ -115,15 +115,6 @@ func readDocsStructureEnforcedConfig(fsys fspath.FS, config *specerrors.DocsStru
 	return sections, nil
 }
 
-func contains(slice []specerrors.DocsStructureSkip, item string) bool {
-	for _, s := range slice {
-		if s.Title == item {
-			return true
-		}
-	}
-	return false
-}
-
 func loadSectionsFromConfig(version string) ([]string, error) {
 	schemaPath := fmt.Sprintf("enforced_sections_v%s.yml", version)
 
