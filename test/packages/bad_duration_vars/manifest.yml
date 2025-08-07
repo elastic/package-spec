@@ -23,6 +23,12 @@ vars:
   - name: max_duration_requires_type_duration
     type: text
     max_duration: 2h
+  - name: duration_unit_may_be_used_only_once
+    type: duration
+    default: 1h1h
+  - name: duration_units_must_be_ordered
+    type: duration
+    default: 5m1h
 
 owner:
   github: elastic/ecosystem

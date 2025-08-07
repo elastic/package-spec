@@ -51,6 +51,8 @@ func TestValidateFile(t *testing.T) {
 			[]string{
 				`field vars.1: Must not be present`,
 				`field vars.2: Must not be present`,
+				`field vars.3.default: Does not match pattern '^(?:\d+h)?(?:\d+m)?(?:\d+s)?(?:\d+ms)?$'`,
+				`field vars.4.default: Does not match pattern '^(?:\d+h)?(?:\d+m)?(?:\d+s)?(?:\d+ms)?$'`,
 			},
 		},
 		"bad_additional_content": {
