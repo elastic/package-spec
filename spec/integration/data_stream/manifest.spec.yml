@@ -72,7 +72,10 @@ spec:
               
               A duration type is a sequence of decimal numbers, each with a unit
               suffix, such as "60s", "1m" or "2h45m".
-              Valid time units are "ms", "s", "m", "h".
+              Duration values must follow these rules:
+              - Use time units of "ms", "s", "m", "h".
+              - When using min_duration, default, and max_duration,
+                they must satisfy: 0 <= min_duration <= default <= max_duration
             type: string
             enum:
               - bool
@@ -151,11 +154,11 @@ spec:
               - ['redis', 'rediss']
               - ['', 'mysql']
           min_duration:
-            description: The minimum allowed duration value for duration data types.
+            description: The minimum allowed duration value for duration data types. This property can only be used when the type is set to 'duration'.
             type: string
             pattern: '^(\d+[smh]|\d+ms)+$'
           max_duration:
-            description: The maximum allowed duration value for duration data types.
+            description: The maximum allowed duration value for duration data types. This property can only be used when the type is set to 'duration'.
             type: string
             pattern: '^(\d+[smh]|\d+ms)+$'
           default:
@@ -220,6 +223,16 @@ spec:
                default:
                  type: string
                  pattern: '^(\d+[smh]|\d+ms)+$'
+         - if:
+             not:
+               properties:
+                 type:
+                   const: duration
+           then:
+             not:
+               anyOf:
+                 - required: [min_duration]
+                 - required: [max_duration]
         required:
           - name
           - type
@@ -631,6 +644,7 @@ spec:
 versions:
   - before: 3.5.0
     patch:
+      # Require >=3.5.0 to use the duration variable type.
       - op: remove
         path: /definitions/vars/items/properties/type/enum/10
       - op: remove

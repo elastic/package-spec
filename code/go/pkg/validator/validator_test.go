@@ -46,6 +46,13 @@ func TestValidateFile(t *testing.T) {
 		"profiling_symbolizer":               {},
 		"logs_synthetic_mode":                {},
 		"kibana_configuration_links":         {},
+		"bad_duration_vars": {
+			"manifest.yml",
+			[]string{
+				`field vars.1: Must not be present`,
+				`field vars.2: Must not be present`,
+			},
+		},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
@@ -361,7 +368,7 @@ func TestValidateItemNotAllowed(t *testing.T) {
 			},
 		},
 		"bad_nested_knowledge_base": {
-			"docs/knowledge_base" : []string{
+			"docs/knowledge_base": []string{
 				"nested_dir",
 				"file.txt",
 			},
