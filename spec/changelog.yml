@@ -10,6 +10,11 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+- version: 3.4.2-next
+  changes:
+    - description: Add optional docs_structure_enforced parameter to validation.yml.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/924
 - version: 3.4.1
   changes:
     - description: Add fips_compatible boolean flag for input package policy templates.
@@ -27,9 +32,6 @@
     - description: Add support for `knowledge_base` directory under docs to store markdown files for AI assistant context.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/916
-    - description: Add optional docs_structure_enforced parameter to validation.yml.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/924
     - description: Add definition for input-level deployment modes.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/915
