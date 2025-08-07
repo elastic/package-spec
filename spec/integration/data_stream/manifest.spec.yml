@@ -76,8 +76,6 @@ spec:
               - Use time units of "ms", "s", "m", "h".
               - When using min_duration, default, and max_duration,
                 they must satisfy: 0 <= min_duration <= default <= max_duration
-              - Units must appear in descending order of magnitude (h->m->s->ms)
-              - Each unit can appear at most once in a duration value
             type: string
             enum:
               - bool
@@ -158,11 +156,11 @@ spec:
           min_duration:
             description: The minimum allowed duration value for duration data types. This property can only be used when the type is set to 'duration'.
             type: string
-            pattern: '^(?:\d+h)?(?:\d+m)?(?:\d+s)?(?:\d+ms)?$'
+            pattern: '^(\d+[smh]|\d+ms)+$'
           max_duration:
             description: The maximum allowed duration value for duration data types. This property can only be used when the type is set to 'duration'.
             type: string
-            pattern: '^(?:\d+h)?(?:\d+m)?(?:\d+s)?(?:\d+ms)?$'
+            pattern: '^(\d+[smh]|\d+ms)+$'
           default:
             description: Default value(s) for variable
             $ref: "#/definitions/input_variable_value"
@@ -224,7 +222,7 @@ spec:
              properties:
                default:
                  type: string
-                 pattern: '^(?:\d+h)?(?:\d+m)?(?:\d+s)?(?:\d+ms)?$'
+                 pattern: '^(\d+[smh]|\d+ms)+$'
          - if:
              not:
                properties:
