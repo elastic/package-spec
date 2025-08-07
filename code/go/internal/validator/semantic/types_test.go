@@ -6,7 +6,7 @@ package semantic
 
 import (
 	"encoding/json"
-	"path"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -115,7 +115,7 @@ func TestListFieldsFiles(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.pkgName, func(t *testing.T) {
-			pkgRootPath := path.Join("..", "..", "..", "..", "..", "test", "packages", c.pkgName)
+			pkgRootPath := filepath.Join("..", "..", "..", "..", "..", "test", "packages", c.pkgName)
 
 			fsys := fspath.DirFS(pkgRootPath)
 			fieldFilesMetadata, err := listFieldsFiles(fsys)
@@ -124,6 +124,10 @@ func TestListFieldsFiles(t *testing.T) {
 			require.Len(t, fieldFilesMetadata, len(c.expected))
 
 			for i, metadata := range fieldFilesMetadata {
+				// The test specification uses slash-separated paths,
+				// but the fullFilePath is OS-specific, so normalize it.
+				metadata.fullFilePath = filepath.ToSlash(metadata.fullFilePath)
+
 				assert.Equal(t, c.expected[i], metadata)
 			}
 		})

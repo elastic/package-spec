@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
-	"path"
+	"path/filepath"
 
 	"github.com/Masterminds/semver/v3"
 
@@ -34,7 +34,7 @@ func (p *Package) Open(name string) (fs.File, error) {
 
 // Path returns a path meaningful for the user.
 func (p *Package) Path(names ...string) string {
-	return path.Join(append([]string{p.location}, names...)...)
+	return filepath.Join(append([]string{p.location}, names...)...)
 }
 
 // IsGA returns true if the package is GA.

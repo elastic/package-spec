@@ -107,8 +107,8 @@ type field struct {
 
 type fieldFileMetadata struct {
 	dataStream   string
-	filePath     string
-	fullFilePath string
+	filePath     string // Slash-separated file path relative to the root of the package.
+	fullFilePath string // Path to file on OS filesystem.
 }
 
 type validateFunc func(fileMetadata fieldFileMetadata, f field) specerrors.ValidationErrors
