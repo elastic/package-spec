@@ -6,7 +6,6 @@ package semantic
 
 import (
 	"fmt"
-	"path"
 	"path/filepath"
 	"testing"
 
@@ -28,7 +27,7 @@ func TestValidateFieldGroups_Bad(t *testing.T) {
 
 	fileError := func(name string, expected string) string {
 		return fmt.Sprintf(`file "%s" is invalid: %s`,
-			path.Join(pkgRoot, name),
+			filepath.Join(pkgRoot, name),
 			expected)
 	}
 
