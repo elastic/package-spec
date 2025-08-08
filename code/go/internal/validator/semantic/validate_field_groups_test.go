@@ -6,7 +6,7 @@ package semantic
 
 import (
 	"fmt"
-	"path"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,25 +16,25 @@ import (
 )
 
 func TestValidateFieldGroups_Good(t *testing.T) {
-	pkgRoot := "../../../../../test/packages/good"
+	pkgRoot := filepath.Join("..", "..", "..", "..", "..", "test", "packages", "good")
 
 	errs := ValidateFieldGroups(fspath.DirFS(pkgRoot))
 	require.Empty(t, errs)
 }
 
 func TestValidateFieldGroups_Bad(t *testing.T) {
-	pkgRoot := "../../../../../test/packages/bad_group_unit"
+	pkgRoot := filepath.Join("..", "..", "..", "..", "..", "test", "packages", "bad_group_unit")
 
 	fileError := func(name string, expected string) string {
 		return fmt.Sprintf(`file "%s" is invalid: %s`,
-			path.Join(pkgRoot, name),
+			filepath.Join(pkgRoot, name),
 			expected)
 	}
 
 	errs := ValidateFieldGroups(fspath.DirFS(pkgRoot))
 	if assert.Len(t, errs, 3) {
-		assert.Equal(t, fileError("data_stream/bar/fields/hello-world.yml", `field "aaa.bbb" can't have unit property'`), errs[0].Error())
-		assert.Equal(t, fileError("data_stream/bar/fields/hello-world.yml", `field "ddd.eee" can't have unit property'`), errs[1].Error())
-		assert.Equal(t, fileError("data_stream/foo/fields/bad-file.yml", `field "fff" can't have metric type property'`), errs[2].Error())
+		assert.Equal(t, fileError(filepath.Join("data_stream", "bar", "fields", "hello-world.yml"), `field "aaa.bbb" can't have unit property'`), errs[0].Error())
+		assert.Equal(t, fileError(filepath.Join("data_stream", "bar", "fields", "hello-world.yml"), `field "ddd.eee" can't have unit property'`), errs[1].Error())
+		assert.Equal(t, fileError(filepath.Join("data_stream", "foo", "fields", "bad-file.yml"), `field "fff" can't have metric type property'`), errs[2].Error())
 	}
 }
