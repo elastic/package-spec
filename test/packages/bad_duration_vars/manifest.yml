@@ -1,0 +1,29 @@
+format_version: 3.5.0
+name: bad_duration_vars
+title: "Bad Durations Vars"
+version: 0.0.1
+source:
+  license: "Apache-2.0"
+description: "Test invalid duration variable types."
+type: integration
+categories:
+  - custom
+conditions:
+  kibana:
+    version: "^9.2.0"
+  elastic:
+    subscription: "basic"
+vars:
+  - name: duration_valid
+    type: duration
+    default: 100h90m80s70ms
+  - name: min_duration_requires_type_duration
+    type: text
+    min_duration: 1h
+  - name: max_duration_requires_type_duration
+    type: text
+    max_duration: 2h
+
+owner:
+  github: elastic/ecosystem
+  type: elastic
