@@ -39,6 +39,7 @@ func namesFromSlash(names []string) []string {
 
 // DirFS returns a file system for a directory, it keeps the path to implement the FS interface.
 func DirFS(path string) FS {
+	path = filepath.FromSlash(path)
 	return &fsDir{
 		FS:   os.DirFS(path),
 		path: path,
