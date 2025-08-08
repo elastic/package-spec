@@ -128,7 +128,7 @@ type durationManifest struct {
 	} `yaml:"policy_templates"`
 }
 
-// allVars collects all duration variables from a manifest including those at the
+// allVars collects all variables from a manifest including those at the
 // top level, within policy templates, and nested inside inputs. It returns a
 // flattened slice of all variables for easier processing.
 func (m *durationManifest) allVars() []durationVar {
@@ -151,7 +151,7 @@ type durationDataStreamManifest struct {
 	} `yaml:"streams"`
 }
 
-// allVars collects all duration variables from a data stream manifest. It
+// allVars collects all variables from a data stream manifest. It
 // returns a flattened slice of all variables from all streams for easier
 // processing.
 func (m *durationDataStreamManifest) allVars() []durationVar {
@@ -215,21 +215,21 @@ func validateDurationVar(v durationVar) error {
 
 	// Check min_duration <= default (if both are defined)
 	if v.MinDuration != nil && v.Default != nil {
-		if minDuration.Nanoseconds() > defaultDuration.Nanoseconds() {
+		if minDuration > defaultDuration {
 			errs = append(errs, fmt.Errorf("min_duration %q greater than default %q", *v.MinDuration, v.Default))
 		}
 	}
 
 	// Check default <= max_duration (if both are defined)
 	if v.Default != nil && v.MaxDuration != nil {
-		if defaultDuration.Nanoseconds() > maxDuration.Nanoseconds() {
+		if defaultDuration > maxDuration {
 			errs = append(errs, fmt.Errorf("default %q greater than max_duration %q", v.Default, *v.MaxDuration))
 		}
 	}
 
 	// Check min_duration <= max_duration (if both are defined)
 	if v.MinDuration != nil && v.MaxDuration != nil {
-		if minDuration.Nanoseconds() > maxDuration.Nanoseconds() {
+		if minDuration > maxDuration {
 			errs = append(errs, fmt.Errorf("min_duration %q greater than max_duration %q", *v.MinDuration, *v.MaxDuration))
 		}
 	}
