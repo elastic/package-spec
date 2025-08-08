@@ -300,7 +300,7 @@ streams:
 		`manifest.yml:2:5 error in variable "interval": default "1m" greater than max_duration "30s"`,
 		`manifest.yml:15:9 error in variable "wait_time": min_duration "30s" greater than max_duration "5s"`,
 		`manifest.yml:21:13 error in variable "period": negative min_duration value "-5s"`,
-		`data_stream/foo/manifest.yml:8:9 error in variable "dwell_time": min_duration "50ms50ms" greater than default "5ms"`,
+		filepath.Join("data_stream", "foo", "manifest.yml") + `:8:9 error in variable "dwell_time": min_duration "50ms50ms" greater than default "5ms"`,
 	}
 
 	errs := ValidateDurationVariables(fspath.DirFS(d))
