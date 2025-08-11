@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/cucumber/godog v0.15.1
 	github.com/cucumber/messages/go/v21 v21.0.1
-	github.com/elastic/elastic-package v0.113.0
+	github.com/elastic/elastic-package v0.114.0
 	github.com/elastic/go-elasticsearch/v9 v9.1.0
 	github.com/elastic/go-licenser v0.4.2
 	github.com/elastic/package-spec/v3 v3.4.1
@@ -126,8 +126,8 @@ require (
 	github.com/nwaples/rardecode/v2 v2.1.0 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
 	github.com/olekukonko/errors v1.1.0 // indirect
-	github.com/olekukonko/ll v0.0.8 // indirect
-	github.com/olekukonko/tablewriter v1.0.8 // indirect
+	github.com/olekukonko/ll v0.0.9 // indirect
+	github.com/olekukonko/tablewriter v1.0.9 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
