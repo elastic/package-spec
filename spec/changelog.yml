@@ -10,9 +10,26 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: Add `duration` variable data type with `min_duration` and `max_duration` validation properties.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/948
     - description: Add support for `alert` rule assets.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/918
+- version: 3.4.2-next
+  changes:
+    - description: Add optional docs_structure_enforced parameter to validation.yml.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/924
+    - description: Allow to use underscores in benchmark file names.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/945
+    - description: Introduce asset_inventory category
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/938
+    - description: Fix paths with slashes displayed on Windows.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/953
 - version: 3.4.1
   changes:
     - description: Add fips_compatible boolean flag for input package policy templates.

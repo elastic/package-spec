@@ -5,7 +5,7 @@ go 1.23.0
 require (
 	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/PaesslerAG/jsonpath v0.1.1
-	github.com/boumenot/gocover-cobertura v1.3.0
+	github.com/boumenot/gocover-cobertura v1.4.0
 	github.com/creasty/defaults v1.8.0
 	github.com/elastic/go-licenser v0.4.2
 	github.com/elastic/gojsonschema v1.2.1
@@ -16,6 +16,7 @@ require (
 	github.com/otiai10/copy v1.14.1
 	github.com/stretchr/testify v1.10.0
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415
+	github.com/yuin/goldmark v1.7.13
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
 	gopkg.in/yaml.v3 v3.0.1
 	gotest.tools/gotestsum v1.12.3

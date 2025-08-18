@@ -46,6 +46,13 @@ func TestValidateFile(t *testing.T) {
 		"profiling_symbolizer":               {},
 		"logs_synthetic_mode":                {},
 		"kibana_configuration_links":         {},
+		"bad_duration_vars": {
+			"manifest.yml",
+			[]string{
+				`field vars.1: Must not be present`,
+				`field vars.2: Must not be present`,
+			},
+		},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
@@ -361,7 +368,7 @@ func TestValidateItemNotAllowed(t *testing.T) {
 			},
 		},
 		"bad_nested_knowledge_base": {
-			"docs/knowledge_base" : []string{
+			"docs/knowledge_base": []string{
 				"nested_dir",
 				"file.txt",
 			},
@@ -607,6 +614,10 @@ func TestValidateWarnings(t *testing.T) {
 		"bad_saved_object_tags_kibana_version": {
 			"conditions.kibana.version must be ^8.10.0 or greater to include saved object tags file: kibana/tags.yml (SVR00005)",
 		},
+		"bad_readme_structure": {
+			"missing required section 'Overview' in file 'README_part1.md'\nmissing required section 'How do I deploy this integration?' in file 'README_part2.md'",
+		},
+		"good_readme_structure": {},
 	}
 	if err := common.EnableWarningsAsErrors(); err != nil {
 		require.NoError(t, err)
