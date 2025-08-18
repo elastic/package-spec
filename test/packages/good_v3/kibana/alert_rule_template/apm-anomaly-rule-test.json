@@ -1,10 +1,9 @@
 {
   "id": "apm-anomaly-rule-test",
-  "type": "alert",
+  "type": "alert-rule-template",
   "attributes": {
     "name": "APM Anomaly rule test",
     "tags": ["Testing"],
-    "enabled": false,
     "alertTypeId": "apm.anomaly",
     "consumer": "alerts",
     "schedule": {
@@ -17,8 +16,6 @@
       "anomalyDetectorTypes": ["txLatency", "txThroughput", "txFailureRate"],
       "environment": "ENVIRONMENT_ALL"
     },
-    "muteAll": false,
-    "mutedInstanceIds": [],
     "alertDelay": {
       "active": 1
     },

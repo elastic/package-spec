@@ -1,6 +1,6 @@
 - text: Foo
   asset_types:
-    - alert
+    - alert_rule_template
     - dashboard
     - visualization
     - search

@@ -83,15 +83,6 @@ spec:
       type: file
       contentMediaType: "application/json"
       pattern: '^.+\.json$'
-  - description: Folder containing alerting rules
-    type: folder
-    name: "alert"
-    required: false
-    contents:
-    - description: An individual alerting rule file
-      type: file
-      contentMediaType: "application/json"
-      pattern: '^.+\.json$'
   - description: Folder containing ML module assets
     type: folder
     name: ml_module
@@ -145,12 +136,23 @@ spec:
       pattern: '^{PACKAGE_NAME}-.+\.json$'
       forbiddenPatterns:
         - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
+  - description: Folder containing alert rule templates
+    type: folder
+    name: "alert_rule_template"
+    required: false
+    contents:
+    - description: An individual alert rule template file
+      type: file
+      contentMediaType: "application/json"
+      pattern: '^.+\.json$'
 versions:
   - before: 3.5.0
     patch:
       - op: remove
-        path: "/contents/14" # remove SLO definitions
+        path: "/contents/14" # remove alert rule template definitions
+      - op: remove
+        path: "/contents/13" # remove SLO definitions
   - before: 2.10.0
     patch:
       - op: remove
-        path: "/contents/13" # remove tags definition
+        path: "/contents/12" # remove tags definition

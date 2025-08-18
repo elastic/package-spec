@@ -13,7 +13,7 @@
     - description: Add `duration` variable data type with `min_duration` and `max_duration` validation properties.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/948
-    - description: Add support for `alert` rule assets.
+    - description: Add support for Kibana `alert-rule-template` assets, which can be used to create alert rules.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/918
 - version: 3.4.2-next
