@@ -11,7 +11,6 @@ spec:
     destination_index_template:
       description: Elasticsearch index template for the transform's destination index
       $ref: "#/definitions/index_template"
-      required: false
     start:
       description: Determines if the transform will be started upon installation
       type: boolean
