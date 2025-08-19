@@ -32,6 +32,12 @@
     - description: Fix paths with slashes displayed on Windows.
       type: bugfix
       link: https://github.com/elastic/package-spec/pull/953
+
+- version: 3.4.2-next
+  changes:
+    - description: Add support for lookup indices.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/936
 - version: 3.4.1
   changes:
     - description: Add fips_compatible boolean flag for input package policy templates.
