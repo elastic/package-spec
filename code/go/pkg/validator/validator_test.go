@@ -177,8 +177,8 @@ func TestValidateFile(t *testing.T) {
 		"bad_saved_object_tags": {
 			"kibana/tags.yml",
 			[]string{
-				`field 0.asset_types.11: 0.asset_types.11 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "ml_module", "osquery_pack_asset", "osquery_saved_query", "alert_rule_template"`,
-				`field 0.asset_types.12: 0.asset_types.12 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "ml_module", "osquery_pack_asset", "osquery_saved_query", "alert_rule_template"`,
+				`field 0.asset_types.11: 0.asset_types.11 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "alert_rule_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
+				`field 0.asset_types.12: 0.asset_types.12 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "alert_rule_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
 				`field 1.asset_ids.1: Invalid type. Expected: string, given: integer`,
 				`field 2: text is required`,
 				`field 3: asset_types is required`,
