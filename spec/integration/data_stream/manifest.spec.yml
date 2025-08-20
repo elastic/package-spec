@@ -67,7 +67,15 @@ spec:
             examples:
               - hosts
           type:
-            description: Data type of variable.
+            description: >
+              Data type of variable.
+              
+              A duration type is a sequence of decimal numbers, each with a unit
+              suffix, such as "60s", "1m" or "2h45m".
+              Duration values must follow these rules:
+              - Use time units of "ms", "s", "m", "h".
+              - When using min_duration, default, and max_duration,
+                they must satisfy: 0 <= min_duration <= default <= max_duration
             type: string
             enum:
               - bool
@@ -80,6 +88,7 @@ spec:
               - time_zone
               - url
               - yaml
+              - duration
             examples:
               - text
           title:
@@ -144,6 +153,14 @@ spec:
               - ['http', 'https']
               - ['redis', 'rediss']
               - ['', 'mysql']
+          min_duration:
+            description: The minimum allowed duration value for duration data types. This property can only be used when the type is set to 'duration'.
+            type: string
+            pattern: '^(\d+[smh]|\d+ms)+$'
+          max_duration:
+            description: The maximum allowed duration value for duration data types. This property can only be used when the type is set to 'duration'.
+            type: string
+            pattern: '^(\d+[smh]|\d+ms)+$'
           default:
             description: Default value(s) for variable
             $ref: "#/definitions/input_variable_value"
@@ -197,6 +214,25 @@ spec:
            then:
              required:
                - secret
+         - if:
+             properties:
+               type:
+                 const: duration
+           then:
+             properties:
+               default:
+                 type: string
+                 pattern: '^(\d+[smh]|\d+ms)+$'
+         - if:
+             not:
+               properties:
+                 type:
+                   const: duration
+           then:
+             not:
+               anyOf:
+                 - required: [min_duration]
+                 - required: [max_duration]
         required:
           - name
           - type
@@ -606,11 +642,17 @@ spec:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
-  - before: 3.4.2
+  - before: 3.5.0
     patch:
+      # Require >=3.5.0 to use the duration variable type.
       - op: remove
-        path: "/definitions/elasticsearch_index_template/properties/settings/properties/index/properties/mode/enum"
-        value: "lookup"
+        path: /definitions/vars/items/properties/type/enum/10
+      - op: remove
+        path: /definitions/vars/items/properties/max_duration
+      - op: remove
+        path: /definitions/vars/items/properties/min_duration
+      - op: remove
+        path: /definitions/vars/items/allOf/2
   - before: 3.3.2
     patch:
       - op: remove

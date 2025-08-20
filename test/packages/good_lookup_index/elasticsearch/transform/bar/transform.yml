@@ -3,7 +3,7 @@ source:
   index:
     - ".ds-.logs-elasticsearch.deprecation-default-*"
 dest:
-  index: test-foo-dest-index
+  index: test-bar-dest-index
 frequency: 1m
 sync:
   time:
