@@ -1,19 +1,9 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ca0da37 (Updated lookup to only be applicable for transforms.)
+
 format_version: 3.4.3
 name: good_lookup_index
 title: "good_lookup_index"
 version: 0.1.4
 description: "This package tests good_lookup_index"
-=======
-format_version: 3.3.2
-name: chargeback
-title: "Chargeback"
-version: 0.1.4
-description: "This package calculates chargeback based on billing and consumption data"
->>>>>>> f362520 (Adding test data with a transform that will try to create a lookup index. Also, fix the versions in changelog, as requested.)
 type: integration
 categories:
   - cloud
@@ -23,19 +13,6 @@ conditions:
     version: "8.18.0"
   elastic:
     subscription: "basic"
-<<<<<<< HEAD
-=======
-screenshots:
-  - src: /img/elastic-logo.png
-    title: Elastic logo
-    size: 600x600
-    type: image/png
-icons:
-  - src: /img/elastic-logo.svg
-    title: Elastic logo
-    size: 32x32
-    type: image/svg+xml
->>>>>>> f362520 (Adding test data with a transform that will try to create a lookup index. Also, fix the versions in changelog, as requested.)
 owner:
   github: elastic/customer-architects
   type: elastic

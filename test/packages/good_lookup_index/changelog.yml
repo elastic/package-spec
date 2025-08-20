@@ -3,3 +3,4 @@
   changes:
     - description: "initital"
       type: bugfix
+      link: https://github.com/elastic/integrations/pull/14883
