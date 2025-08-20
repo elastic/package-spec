@@ -48,4 +48,4 @@ versions:
   - before: 3.4.3-next
     patch:
       - op: remove
-        path: "/properties/destination_index_template/properties/settings/properties/index/properties/mode/enum/lookup"
+        path: "/properties/destination_index_template/properties/settings/properties/index/properties/mode/enum/0"
