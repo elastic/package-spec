@@ -44,8 +44,3 @@ properties:
     description: Determines if the transform will be started upon installation
     type: boolean
     default: true
-versions:
-  - before: 3.4.3-next
-    patch:
-      - op: remove
-        path: "/properties/destination_index_template/properties/settings/properties/index/properties/mode/enum/0"
