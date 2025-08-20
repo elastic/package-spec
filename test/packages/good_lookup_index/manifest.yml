@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> ca0da37 (Updated lookup to only be applicable for transforms.)
 format_version: 3.4.3
 name: good_lookup_index
 title: "good_lookup_index"
