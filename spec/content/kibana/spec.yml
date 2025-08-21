@@ -47,12 +47,12 @@ spec:
       type: file
       contentMediaType: "application/json"
       pattern: '^.+\.json$'
-  - description: Folder containing alert rule templates
+  - description: Folder containing alerting rule templates
     type: folder
-    name: "alert_rule_template"
+    name: "alerting_rule_template"
     required: false
     contents:
-    - description: An individual alert rule template file
+    - description: An individual alerting rule template file
       type: file
       contentMediaType: "application/json"
       pattern: '^.+\.json$'
@@ -60,7 +60,7 @@ versions:
   - before: 3.5.0
     patch:
       - op: remove
-        path: "/contents/5" # remove alert rule template definitions
+        path: "/contents/5" # remove alerting rule template definitions
   - before: 3.4.0
     patch:
       - op: remove

@@ -1,10 +1,10 @@
 {
   "id": "apm-anomaly-rule-test",
-  "type": "alert-rule-template",
+  "type": "alerting_rule_template",
   "attributes": {
     "name": "APM Anomaly rule test",
     "tags": ["Testing"],
-    "alertTypeId": "apm.anomaly",
+    "ruleTypeId": "apm.anomaly",
     "consumer": "alerts",
     "schedule": {
       "interval": "1m"
@@ -18,8 +18,7 @@
     },
     "alertDelay": {
       "active": 1
-    },
-    "actions": []
+    }
   },
   "coreMigrationVersion": "8.8.0",
   "typeMigrationVersion": "10.6.0"

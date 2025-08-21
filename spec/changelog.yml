@@ -13,7 +13,7 @@
     - description: Add `duration` variable data type with `min_duration` and `max_duration` validation properties.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/948
-    - description: Add support for Kibana `alert-rule-template` assets, which can be used to create alert rules.
+    - description: Add support for Kibana `alerting_rule_template` assets, which can be used to create alert rules.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/918
 - version: 3.4.2-next
@@ -248,7 +248,7 @@
     - description: Using non-GA versions of the spec in GA packages produces a filterable validation error instead of a warning
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/627
-    - description: "Allow to set index: false in dynamic templates defined in data stream manifests"
+    - description: 'Allow to set index: false in dynamic templates defined in data stream manifests'
       type: enhancement
       link: https://github.com/elastic/package-spec/issues/650
     - description: Validate that data streams with time series enabled have configured dimensions
@@ -746,7 +746,7 @@
     - description: Add `hidden` fields to data stream manifest file.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/91
-    - description: "Revert: Allow `condition` under inputs."
+    - description: 'Revert: Allow `condition` under inputs.'
       type: bugfix
       link: https://github.com/elastic/package-spec/pull/93
     - description: Support `lens` Kibana type.
