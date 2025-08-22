@@ -22,7 +22,6 @@ properties:
                 type: string
                 enum:
                   - lookup
-                  - standard
               codec:
                 $ref: "../../data_stream/manifest.spec.yml#/properties/elasticsearch/properties/index_template/properties/settings/properties/index/properties/codec"
               mapping:
