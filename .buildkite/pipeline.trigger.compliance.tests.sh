@@ -28,8 +28,8 @@ steps:
 EOF
 
 # Generate each test we want to do.
-compliance_test 9.1.0-SNAPSHOT 3.4.1
-compliance_test 8.19.0-SNAPSHOT 3.4.1
+compliance_test 9.1.0-SNAPSHOT 3.4.3
+compliance_test 8.19.0-SNAPSHOT 3.4.3
 compliance_test 9.0.1 3.3.5
 compliance_test 8.14.0 3.1.5
 compliance_test 8.9.0 2.7.0

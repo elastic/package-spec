@@ -1,0 +1,18 @@
+
+format_version: 3.4.3
+name: good_lookup_index
+title: "good_lookup_index"
+version: 0.1.4
+description: "This package tests good_lookup_index"
+type: integration
+categories:
+  - cloud
+  - custom
+conditions:
+  kibana:
+    version: "8.18.0"
+  elastic:
+    subscription: "basic"
+owner:
+  github: elastic/customer-architects
+  type: elastic
