@@ -10,7 +10,7 @@ require (
 	github.com/elastic/go-elasticsearch/v9 v9.1.0
 	github.com/elastic/go-licenser v0.4.2
 	github.com/elastic/package-spec/v3 v3.4.1
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.0
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
 	gotest.tools/gotestsum v1.12.3
