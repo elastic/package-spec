@@ -11,6 +11,24 @@ spec:
           type: object
           additionalProperties: false
           properties:
+            analysis:
+              type: object
+              additionalProperties: false
+              properties:
+                analyzer:
+                  description: Definition of custom analyzer.
+                  type: object
+                  additionalProperties:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      type:
+                        description: Type of analyzer
+                        type: string
+                        enum:
+                          - pattern
+                      pattern:
+                        type: string
             index:
               type: object
               additionalProperties: false
@@ -21,15 +39,67 @@ spec:
                   enum:
                     - lookup
                 codec:
-                  $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/settings/properties/index/properties/codec"
+                  description: >
+                    Type of compression to use. The default is to use LZ4, `best_compression` uses DEFLATE,
+                    with higher compression but lower ingestion performance.
+                  type: string
+                  enum:
+                    - default
+                    - best_compression
+                refresh_interval:
+                  description: >
+                    How often to perform a refresh operation, which makes recent changes to the index visible to search.
+                  type: string
+                  example: 1s
                 mapping:
-                  $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/settings/properties/index/properties/mapping"
+                  type: object
+                  additionalProperties: false
+                  patternProperties:
+                    "^(dimension|nested|total)_fields$":
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        limit:
+                          description: Limit on the number of fields of this kind on this data stream.
+                          type: integer
                 sort:
-                  $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/settings/properties/index/properties/sort"
-            number_of_shards:
-              $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/settings/properties/number_of_shards"
-            analysis:
-              $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/settings/properties/analysis"
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    field:
+                      description: Fields used to sort the document in the Lucene segments.
+                      oneOf:
+                        - type: string
+                        - type: array
+                          items:
+                            type: string
+                    order:
+                      description: The sort order to use for each field.
+                      oneOf:
+                        - type: string
+                          enum:
+                            - asc
+                            - desc
+                        - type: array
+                          items:
+                            type: string
+                            enum:
+                              - asc
+                              - desc
+                number_of_shards:
+                  description: Number of primary shards that the data stream should have.
+                  type: integer
+                  minimum: 1
+                  default: 1
+                number_of_routing_shards:
+                  description: Number used when splitting shards.
+                  type: integer
+                  minimum: 1
+                  default: 1
+                hidden:
+                  description: Makes the index hidden.
+                  type: boolean
+                  default: false
         mappings:
           $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/mappings"
         ingest_pipeline:
@@ -42,8 +112,8 @@ spec:
       default: true
 
 
-#versions:
-#  - before: 3.4.0
-#    patch:
-#      - op: remove
-#        path: "/properties/destination_index_template/properties/settings/properties/index" # Lookup index mode is not supported in older stacks.
+versions:
+  - before: 3.4.0
+    patch:
+      - op: remove
+        path: "/properties/destination_index_template/properties/settings/properties/index/properties/mode" # Lookup index mode is not supported in older stacks.
