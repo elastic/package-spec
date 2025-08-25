@@ -1,45 +1,49 @@
-type: object
-additionalProperties: false
-definitions:
-  index_template:
-    $ref: "../../data_stream/manifest.spec.yml#/properties/elasticsearch/properties/index_template"
-properties:
-  destination_index_template:
-    description: Elasticsearch index template for the transform's destination index
-    type: object
-    additionalProperties: false
-    properties:
-      settings:
-        type: object
-        additionalProperties: false
-        properties:
-          index:
-            type: object
-            additionalProperties: false
-            properties:
-              mode:
-                description: Index mode for lookup indices.
-                type: string
-                enum:
-                  - lookup
-              codec:
-                $ref: "../../data_stream/manifest.spec.yml#/properties/elasticsearch/properties/index_template/properties/settings/properties/index/properties/codec"
-              mapping:
-                $ref: "../../data_stream/manifest.spec.yml#/properties/elasticsearch/properties/index_template/properties/settings/properties/index/properties/mapping"
-              sort:
-                $ref: "../../data_stream/manifest.spec.yml#/properties/elasticsearch/properties/index_template/properties/settings/properties/index/properties/sort"
-          number_of_shards:
-            $ref: "../../data_stream/manifest.spec.yml#/properties/elasticsearch/properties/index_template/properties/settings/properties/number_of_shards"
-          analysis:
-            $ref: "../../data_stream/manifest.spec.yml#/properties/elasticsearch/properties/index_template/properties/settings/properties/analysis"
-      mappings:
-        $ref: "../../data_stream/manifest.spec.yml#/properties/elasticsearch/properties/index_template/properties/mappings"
-      ingest_pipeline:
-        $ref: "../../data_stream/manifest.spec.yml#/properties/elasticsearch/properties/index_template/properties/ingest_pipeline"
-      data_stream:
-        $ref: "../../data_stream/manifest.spec.yml#/properties/elasticsearch/properties/index_template/properties/data_stream"
-    required: false
-  start:
-    description: Determines if the transform will be started upon installation
-    type: boolean
-    default: true
+spec:
+  type: object
+  additionalProperties: false
+  properties:
+    destination_index_template:
+      description: Elasticsearch index template for the transform's destination index
+      type: object
+      additionalProperties: false
+      properties:
+        settings:
+          type: object
+          additionalProperties: false
+          properties:
+            index:
+              type: object
+              additionalProperties: false
+              properties:
+                mode:
+                  description: Index mode for lookup indices.
+                  type: string
+                  enum:
+                    - lookup
+                codec:
+                  $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/settings/properties/index/properties/codec"
+                mapping:
+                  $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/settings/properties/index/properties/mapping"
+                sort:
+                  $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/settings/properties/index/properties/sort"
+            number_of_shards:
+              $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/settings/properties/number_of_shards"
+            analysis:
+              $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/settings/properties/analysis"
+        mappings:
+          $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/mappings"
+        ingest_pipeline:
+          $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/ingest_pipeline"
+        data_stream:
+          $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/data_stream"
+    start:
+      description: Determines if the transform will be started upon installation
+      type: boolean
+      default: true
+
+
+#versions:
+#  - before: 3.4.0
+#    patch:
+#      - op: remove
+#        path: "/properties/destination_index_template/properties/settings/properties/index" # Lookup index mode is not supported in older stacks.
