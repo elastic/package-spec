@@ -35,6 +35,7 @@ func TestValidateFile(t *testing.T) {
 		"good_v3":                            {},
 		"good_input":                         {},
 		"good_content":                       {},
+		"good_lookup_index":                  {},
 		"deploy_custom_agent":                {},
 		"deploy_custom_agent_multi_services": {},
 		"deploy_docker":                      {},

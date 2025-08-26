@@ -16,7 +16,12 @@
     - description: Add support for Kibana `alerting_rule_template` assets, which can be used to create alert rules.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/918
-- version: 3.4.2-next
+- version: 3.4.3-next
+  changes:
+    - description: Add support for lookup indices.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/936
+- version: 3.4.2
   changes:
     - description: Add optional docs_structure_enforced parameter to validation.yml.
       type: enhancement
