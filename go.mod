@@ -14,7 +14,7 @@ require (
 	github.com/go-viper/mapstructure/v2 v2.4.0
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901
 	github.com/otiai10/copy v1.14.1
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.0
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415
 	github.com/yuin/goldmark v1.7.13
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
