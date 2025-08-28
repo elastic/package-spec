@@ -4,7 +4,6 @@
 spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
-  additionalProperties: true
   properties:
     skip:
       $ref: "./../config.spec.yml#/definitions/skip"
@@ -26,7 +25,6 @@ spec:
     agent:
       description: "Configuration overrides for the Elastic Agent"
       type: object
-      additionalProperties: true
       properties:
         runtime:
           description: "Runtime to run the Elastic Agent process"
@@ -165,7 +163,6 @@ spec:
       type:
         - "null"
         - object
-      additionalProperties: true
       properties:
         vars:
           description: Variables used to configure settings defined in the data stream manifest.

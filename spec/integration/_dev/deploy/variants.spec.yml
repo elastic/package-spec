@@ -10,7 +10,6 @@ spec:
     variants:
       description: Variant names and their configurations
       type: object
-      additionalProperties: true
     default:
       description: Default variant to use
       type: string

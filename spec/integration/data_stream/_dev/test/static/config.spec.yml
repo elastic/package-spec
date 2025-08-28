@@ -4,7 +4,6 @@
 spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
-  additionalProperties: true
   properties:
     skip:
       $ref: "./../config.spec.yml#/definitions/skip"

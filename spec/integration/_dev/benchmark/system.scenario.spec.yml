@@ -96,7 +96,6 @@ spec:
                 raw:
                   description: Raw config.
                   type: object
-                  additionalProperties: true
                 path:
                   description: Config path.
                   type: string
@@ -108,7 +107,6 @@ spec:
                 raw:
                   description: Raw fields.
                   type: object
-                  additionalProperties: true
                 path:
                   description: Fields path.
                   type: string
