@@ -39,8 +39,8 @@ spec:
       patternProperties:
         "^[a-zA-Z0-9_]+$":
           type: array
+          minItems: 1
           items:
-            minItems: 1
             type: object
             required:
               - name

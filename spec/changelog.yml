@@ -16,6 +16,9 @@
     - description: Add support for Kibana `alerting_rule_template` assets, which can be used to create alert rules.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/918
+    - description: Fix required_var minItems validation in data stream manifest schema.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/965
 - version: 3.4.2-next
   changes:
     - description: Add optional docs_structure_enforced parameter to validation.yml.
