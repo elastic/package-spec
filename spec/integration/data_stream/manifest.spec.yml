@@ -344,9 +344,9 @@ spec:
               type: array
               items:
                 type: string
-                examples:
-                  - ["strict_date_optional_time","yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"] # This is the default if not set.
-                  - ["MM/dd/yyyy"]
+              examples:
+                - ["strict_date_optional_time","yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"] # This is the default if not set.
+                - ["MM/dd/yyyy"]
             dynamic_templates:
               type: array
               items:
