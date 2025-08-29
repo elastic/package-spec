@@ -25,7 +25,6 @@ spec:
       type:
         - "null"
         - object
-      additionalProperties: true
       properties:
         "data_stream.dataset":
           type: string
