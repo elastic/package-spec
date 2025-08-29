@@ -33,6 +33,9 @@
     - description: Add support for lookup indices.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/936
+    - description: Fix dynamic_date_formats example type in data stream manifest schema.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/966
 - version: 3.4.1
   changes:
     - description: Add fips_compatible boolean flag for input package policy templates.

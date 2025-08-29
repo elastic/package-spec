@@ -121,7 +121,6 @@ spec:
                 - type: number
                 - type: boolean
           - type: object
-            additionalProperties: true
 
       metric_type:
         description: >
