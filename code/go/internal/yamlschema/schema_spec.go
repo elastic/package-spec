@@ -28,6 +28,7 @@ func (i *itemSchemaSpec) resolve(target semver.Version) (map[string]interface{},
 		// Nothing to do.
 		return i.Spec, nil
 	}
+
 	spec, err := specpatch.ResolvePatch(i.Spec, patchJSON)
 	if err != nil {
 		return nil, fmt.Errorf("failed to apply patch: %w", err)
