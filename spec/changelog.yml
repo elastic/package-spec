@@ -13,14 +13,14 @@
     - description: Add `duration` variable data type with `min_duration` and `max_duration` validation properties.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/948
-    - description: Fix dynamic_date_formats example type in data stream manifest schema.
-      type: bugfix
-      link: https://github.com/elastic/package-spec/pull/966
 - version: 3.4.3-next
   changes:
     - description: Add support for lookup indices.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/936
+    - description: Fix dynamic_date_formats example type in data stream manifest schema.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/966
 - version: 3.4.2
   changes:
     - description: Add optional docs_structure_enforced parameter to validation.yml.
