@@ -12,90 +12,32 @@ spec:
           additionalProperties: false
           properties:
             analysis:
-              type: object
-              additionalProperties: false
-              properties:
-                analyzer:
-                  description: Definition of custom analyzer.
-                  type: object
-                  additionalProperties:
-                    type: object
-                    additionalProperties: false
-                    properties:
-                      type:
-                        description: Type of analyzer
-                        type: string
-                        enum:
-                          - pattern
-                      pattern:
-                        type: string
+              $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_analysis"
             index:
               type: object
               additionalProperties: false
               properties:
+                codec:
+                  $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_index/properties/codec"
+                mapping:
+                  $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_index/properties/mapping"
                 mode:
                   description: Index mode for lookup indices.
                   type: string
                   enum:
                     - lookup
-                codec:
-                  description: >
-                    Type of compression to use. The default is to use LZ4, `best_compression` uses DEFLATE,
-                    with higher compression but lower ingestion performance.
-                  type: string
-                  enum:
-                    - default
-                    - best_compression
                 refresh_interval:
                   description: >
                     How often to perform a refresh operation, which makes recent changes to the index visible to search.
                   type: string
                   example: 1s
-                mapping:
-                  type: object
-                  additionalProperties: false
-                  patternProperties:
-                    "^(dimension|nested|total)_fields$":
-                      type: object
-                      additionalProperties: false
-                      properties:
-                        limit:
-                          description: Limit on the number of fields of this kind on this data stream.
-                          type: integer
                 sort:
-                  type: object
-                  additionalProperties: false
-                  properties:
-                    field:
-                      description: Fields used to sort the document in the Lucene segments.
-                      oneOf:
-                        - type: string
-                        - type: array
-                          items:
-                            type: string
-                    order:
-                      description: The sort order to use for each field.
-                      oneOf:
-                        - type: string
-                          enum:
-                            - asc
-                            - desc
-                        - type: array
-                          items:
-                            type: string
-                            enum:
-                              - asc
-                              - desc
+                  $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_index/properties/sort"
                 number_of_shards:
-                  description: Number of primary shards that the data stream should have.
-                  type: integer
-                  minimum: 1
-                  default: 1
+                  $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_number_of_shards"
                 number_of_routing_shards:
                   description: Number used when splitting shards.
-                  type: integer
-                  minimum: 1
-                  default: 1
+                  $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_number_of_shards"
                 hidden:
                   description: Makes the index hidden.
                   type: boolean
