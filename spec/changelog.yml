@@ -39,7 +39,7 @@
     - description: Fix dynamic_date_formats example type in data stream manifest schema.
       type: bugfix
       link: https://github.com/elastic/package-spec/pull/966
-    - description: Introduce misconfiguration_workflow_supported and vulnerability_workflow_supported category
+    - description: Introduce misconfiguration_workflow and vulnerability_workflow category
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/974
 - version: 3.4.1
