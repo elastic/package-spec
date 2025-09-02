@@ -62,6 +62,9 @@ func (l *yamlReferenceLoader) LoadJSON() (any, error) {
 	if err != nil {
 		return nil, fmt.Errorf("schema unmarshalling failed (path: %s): %w", l.source, err)
 	}
+	if len(schema.Spec) == 0 {
+		return nil, fmt.Errorf("no spec found in schema file (path: %s)", l.source)
+	}
 
 	// fixJSONNumbers ensures that the numbers in the resulting spec are of type `json.Number`, that is
 	// what the gojsonschema library expects. Without this, gojsonschema complains about some integer types
