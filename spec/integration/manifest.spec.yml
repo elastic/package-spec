@@ -67,6 +67,7 @@ spec:
           - languages
           - load_balancer
           - message_queue
+          - misconfiguration_workflow_supported
           - monitoring
           - native_search
           - network
@@ -89,6 +90,7 @@ spec:
           - virtualization
           - vpn_security
           - vulnerability_management
+          - vulnerability_workflow_supported
           - web
           - web_application_firewall
           - websphere
