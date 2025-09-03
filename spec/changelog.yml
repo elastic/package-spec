@@ -6,7 +6,7 @@
   changes:
     - description: Add support for opentelemetry category.
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/123
+      link: https://github.com/elastic/package-spec/pull/940
     - description: Add support for `slo` assets.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/767
