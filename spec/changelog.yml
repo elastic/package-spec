@@ -4,15 +4,17 @@
 ##
 - version: 3.5.0-next
   changes:
-    - description: Add support for opentelemetry category.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/940
     - description: Add support for `slo` assets.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/767
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+- version: 3.4.2-next
+  changes:
+    - description: Add support for opentelemetry category.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/940
 - version: 3.4.1
   changes:
     - description: Add fips_compatible boolean flag for input package policy templates.
