@@ -28,8 +28,8 @@ steps:
 EOF
 
 # Generate each test we want to do.
-compliance_test 9.1.0-SNAPSHOT 3.4.1
-compliance_test 8.19.0-SNAPSHOT 3.4.1
+compliance_test 9.1.0-SNAPSHOT 3.4.2
+compliance_test 8.19.0-SNAPSHOT 3.4.2
 compliance_test 9.0.1 3.3.5
 compliance_test 8.14.0 3.1.5
 compliance_test 8.9.0 2.7.0
@@ -39,12 +39,14 @@ cat <<EOF
       - wait: ~
         continue_on_failure: true
       - label: ":junit: Annotate compliance test results"
+        agents:
+          # requires at least "bash", "curl" and "git"
+          image: "docker.elastic.co/ci-agent-images/buildkite-junit-annotate:1.0"
         plugins:
-          - junit-annotate#v2.5.0:
+          - junit-annotate#v2.7.0:
               artifacts: "compliance/report-*.xml"
               context: "compliance"
               report-skipped: true
               always-annotate: true
-        agents:
-          provider: "gcp"
+              run-in-docker: false
 EOF

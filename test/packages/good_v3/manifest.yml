@@ -105,6 +105,11 @@ policy_templates:
             title: API URL
             show_user: true
             required: true
+          - name: interval
+            type: duration
+            min_duration: 10s
+            max_duration: 4h3m2s1ms
+            default: 1m
   - name: apache-agentless
     title: Apache logs and metrics in agentless
     description: Collect logs and metrics from Apache instances in agentless

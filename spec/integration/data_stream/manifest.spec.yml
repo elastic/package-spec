@@ -39,8 +39,8 @@ spec:
       patternProperties:
         "^[a-zA-Z0-9_]+$":
           type: array
+          minItems: 1
           items:
-            minItems: 1
             type: object
             required:
               - name
@@ -67,7 +67,15 @@ spec:
             examples:
               - hosts
           type:
-            description: Data type of variable.
+            description: >
+              Data type of variable.
+              
+              A duration type is a sequence of decimal numbers, each with a unit
+              suffix, such as "60s", "1m" or "2h45m".
+              Duration values must follow these rules:
+              - Use time units of "ms", "s", "m", "h".
+              - When using min_duration, default, and max_duration,
+                they must satisfy: 0 <= min_duration <= default <= max_duration
             type: string
             enum:
               - bool
@@ -80,6 +88,7 @@ spec:
               - time_zone
               - url
               - yaml
+              - duration
             examples:
               - text
           title:
@@ -144,6 +153,14 @@ spec:
               - ['http', 'https']
               - ['redis', 'rediss']
               - ['', 'mysql']
+          min_duration:
+            description: The minimum allowed duration value for duration data types. This property can only be used when the type is set to 'duration'.
+            type: string
+            pattern: '^(\d+[smh]|\d+ms)+$'
+          max_duration:
+            description: The maximum allowed duration value for duration data types. This property can only be used when the type is set to 'duration'.
+            type: string
+            pattern: '^(\d+[smh]|\d+ms)+$'
           default:
             description: Default value(s) for variable
             $ref: "#/definitions/input_variable_value"
@@ -197,6 +214,25 @@ spec:
            then:
              required:
                - secret
+         - if:
+             properties:
+               type:
+                 const: duration
+           then:
+             properties:
+               default:
+                 type: string
+                 pattern: '^(\d+[smh]|\d+ms)+$'
+         - if:
+             not:
+               properties:
+                 type:
+                   const: duration
+           then:
+             not:
+               anyOf:
+                 - required: [min_duration]
+                 - required: [max_duration]
         required:
           - name
           - type
@@ -211,75 +247,11 @@ spec:
           additionalProperties: false
           properties:
             analysis:
-              type: object
-              additionalProperties: false
-              properties:
-                analyzer:
-                  description: Definition of custom analyzer.
-                  type: object
-                  additionalProperties:
-                    type: object
-                    additionalProperties: false
-                    properties:
-                      type:
-                        description: Type of analyzer
-                        type: string
-                        enum:
-                          - pattern
-                      pattern:
-                        type: string
+              $ref: "#/definitions/index_template_setting_analysis"
             index:
-              type: object
-              additionalProperties: false
-              properties:
-                codec:
-                  description: >
-                    Type of compression to use. The default is to use LZ4, `best_compression` uses DEFLATE,
-                    with higher compression but lower ingestion performance.
-                  type: string
-                  enum:
-                    - default
-                    - best_compression
-                mapping:
-                  type: object
-                  additionalProperties: false
-                  patternProperties:
-                    "^(dimension|nested|total)_fields$":
-                      type: object
-                      additionalProperties: false
-                      properties:
-                        limit:
-                          description: Limit on the number of fields of this kind on this data stream.
-                          type: integer
-                sort:
-                  type: object
-                  additionalProperties: false
-                  properties:
-                    field:
-                      description: Fields used to sort the document in the Lucene segments.
-                      oneOf:
-                        - type: string
-                        - type: array
-                          items:
-                            type: string
-                    order:
-                      description: The sort order to use for each field.
-                      oneOf:
-                        - type: string
-                          enum:
-                            - asc
-                            - desc
-                        - type: array
-                          items:
-                            type: string
-                            enum:
-                              - asc
-                              - desc
+              $ref: "#/definitions/index_template_setting_index"
             number_of_shards:
-              description: Number of primary shards that the data stream should have.
-              type: integer
-              minimum: 1
-              default: 1
+              $ref: "#/definitions/index_template_setting_number_of_shards"
         mappings:
           description: Mappings section of index template
           type: object
@@ -308,9 +280,9 @@ spec:
               type: array
               items:
                 type: string
-                examples:
-                  - ["strict_date_optional_time","yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"] # This is the default if not set.
-                  - ["MM/dd/yyyy"]
+              examples:
+                - ["strict_date_optional_time","yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"] # This is the default if not set.
+                - ["MM/dd/yyyy"]
             dynamic_templates:
               type: array
               items:
@@ -441,7 +413,6 @@ spec:
 
               type: boolean
               default: true
-
         ingest_pipeline:
           description: Elasticsearch ingest pipeline settings
           type: object
@@ -460,6 +431,76 @@ spec:
             hidden:
               description: Makes the data stream hidden
               type: boolean
+    index_template_setting_analysis:
+      type: object
+      additionalProperties: false
+      properties:
+        analyzer:
+          description: Definition of custom analyzer.
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties: false
+            properties:
+              type:
+                description: Type of analyzer
+                type: string
+                enum:
+                  - pattern
+              pattern:
+                type: string
+    index_template_setting_index:
+      type: object
+      additionalProperties: false
+      properties:
+        codec:
+          description: >
+            Type of compression to use. The default is to use LZ4, `best_compression` uses DEFLATE,
+            with higher compression but lower ingestion performance.
+          type: string
+          enum:
+            - default
+            - best_compression
+        mapping:
+          type: object
+          additionalProperties: false
+          patternProperties:
+            "^(dimension|nested|total)_fields$":
+              type: object
+              additionalProperties: false
+              properties:
+                limit:
+                  description: Limit on the number of fields of this kind on this data stream.
+                  type: integer
+        sort:
+          type: object
+          additionalProperties: false
+          properties:
+            field:
+              description: Fields used to sort the document in the Lucene segments.
+              oneOf:
+                - type: string
+                - type: array
+                  items:
+                    type: string
+            order:
+              description: The sort order to use for each field.
+              oneOf:
+                - type: string
+                  enum:
+                    - asc
+                    - desc
+                - type: array
+                  items:
+                    type: string
+                    enum:
+                      - asc
+                      - desc
+    index_template_setting_number_of_shards:
+      description: Number of primary shards that the data stream should have.
+      type: integer
+      minimum: 1
+      default: 1
   properties:
     dataset:
       description: Name of data set.
@@ -606,6 +647,17 @@ spec:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.5.0
+    patch:
+      # Require >=3.5.0 to use the duration variable type.
+      - op: remove
+        path: /definitions/vars/items/properties/type/enum/10
+      - op: remove
+        path: /definitions/vars/items/properties/max_duration
+      - op: remove
+        path: /definitions/vars/items/properties/min_duration
+      - op: remove
+        path: /definitions/vars/items/allOf/2
   - before: 3.3.2
     patch:
       - op: remove

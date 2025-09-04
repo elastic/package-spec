@@ -13,12 +13,20 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-//go:embed spec spec/integration/_dev spec/integration/data_stream/_dev spec/input/_dev
+//go:embed spec spec/integration/_dev spec/integration/data_stream/_dev spec/input/_dev docs_schema
 var content embed.FS
 
 // FS returns an io/fs.FS for accessing the "package-spec/spec" contents.
 func FS() fs.FS {
 	fs, err := fs.Sub(content, "spec")
+	if err != nil {
+		panic(err)
+	}
+	return fs
+}
+
+func DocsFS() fs.FS {
+	fs, err := fs.Sub(content, "docs_schema")
 	if err != nil {
 		panic(err)
 	}
