@@ -34,6 +34,7 @@ func TestValidateFile(t *testing.T) {
 		"good_v2":                            {},
 		"good_v3":                            {},
 		"good_input":                         {},
+		"good_input_otel":                    {},
 		"good_content":                       {},
 		"good_lookup_index":                  {},
 		"deploy_custom_agent":                {},
@@ -47,6 +48,7 @@ func TestValidateFile(t *testing.T) {
 		"profiling_symbolizer":               {},
 		"logs_synthetic_mode":                {},
 		"kibana_configuration_links":         {},
+		"with_links":                         {},
 		"bad_duration_vars": {
 			"manifest.yml",
 			[]string{
@@ -291,7 +293,6 @@ func TestValidateFile(t *testing.T) {
 				`policy template "unsupported_modes" enables deployment mode "default" but no input supports this mode`,
 			},
 		},
-		"with_links": {},
 		"bad_discovery_fields": {
 			"manifest.yml",
 			[]string{
@@ -301,6 +302,12 @@ func TestValidateFile(t *testing.T) {
 				"field discovery.fields.2: Additional property value is not allowed",
 				"field discovery.datasets.0.name: Invalid type. Expected: string, given: integer",
 				"field discovery.datasets.1: Additional property foo is not allowed",
+			},
+		},
+		"bad_input_otel_old_version": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0.input: Must not be present",
 			},
 		},
 	}
