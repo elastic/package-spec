@@ -21,6 +21,9 @@
       link: https://github.com/elastic/package-spec/pull/965
 - version: 3.4.2-next
   changes:
+    - description: Add support for opentelemetry category.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/940
     - description: Add optional docs_structure_enforced parameter to validation.yml.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/924
