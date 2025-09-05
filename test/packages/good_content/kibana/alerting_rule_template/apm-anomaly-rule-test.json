@@ -2,10 +2,9 @@
   "id": "apm-anomaly-rule-test",
   "type": "alerting_rule_template",
   "attributes": {
-    "name": "APM Anomaly rule test",
+    "name": "APM Anomaly rule test v2",
     "tags": ["Testing"],
     "ruleTypeId": "apm.anomaly",
-    "consumer": "alerts",
     "schedule": {
       "interval": "1m"
     },
