@@ -122,6 +122,14 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  # Reserve otelcol input name before 3.5.0.
+  - before: 3.5.0
+    patch:
+      - op: add
+        path: "/properties/policy_templates/items/properties/input"
+        value:
+          not:
+            const: otelcol
   - before: 2.12.0
     patch:
       - op: remove

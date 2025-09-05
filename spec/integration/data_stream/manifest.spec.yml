@@ -562,6 +562,8 @@ spec:
             - aws/metrics
             - s3
             - file
+            not:
+              const: otelcol
           title:
             description: >
               Title of the stream. It should include the source of the data that is
