@@ -5,7 +5,6 @@
     "name": "APM Anomaly rule test",
     "tags": ["Testing"],
     "ruleTypeId": "apm.anomaly",
-    "consumer": "alerts",
     "schedule": {
       "interval": "1m"
     },
@@ -21,5 +20,5 @@
     }
   },
   "coreMigrationVersion": "8.8.0",
-  "typeMigrationVersion": "10.6.0"
+  "typeMigrationVersion": "10.1.0"
 }
