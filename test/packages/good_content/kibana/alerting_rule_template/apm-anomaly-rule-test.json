@@ -2,7 +2,7 @@
   "id": "apm-anomaly-rule-test",
   "type": "alerting_rule_template",
   "attributes": {
-    "name": "APM Anomaly rule test v2",
+    "name": "APM Anomaly rule test",
     "tags": ["Testing"],
     "ruleTypeId": "apm.anomaly",
     "schedule": {
