@@ -68,4 +68,4 @@ versions:
   - before: 3.4.0
     patch:
       - op: remove
-        path: "/contents/3" # remove AI prompt definitions
+        path: "/contents/2" # remove AI prompt definitions
