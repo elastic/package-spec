@@ -2,6 +2,8 @@ module github.com/elastic/package-spec/v3
 
 go 1.24.0
 
+toolchain go1.24.7
+
 require (
 	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/PaesslerAG/jsonpath v0.1.1
