@@ -32,7 +32,9 @@ checkout_merge() {
     }
 }
 
-export GO_VERSION="$(< .go-version)"
+FILE_GO_VERSION=$(cat .go-version)
+GO_VERSION="${GO_VERSION:-${FILE_GO_VERSION}}"
+export GO_VERSION
 pull_request="${BUILDKITE_PULL_REQUEST:-false}"
 
 if [[ "${pull_request}" == "false" ]]; then

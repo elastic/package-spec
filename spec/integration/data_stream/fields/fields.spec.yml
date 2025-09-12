@@ -612,7 +612,7 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
-  - before: 3.5.0
+  - before: 3.6.0
     patch:
       - op: remove
         path: "/items/properties/type/enum/35" #remove semantic_text type
