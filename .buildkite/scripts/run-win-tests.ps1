@@ -30,7 +30,7 @@ function installGoDependencies {
 }
 
 fixCRLF
-withGolang "1.24.6" # Latest 1.24 version in Chocolatey.
+withGolang $env:GO_VERSION
 installGoDependencies
 
 $ErrorActionPreference = "Continue" # set +e
