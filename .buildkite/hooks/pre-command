@@ -7,6 +7,5 @@ set -euo pipefail
 # Secrets must be redacted
 # https://buildkite.com/docs/pipelines/managing-log-output#redacted-environment-variables
 
-FILE_GO_VERSION=$(cat .go-version)
-GO_VERSION="${GO_VERSION:-${FILE_GO_VERSION}}"
+GO_VERSION=$(cat .go-version)
 export GO_VERSION
