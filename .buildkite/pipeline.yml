@@ -35,6 +35,9 @@ steps:
       - label: ":windows: Tests on Windows"
         key: windows-test
         command: ".buildkite/scripts/run-win-tests.ps1"
+        env:
+          # Latest 1.24 version supported by Chocolatey.
+          GO_VERSION: "1.24.6"
         agents:
           provider: "gcp"
           image: "${GO_WINDOWS_AGENT_IMAGE}"

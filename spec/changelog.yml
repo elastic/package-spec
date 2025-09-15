@@ -2,14 +2,18 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 3.5.0-next
+- version: 3.6.0-next
   changes:
+    # Pending on https://github.com/elastic/kibana/pull/186974
     - description: Add support for `slo` assets.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/767
+    # Pending on https://github.com/elastic/kibana/issues/220294
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+- version: 3.5.0
+  changes:
     - description: Add `duration` variable data type with `min_duration` and `max_duration` validation properties.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/948
@@ -22,7 +26,7 @@
     - description: Add support for OTel collector configuration in input packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/975
-- version: 3.4.2-next
+- version: 3.4.2
   changes:
     - description: Add support for opentelemetry category.
       type: enhancement
@@ -39,7 +43,7 @@
     - description: Fix paths with slashes displayed on Windows.
       type: bugfix
       link: https://github.com/elastic/package-spec/pull/953
-    - description: Add support for lookup indices.
+    - description: Add support for lookup indices in transforms.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/936
     - description: Fix dynamic_date_formats example type in data stream manifest schema.

@@ -57,13 +57,15 @@ spec:
       contentMediaType: "application/json"
       pattern: '^.+\.json$'
 versions:
+  - before: 3.6.0
+    patch:
+      - op: remove
+        path: "/contents/2" # remove SLO definitions
   - before: 3.5.0
     patch:
       - op: remove
-        path: "/contents/5" # remove alerting rule template definitions
+        path: "/contents/4" # remove alerting rule template definitions
   - before: 3.4.0
     patch:
       - op: remove
-        path: "/contents/3" # remove AI prompt definitions
-      - op: remove
-        path: "/contents/2" # remove SLO definitions
+        path: "/contents/2" # remove AI prompt definitions
