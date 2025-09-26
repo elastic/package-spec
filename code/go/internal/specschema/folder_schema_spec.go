@@ -40,20 +40,3 @@ func (f *folderSchemaSpec) resolve(target semver.Version) (*folderItemSpec, erro
 	}
 	return &resolved, nil
 }
-
-func (f *folderSchemaSpec) patchForVersion(target semver.Version) ([]byte, error) {
-	var patch []any
-	for _, version := range f.Versions {
-		if sv, err := semver.NewVersion(version.Before); err != nil {
-			return nil, err
-		} else if !target.LessThan(sv) {
-			continue
-		}
-
-		patch = append(patch, version.Patch...)
-	}
-	if len(patch) == 0 {
-		return nil, nil
-	}
-	return json.Marshal(patch)
-}

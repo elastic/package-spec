@@ -5,6 +5,7 @@ TEST_RESULTS_FOLDER = $(PWD)/build/test-results
 golicenser_cmd = go run github.com/elastic/go-licenser
 golint_cmd = go run golang.org/x/lint/golint
 gotestsum_cmd = go run gotest.tools/gotestsum
+staticcheck_cmd = go run honnef.co/go/tools/cmd/staticcheck
 goimports_cmd = go run golang.org/x/tools/cmd/goimports
 
 update:
@@ -17,6 +18,7 @@ check: lint check-license check-spec format check-git-clean
 # which are not compliant with linter rules. The golint tool doesn't support ignore comments.
 lint:
 	@go list ./... | grep -v yamlschema | xargs -n 1 $(golint_cmd) -set_exit_status
+	@$(staticcheck_cmd) ./...
 
 format:
 	@${goimports_cmd} -local github.com/elastic/package-spec/ -w .

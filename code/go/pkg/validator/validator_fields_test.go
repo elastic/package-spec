@@ -538,11 +538,11 @@ func TestValidateFields(t *testing.T) {
 
 // encodeContent encodes the content as YAML, unless it is already an array of bytes, that is returned as is.
 func encodeContent(content any) ([]byte, error) {
-	switch content.(type) {
+	switch content := content.(type) {
 	case nil:
 		return nil, nil
 	case []byte:
-		return content.([]byte), nil
+		return content, nil
 	default:
 		var jsonFields bytes.Buffer
 		enc := yaml.NewEncoder(&jsonFields)

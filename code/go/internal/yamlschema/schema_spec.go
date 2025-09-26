@@ -46,20 +46,3 @@ func (i *itemSchemaSpec) resolve(target semver.Version) (map[string]interface{},
 	}
 	return resolved, nil
 }
-
-func (i *itemSchemaSpec) patchForVersion(target semver.Version) ([]byte, error) {
-	var patch []any
-	for _, version := range i.Versions {
-		if sv, err := semver.NewVersion(version.Before); err != nil {
-			return nil, err
-		} else if !target.LessThan(sv) {
-			continue
-		}
-
-		patch = append(patch, version.Patch...)
-	}
-	if len(patch) == 0 {
-		return nil, nil
-	}
-	return json.Marshal(patch)
-}

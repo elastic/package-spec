@@ -7,9 +7,11 @@
 package main
 
 import (
-	_ "github.com/elastic/elastic-package"
-	_ "github.com/elastic/go-licenser"
 	_ "golang.org/x/lint"
 	_ "golang.org/x/tools/cmd/goimports"
 	_ "gotest.tools/gotestsum"
+	_ "honnef.co/go/tools/cmd/staticcheck"
+
+	_ "github.com/elastic/elastic-package"
+	_ "github.com/elastic/go-licenser"
 )
