@@ -41,35 +41,33 @@ policy_templates:
     template_path: missing.yml.hbs
 `),
 			wantErr: true,
-			errMsg:  "references template_path \"missing.yml.hbs\" but file",
+			errMsg:  "references template_path \"missing.yml.hbs\": file \"/test/package/agent/input/missing.yml.hbs\" does not exist",
 		},
 		{
 			name: "integration_manifest_with_policy_template_success",
 			fsys: newMockFS().
 				WithFile("manifest.yml", `
 type: integration
-inputs:
-  - title: Test UDP
-    policy_templates:
-      - name: Test UDP
-        template_path: udp.yml.hbs
+policy_templates:
+  - inputs:
+    - title: Test UDP
+      template_path: udp.yml.hbs
 `).
 				WithFile("agent/input/udp.yml.hbs", "# UDP template"),
 			wantErr: false,
 		},
 		{
-			name: "missing_template_file",
+			name: "integration_manifest_with_policy_template_invalid",
 			fsys: newMockFS().
 				WithFile("manifest.yml", `
 type: integration
-inputs:
-  - title: Test UDP
-    policy_templates:
-      - name: Test UDP
-        template_path: missing.yml.hbs
+policy_templates:
+  - inputs:
+    - title: Test UDP
+      template_path: missing.yml.hbs
 `),
 			wantErr: true,
-			errMsg:  "references template_path \"missing.yml.hbs\" but file",
+			errMsg:  "references template_path \"missing.yml.hbs\": file \"/test/package/agent/input/missing.yml.hbs\" does not exist",
 		},
 	}
 
