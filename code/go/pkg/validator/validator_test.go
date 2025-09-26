@@ -310,6 +310,27 @@ func TestValidateFile(t *testing.T) {
 				"field policy_templates.0.input: Must not be present",
 			},
 		},
+		"input_policy_template_valid":       {},
+		"integration_policy_template_valid": {},
+		"stream_templates_valid":            {},
+		"input_policy_template_invalid": {
+			invalidPkgFilePath: "manifest.yml",
+			expectedErrContains: []string{
+				"policy template \"sample\" references template_path \"missing.yml.hbs\": file \"../../../../test/packages/input_policy_template_invalid/agent/input/missing.yml.hbs\" does not exist",
+			},
+		},
+		"integration_policy_template_invalid": {
+			invalidPkgFilePath: "manifest.yml",
+			expectedErrContains: []string{
+				"policy template \"sample\" references template_path \"missing.yml.hbs\": file \"../../../../test/packages/integration_policy_template_invalid/agent/input/missing.yml.hbs\" does not exist",
+			},
+		},
+		"stream_templates_invalid": {
+			invalidPkgFilePath: "data_stream/test_stream/manifest.yml",
+			expectedErrContains: []string{
+				"stream \"filestream\" references template_path \"missing.yml.hbs\" but file \"../../../../test/packages/stream_templates_invalid/data_stream/test_stream/agent/stream/missing.yml.hbs\" does not exist",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {

@@ -42,7 +42,7 @@ func validateDataStreamManifestTemplates(fsys fspath.FS, manifestPath, dataStrea
 
 	var manifest struct {
 		Streams []struct {
-			Title        string `yaml:"title"`
+			Input        string `yaml:"input"`
 			TemplatePath string `yaml:"template_path"`
 		} `yaml:"streams"`
 	}
@@ -63,7 +63,7 @@ func validateDataStreamManifestTemplates(fsys fspath.FS, manifestPath, dataStrea
 		if err != nil {
 			errs = append(errs, specerrors.NewStructuredErrorf(
 				"file \"%s\" is invalid: stream \"%s\" references template_path \"%s\" but file \"%s\" does not exist",
-				fsys.Path(manifestPath), stream.Title, stream.TemplatePath, fsys.Path(templatePath)))
+				fsys.Path(manifestPath), stream.Input, stream.TemplatePath, fsys.Path(templatePath)))
 		}
 	}
 
