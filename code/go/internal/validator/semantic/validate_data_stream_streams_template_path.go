@@ -7,6 +7,7 @@ package semantic
 import (
 	"io/fs"
 	"path"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -57,7 +58,18 @@ func validateDataStreamManifestTemplates(fsys fspath.FS, manifestPath, dataStrea
 			continue // template_path is optional
 		}
 
-		// Check if template file exists
+		// First check if template_path is a relative path to the agents/stream directory
+		if strings.HasPrefix(stream.TemplatePath, "./agent/stream") {
+			templatePath := path.Join("data_stream", dataStreamName, stream.TemplatePath)
+			if _, err := fs.Stat(fsys, templatePath); err != nil {
+				errs = append(errs, specerrors.NewStructuredErrorf(
+					"file \"%s\" is invalid: stream \"%s\" references template_path \"%s\" with redundant prefix \"./agent/stream\"; use \"agent/stream\" instead",
+					fsys.Path(manifestPath), stream.Input, stream.TemplatePath))
+				continue
+			}
+		}
+
+		// Fallback to check if template_path is the name of the file in the agents/stream directory
 		templatePath := path.Join("data_stream", dataStreamName, "agent", "stream", stream.TemplatePath)
 		_, err := fs.Stat(fsys, templatePath)
 		if err != nil {

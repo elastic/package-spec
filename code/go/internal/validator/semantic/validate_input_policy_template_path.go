@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/fs"
 	"path"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -77,6 +78,16 @@ func ValidateInputPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 }
 
 func validateTemplatePath(fsys fspath.FS, tmplPath string) error {
+	// First check if template_path is a relative path to the agents/input directory
+	if strings.HasPrefix(tmplPath, "./agent/input") {
+		templatePath := path.Join(tmplPath)
+		if _, err := fs.Stat(fsys, templatePath); err != nil {
+			return fmt.Errorf("file \"%s\" does not exist", fsys.Path(templatePath))
+		}
+		return nil
+	}
+
+	// fallback to check if template_path is the name of the file in the agents/input directory
 	templatePath := path.Join("agent", "input", tmplPath)
 	_, err := fs.Stat(fsys, templatePath)
 	if err != nil {
