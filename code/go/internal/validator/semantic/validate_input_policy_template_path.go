@@ -5,7 +5,7 @@
 package semantic
 
 import (
-	"fmt"
+	"errors"
 	"io/fs"
 	"path"
 	"strings"
@@ -14,6 +14,10 @@ import (
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
+)
+
+var (
+	errNotExist = errors.New("file does not exist")
 )
 
 // ValidateInputPolicyTemplates validates that all referenced template_path files exist for integration and input policy templates
@@ -82,7 +86,7 @@ func validateTemplatePath(fsys fspath.FS, tmplPath string) error {
 	if strings.HasPrefix(tmplPath, "./agent/input") {
 		templatePath := path.Join(tmplPath)
 		if _, err := fs.Stat(fsys, templatePath); err != nil {
-			return fmt.Errorf("file \"%s\" does not exist", fsys.Path(templatePath))
+			return errNotExist
 		}
 		return nil
 	}
@@ -91,7 +95,7 @@ func validateTemplatePath(fsys fspath.FS, tmplPath string) error {
 	templatePath := path.Join("agent", "input", tmplPath)
 	_, err := fs.Stat(fsys, templatePath)
 	if err != nil {
-		return fmt.Errorf("file \"%s\" does not exist", fsys.Path(templatePath))
+		return errNotExist
 	}
 
 	return nil
