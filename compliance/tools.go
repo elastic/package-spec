@@ -8,6 +8,7 @@ package main
 
 import (
 	_ "golang.org/x/lint"
+	_ "golang.org/x/tools/cmd/goimports"
 	_ "gotest.tools/gotestsum"
 	_ "honnef.co/go/tools/cmd/staticcheck"
 
