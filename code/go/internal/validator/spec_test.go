@@ -152,3 +152,23 @@ func TestFolderSpecInvalid(t *testing.T) {
 	}
 
 }
+
+func Test_ValidateStreamTemplates(t *testing.T) {
+	spec, err := NewSpec(*semver.MustParse("3.2.0"))
+	require.NoError(t, err)
+
+	// valid package
+	pkg, err := packages.NewPackage("testdata/packages/stream_templates_valid")
+	require.NoError(t, err)
+
+	errs := spec.ValidatePackage(*pkg)
+	require.Empty(t, errs)
+
+	// invalid package
+	pkg, err = packages.NewPackage("testdata/packages/stream_templates_invalid")
+	require.NoError(t, err)
+
+	errs = spec.ValidatePackage(*pkg)
+	require.NotEmpty(t, errs)
+	assert.Contains(t, errs.Error(), "references template_path \"missing.yml.hbs\" but file \"testdata/packages/stream_templates_invalid/data_stream/test_stream/agent/stream/missing.yml.hbs\"")
+}
