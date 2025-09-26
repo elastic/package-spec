@@ -11,9 +11,10 @@ import (
 	"testing/fstest"
 	"time"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 )
 
 // mockFS implements fspath.FS for testing

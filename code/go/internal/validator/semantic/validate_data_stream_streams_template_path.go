@@ -8,9 +8,10 @@ import (
 	"io/fs"
 	"path"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
-	"gopkg.in/yaml.v3"
 )
 
 // ValidateStreamTemplates validates that all referenced template_path files exist for data streams
