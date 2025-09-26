@@ -35,7 +35,7 @@ go mod download -x
 echo "--- Running unit tests"
 $ErrorActionPreference = "Continue" # set +e
 
-gotestsum --format testname --junitfile junit-win-report.xml -- -v ./code/go/...
+go run gotest.tools/gotestsum --format testname --junitfile junit-win-report.xml -- -v ./code/go/...
 
 $EXITCODE=$LASTEXITCODE
 $ErrorActionPreference = "Stop"
