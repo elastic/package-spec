@@ -5,6 +5,7 @@
 package semantic
 
 import (
+	"fmt"
 	"io/fs"
 	"path"
 
@@ -25,18 +26,15 @@ func ValidateInputPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 	}
 
 	var manifest struct { // package manifest
-		Type   string `yaml:"type"` // integration or input
-		Inputs []struct {
-			Title           string     `yaml:"title"`
-			PolicyTemplates []struct { // policy templates reference for integration type packages
-				Name         string `yaml:"name"`
-				TemplatePath string `yaml:"template_path"`
-			} `yaml:"policy_templates"`
-		} `yaml:"inputs"`
+		Type string `yaml:"type"` // integration or input
 
-		PolicyTemplates []struct { // policy templates reference for input type packages
+		PolicyTemplates []struct {
 			Name         string `yaml:"name"`
-			TemplatePath string `yaml:"template_path"` // optional
+			TemplatePath string `yaml:"template_path"` // optional, input type packages
+			Inputs       []struct {
+				Title        string `yaml:"title"`
+				TemplatePath string `yaml:"template_path"` // optional, integration type packages
+			} `yaml:"inputs"`
 		} `yaml:"policy_templates"`
 	}
 
@@ -47,16 +45,16 @@ func ValidateInputPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 
 	switch manifest.Type {
 	case "integration":
-		for _, input := range manifest.Inputs {
-			for _, policyTemplate := range input.PolicyTemplates {
-				if policyTemplate.TemplatePath == "" {
+		for _, policyTemplate := range manifest.PolicyTemplates {
+			for _, input := range policyTemplate.Inputs {
+				if input.TemplatePath == "" {
 					continue // template_path is optional
 				}
-				err := validateTemplatePath(fsys, policyTemplate.TemplatePath)
+				err := validateTemplatePath(fsys, input.TemplatePath)
 				if err != nil {
 					errs = append(errs, specerrors.NewStructuredErrorf(
-						"file \"%s\" is invalid: policy template \"%s\" references template_path \"%s\" but file \"%s\" does not exist",
-						fsys.Path(manifestPath), policyTemplate.Name, policyTemplate.TemplatePath, fsys.Path(policyTemplate.TemplatePath)))
+						"file \"%s\" is invalid: policy template \"%s\" references template_path \"%s\": %s",
+						fsys.Path(manifestPath), policyTemplate.Name, input.TemplatePath, err.Error()))
 				}
 			}
 		}
@@ -68,8 +66,8 @@ func ValidateInputPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 			err := validateTemplatePath(fsys, policyTemplate.TemplatePath)
 			if err != nil {
 				errs = append(errs, specerrors.NewStructuredErrorf(
-					"file \"%s\" is invalid: policy template \"%s\" references template_path \"%s\" but file \"%s\" does not exist",
-					fsys.Path(manifestPath), policyTemplate.Name, policyTemplate.TemplatePath, fsys.Path(policyTemplate.TemplatePath)))
+					"file \"%s\" is invalid: policy template \"%s\" references template_path \"%s\": %s",
+					fsys.Path(manifestPath), policyTemplate.Name, policyTemplate.TemplatePath, err.Error()))
 			}
 		}
 	}
@@ -81,7 +79,7 @@ func validateTemplatePath(fsys fspath.FS, tmplPath string) error {
 	templatePath := path.Join("agent", "input", tmplPath)
 	_, err := fs.Stat(fsys, templatePath)
 	if err != nil {
-		return err
+		return fmt.Errorf("file \"%s\" does not exist", fsys.Path(templatePath))
 	}
 
 	return nil
