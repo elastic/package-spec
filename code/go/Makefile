@@ -22,8 +22,6 @@ lint:
 	@go list ./... | grep -v yamlschema | xargs -n 1 $(golint_cmd) -set_exit_status
 	@$(staticcheck_cmd) ./...
 
-check-static:
-
 check-license:
 	@$(golicenser_cmd) -license Elastic -d
 
