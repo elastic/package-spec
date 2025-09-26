@@ -223,8 +223,10 @@ func (fs *mockFS) Open(name string) (fs.File, error) {
 	return f.open(), nil
 }
 
-var _ fs.File = &mockFile{}
-var _ fs.ReadDirFile = &mockFile{}
+var (
+	_ fs.File        = &mockFile{}
+	_ fs.ReadDirFile = &mockFile{}
+)
 
 type mockFile struct {
 	stat    mockFileInfo
@@ -344,8 +346,7 @@ func (f *mockFile) findFile(name string) (*mockFile, error) {
 }
 
 func (f *mockFile) open() *mockFile {
-	var descriptor mockFile
-	descriptor = *f
+	descriptor := *f
 	if f.content != "" {
 		descriptor.reader = strings.NewReader(f.content)
 	}
@@ -375,8 +376,10 @@ func (f *mockFile) ReadDir(n int) ([]fs.DirEntry, error) {
 	return result, nil
 }
 
-var _ fs.FileInfo = &mockFileInfo{}
-var _ fs.DirEntry = &mockFileInfo{}
+var (
+	_ fs.FileInfo = &mockFileInfo{}
+	_ fs.DirEntry = &mockFileInfo{}
+)
 
 type mockFileInfo struct {
 	name    string

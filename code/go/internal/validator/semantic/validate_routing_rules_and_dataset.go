@@ -27,6 +27,12 @@ func ValidateRoutingRulesAndDataset(fsys fspath.FS) specerrors.ValidationErrors 
 	var errs specerrors.ValidationErrors
 	for _, dataStream := range dataStreams {
 		anyRoutingRules, err := anyRoutingRulesInDataStream(fsys, dataStream)
+		if err != nil {
+			errs.Append(specerrors.ValidationErrors{
+				specerrors.NewStructuredErrorf("failed to find routing rules in data stream %q: %w", dataStream, err),
+			})
+			continue
+		}
 		if !anyRoutingRules {
 			continue
 		}
