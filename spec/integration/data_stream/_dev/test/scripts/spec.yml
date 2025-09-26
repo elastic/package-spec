@@ -1,0 +1,8 @@
+spec:
+  additionalContents: false
+  contents:
+    - description: Script test definitions.
+      type: file
+      contentMediaType: "text/plain"
+      pattern: '^.+\.(txt|txtar)$'
+      required: false
