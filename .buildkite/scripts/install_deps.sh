@@ -90,13 +90,9 @@ with_docker_compose() {
 
 install_go_dependencies() {
     local install_packages=(
-            "github.com/magefile/mage"
-            "github.com/elastic/go-licenser"
-            "golang.org/x/tools/cmd/goimports"
-            "github.com/jstemmer/go-junit-report"
-            "gotest.tools/gotestsum"
+        "github.com/magefile/mage"
     )
     for pkg in "${install_packages[@]}"; do
-        go install "${pkg}@latest"
+        go install "${pkg}@${SETUP_MAGE_VERSION}"
     done
 }
