@@ -24,17 +24,17 @@ func ValidateStreamTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 	}
 
 	for _, dataStream := range dataStreams {
-		manifestPath := path.Join("data_stream", dataStream, "manifest.yml")
-		streamErrs := validateDataStreamManifestTemplates(fsys, manifestPath, dataStream)
+		streamErrs := validateDataStreamManifestTemplates(fsys, dataStream)
 		errs = append(errs, streamErrs...)
 	}
 
 	return errs
 }
 
-func validateDataStreamManifestTemplates(fsys fspath.FS, manifestPath, dataStreamName string) specerrors.ValidationErrors {
+func validateDataStreamManifestTemplates(fsys fspath.FS, dataStreamName string) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
+	manifestPath := path.Join("data_stream", dataStreamName, "manifest.yml")
 	data, err := fs.ReadFile(fsys, manifestPath)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(manifestPath), err)}
