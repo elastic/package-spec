@@ -98,7 +98,7 @@ streams:
     description: Test UDP stream
 `),
 			wantErr: true,
-			errMsg:  "references template_path \"missing.yml.hbs\" but file",
+			errMsg:  "references template_path \"missing.yml.hbs\": open data_stream/test/agent/stream/missing.yml.hbs: file does not exist\n",
 		},
 	}
 

@@ -42,7 +42,7 @@ policy_templates:
     template_path: missing.yml.hbs
 `),
 			wantErr: true,
-			errMsg:  "references template_path \"missing.yml.hbs\": file \"/test/package/agent/input/missing.yml.hbs\" does not exist",
+			errMsg:  "references template_path \"missing.yml.hbs\": open agent/input/missing.yml.hbs: file does not exist",
 		},
 		{
 			name: "integration_manifest_with_policy_template_success",
@@ -68,7 +68,7 @@ policy_templates:
       template_path: missing.yml.hbs
 `),
 			wantErr: true,
-			errMsg:  "references template_path \"missing.yml.hbs\": file \"/test/package/agent/input/missing.yml.hbs\" does not exist",
+			errMsg:  "references template_path \"missing.yml.hbs\": open agent/input/missing.yml.hbs: file does not exist",
 		},
 	}
 
