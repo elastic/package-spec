@@ -4,6 +4,9 @@
 ##
 - version: 3.6.0-next
   changes:
+    - description: Add validation for template_path in policy templates and data streams.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/986
     # Pending on https://github.com/elastic/kibana/pull/186974
     - description: Add support for `slo` assets.
       type: enhancement
