@@ -5,7 +5,6 @@
 package semantic
 
 import (
-	"fmt"
 	"io/fs"
 	"path"
 
@@ -44,9 +43,9 @@ func ValidateInputPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to parse manifest: %w", fsys.Path(manifestPath), err)}
 	}
 
-	switch manifest.Type {
-	case "integration":
-		for _, policyTemplate := range manifest.PolicyTemplates {
+	for _, policyTemplate := range manifest.PolicyTemplates {
+		switch manifest.Type {
+		case "integration":
 			for _, input := range policyTemplate.Inputs {
 				if input.TemplatePath == "" {
 					continue // template_path is optional
@@ -54,21 +53,20 @@ func ValidateInputPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 				err := validateTemplatePath(fsys, input.TemplatePath)
 				if err != nil {
 					errs = append(errs, specerrors.NewStructuredErrorf(
-						"file \"%s\" is invalid: policy template \"%s\" references template_path \"%s\": %s",
-						fsys.Path(manifestPath), policyTemplate.Name, input.TemplatePath, err.Error()))
+						"file \"%s\" is invalid: policy template \"%s\" references template_path \"%s\": %w",
+						fsys.Path(manifestPath), policyTemplate.Name, input.TemplatePath, err))
 				}
 			}
-		}
-	case "input":
-		for _, policyTemplate := range manifest.PolicyTemplates {
+
+		case "input":
 			if policyTemplate.TemplatePath == "" {
 				continue // template_path is optional
 			}
 			err := validateTemplatePath(fsys, policyTemplate.TemplatePath)
 			if err != nil {
 				errs = append(errs, specerrors.NewStructuredErrorf(
-					"file \"%s\" is invalid: policy template \"%s\" references template_path \"%s\": %s",
-					fsys.Path(manifestPath), policyTemplate.Name, policyTemplate.TemplatePath, err.Error()))
+					"file \"%s\" is invalid: policy template \"%s\" references template_path \"%s\": %w",
+					fsys.Path(manifestPath), policyTemplate.Name, policyTemplate.TemplatePath, err))
 			}
 		}
 	}
@@ -80,7 +78,7 @@ func validateTemplatePath(fsys fspath.FS, tmplPath string) error {
 	templatePath := path.Join("agent", "input", tmplPath)
 	_, err := fs.Stat(fsys, templatePath)
 	if err != nil {
-		return fmt.Errorf("file \"%s\" does not exist", fsys.Path(templatePath))
+		return err
 	}
 
 	return nil

@@ -62,8 +62,8 @@ func validateDataStreamManifestTemplates(fsys fspath.FS, dataStreamName string) 
 		_, err := fs.Stat(fsys, templatePath)
 		if err != nil {
 			errs = append(errs, specerrors.NewStructuredErrorf(
-				"file \"%s\" is invalid: stream \"%s\" references template_path \"%s\" but file \"%s\" does not exist",
-				fsys.Path(manifestPath), stream.Input, stream.TemplatePath, fsys.Path(templatePath)))
+				"file \"%s\" is invalid: stream \"%s\" references template_path \"%s\": %w",
+				fsys.Path(manifestPath), stream.Input, stream.TemplatePath, err))
 		}
 	}
 
