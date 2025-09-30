@@ -26,7 +26,7 @@ type mockFS struct {
 func newMockFS() *mockFS {
 	return &mockFS{
 		MapFS:    make(fstest.MapFS),
-		basePath: "/test/package",
+		basePath: filepath.Join("base", "path"),
 	}
 }
 
@@ -76,21 +76,21 @@ func TestValidateStreamTemplates(t *testing.T) {
 			name: "valid_data_stream_with_templates",
 			fsys: newMockFS().
 				WithDataStream("test", "integration").
-				WithFile("data_stream/test/manifest.yml", `
+				WithFile(filepath.Join("data_stream", "test", "manifest.yml"), `
 streams:
   - input: udp
     template_path: udp.yml.hbs
     title: Test UDP
     description: Test UDP stream
 `).
-				WithFile("data_stream/test/agent/stream/udp.yml.hbs", "# UDP template"),
+				WithFile(filepath.Join("data_stream", "test", "agent", "stream", "udp.yml.hbs"), "# UDP template"),
 			wantErr: false,
 		},
 		{
 			name: "missing_template_file",
 			fsys: newMockFS().
 				WithDataStream("test", "integration").
-				WithFile("data_stream/test/manifest.yml", `
+				WithFile(filepath.Join("data_stream", "test", "manifest.yml"), `
 streams:
   - input: udp
     template_path: missing.yml.hbs

@@ -30,7 +30,7 @@ policy_templates:
   - name: udp
     template_path: udp.yml.hbs
 `).
-				WithFile("agent/input/udp.yml.hbs", "# UDP template"),
+				WithFile(filepath.Join("agent", "input", "udp.yml.hbs"), "# UDP template"),
 			wantErr: false,
 		},
 		{
@@ -55,7 +55,7 @@ policy_templates:
     - title: Test UDP
       template_path: udp.yml.hbs
 `).
-				WithFile("agent/input/udp.yml.hbs", "# UDP template"),
+				WithFile(filepath.Join("agent", "input", "udp.yml.hbs"), "# UDP template"),
 			wantErr: false,
 		},
 		{
