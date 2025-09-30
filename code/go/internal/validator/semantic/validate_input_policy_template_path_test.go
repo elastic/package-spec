@@ -9,9 +9,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 )
 
 func TestValidateInputPolicyTemplates(t *testing.T) {
