@@ -316,19 +316,19 @@ func TestValidateFile(t *testing.T) {
 		"input_policy_template_invalid": {
 			invalidPkgFilePath: "manifest.yml",
 			expectedErrContains: []string{
-				"policy template \"sample\" references template_path \"missing.yml.hbs\": open agent/input/missing.yml.hbs: no such file or directory",
+				"policy template \"sample\" references template_path \"missing.yml.hbs\": open " + filepath.Join("agent", "input", "missing.yml.hbs") + ": no such file or directory",
 			},
 		},
 		"integration_policy_template_invalid": {
 			invalidPkgFilePath: "manifest.yml",
 			expectedErrContains: []string{
-				"policy template \"sample\" references template_path \"missing.yml.hbs\": open agent/input/missing.yml.hbs: no such file or directory",
+				"policy template \"sample\" references template_path \"missing.yml.hbs\": open " + filepath.Join("agent", "input", "missing.yml.hbs") + ": no such file or directory",
 			},
 		},
 		"stream_templates_invalid": {
 			invalidPkgFilePath: "data_stream/test_stream/manifest.yml",
 			expectedErrContains: []string{
-				"stream \"filestream\" references template_path \"missing.yml.hbs\": open data_stream/test_stream/agent/stream/missing.yml.hbs: no such file or directory",
+				"stream \"filestream\" references template_path \"missing.yml.hbs\": open " + filepath.Join("data_stream", "test_stream", "agent", "stream", "missing.yml.hbs") + ": no such file or directory",
 			},
 		},
 	}
