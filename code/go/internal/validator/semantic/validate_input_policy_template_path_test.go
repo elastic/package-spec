@@ -5,84 +5,90 @@
 package semantic
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 
+	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 )
 
 func TestValidateInputPolicyTemplates(t *testing.T) {
-	tests := []struct {
-		name    string
-		fsys    fspath.FS
-		wantErr bool
-		errMsg  string
-	}{
-		{
-			name: "input_manifest_with_policy_template_success",
-			fsys: newMockFS().
-				WithFile("manifest.yml", `
+
+	t.Run("input_manifest_with_policy_template_success", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.MkdirAll(filepath.Join(d, "agent", "input"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "manifest.yml"), []byte(`
 type: input
 policy_templates:
   - name: udp
     template_path: udp.yml.hbs
-`).
-				WithFile(filepath.Join("agent", "input", "udp.yml.hbs"), "# UDP template"),
-			wantErr: false,
-		},
-		{
-			name: "input_manifest_with_policy_template_missing_template_file",
-			fsys: newMockFS().
-				WithFile("manifest.yml", `
+`), 0o644)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "agent", "input", "udp.yml.hbs"), []byte("# UDP template"), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateInputPolicyTemplates(fspath.DirFS(d))
+		require.Empty(t, errs, "expected no validation errors")
+
+	})
+
+	t.Run("input_manifest_with_policy_template_missing_template_file", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.MkdirAll(filepath.Join(d, "agent", "input"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "manifest.yml"), []byte(`
 type: input
 policy_templates:
   - name: udp
     template_path: missing.yml.hbs
-`),
-			wantErr: true,
-			errMsg:  "references template_path \"missing.yml.hbs\": open " + filepath.Join("agent", "input", "missing.yml.hbs") + ": file does not exist",
-		},
-		{
-			name: "integration_manifest_with_policy_template_success",
-			fsys: newMockFS().
-				WithFile("manifest.yml", `
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateInputPolicyTemplates(fspath.DirFS(d))
+		require.NotEmpty(t, errs, "expected validation errors")
+		assert.Contains(t, errs.Error(), "references template_path \"missing.yml.hbs\": open "+filepath.Join("agent", "input", "missing.yml.hbs")+": no such file or directory")
+	})
+	t.Run("integration_manifest_with_policy_template_success", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.MkdirAll(filepath.Join(d, "agent", "input"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "manifest.yml"), []byte(`
 type: integration
 policy_templates:
   - inputs:
     - title: Test UDP
       template_path: udp.yml.hbs
-`).
-				WithFile(filepath.Join("agent", "input", "udp.yml.hbs"), "# UDP template"),
-			wantErr: false,
-		},
-		{
-			name: "integration_manifest_with_policy_template_invalid",
-			fsys: newMockFS().
-				WithFile("manifest.yml", `
+`), 0o644)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "agent", "input", "udp.yml.hbs"), []byte("# UDP template"), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateInputPolicyTemplates(fspath.DirFS(d))
+		require.Empty(t, errs, "expected no validation errors")
+	})
+
+	t.Run("integration_manifest_with_policy_template_invalid", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.MkdirAll(filepath.Join(d, "agent", "input"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "manifest.yml"), []byte(`
 type: integration
 policy_templates:
   - inputs:
     - title: Test UDP
       template_path: missing.yml.hbs
-`),
-			wantErr: true,
-			errMsg:  "references template_path \"missing.yml.hbs\": open " + filepath.Join("agent", "input", "missing.yml.hbs") + ": file does not exist",
-		},
-	}
+`), 0o644)
+		require.NoError(t, err)
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			errs := ValidateInputPolicyTemplates(tt.fsys)
-
-			if tt.wantErr {
-				require.NotEmpty(t, errs, "expected validation errors")
-				assert.Contains(t, errs.Error(), tt.errMsg)
-			} else {
-				assert.Empty(t, errs, "expected no validation errors")
-			}
-		})
-	}
+		errs := ValidateInputPolicyTemplates(fspath.DirFS(d))
+		require.NotEmpty(t, errs, "expected validation errors")
+		assert.Contains(t, errs.Error(), "references template_path \"missing.yml.hbs\": open "+filepath.Join("agent", "input", "missing.yml.hbs")+": no such file or directory")
+	})
 }

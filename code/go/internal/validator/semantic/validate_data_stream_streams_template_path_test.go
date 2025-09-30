@@ -5,11 +5,9 @@
 package semantic
 
 import (
+	"os"
 	"path/filepath"
-	"strings"
 	"testing"
-	"testing/fstest"
-	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -17,101 +15,45 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 )
 
-// mockFS implements fspath.FS for testing
-type mockFS struct {
-	fstest.MapFS
-	basePath string
-}
-
-func newMockFS() *mockFS {
-	return &mockFS{
-		MapFS:    make(fstest.MapFS),
-		basePath: filepath.Join("base", "path"),
-	}
-}
-
-func (m *mockFS) Path(names ...string) string {
-	return filepath.Join(append([]string{m.basePath}, names...)...)
-}
-
-func (m *mockFS) WithDataStream(name, packageType string) *mockFS {
-	// Create data stream directory structure
-	manifestPath := filepath.Join("data_stream", name, "manifest.yml")
-	m.MapFS[manifestPath] = &fstest.MapFile{
-		Data:    []byte(""),
-		Mode:    0644,
-		ModTime: time.Now(),
-	}
-
-	// Create package manifest if it's an integration
-	if packageType == "integration" {
-		m.MapFS["manifest.yml"] = &fstest.MapFile{
-			Data:    []byte("format_version: 3.0.0\nname: " + name + "\ntype: integration\n"),
-			Mode:    0644,
-			ModTime: time.Now(),
-		}
-	}
-	return m
-}
-
-func (m *mockFS) WithFile(path, content string) *mockFS {
-	// Normalize path separators
-	path = filepath.ToSlash(path)
-	m.MapFS[path] = &fstest.MapFile{
-		Data:    []byte(strings.TrimPrefix(content, "\n")),
-		Mode:    0644,
-		ModTime: time.Now(),
-	}
-	return m
-}
-
 func TestValidateStreamTemplates(t *testing.T) {
-	tests := []struct {
-		name    string
-		fsys    fspath.FS
-		wantErr bool
-		errMsg  string
-	}{
-		{
-			name: "valid_data_stream_with_templates",
-			fsys: newMockFS().
-				WithDataStream("test", "integration").
-				WithFile(filepath.Join("data_stream", "test", "manifest.yml"), `
+
+	t.Run("valid_data_stream_with_templates", func(t *testing.T) {
+		d := t.TempDir()
+		err := os.MkdirAll(filepath.Join(d, "data_stream", "test", "agent", "stream"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "test", "manifest.yml"), []byte(`
 streams:
   - input: udp
     template_path: udp.yml.hbs
     title: Test UDP
     description: Test UDP stream
-`).
-				WithFile(filepath.Join("data_stream", "test", "agent", "stream", "udp.yml.hbs"), "# UDP template"),
-			wantErr: false,
-		},
-		{
-			name: "missing_template_file",
-			fsys: newMockFS().
-				WithDataStream("test", "integration").
-				WithFile(filepath.Join("data_stream", "test", "manifest.yml"), `
+`), 0o644)
+		require.NoError(t, err)
+
+		err = os.WriteFile(filepath.Join(d, "data_stream", "test", "agent", "stream", "udp.yml.hbs"), []byte("# UDP template"), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateStreamTemplates(fspath.DirFS(d))
+		require.Empty(t, errs, "expected no validation errors")
+
+	})
+
+	t.Run("missing_template_file", func(t *testing.T) {
+		d := t.TempDir()
+		err := os.MkdirAll(filepath.Join(d, "data_stream", "test", "agent", "stream"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "test", "manifest.yml"), []byte(`
 streams:
   - input: udp
     template_path: missing.yml.hbs
     title: Test UDP
     description: Test UDP stream
-`),
-			wantErr: true,
-			errMsg:  "references template_path \"missing.yml.hbs\": open " + filepath.Join("data_stream", "test", "agent", "stream", "missing.yml.hbs") + ": file does not exist\n",
-		},
-	}
+`), 0o644)
+		require.NoError(t, err)
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			errs := ValidateStreamTemplates(tt.fsys)
+		errs := ValidateStreamTemplates(fspath.DirFS(d))
+		require.NotEmpty(t, errs, "expected validation errors")
+		assert.Contains(t, errs.Error(), "references template_path \"missing.yml.hbs\": open "+filepath.Join("data_stream", "test", "agent", "stream", "missing.yml.hbs")+": no such file or directory")
+	})
 
-			if tt.wantErr {
-				require.NotEmpty(t, errs, "expected validation errors")
-				assert.Contains(t, errs.Error(), tt.errMsg)
-			} else {
-				assert.Empty(t, errs, "expected no validation errors")
-			}
-		})
-	}
 }
