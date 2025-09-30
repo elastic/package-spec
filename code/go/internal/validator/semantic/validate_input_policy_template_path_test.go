@@ -5,6 +5,7 @@
 package semantic
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -42,7 +43,7 @@ policy_templates:
     template_path: missing.yml.hbs
 `),
 			wantErr: true,
-			errMsg:  "references template_path \"missing.yml.hbs\": open agent/input/missing.yml.hbs: file does not exist",
+			errMsg:  "references template_path \"missing.yml.hbs\": open " + filepath.Join("agent", "input", "missing.yml.hbs") + ": file does not exist",
 		},
 		{
 			name: "integration_manifest_with_policy_template_success",
@@ -68,7 +69,7 @@ policy_templates:
       template_path: missing.yml.hbs
 `),
 			wantErr: true,
-			errMsg:  "references template_path \"missing.yml.hbs\": open agent/input/missing.yml.hbs: file does not exist",
+			errMsg:  "references template_path \"missing.yml.hbs\": open " + filepath.Join("agent", "input", "missing.yml.hbs") + ": file does not exist",
 		},
 	}
 

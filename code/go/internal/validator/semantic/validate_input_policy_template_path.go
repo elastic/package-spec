@@ -6,7 +6,7 @@ package semantic
 
 import (
 	"io/fs"
-	"path"
+	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 
@@ -75,7 +75,7 @@ func ValidateInputPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 }
 
 func validateTemplatePath(fsys fspath.FS, tmplPath string) error {
-	templatePath := path.Join("agent", "input", tmplPath)
+	templatePath := filepath.Join("agent", "input", tmplPath)
 	_, err := fs.Stat(fsys, templatePath)
 	if err != nil {
 		return err
