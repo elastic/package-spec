@@ -1,7 +1,9 @@
 # Introduction
 
 This repository contains:
+
 * Specifications for Elastic Packages, as served up by the [Elastic Package Registry (EPR)](https://github.com/elastic/package-registry). There may be multiple versions of the specifications; these are resolved when loading the spec depending on the `format_version` of the package. Read more in the _Specification Versioning_ section below.
+
 * Code libraries for validating said specifications; these can be found under the `code` top-level folder.
 
 Please use this repository to discuss any changes to the specification, either by making issues or PRs to the specification.
