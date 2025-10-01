@@ -5,6 +5,7 @@
 package semantic
 
 import (
+	"errors"
 	"io/fs"
 	"path/filepath"
 
@@ -12,6 +13,12 @@ import (
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
+)
+
+var (
+	errFailedToReadManifest  = errors.New("failed to read manifest")
+	errFailedToParseManifest = errors.New("failed to parse manifest")
+	errTemplateNotFound      = errors.New("template file not found")
 )
 
 // ValidateStreamTemplates validates that all referenced template_path files exist for data streams
@@ -37,7 +44,7 @@ func validateDataStreamManifestTemplates(fsys fspath.FS, dataStreamName string) 
 	manifestPath := filepath.Join("data_stream", dataStreamName, "manifest.yml")
 	data, err := fs.ReadFile(fsys, manifestPath)
 	if err != nil {
-		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(manifestPath), err)}
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), errFailedToReadManifest)}
 	}
 
 	var manifest struct {
@@ -49,7 +56,7 @@ func validateDataStreamManifestTemplates(fsys fspath.FS, dataStreamName string) 
 
 	err = yaml.Unmarshal(data, &manifest)
 	if err != nil {
-		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to parse manifest: %w", fsys.Path(manifestPath), err)}
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), errFailedToParseManifest)}
 	}
 
 	for _, stream := range manifest.Streams {
@@ -63,7 +70,7 @@ func validateDataStreamManifestTemplates(fsys fspath.FS, dataStreamName string) 
 		if err != nil {
 			errs = append(errs, specerrors.NewStructuredErrorf(
 				"file \"%s\" is invalid: stream \"%s\" references template_path \"%s\": %w",
-				fsys.Path(manifestPath), stream.Input, stream.TemplatePath, err))
+				fsys.Path(manifestPath), stream.Input, stream.TemplatePath, errTemplateNotFound))
 		}
 	}
 

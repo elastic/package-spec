@@ -22,7 +22,7 @@ func ValidateInputPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 
 	data, err := fs.ReadFile(fsys, manifestPath)
 	if err != nil {
-		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(manifestPath), err)}
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: %ww", fsys.Path(manifestPath), errFailedToReadManifest)}
 	}
 
 	var manifest struct { // package manifest
@@ -40,7 +40,7 @@ func ValidateInputPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 
 	err = yaml.Unmarshal(data, &manifest)
 	if err != nil {
-		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to parse manifest: %w", fsys.Path(manifestPath), err)}
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), errFailedToParseManifest)}
 	}
 
 	for _, policyTemplate := range manifest.PolicyTemplates {
@@ -78,7 +78,7 @@ func validateTemplatePath(fsys fspath.FS, tmplPath string) error {
 	templatePath := filepath.Join("agent", "input", tmplPath)
 	_, err := fs.Stat(fsys, templatePath)
 	if err != nil {
-		return err
+		return errTemplateNotFound
 	}
 
 	return nil

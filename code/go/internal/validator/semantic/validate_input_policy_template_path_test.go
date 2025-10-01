@@ -52,7 +52,8 @@ policy_templates:
 
 		errs := ValidateInputPolicyTemplates(fspath.DirFS(d))
 		require.NotEmpty(t, errs, "expected validation errors")
-		assert.Contains(t, errs.Error(), "references template_path \"missing.yml.hbs\": open "+filepath.Join("agent", "input", "missing.yml.hbs")+": no such file or directory")
+		assert.Len(t, errs, 1)
+		assert.ErrorAs(t, errs[0], &errTemplateNotFound)
 	})
 	t.Run("integration_manifest_with_policy_template_success", func(t *testing.T) {
 		d := t.TempDir()
@@ -90,6 +91,7 @@ policy_templates:
 
 		errs := ValidateInputPolicyTemplates(fspath.DirFS(d))
 		require.NotEmpty(t, errs, "expected validation errors")
-		assert.Contains(t, errs.Error(), "references template_path \"missing.yml.hbs\": open "+filepath.Join("agent", "input", "missing.yml.hbs")+": no such file or directory")
+		assert.Len(t, errs, 1)
+		assert.ErrorAs(t, errs[0], &errTemplateNotFound)
 	})
 }
