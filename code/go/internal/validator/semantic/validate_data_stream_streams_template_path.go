@@ -7,7 +7,7 @@ package semantic
 import (
 	"errors"
 	"io/fs"
-	"path/filepath"
+	"path"
 
 	"gopkg.in/yaml.v3"
 
@@ -41,7 +41,7 @@ func ValidateStreamTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 func validateDataStreamManifestTemplates(fsys fspath.FS, dataStreamName string) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
-	manifestPath := filepath.Join("data_stream", dataStreamName, "manifest.yml")
+	manifestPath := path.Join("data_stream", dataStreamName, "manifest.yml")
 	data, err := fs.ReadFile(fsys, manifestPath)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), errFailedToReadManifest)}
@@ -65,7 +65,7 @@ func validateDataStreamManifestTemplates(fsys fspath.FS, dataStreamName string) 
 		}
 
 		// Check if template file exists
-		templatePath := filepath.Join("data_stream", dataStreamName, "agent", "stream", stream.TemplatePath)
+		templatePath := path.Join("data_stream", dataStreamName, "agent", "stream", stream.TemplatePath)
 		_, err := fs.Stat(fsys, templatePath)
 		if err != nil {
 			errs = append(errs, specerrors.NewStructuredErrorf(
