@@ -4,9 +4,6 @@
 ##
 - version: 3.6.0-next
   changes:
-    - description: Add validation for template_path in policy templates and data streams.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/986
     # Pending on https://github.com/elastic/kibana/pull/186974
     - description: Add support for `slo` assets.
       type: enhancement
@@ -15,6 +12,9 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: Add validation for template_path in policy templates and data streams.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/986
 - version: 3.5.0
   changes:
     - description: Add `duration` variable data type with `min_duration` and `max_duration` validation properties.
