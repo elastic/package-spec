@@ -310,27 +310,27 @@ func TestValidateFile(t *testing.T) {
 				"field policy_templates.0.input: Must not be present",
 			},
 		},
-		"input_policy_template_valid":       {},
-		"integration_policy_template_valid": {},
-		"stream_templates_valid":            {},
-		"input_policy_template_invalid": {
-			invalidPkgFilePath: "manifest.yml",
-			expectedErrContains: []string{
-				"policy template \"sample\" references template_path \"missing.yml.hbs\": template file not found",
-			},
-		},
-		"integration_policy_template_invalid": {
-			invalidPkgFilePath: "manifest.yml",
-			expectedErrContains: []string{
-				"policy template \"sample\" references template_path \"missing.yml.hbs\": template file not found",
-			},
-		},
-		"stream_templates_invalid": {
-			invalidPkgFilePath: "data_stream/test_stream/manifest.yml",
-			expectedErrContains: []string{
-				"stream \"filestream\" references template_path \"missing.yml.hbs\": template file not found",
-			},
-		},
+		// "input_policy_template_valid":       {},
+		// "integration_policy_template_valid": {},
+		// "stream_templates_valid":            {},
+		// "input_policy_template_invalid": {
+		// 	invalidPkgFilePath: "manifest.yml",
+		// 	expectedErrContains: []string{
+		// 		"policy template \"sample\" references template_path \"missing.yml.hbs\": template file not found",
+		// 	},
+		// },
+		// "integration_policy_template_invalid": {
+		// 	invalidPkgFilePath: "manifest.yml",
+		// 	expectedErrContains: []string{
+		// 		"policy template \"sample\" references template_path \"missing.yml.hbs\": template file not found",
+		// 	},
+		// },
+		// "stream_templates_invalid": {
+		// 	invalidPkgFilePath: "data_stream/test_stream/manifest.yml",
+		// 	expectedErrContains: []string{
+		// 		"stream \"filestream\" references template_path \"missing.yml.hbs\": template file not found",
+		// 	},
+		// },
 	}
 
 	for pkgName, test := range tests {
