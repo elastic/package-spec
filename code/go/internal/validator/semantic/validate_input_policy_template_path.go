@@ -50,7 +50,7 @@ func ValidateInputPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 				if input.TemplatePath == "" {
 					continue // template_path is optional
 				}
-				err := validateTemplatePath(fsys, input.TemplatePath)
+				err := validateAgentInputTemplatePath(fsys, input.TemplatePath)
 				if err != nil {
 					errs = append(errs, specerrors.NewStructuredErrorf(
 						"file \"%s\" is invalid: policy template \"%s\" references template_path \"%s\": %w",
@@ -62,7 +62,7 @@ func ValidateInputPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 			if policyTemplate.TemplatePath == "" {
 				continue // template_path is optional
 			}
-			err := validateTemplatePath(fsys, policyTemplate.TemplatePath)
+			err := validateAgentInputTemplatePath(fsys, policyTemplate.TemplatePath)
 			if err != nil {
 				errs = append(errs, specerrors.NewStructuredErrorf(
 					"file \"%s\" is invalid: policy template \"%s\" references template_path \"%s\": %w",
@@ -74,7 +74,7 @@ func ValidateInputPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 	return errs
 }
 
-func validateTemplatePath(fsys fspath.FS, tmplPath string) error {
+func validateAgentInputTemplatePath(fsys fspath.FS, tmplPath string) error {
 	templatePath := path.Join("agent", "input", tmplPath)
 	_, err := fs.Stat(fsys, templatePath)
 	if err != nil {
