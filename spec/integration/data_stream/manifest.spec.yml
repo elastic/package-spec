@@ -657,6 +657,7 @@ versions:
         value:
           description: "Path to Elasticsearch index template for stream."
           type: string
+          default: "stream.yml.hbs"
   - before: 3.5.0
     patch:
       # Require >=3.5.0 to use the duration variable type.

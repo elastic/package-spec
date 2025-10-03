@@ -94,7 +94,7 @@ spec:
           - description
           - type
           - input
-          - template_path
+          - template_path # Required in 3.6.0+
     icons:
       $ref: "../integration/manifest.spec.yml#/definitions/icons"
     screenshots:
@@ -125,8 +125,8 @@ spec:
 versions:
   - before: 3.6.0
     patch:
-      - op: add
-        path: "/properties/policy_templates/items/properties/template_path"
+      - op: remove
+        path: "/properties/policy_templates/items/required/5"  # Remove template_path requirement
   # Reserve otelcol input name before 3.5.0.
   - before: 3.5.0
     patch:

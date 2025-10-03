@@ -94,6 +94,7 @@ policy_templates:
               - http://127.0.0.1
             hide_in_deployment_modes:
               - agentless
+        template_path: apache_metrics.yml.hbs
       - type: httpjson
         title: Collect data via HTTP JSON API
         description: Collecting data from HTTP JSON API (default only)
@@ -110,6 +111,7 @@ policy_templates:
             min_duration: 10s
             max_duration: 4h3m2s1ms
             default: 1m
+        template_path: httpjson.yml.hbs
   - name: apache-agentless
     title: Apache logs and metrics in agentless
     description: Collect logs and metrics from Apache instances in agentless
@@ -143,6 +145,7 @@ policy_templates:
             show_user: true
             default:
               - http://127.0.0.1
+        template_path: apache_metrics.yml.hbs
       - type: aws/s3
         title: Collect S3 logs (agentless only)
         description: Collecting logs from AWS S3 in agentless mode
@@ -154,6 +157,7 @@ policy_templates:
             title: S3 Bucket Name
             show_user: true
             required: true
+        template_path: aws_s3.yml.hbs
 owner:
   github: elastic/foobar
   type: elastic
