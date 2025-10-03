@@ -53,7 +53,7 @@ policy_templates:
 		errs := ValidateInputPolicyTemplates(fspath.DirFS(d))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
-		assert.ErrorAs(t, errs[0], &errTemplateNotFound)
+		assert.ErrorIs(t, errs[0], errTemplateNotFound)
 	})
 	t.Run("integration_manifest_with_policy_template_success", func(t *testing.T) {
 		d := t.TempDir()
@@ -92,6 +92,6 @@ policy_templates:
 		errs := ValidateInputPolicyTemplates(fspath.DirFS(d))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
-		assert.ErrorAs(t, errs[0], &errTemplateNotFound)
+		assert.ErrorIs(t, errs[0], errTemplateNotFound)
 	})
 }

@@ -5,7 +5,10 @@
 package semantic
 
 import (
+	"errors"
+	"fmt"
 	"io/fs"
+	"os"
 	"path"
 
 	"gopkg.in/yaml.v3"
@@ -78,7 +81,10 @@ func validateAgentInputTemplatePath(fsys fspath.FS, tmplPath string) error {
 	templatePath := path.Join("agent", "input", tmplPath)
 	_, err := fs.Stat(fsys, templatePath)
 	if err != nil {
-		return errTemplateNotFound
+		if errors.Is(err, os.ErrNotExist) {
+			return errTemplateNotFound
+		}
+		return fmt.Errorf("failed to stat template file %s: %w", fsys.Path(templatePath), err)
 	}
 
 	return nil
