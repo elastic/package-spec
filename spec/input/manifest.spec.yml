@@ -94,6 +94,7 @@ spec:
           - description
           - type
           - input
+          - template_path
     icons:
       $ref: "../integration/manifest.spec.yml#/definitions/icons"
     screenshots:
@@ -122,6 +123,10 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.6.0
+    patch:
+      - op: add
+        path: "/properties/policy_templates/items/properties/template_path"
   # Reserve otelcol input name before 3.5.0.
   - before: 3.5.0
     patch:

@@ -624,6 +624,7 @@ spec:
                 - type
                 - title
                 - description
+                - template_path
           multiple:
             type: boolean
           icons:
@@ -692,6 +693,10 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.6.0
+    patch:
+      - op: add
+        path: "/properties/policy_templates/items/properties/template_path"
   - before: 3.3.2
     patch:
       - op: remove

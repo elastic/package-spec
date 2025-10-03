@@ -650,6 +650,13 @@ spec:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.6.0
+    patch:
+      - op: add
+        path: "/properties/streams/items/properties/template_path"
+        value:
+          description: "Path to Elasticsearch index template for stream."
+          type: string
   - before: 3.5.0
     patch:
       # Require >=3.5.0 to use the duration variable type.
