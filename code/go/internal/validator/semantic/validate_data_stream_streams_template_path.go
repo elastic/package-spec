@@ -7,12 +7,17 @@ package semantic
 import (
 	"errors"
 	"io/fs"
+	"os"
 	"path"
 
 	"gopkg.in/yaml.v3"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
+)
+
+const (
+	defaultTemplatePath = "stream.yml.hbs"
 )
 
 var (
@@ -60,17 +65,33 @@ func validateDataStreamManifestTemplates(fsys fspath.FS, dataStreamName string) 
 	}
 
 	for _, stream := range manifest.Streams {
+		streamPath := stream.TemplatePath
 		if stream.TemplatePath == "" {
-			continue // template_path is optional
+			// if template_path is not set, fleet will default to stream.yml.hbs
+			// validation should check that the file exists
+			streamPath = defaultTemplatePath
 		}
 
 		// Check if template file exists
-		templatePath := path.Join("data_stream", dataStreamName, "agent", "stream", stream.TemplatePath)
+		templatePath := path.Join("data_stream", dataStreamName, "agent", "stream", streamPath)
 		_, err := fs.Stat(fsys, templatePath)
 		if err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				// Check if default template file exists
+				if stream.TemplatePath == "" {
+					errs = append(errs, specerrors.NewStructuredErrorf(
+						"file \"%s\" is invalid: stream \"%s\" references default template_path \"%s\": %w",
+						fsys.Path(manifestPath), stream.Input, streamPath, errTemplateNotFound))
+					continue
+				}
+				errs = append(errs, specerrors.NewStructuredErrorf(
+					"file \"%s\" is invalid: stream \"%s\" references template_path \"%s\": %w",
+					fsys.Path(manifestPath), stream.Input, streamPath, errTemplateNotFound))
+				continue
+			}
 			errs = append(errs, specerrors.NewStructuredErrorf(
 				"file \"%s\" is invalid: stream \"%s\" references template_path \"%s\": %w",
-				fsys.Path(manifestPath), stream.Input, stream.TemplatePath, errTemplateNotFound))
+				fsys.Path(manifestPath), stream.Input, streamPath, err))
 		}
 	}
 
