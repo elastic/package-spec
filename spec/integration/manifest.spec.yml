@@ -693,10 +693,6 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
-  - before: 3.6.0
-    patch:
-      - op: remove
-        path: "/properties/policy_templates/items/properties/inputs/items/required/3"
   - before: 3.3.2
     patch:
       - op: remove
