@@ -156,6 +156,7 @@ func generateFields(n int) string {
 func (fs *mockFS) Good() *mockFS {
 	return fs.WithFiles(
 		newMockFile("manifest.yml").WithContent(manifestYml),
+		newMockFile("agent/input/template.yml.hbs").WithContent("# Input template"),
 		newMockFile("changelog.yml").WithContent(changelogYml),
 		newMockFile("docs/README.md").WithContent("## README"),
 		newMockFile("img/kibana-system.png"),

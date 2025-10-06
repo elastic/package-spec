@@ -12,6 +12,7 @@ policy_templates:
       - title: universal_profiling_symbolizer
         description: Enhance Universal Profiling with additional symbol information
         type: pf-elastic-symbolizer
+        template_path: template.yml.hbs
         vars:
           - name: Symbols object store endpoint
             type: text
