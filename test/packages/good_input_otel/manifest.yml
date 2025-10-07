@@ -67,10 +67,6 @@ policy_templates:
         multi: true
         required: false
         show_user: false
-elasticsearch:
-  index_template:
-    mappings:
-      subobjects: false
 owner:
   github: elastic/ecosystem
   type: elastic
