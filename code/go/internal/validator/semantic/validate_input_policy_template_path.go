@@ -33,10 +33,10 @@ func ValidateInputPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 
 		PolicyTemplates []struct {
 			Name         string `yaml:"name"`
-			TemplatePath string `yaml:"template_path"` // optional, input type packages
+			TemplatePath string `yaml:"template_path"` // input type packages require this field
 			Inputs       []struct {
 				Title        string `yaml:"title"`
-				TemplatePath string `yaml:"template_path"` // optional, integration type packages
+				TemplatePath string `yaml:"template_path"` // optional for integration packages
 			} `yaml:"inputs"`
 		} `yaml:"policy_templates"`
 	}
@@ -63,7 +63,10 @@ func ValidateInputPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 
 		case "input":
 			if policyTemplate.TemplatePath == "" {
-				continue // template_path is optional
+				errs = append(errs, specerrors.NewStructuredErrorf(
+					"file \"%s\" is invalid: policy template \"%s\" is missing required field \"template_path\"",
+					fsys.Path(manifestPath), policyTemplate.Name))
+				continue
 			}
 			err := validateAgentInputTemplatePath(fsys, policyTemplate.TemplatePath)
 			if err != nil {

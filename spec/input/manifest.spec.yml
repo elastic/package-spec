@@ -94,7 +94,7 @@ spec:
           - description
           - type
           - input
-          - template_path # Required in 3.6.0+
+          - template_path
     icons:
       $ref: "../integration/manifest.spec.yml#/definitions/icons"
     screenshots:

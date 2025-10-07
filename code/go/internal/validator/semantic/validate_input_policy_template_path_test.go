@@ -37,6 +37,25 @@ policy_templates:
 
 	})
 
+	t.Run("input_manifest_with_policy_template_missing_template_path", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.MkdirAll(filepath.Join(d, "agent", "input"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "manifest.yml"), []byte(`
+type: input
+policy_templates:
+  - name: udp
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateInputPolicyTemplates(fspath.DirFS(d))
+		require.NotEmpty(t, errs, "expected no validation errors")
+
+		assert.Len(t, errs, 1)
+		assert.Contains(t, errs[0].Error(), "is missing required field \"template_path\"")
+	})
+
 	t.Run("input_manifest_with_policy_template_missing_template_file", func(t *testing.T) {
 		d := t.TempDir()
 

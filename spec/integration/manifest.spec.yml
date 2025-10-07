@@ -624,7 +624,6 @@ spec:
                 - type
                 - title
                 - description
-                - template_path
           multiple:
             type: boolean
           icons:
