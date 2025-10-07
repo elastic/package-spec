@@ -10,8 +10,14 @@ Feature: Basic package types support
   @2.6.0
   Scenario: Input package can be installed
    Given the "basic_input" package is installed
-     And a policy is created with "basic_input" package, "test" template, "test" input, "logfile" input type and dataset "spec.input_test"
+     And a policy is created with "basic_input" package, "1.0.0" version, "test" template, "test" input, "logfile" input type and dataset "spec.input_test"
     Then there is an index template "logs-spec.input_test" with pattern "logs-spec.input_test-*"
+
+  @3.5.0
+  Scenario: OTel input package can be installed
+   Given the "good_input_otel" package is installed
+     And a policy is created with "good_input_otel" package, "0.0.1" version, "httpcheckreceiver" template, "httpcheckreceiver" input, "otelcol" input type and dataset "spec.otel_input_test"
+    Then there is an index template "metrics-spec.otel_input_test" with pattern "metrics-spec.otel_input_test.otel-*"
 
   @3.3.0
   Scenario: Basic content package can be installed

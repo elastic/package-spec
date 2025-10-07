@@ -1,5 +1,5 @@
 format_version: 3.5.0
-name: httpcheck
+name: good_input_otel
 title: "Simple HTTP Check"
 version: 0.0.1
 source:
@@ -26,7 +26,7 @@ icons:
     size: 32x32
     type: image/svg+xml
 policy_templates:
-  - name: check
+  - name: httpcheckreceiver
     type: metrics
     title: HTTP Check
     description: Perform HTTP checks and collect its results.
@@ -60,6 +60,8 @@ policy_templates:
         multi: true
         required: true
         show_user: true
+        default:
+          - https://epr.elastic.co
       - name: headers
         type: text
         title: HTTP headers
