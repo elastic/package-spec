@@ -46,7 +46,6 @@ policy_templates:
         title: Collect metrics from Apache instances
         description: Collecting Apache status metrics
         multi: false
-        template_path: template.yml.hbs
         vars:
           - name: input_password
             type: password
@@ -97,7 +96,6 @@ policy_templates:
         title: Collect metrics in agentless
         description: Collecting metrics in agentless mode
         multi: false
-        template_path: template.yml.hbs
         vars:
           - name: input_password
             type: password

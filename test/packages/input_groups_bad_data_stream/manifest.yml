@@ -42,7 +42,6 @@ policy_templates:
         title: Collect logs from EC2 service
         description: Collecting EC2 logs using S3 input
         input_group: logs
-        template_path: template.yml.hbs
         vars:
           - name: visibility_timeout
             type: text
@@ -56,7 +55,6 @@ policy_templates:
         title: Collect metrics from EC2 service
         description: Collecting EC2 metrics using AWS CloudWatch
         input_group: metrics
-        template_path: template.yml.hbs
         vars:
           - name: endpoint
             type: text
@@ -87,12 +85,10 @@ policy_templates:
         title: Collect logs from the DynamoDB service
         description: Collecting DynamoDB logs using S3 input
         input_group: logs
-        template_path: template.yml.hbs
       - type: aws/metrics
         title: Collect metrics from DynamoDB service
         description: Collecting DynamoDB metrics using AWS CloudWatch
         input_group: metrics
-        template_path: template.yml.hbs
     icons:
       - src: /img/aws-dynamodb.svg
         title: AWS DynamoDB logo
@@ -118,17 +114,14 @@ policy_templates:
         title: Collect logs from Barracuda via UDP
         description: Collecting syslog from Barracuda via UDP
         input_group: logs
-        template_path: template.yml.hbs
       - type: tcp
         title: Collect logs from Barracuda via TCP
         description: Collecting syslog from Barracuda via TCP
         input_group: logs
-        template_path: template.yml.hbs
       - type: logfile
         title: Collect logs from Barracuda via file
         description: Collecting syslog from Barracuda via file.
         input_group: logs
-        template_path: template.yml.hbs
     icons:
       - src: /img/barracuda-logo.svg
         title: Barracuda logo

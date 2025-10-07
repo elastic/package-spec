@@ -24,6 +24,5 @@ policy_templates:
             show_user: true
             default:
             - http://127.0.0.1
-        template_path: template.yml.hbs
 owner:
   github: elastic/foobar

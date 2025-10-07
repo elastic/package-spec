@@ -27,7 +27,6 @@ policy_templates:
     input: log_file
     title: Sample logs
     description: Collect sample logs
-    template_path: input.yml.hbs
     vars:
       - name: paths
         required: true

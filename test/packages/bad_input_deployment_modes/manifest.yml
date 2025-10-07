@@ -13,22 +13,18 @@ policy_templates:
         title: Test metrics with invalid mode
         description: Test metrics collection with invalid deployment mode
         deployment_modes: ['invalid_mode']  # Invalid deployment mode
-        template_path: template.yml.hbs
       - type: test/logs
         title: Test logs with empty array
         description: Test logs collection with empty deployment modes array
         deployment_modes: []  # Empty array should be invalid
-        template_path: template.yml.hbs
       - type: test/traces
         title: Test traces with duplicate modes
         description: Test traces collection with duplicate deployment modes
         deployment_modes: ['default', 'default']  # Duplicate values should be invalid
-        template_path: template.yml.hbs
       - type: test/system
         title: Test system with disabled agentless
         description: Test input that tries to use agentless when it's disabled
         deployment_modes: ['agentless']  # Agentless is disabled by default
-        template_path: template.yml.hbs
   - name: unsupported_modes
     title: Policy with unsupported deployment modes
     description: Policy template that enables deployment modes not supported by any input
@@ -45,7 +41,6 @@ policy_templates:
         title: Test metrics (agentless only)
         description: Test metrics collection only for agentless mode
         deployment_modes: ['agentless']  # Only supports agentless, but default is also enabled in template
-        template_path: template.yml.hbs
 owner:
   github: elastic/test
   type: elastic

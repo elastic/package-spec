@@ -17,7 +17,6 @@ policy_templates:
       - type: apache/metrics
         title: Collect metrics from Apache instances
         description: Collecting Apache status metrics
-        template_path: template.yml.hbs
         multi: false
         vars:
           - name: hosts

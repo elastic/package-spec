@@ -35,6 +35,5 @@ policy_templates:
       - type: logfile
         title: Collect sample logs from instances
         description: Collecting sample logs
-        template_path: template.yml.hbs
 owner:
   github: elastic/ecosystem
