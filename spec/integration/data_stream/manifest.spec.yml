@@ -586,6 +586,7 @@ spec:
           template_path:
             description: "Path to Elasticsearch index template for stream."
             type: string
+            default: "stream.yml.hbs"
           required_vars:
             $ref: "#/definitions/required_vars"
           vars:

@@ -589,7 +589,7 @@ spec:
                   description: Path of the config template for the input.
                   type: string
                   examples:
-                    - ./agent/input/template.yml.hbs
+                    - template.yml.hbs
                 input_group:
                   description: Name of the input group
                   type: string

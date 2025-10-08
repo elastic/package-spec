@@ -163,6 +163,7 @@ func (fs *mockFS) Good() *mockFS {
 		newMockFile("_dev/deploy/docker/docker-compose.yml").WithContent("version: 2.3"),
 		newMockFile("data_stream/foo/manifest.yml").WithContent(datastreamManifestYml),
 		newMockFile("data_stream/foo/fields/base-fields.yml").WithContent(fieldsYml),
+		newMockFile("data_stream/foo/agent/stream/stream.yml.hbs").WithContent("# Stream template"),
 	)
 }
 
