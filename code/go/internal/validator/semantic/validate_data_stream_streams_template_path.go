@@ -7,8 +7,8 @@ package semantic
 import (
 	"errors"
 	"io/fs"
-	"os"
 	"path"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -67,31 +67,36 @@ func validateDataStreamManifestTemplates(fsys fspath.FS, dataStreamName string) 
 	for _, stream := range manifest.Streams {
 		streamPath := stream.TemplatePath
 		if stream.TemplatePath == "" {
-			// if template_path is not set, fleet will default to stream.yml.hbs
-			// validation should check that the file exists
+			// When no template_path is specified, it defaults to "stream.yml.hbs"
 			streamPath = defaultTemplatePath
 		}
 
-		// Check if template file exists
-		templatePath := path.Join("data_stream", dataStreamName, "agent", "stream", streamPath)
-		_, err := fs.Stat(fsys, templatePath)
-		if err != nil {
-			if errors.Is(err, os.ErrNotExist) {
-				// Check if default template file exists
-				if stream.TemplatePath == "" {
-					errs = append(errs, specerrors.NewStructuredErrorf(
-						"file \"%s\" is invalid: stream \"%s\" references default template_path \"%s\": %w",
-						fsys.Path(manifestPath), stream.Input, streamPath, errTemplateNotFound))
-					continue
-				}
+		// Walk through the "data_stream/<dataStreamName>/agent/stream" directory
+		// This mirrors the logic in fleet where the assets are filtered based on the template_path
+		// https://github.com/elastic/kibana/blob/main/x-pack/platform/plugins/shared/fleet/server/services/package_policy.ts#L3317
+		streamDir := path.Join("data_stream", dataStreamName, "agent", "stream")
+		found := false
+		fs.WalkDir(fsys, streamDir, func(filePath string, d fs.DirEntry, walkErr error) error {
+			if walkErr != nil {
+				return walkErr
+			}
+			if !d.IsDir() && path.Base(filePath) != "" && strings.HasSuffix(filePath, streamPath) {
+				found = true
+				return fs.SkipDir // Stop walking once found
+			}
+			return nil
+		})
+		if !found {
+			if stream.TemplatePath == "" {
 				errs = append(errs, specerrors.NewStructuredErrorf(
-					"file \"%s\" is invalid: stream \"%s\" references template_path \"%s\": %w",
+					"file \"%s\" is invalid: stream \"%s\" is missing template file \"%s\": %w",
 					fsys.Path(manifestPath), stream.Input, streamPath, errTemplateNotFound))
 				continue
 			}
 			errs = append(errs, specerrors.NewStructuredErrorf(
 				"file \"%s\" is invalid: stream \"%s\" references template_path \"%s\": %w",
-				fsys.Path(manifestPath), stream.Input, streamPath, err))
+				fsys.Path(manifestPath), stream.Input, streamPath, errTemplateNotFound))
+			continue
 		}
 	}
 

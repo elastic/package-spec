@@ -57,6 +57,26 @@ streams:
 
 	})
 
+	t.Run("valid_data_stream_with_default_templates_endsWith_stream", func(t *testing.T) {
+		d := t.TempDir()
+		err := os.MkdirAll(filepath.Join(d, "data_stream", "test", "agent", "stream"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "test", "manifest.yml"), []byte(`
+streams:
+  - input: udp
+    title: Test UDP
+    description: Test UDP stream
+`), 0o644)
+		require.NoError(t, err)
+
+		err = os.WriteFile(filepath.Join(d, "data_stream", "test", "agent", "stream", "filestream.yml.hbs"), []byte("# UDP template"), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateStreamTemplates(fspath.DirFS(d))
+		require.Empty(t, errs, "expected no validation errors")
+
+	})
+
 	t.Run("err_read_manifest", func(t *testing.T) {
 		d := t.TempDir()
 		err := os.MkdirAll(filepath.Join(d, "data_stream", "test", "agent", "stream"), 0o755)
@@ -127,7 +147,7 @@ streams:
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.ErrorIs(t, errs[0], errTemplateNotFound)
-		assert.ErrorContains(t, errs[0], "stream \"udp\" references default template_path \"stream.yml.hbs\": template file not found")
+		assert.ErrorContains(t, errs[0], "stream \"udp\" is missing template file \"stream.yml.hbs\": template file not found")
 	})
 
 }
