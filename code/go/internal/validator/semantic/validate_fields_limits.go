@@ -24,7 +24,7 @@ func validateFieldsLimits(fsys fspath.FS, limit int) specerrors.ValidationErrors
 			return nil
 		}
 
-		count, _ := counts[metadata.dataStream]
+		count := counts[metadata.dataStream]
 		counts[metadata.dataStream] = count + 1
 		return nil
 	}

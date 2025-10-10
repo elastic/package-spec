@@ -16,7 +16,7 @@ import (
 func validateContentType(fsys fs.FS, path string, contentType spectypes.ContentType) error {
 	switch contentType.MediaType {
 	case "application/x-yaml":
-		v, _ := contentType.Params["require-document-dashes"]
+		v := contentType.Params["require-document-dashes"]
 		requireDashes := (v == "true")
 		if requireDashes {
 			err := validateYAMLDashes(fsys, path)

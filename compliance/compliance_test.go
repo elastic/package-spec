@@ -146,14 +146,12 @@ func aPolicyIsCreatedWithPackageAndVersion(packageName, packageVersion string) e
 	return nil
 }
 
-func aPolicyIsCreatedWithPackageInputAndDataset(packageName, templateName, inputName, inputType, dataset string) error {
-	const version = "1.0.0" // TODO: Add support for package and version
-
+func aPolicyIsCreatedWithPackageInputAndDataset(packageName, packageVersion, templateName, inputName, inputType, dataset string) error {
 	kibana, err := NewKibanaClient()
 	if err != nil {
 		return err
 	}
-	_, err = kibana.CreatePolicyForPackageInputAndDataset(packageName, version, templateName, inputName, inputType, dataset)
+	_, err = kibana.CreatePolicyForPackageInputAndDataset(packageName, packageVersion, templateName, inputName, inputType, dataset)
 	if err != nil {
 		return err
 	}
@@ -172,7 +170,7 @@ func thereIsAnIndexTemplateWithPattern(indexTemplateName, pattern string) error 
 	}
 
 	if !slices.Contains(indexTemplate.IndexPatterns, pattern) {
-		return fmt.Errorf("index template %q not found in %s", pattern, indexTemplate.IndexPatterns)
+		return fmt.Errorf("pattern %q not found in %s", pattern, indexTemplate.IndexPatterns)
 	}
 
 	return nil
@@ -310,7 +308,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^the "([^"]*)" package is installed$`, thePackageIsInstalled)
 	ctx.Step(`^a policy is created with "([^"]*)" package$`, aPolicyIsCreatedWithPackage)
 	ctx.Step(`^a policy is created with "([^"]*)" package and "([^"]*)" version$`, aPolicyIsCreatedWithPackageAndVersion)
-	ctx.Step(`^a policy is created with "([^"]*)" package, "([^"]*)" template, "([^"]*)" input, "([^"]*)" input type and dataset "([^"]*)"$`, aPolicyIsCreatedWithPackageInputAndDataset)
+	ctx.Step(`^a policy is created with "([^"]*)" package, "([^"]*)" version, "([^"]*)" template, "([^"]*)" input, "([^"]*)" input type and dataset "([^"]*)"$`, aPolicyIsCreatedWithPackageInputAndDataset)
 	ctx.Step(`^there is an index template "([^"]*)" with pattern "([^"]*)"$`, thereIsAnIndexTemplateWithPattern)
 	ctx.Step(`^there is a transform "([^"]*)"$`, thereIsATransform)
 	ctx.Step(`^there is a transform alias "([^"]*)"$`, thereIsATransformAlias)
