@@ -1,0 +1,12 @@
+spec:
+  additionalContents: false
+  contents:
+    - description: >-
+        Script test definitions in txtar format, with semantics based on the
+        testscript package, but with extensions to make it possible to interact
+        with an Elastic stack. You can read more about the use of txtar and
+        testscript at https://pkg.go.dev/github.com/rogpeppe/go-internal/testscript.
+      type: file
+      contentMediaType: "text/plain"
+      pattern: '^.+\.(txt|txtar)$'
+      required: false
