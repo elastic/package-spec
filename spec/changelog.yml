@@ -12,9 +12,6 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
-    - description: Add validation for template_path in policy templates and data streams.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/986
 - version: 3.5.1-next
   changes:
     - description: Input packages don't require to define fields.
@@ -23,6 +20,9 @@
     - description: Add support for script testing in data streams.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/985
+    - description: Add validation for template_path in policy templates and data streams.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/986
 - version: 3.5.0
   changes:
     - description: Add `duration` variable data type with `min_duration` and `max_duration` validation properties.
