@@ -73,7 +73,7 @@ func validateDataStreamManifestTemplates(fsys fspath.FS, dataStreamName string) 
 
 		// Walk through the "data_stream/<dataStreamName>/agent/stream" directory
 		// This mirrors the logic in fleet where the assets are filtered based on the template_path
-		// https://github.com/elastic/kibana/blob/main/x-pack/platform/plugins/shared/fleet/server/services/package_policy.ts#L3317
+		// https://github.com/elastic/kibana/blob/ced929a/x-pack/platform/plugins/shared/fleet/server/services/package_policy.ts#L3317
 		streamDir := path.Join("data_stream", dataStreamName, "agent", "stream")
 		found := false
 		if err := fs.WalkDir(fsys, streamDir, func(filePath string, d fs.DirEntry, walkErr error) error {
