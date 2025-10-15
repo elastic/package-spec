@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	defaultTemplatePath = "stream.yml.hbs"
+	defaultStreamTemplatePath = "stream.yml.hbs"
 )
 
 var (
@@ -68,7 +68,7 @@ func validateDataStreamManifestTemplates(fsys fspath.FS, dataStreamName string) 
 		streamPath := stream.TemplatePath
 		if stream.TemplatePath == "" {
 			// When no template_path is specified, it defaults to "stream.yml.hbs"
-			streamPath = defaultTemplatePath
+			streamPath = defaultStreamTemplatePath
 		}
 
 		// Walk through the "data_stream/<dataStreamName>/agent/stream" directory
