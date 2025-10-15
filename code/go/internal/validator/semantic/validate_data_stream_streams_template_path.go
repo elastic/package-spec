@@ -82,7 +82,7 @@ func validateDataStreamManifestTemplates(fsys fspath.FS, dataStreamName string) 
 			}
 			if !d.IsDir() && path.Base(filePath) != "" && strings.HasSuffix(filePath, streamPath) {
 				found = true
-				return fs.SkipDir // Stop walking once found
+				return fs.SkipAll // Stop walking once found
 			}
 			return nil
 		})
