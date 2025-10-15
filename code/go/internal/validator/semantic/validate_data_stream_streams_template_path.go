@@ -76,7 +76,7 @@ func validateDataStreamManifestTemplates(fsys fspath.FS, dataStreamName string) 
 		// https://github.com/elastic/kibana/blob/main/x-pack/platform/plugins/shared/fleet/server/services/package_policy.ts#L3317
 		streamDir := path.Join("data_stream", dataStreamName, "agent", "stream")
 		found := false
-		fs.WalkDir(fsys, streamDir, func(filePath string, d fs.DirEntry, walkErr error) error {
+		if err := fs.WalkDir(fsys, streamDir, func(filePath string, d fs.DirEntry, walkErr error) error {
 			if walkErr != nil {
 				return walkErr
 			}
@@ -85,7 +85,10 @@ func validateDataStreamManifestTemplates(fsys fspath.FS, dataStreamName string) 
 				return fs.SkipAll // Stop walking once found
 			}
 			return nil
-		})
+		}); err != nil {
+			errs = append(errs, specerrors.NewStructuredErrorf("file \"%s\" is invalid: stream \"%s\" error walking dir \"%s\": %w", fsys.Path(manifestPath), stream.Input, streamDir, err))
+			break
+		}
 		if !found {
 			if stream.TemplatePath == "" {
 				errs = append(errs, specerrors.NewStructuredErrorf(
