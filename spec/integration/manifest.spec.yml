@@ -217,6 +217,16 @@ spec:
               description: Kibana versions compatible with this package.
               examples:
                 - ">=7.9.0"
+        agent:
+          description: Elastic Agent conditions
+          type: object
+          additionalProperties: false
+          properties:
+            version:
+              type: string
+              description: Elastic Agent versions compatible with this package.
+              examples:
+                - ">=9.1.5"
     description:
       description: >
         A longer description of the package. It should describe, at least all the kinds of
@@ -692,6 +702,10 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.6.0
+    patch:
+      - op: remove
+        path: "/definitions/conditions/properties/agent/properties/version"
   - before: 3.3.2
     patch:
       - op: remove
