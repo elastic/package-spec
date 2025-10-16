@@ -17,6 +17,8 @@ var (
 	errAgentVersionIncorrectType    = fmt.Errorf("manifest agent version is not a string")
 )
 
+// ValidateMinimumAgentVersion checks that the package manifest includes the agent.version condition.
+// This is required for integration packages since version 3.6.0 of the spec.
 func ValidateMinimumAgentVersion(fsys fspath.FS) specerrors.ValidationErrors {
 	manifest, err := readManifest(fsys)
 	if err != nil {
