@@ -66,7 +66,14 @@ spec:
     categories:
       $ref: "../integration/manifest.spec.yml#/definitions/categories"
     conditions:
-      $ref: "../integration/manifest.spec.yml#/definitions/conditions"
+      description: Conditions under which this package can be installed.
+      type: object
+      additionalProperties: false
+      properties:
+        elastic:
+          $ref: "../integration/manifest.spec.yml#/definitions/conditions/properties/elastic"
+        kibana:
+          $ref: "../integration/manifest.spec.yml#/definitions/conditions/properties/kibana"
     discovery:
       $ref: "#/definitions/discovery"
     icons:

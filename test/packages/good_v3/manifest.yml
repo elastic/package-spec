@@ -14,6 +14,8 @@ conditions:
     capabilities:
       - observability
       - security
+  agent:
+    version: '^9.1.0'
 vars:
   - name: package_password
     type: password
