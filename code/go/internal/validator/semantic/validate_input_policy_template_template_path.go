@@ -41,7 +41,7 @@ type inputPackageManifest struct { // package manifest
 	PolicyTemplates []inputPolicyTemplate `yaml:"policy_templates"`
 }
 
-// ValidateInputPackagesPolicyTemplates
+// ValidateInputPackagesPolicyTemplates validates the policy template entries of an input package
 func ValidateInputPackagesPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
