@@ -226,7 +226,11 @@ spec:
               type: string
               description: Elastic Agent versions compatible with this package.
               examples:
-                - ">=9.1.5"
+                - "^9.5.0"
+          required:
+            - version
+      required:
+        - agent
     description:
       description: >
         A longer description of the package. It should describe, at least all the kinds of
@@ -702,10 +706,6 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
-  - before: 3.6.0
-    patch:
-      - op: remove
-        path: "/definitions/conditions/properties/agent/properties/version"
   - before: 3.3.2
     patch:
       - op: remove

@@ -15,8 +15,6 @@ conditions:
     subscription: 'basic'
     capabilities:
       - security
-  agent:
-    version: '9.1.5'
 discovery:
   fields:
     - name: process.pid

@@ -5,20 +5,21 @@
 package semantic
 
 import (
+	"errors"
 	"fmt"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 var (
-	errAgentVersionConditionMissing = fmt.Errorf("agent.version condition is required")
+	errInvalidAgentVersionCondition = fmt.Errorf("invalid agent.version condition")
 	errAgentVersionIncorrectType    = fmt.Errorf("manifest agent version is not a string")
 )
 
 // ValidateMinimumAgentVersion checks that the package manifest includes the agent.version condition.
-// This is required for integration packages since version 3.6.0 of the spec.
 func ValidateMinimumAgentVersion(fsys fspath.FS) specerrors.ValidationErrors {
 	manifest, err := readManifest(fsys)
 	if err != nil {
@@ -30,8 +31,8 @@ func ValidateMinimumAgentVersion(fsys fspath.FS) specerrors.ValidationErrors {
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
-	if agentVersionCondition == "" {
-		return specerrors.ValidationErrors{specerrors.NewStructuredError(errAgentVersionConditionMissing, specerrors.UnassignedCode)}
+	if _, err := semver.NewConstraint(agentVersionCondition); agentVersionCondition != "" && err != nil {
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(errors.Join(err, errInvalidAgentVersionCondition), specerrors.UnassignedCode)}
 	}
 
 	return nil

@@ -27,7 +27,7 @@ name: test-package
 version: 1.0.0
 conditions:
   agent:
-    version: "8.0.0"
+    version: "^8.0.0"
 `,
 			expectedErr: nil,
 		},
@@ -39,15 +39,7 @@ version: 1.0.0
 conditions:
   some.other.condition: "value"
 `,
-			expectedErr: errAgentVersionConditionMissing,
-		},
-		{
-			title: "invalid - conditions block is missing",
-			manifestYAML: `
-name: test-package
-version: 1.0.0
-`,
-			expectedErr: errAgentVersionConditionMissing,
+			expectedErr: nil,
 		},
 		{
 			title: "invalid - agent.version condition is not a string",
@@ -56,9 +48,19 @@ name: test-package
 version: 1.0.0
 conditions:
   agent.version:
-    min: "8.0.0"
+    min: "^8.0.0"
 `,
 			expectedErr: errAgentVersionIncorrectType,
+		},
+		{
+			title: "invalid - agent.version condition is not a constraint",
+			manifestYAML: `
+name: test-package
+version: 1.0.0
+conditions:
+  agent.version: test
+`,
+			expectedErr: errInvalidAgentVersionCondition,
 		},
 	}
 
@@ -74,7 +76,8 @@ conditions:
 			errs := ValidateMinimumAgentVersion(fsys)
 
 			if c.expectedErr != nil {
-				require.ErrorContains(t, errs, c.expectedErr.Error())
+				require.Len(t, errs, 1)
+				require.ErrorIs(t, errs[0], c.expectedErr)
 			} else {
 				require.Empty(t, errs)
 			}
