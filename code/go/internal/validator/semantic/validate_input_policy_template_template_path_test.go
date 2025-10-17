@@ -95,3 +95,48 @@ policy_templates:
 	})
 
 }
+func TestValidateInputPackagePolicyTemplate(t *testing.T) {
+	t.Run("existing_template_found", func(t *testing.T) {
+		d := t.TempDir()
+
+		// create directories and template file that should match the pattern "*/*/tmpl"
+		err := os.MkdirAll(filepath.Join(d, "agent", "input"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "agent", "input", "udp.yml.hbs"), []byte("# UDP template"), 0o644)
+		require.NoError(t, err)
+
+		err = validateInputPackagePolicyTemplate(fspath.DirFS(d), inputPolicyTemplate{
+			TemplatePath: "udp.yml.hbs",
+		})
+		require.NoError(t, err)
+	})
+
+	t.Run("existing_template_found_nested", func(t *testing.T) {
+		d := t.TempDir()
+
+		// create directories and template file that should match the pattern "*/*/tmpl"
+		err := os.MkdirAll(filepath.Join(d, "data_stream", "test", "agent", "stream"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "test", "agent", "stream", "udp.yml.hbs"), []byte("# UDP template"), 0o644)
+		require.NoError(t, err)
+
+		err = validateInputPackagePolicyTemplate(fspath.DirFS(d), inputPolicyTemplate{
+			TemplatePath: "udp.yml.hbs",
+		})
+		require.NoError(t, err)
+	})
+
+	t.Run("template_not_found", func(t *testing.T) {
+		d := t.TempDir()
+
+		// no template file created
+		err := os.MkdirAll(filepath.Join(d, "agent", "input"), 0o755)
+		require.NoError(t, err)
+
+		err = validateInputPackagePolicyTemplate(fspath.DirFS(d), inputPolicyTemplate{
+			TemplatePath: "missing.yml.hbs",
+		})
+		require.Error(t, err)
+		assert.ErrorIs(t, err, errTemplateNotFound)
+	})
+}

@@ -8,12 +8,12 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"os"
 	"path"
 
 	"gopkg.in/yaml.v3"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -83,17 +83,41 @@ func validateInputPackagePolicyTemplate(fsys fspath.FS, policyTemplate inputPoli
 	if policyTemplate.TemplatePath == "" {
 		return errRequiredTemplatePath
 	}
-	return validateAgentInputTemplatePath(fsys, policyTemplate.TemplatePath)
+
+	if err := validateAgentInputTemplatePath(fsys, policyTemplate.TemplatePath); err != nil {
+		// fallback to data_stream/*/agent/stream if not found in agent/input
+		// fleet looks for the template within all the files of the package using endsWith match
+		if err := validateStreamAgentStreamTemplatePath(fsys, policyTemplate.TemplatePath); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
+// validateAgentInputTemplatePath checks if the template file exists under agent/input directory
 func validateAgentInputTemplatePath(fsys fspath.FS, tmplPath string) error {
-	templatePath := path.Join("agent", "input", tmplPath)
-	_, err := fs.Stat(fsys, templatePath)
+	foundPaths, err := pkgpath.Files(fsys, path.Join("agent", "input", tmplPath))
 	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return errTemplateNotFound
-		}
-		return fmt.Errorf("failed to stat template file %s: %w", fsys.Path(templatePath), err)
+		return fmt.Errorf("failed to find template files: %w", err)
+	}
+
+	if len(foundPaths) == 0 {
+		return errTemplateNotFound
+	}
+
+	return nil
+}
+
+// validateStreamAgentStreamTemplatePath checks if the template file exists under data_stream/*/agent/stream directory
+func validateStreamAgentStreamTemplatePath(fsys fspath.FS, tmplPath string) error {
+	foundPaths, err := pkgpath.Files(fsys, path.Join("data_stream", "*", "agent", "stream", tmplPath))
+	if err != nil {
+		return fmt.Errorf("failed to find template files: %w", err)
+	}
+
+	if len(foundPaths) == 0 {
+		return errTemplateNotFound
 	}
 
 	return nil
