@@ -32,8 +32,10 @@ func ValidateMinimumAgentVersion(fsys fspath.FS) specerrors.ValidationErrors {
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
-	if _, err := semver.NewConstraint(agentVersionCondition); agentVersionCondition != "" && err != nil {
-		return specerrors.ValidationErrors{specerrors.NewStructuredError(errors.Join(err, errInvalidAgentVersionCondition), specerrors.UnassignedCode)}
+	if agentVersionCondition != "" {
+		if _, err := semver.NewConstraint(agentVersionCondition); err != nil {
+			return specerrors.ValidationErrors{specerrors.NewStructuredError(errors.Join(err, errInvalidAgentVersionCondition), specerrors.UnassignedCode)}
+		}
 	}
 
 	return nil
