@@ -12,8 +12,8 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
-    - description: Add validation to ensure that the agent version is defined in the package manifest.
-      type: enhancement
+    - description: Require defining agent version constraints in input and integration packages.
+      type: breaking-change
       link: https://github.com/elastic/package-spec/pull/999
 - version: 3.5.1-next
   changes:
@@ -23,6 +23,9 @@
     - description: Add support for script testing in data streams.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/985
+    - description: Allow to define agent version constrains in input and integration packages.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/999
 - version: 3.5.0
   changes:
     - description: Add `duration` variable data type with `min_duration` and `max_duration` validation properties.
