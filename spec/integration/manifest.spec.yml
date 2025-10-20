@@ -684,6 +684,7 @@ spec:
     - version
     - type
     - owner
+    - conditions
   allOf:
     - if:
         properties:
@@ -709,9 +710,11 @@ versions:
   - before: 3.6.0
     patch:
       - op: remove
-        path: "/definitions/conditions/required"
+        path: "/required/7" # removes requirement for conditions
       - op: remove
-        path: "/definitions/conditions/properties/agent/required"
+        path: "/definitions/conditions/required/0" # removes requirement for agent
+      - op: remove
+        path: "/definitions/conditions/properties/agent/required/0" # removes requirement for version
   - before: 3.3.2
     patch:
       - op: remove
