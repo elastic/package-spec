@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	inputPackageType packageType = "input"
+	inputPackageType string = "input"
 )
 
 var (
@@ -29,15 +29,13 @@ var (
 	errInvalidPackageType    = errors.New("invalid package type")
 )
 
-type packageType string
-
 type inputPolicyTemplate struct {
 	Name         string `yaml:"name"`
 	TemplatePath string `yaml:"template_path"` // input type packages require this field
 }
 
 type inputPackageManifest struct { // package manifest
-	Type            packageType           `yaml:"type"`
+	Type            string                `yaml:"type"`
 	PolicyTemplates []inputPolicyTemplate `yaml:"policy_templates"`
 }
 
