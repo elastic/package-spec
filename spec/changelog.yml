@@ -23,6 +23,9 @@
     - description: Input packages require to define template_path in manifest.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1000
+    - description: Integration packages validation of template paths.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1002
 - version: 3.5.0
   changes:
     - description: Add `duration` variable data type with `min_duration` and `max_duration` validation properties.
