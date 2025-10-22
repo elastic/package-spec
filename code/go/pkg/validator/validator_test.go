@@ -310,6 +310,13 @@ func TestValidateFile(t *testing.T) {
 				"field policy_templates.0.input: Must not be present",
 			},
 		},
+		"bad_input_template_path": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0: template_path is required",
+				"policy template \"sql_query\" references template_path \"\": template_path is required for input type packages",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
