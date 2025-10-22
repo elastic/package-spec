@@ -6,6 +6,7 @@ package semantic
 
 import (
 	"errors"
+	"fmt"
 	"io/fs"
 	"path"
 
@@ -98,14 +99,14 @@ func validateIntegrationPackagePolicyTemplate(fsys fspath.FS, policyTemplate int
 			// validate the provided template_path file exists
 			err := validateAgentInputTemplatePath(fsys, input.TemplatePath)
 			if err != nil {
-				return err
+				return fmt.Errorf("error validating input \"%s\": %w", input.Type, err)
 			}
 			continue
 		}
 
 		err := validateInputWithStreams(fsys, input.Type, dsManifestMap)
 		if err != nil {
-			return err
+			return fmt.Errorf("error validating input from streams \"%s\": %w", input.Type, err)
 		}
 	}
 	return nil
