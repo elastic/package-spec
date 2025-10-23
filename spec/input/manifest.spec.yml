@@ -94,6 +94,7 @@ spec:
           - description
           - type
           - input
+          - template_path
     icons:
       $ref: "../integration/manifest.spec.yml#/definitions/icons"
     screenshots:

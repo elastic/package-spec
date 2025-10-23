@@ -23,6 +23,9 @@
     - description: Add support for script testing in data streams.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/985
+    - description: Input packages require to define template_path in manifest.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1000
     - description: Allow to define agent version constrains in input and integration packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/999
