@@ -320,7 +320,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_agent_version_v3": {
 			"manifest.yml",
 			[]string{
-				"field conditions: agent is required",
+				"field conditions.agent: version is required",
 			},
 		},
 	}
