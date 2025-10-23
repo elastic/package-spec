@@ -317,6 +317,12 @@ func TestValidateFile(t *testing.T) {
 				"policy template \"sql_query\" references template_path \"\": template_path is required for input type packages",
 			},
 		},
+		"bad_agent_version_v3": {
+			"manifest.yml",
+			[]string{
+				"field conditions: agent is required",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
