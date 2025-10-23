@@ -120,9 +120,14 @@ spec:
   - version
   - type
   - owner
+  - conditions
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.6.0
+    patch:
+      - op: remove
+        path: "/required/7" # removes requirement for conditions
   # Reserve otelcol input name before 3.5.0.
   - before: 3.5.0
     patch:
