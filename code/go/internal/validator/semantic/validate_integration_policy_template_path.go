@@ -21,10 +21,6 @@ const (
 	packageTypeIntegration    = "integration"
 )
 
-var (
-	errMultipleTemplatesFound = errors.New("multiple template files found for the stream")
-)
-
 type policyTemplateInput struct {
 	Type         string `yaml:"type"`
 	TemplatePath string `yaml:"template_path"` // optional for integration packages
