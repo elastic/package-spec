@@ -30,7 +30,7 @@
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/999
     - description: Allow to define policy_template in system benchmark configuration files.
-      type: bug-fix
+      type: bugfix
       link: https://github.com/elastic/package-spec/pull/1004
 - version: 3.5.0
   changes:
