@@ -26,9 +26,8 @@ var (
 )
 
 type policyTemplateInput struct {
-	Type         string   `yaml:"type"`
-	TemplatePath string   `yaml:"template_path"` // optional for integration packages
-	Streams      []stream // this fields is added by fleet, relates the input with the data stream streams that use it
+	Type         string `yaml:"type"`
+	TemplatePath string `yaml:"template_path"` // optional for integration packages
 }
 
 type integrationPolicyTemplate struct {
