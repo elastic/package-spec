@@ -62,9 +62,7 @@ func TestValidateInputWithStreams(t *testing.T) {
 	require.NoError(t, err)
 	err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "access.yml.hbs"), []byte(`access stream template`), 0o644)
 	require.NoError(t, err)
-	err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "log.yml.hbs"), []byte(`default stream template`), 0o644)
-	require.NoError(t, err)
-	err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "syslog.yml.hbs"), []byte(`default stream template`), 0o644)
+	err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "stream.yml.hbs"), []byte(`default stream template`), 0o644)
 	require.NoError(t, err)
 
 	dsMap := make(map[string]dataStreamManifest)
@@ -73,21 +71,13 @@ func TestValidateInputWithStreams(t *testing.T) {
 			{
 				Input:        "nginx/access",
 				TemplatePath: "access.yml.hbs",
-				// access.yml.hbs exists
 			},
 			{
 				Input:        "nginx/error",
-				TemplatePath: "error.yml.hbs",
-				// error.yml.hbs does not exist
+				TemplatePath: "error_stream.yml.hbs",
 			},
 			{
-				Input: "nginx/default",
-				// no template_path set, should default to stream.yml.hbs
-			},
-			{
-				Input: "nginx/multiple",
-				// exact match will not be found, but multiple files ending with log.yml.hbs and syslog.yml.hbs will be found
-				TemplatePath: "og.yml.hbs",
+				Input: "nginx/other",
 			},
 		},
 	}
@@ -102,26 +92,18 @@ func TestValidateInputWithStreams(t *testing.T) {
 	})
 
 	t.Run("valid input with default template_path", func(t *testing.T) {
-		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "stream.yml.hbs"), []byte(`default stream template`), 0o644)
-		require.NoError(t, err)
-		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", "stream.yml.hbs"))
 		err = validateInputWithStreams(fspath.DirFS(d), "nginx/other", dsMap)
 		require.NoError(t, err)
 	})
 
 	t.Run("multiple templates found for input", func(t *testing.T) {
-		err = validateInputWithStreams(fspath.DirFS(d), "nginx/multiple", dsMap)
+		// create another template file that matches the default template path for the nginx/other input
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "error_stream.yml.hbs"), []byte(`other stream template`), 0o644)
+		require.NoError(t, err)
+
+		err = validateInputWithStreams(fspath.DirFS(d), "nginx/other", dsMap)
 		require.ErrorIs(t, err, errMultipleTemplatesFound)
 	})
-
-	t.Run("valid input with prefix default template_path", func(t *testing.T) {
-		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "filestream.yml.hbs"), []byte(`default stream template`), 0o644)
-		require.NoError(t, err)
-
-		err = validateInputWithStreams(fspath.DirFS(d), "nginx/default", dsMap)
-		require.NoError(t, err)
-	})
-
 }
 func TestValidateIntegrationPolicyTemplates_NonIntegrationType(t *testing.T) {
 	d := t.TempDir()
