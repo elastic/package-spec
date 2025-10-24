@@ -96,14 +96,6 @@ func TestValidateInputWithStreams(t *testing.T) {
 		require.NoError(t, err)
 	})
 
-	t.Run("multiple templates found for input", func(t *testing.T) {
-		// create another template file that matches the default template path for the nginx/other input
-		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "error_stream.yml.hbs"), []byte(`other stream template`), 0o644)
-		require.NoError(t, err)
-
-		err = validateInputWithStreams(fspath.DirFS(d), "nginx/other", dsMap)
-		require.ErrorIs(t, err, errMultipleTemplatesFound)
-	})
 }
 func TestValidateIntegrationPolicyTemplates_NonIntegrationType(t *testing.T) {
 	d := t.TempDir()
