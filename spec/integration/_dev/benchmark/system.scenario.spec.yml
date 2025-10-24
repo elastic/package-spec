@@ -140,6 +140,8 @@ spec:
     input:
       description: The input of the package to benchmark.
       type: string
+    policy_template:
+      $ref: "#/definitions/policy_template"
     vars:
       description: The package level variables.
       $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/vars"
