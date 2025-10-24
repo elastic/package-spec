@@ -29,6 +29,9 @@
     - description: Allow to define agent version constrains in input and integration packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/999
+    - description: Allow to define policy_template in system benchmark configuration files.
+      type: bug-fix
+      link: https://github.com/elastic/package-spec/pull/1004
 - version: 3.5.0
   changes:
     - description: Add `duration` variable data type with `min_duration` and `max_duration` validation properties.
