@@ -154,9 +154,17 @@ func validateInputWithStreams(fsys fspath.FS, input string, dsMap map[string]dat
 			}
 
 			// match all the possible template files for the stream under data_stream/<stream>/agent/stream/ that end with template_path
-			tmplFiles, err := fs.Glob(fsys, path.Join(dsDir, "agent", "stream", "*"+stream.TemplatePath))
+			tmplFiles, err := fs.Glob(fsys, path.Join(dsDir, "agent", "stream", stream.TemplatePath))
 			if err != nil {
 				return err
+			}
+			if len(tmplFiles) == 0 {
+				// when the exact template_path file is not found, try to find any file that ends with the template_path value
+				// this is to accommodate legacy cases where the default template_path could be prefixed
+				tmplFiles, err = fs.Glob(fsys, path.Join(dsDir, "agent", "stream", "*"+stream.TemplatePath))
+				if err != nil {
+					return err
+				}
 			}
 			if len(tmplFiles) == 0 {
 				return errTemplateNotFound
