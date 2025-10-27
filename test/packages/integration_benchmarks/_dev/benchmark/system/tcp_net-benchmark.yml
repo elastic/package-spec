@@ -2,6 +2,7 @@
 description: Benchmark 20MiB of data ingested
 input: tcp
 vars: ~
+policy_template: mytemplate
 data_stream.dataset: test
 data_stream.vars.paths:
   - "{{SERVICE_LOGS_DIR}}/corpus-*"
