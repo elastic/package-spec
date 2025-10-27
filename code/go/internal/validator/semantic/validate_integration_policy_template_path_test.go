@@ -62,8 +62,6 @@ func TestValidateInputWithStreams(t *testing.T) {
 	require.NoError(t, err)
 	err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "access.yml.hbs"), []byte(`access stream template`), 0o644)
 	require.NoError(t, err)
-	err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "stream.yml.hbs"), []byte(`default stream template`), 0o644)
-	require.NoError(t, err)
 
 	dsMap := make(map[string]dataStreamManifest)
 	dsMap[filepath.ToSlash(path.Join("data_stream", "logs"))] = dataStreamManifest{
@@ -79,6 +77,9 @@ func TestValidateInputWithStreams(t *testing.T) {
 			{
 				Input: "nginx/other",
 			},
+			{
+				Input: "prefix/stream",
+			},
 		},
 	}
 	t.Run("valid input with existing template_path", func(t *testing.T) {
@@ -92,7 +93,20 @@ func TestValidateInputWithStreams(t *testing.T) {
 	})
 
 	t.Run("valid input with default template_path", func(t *testing.T) {
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "stream.yml.hbs"), []byte(`default stream template`), 0o644)
+		require.NoError(t, err)
+		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", "stream.yml.hbs"))
+
 		err = validateInputWithStreams(fspath.DirFS(d), "nginx/other", dsMap)
+		require.NoError(t, err)
+	})
+
+	t.Run("valid input with default prefixed template_path", func(t *testing.T) {
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "prefixstream.yml.hbs"), []byte(`access stream template`), 0o644)
+		require.NoError(t, err)
+		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", "prefixstream.yml.hbs"))
+
+		err = validateInputWithStreams(fspath.DirFS(d), "prefix/stream", dsMap)
 		require.NoError(t, err)
 	})
 

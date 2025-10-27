@@ -151,7 +151,15 @@ func validateInputWithStreams(fsys fspath.FS, input string, dsMap map[string]dat
 			_, err := fs.ReadFile(fsys, path.Join(dsDir, "agent", "stream", stream.TemplatePath))
 			if err != nil {
 				if errors.Is(err, fs.ErrNotExist) {
-					return errTemplateNotFound
+					// fallback to glob pattern matching in case the default template path is customized with a prefix
+					matches, err := fs.Glob(fsys, path.Join(dsDir, "agent", "stream", "*"+stream.TemplatePath))
+					if err != nil {
+						return err
+					}
+					if len(matches) == 0 {
+						return errTemplateNotFound
+					}
+					continue
 				}
 				return err
 			}
