@@ -15,6 +15,6 @@ policy_templates:
       - type: apm
         title: Collect traces
         description: Collect traces
-        template_path: ./agent/input/template.yml.hbs
+        template_path: template.yml.hbs
 owner:
   github: elastic/foobar

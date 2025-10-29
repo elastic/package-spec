@@ -323,6 +323,24 @@ func TestValidateFile(t *testing.T) {
 				"field conditions.agent: version is required",
 			},
 		},
+		"bad_integration_stream_template_path": {
+			"manifest.yml",
+			[]string{
+				"policy template \"sample\" references input template_path: error validating input from streams \"logfile\": template file not found",
+			},
+		},
+		"bad_integration_stream_template_path_default": {
+			"manifest.yml",
+			[]string{
+				"policy template \"sample\" references input template_path: error validating input from streams \"logfile\": template file not found",
+			},
+		},
+		"bad_integration_input_template_path": {
+			"manifest.yml",
+			[]string{
+				"policy template \"sample\" references input template_path: error validating input \"logfile\": template file not found",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
