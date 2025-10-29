@@ -15,7 +15,7 @@
     - description: Require defining agent version constraints in input and integration packages.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/999
-- version: 3.5.1-next
+- version: 3.5.1
   changes:
     - description: Input packages don't require to define fields.
       type: enhancement
