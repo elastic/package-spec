@@ -26,7 +26,7 @@ Feature: Basic package types support
     Then there is a dashboard "basic_content-dashboard-abc-1"
      And there is a detection rule "12cea9e9-5766-474d-a9dc-34ef7c7677c7"
 
-  @3.7.0
+  @3.6.0
   Scenario: Content package can be installed
    Given the "good_content" package is installed
      And prebuilt detection rules are loaded
