@@ -2,9 +2,9 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 3.6.0-next
+- version: 3.7.0-next
   changes:
-    # Pending on https://github.com/elastic/kibana/pull/186974
+      # Pending on https://github.com/elastic/kibana/pull/186974
     - description: Add support for `slo` assets.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/767
@@ -12,6 +12,8 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+- version: 3.6.0
+  changes:
     - description: Require defining agent version constraints in input and integration packages.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/999
