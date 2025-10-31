@@ -14,6 +14,20 @@ policy_templates:
     title: Apache logs and metrics
     description: Collect logs and metrics from Apache instances
     inputs:
+      - type: logfile-link
+        title: Collect logs from Apache instances
+        description: Collecting Apache access and error logs
+        multi: false
+        vars:
+          - name: paths
+            type: text
+            title: Paths
+            multi: true
+            required: true
+            show_user: true
+            default:
+              - /var/log/apache2/access.log
+              - /var/log/apache2/error.log
       - type: apache/metrics
         title: Collect metrics from Apache instances
         description: Collecting Apache status metrics
