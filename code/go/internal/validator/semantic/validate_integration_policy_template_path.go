@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"io/fs"
 	"path"
+	"path/filepath"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -148,18 +150,18 @@ func validateInputWithStreams(fsys fspath.FS, input string, dsMap map[string]dat
 				stream.TemplatePath = defaultStreamTemplatePath
 			}
 
-			_, err := fs.ReadFile(fsys, path.Join(dsDir, "agent", "stream", stream.TemplatePath))
+			foundFile, err := findPathWithPattern(fsys, dsDir, stream.TemplatePath)
+			if err != nil {
+				return err
+			}
+			if foundFile == "" {
+				return errTemplateNotFound
+			}
+
+			_, err = fs.ReadFile(fsys, foundFile)
 			if err != nil {
 				if errors.Is(err, fs.ErrNotExist) {
-					// fallback to glob pattern matching in case the default template path is customized with a prefix
-					matches, err := fs.Glob(fsys, path.Join(dsDir, "agent", "stream", "*"+stream.TemplatePath))
-					if err != nil {
-						return err
-					}
-					if len(matches) == 0 {
-						return errTemplateNotFound
-					}
-					continue
+					return errTemplateNotFound
 				}
 				return err
 			}
@@ -167,4 +169,34 @@ func validateInputWithStreams(fsys fspath.FS, input string, dsMap map[string]dat
 	}
 
 	return nil
+}
+
+// findPathWithPattern looks for a file matching the templatePath in the given data stream directory
+// It checks for exact matches, files ending with the templatePath, or templatePath + ".link"
+func findPathWithPattern(fsys fspath.FS, dsDir, templatePath string) (string, error) {
+	// Check for exact match, files ending with stream.TemplatePath, or stream.TemplatePath + ".link"
+	pattern := path.Join(dsDir, "agent", "stream", "*"+templatePath+"*")
+	matches, err := fs.Glob(fsys, pattern)
+	if err != nil {
+		return "", err
+	}
+
+	// Filter matches to ensure they match our criteria:
+	// 1. Exact name match
+	// 2. Ends with stream.TemplatePath
+	// 3. Equals stream.TemplatePath + ".link"
+	var foundFile string
+	for _, match := range matches {
+		base := filepath.Base(match)
+		if base == templatePath || base == templatePath+".link" {
+			foundFile = match
+			break
+		}
+		// fallbak to check for suffix match, in case the path is prefixed
+		if strings.HasSuffix(match, templatePath) {
+			foundFile = match
+			break
+		}
+	}
+	return foundFile, nil
 }
