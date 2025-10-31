@@ -181,7 +181,7 @@ streams:
 }
 func TestFindPathWithPattern(t *testing.T) {
 	d := t.TempDir()
-	
+
 	dsDir := filepath.ToSlash(path.Join("data_stream", "logs"))
 	err := os.MkdirAll(filepath.Join(d, "data_stream", "logs", "agent", "stream"), 0o755)
 	require.NoError(t, err)
@@ -225,7 +225,7 @@ func TestFindPathWithPattern(t *testing.T) {
 
 	t.Run("no match found", func(t *testing.T) {
 		templatePath := "nonexistent.yml.hbs"
-		
+
 		foundFile, err := findPathWithPattern(fspath.DirFS(d), dsDir, templatePath)
 		require.NoError(t, err)
 		require.Empty(t, foundFile)
@@ -235,11 +235,11 @@ func TestFindPathWithPattern(t *testing.T) {
 		templatePath := "multi.yml.hbs"
 		exactFile := "multi.yml.hbs"
 		prefixedFile := "prefixmulti.yml.hbs"
-		
+
 		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", exactFile), []byte("exact"), 0o644)
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", exactFile))
-		
+
 		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", prefixedFile), []byte("prefixed"), 0o644)
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", prefixedFile))
@@ -254,11 +254,11 @@ func TestFindPathWithPattern(t *testing.T) {
 		templatePath := "link.yml.hbs"
 		linkFile := "link.yml.hbs.link"
 		suffixFile := "prefixlink.yml.hbs"
-		
+
 		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", linkFile), []byte("link"), 0o644)
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", linkFile))
-		
+
 		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", suffixFile), []byte("suffix"), 0o644)
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", suffixFile))
@@ -269,4 +269,3 @@ func TestFindPathWithPattern(t *testing.T) {
 		require.Equal(t, filepath.ToSlash(path.Join(dsDir, "agent", "stream", linkFile)), foundFile)
 	})
 }
-
