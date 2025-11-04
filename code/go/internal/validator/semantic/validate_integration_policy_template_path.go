@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io/fs"
 	"path"
-	"path/filepath"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -182,12 +181,12 @@ func findPathAtDirectory(fsys fspath.FS, dir, templatePath string) (string, erro
 	for _, entry := range entries {
 		name := entry.Name()
 		if name == templatePath || name == templatePath+".link" {
-			foundFile = filepath.Join(dir, name)
+			foundFile = path.Join(dir, name)
 			break
 		}
 		// fallback to check for suffix match, in case the path is prefixed
 		if strings.HasSuffix(name, templatePath) || strings.HasSuffix(name, templatePath+".link") {
-			foundFile = filepath.Join(dir, name)
+			foundFile = path.Join(dir, name)
 			break
 		}
 	}
