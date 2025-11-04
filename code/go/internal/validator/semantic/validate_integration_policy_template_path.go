@@ -5,7 +5,6 @@
 package semantic
 
 import (
-	"errors"
 	"fmt"
 	"io/fs"
 	"path"
@@ -159,13 +158,7 @@ func validateInputWithStreams(fsys fspath.FS, input string, dsMap map[string]dat
 				return errTemplateNotFound
 			}
 
-			_, err = fs.ReadFile(fsys, foundFile)
-			if err != nil {
-				if errors.Is(err, fs.ErrNotExist) {
-					return errTemplateNotFound
-				}
-				return err
-			}
+			return nil
 		}
 	}
 
