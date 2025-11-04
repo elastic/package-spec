@@ -6,7 +6,6 @@ package semantic
 
 import (
 	"errors"
-	"fmt"
 	"io/fs"
 	"path"
 
@@ -85,9 +84,12 @@ func validateInputPackagePolicyTemplate(fsys fspath.FS, policyTemplate inputPoli
 
 func validateAgentInputTemplatePath(fsys fspath.FS, tmplPath string) error {
 	dir := path.Join("agent", "input")
-	foundFile, err := findPathWithPattern(fsys, dir, tmplPath)
+	foundFile, err := findPathAtDirectory(fsys, dir, tmplPath)
 	if err != nil {
-		return fmt.Errorf("failed to stat template file %s: %w", fsys.Path(tmplPath), err)
+		if errors.Is(err, fs.ErrNotExist) {
+			return errTemplateNotFound
+		}
+		return err
 	}
 	if foundFile == "" {
 		return errTemplateNotFound

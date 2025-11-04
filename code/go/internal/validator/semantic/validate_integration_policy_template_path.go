@@ -150,7 +150,7 @@ func validateInputWithStreams(fsys fspath.FS, input string, dsMap map[string]dat
 			}
 
 			dir := path.Join(dsDir, "agent", "stream")
-			foundFile, err := findPathWithPattern(fsys, dir, stream.TemplatePath)
+			foundFile, err := findPathAtDirectory(fsys, dir, stream.TemplatePath)
 			if err != nil {
 				return err
 			}
@@ -165,12 +165,11 @@ func validateInputWithStreams(fsys fspath.FS, input string, dsMap map[string]dat
 	return nil
 }
 
-// findPathWithPattern looks for a file matching the templatePath in the given directory (dir)
+// findPathAtDirectory looks for a file matching the templatePath in the given directory (dir)
 // It checks for exact matches, files ending with the templatePath, or templatePath + ".link"
-func findPathWithPattern(fsys fspath.FS, dir, templatePath string) (string, error) {
+func findPathAtDirectory(fsys fspath.FS, dir, templatePath string) (string, error) {
 	// Check for exact match, files ending with stream.TemplatePath, or stream.TemplatePath + ".link"
-	pattern := path.Join(dir, "*"+templatePath+"*")
-	matches, err := fs.Glob(fsys, pattern)
+	entries, err := fs.ReadDir(fsys, dir)
 	if err != nil {
 		return "", err
 	}
@@ -180,15 +179,15 @@ func findPathWithPattern(fsys fspath.FS, dir, templatePath string) (string, erro
 	// 2. Ends with stream.TemplatePath
 	// 3. Equals stream.TemplatePath + ".link"
 	var foundFile string
-	for _, match := range matches {
-		base := filepath.Base(match)
-		if base == templatePath || base == templatePath+".link" {
-			foundFile = match
+	for _, entry := range entries {
+		name := entry.Name()
+		if name == templatePath || name == templatePath+".link" {
+			foundFile = filepath.Join(dir, name)
 			break
 		}
 		// fallback to check for suffix match, in case the path is prefixed
-		if strings.HasSuffix(match, templatePath) || strings.HasSuffix(match, templatePath+".link") {
-			foundFile = match
+		if strings.HasSuffix(name, templatePath) || strings.HasSuffix(name, templatePath+".link") {
+			foundFile = filepath.Join(dir, name)
 			break
 		}
 	}

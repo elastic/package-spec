@@ -179,7 +179,7 @@ streams:
 	errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
 	require.Empty(t, errs)
 }
-func TestFindPathWithPattern(t *testing.T) {
+func TestFindPathAtDirectory(t *testing.T) {
 	d := t.TempDir()
 
 	dsDir := filepath.ToSlash(path.Join("data_stream", "logs", "agent", "stream"))
@@ -192,7 +192,7 @@ func TestFindPathWithPattern(t *testing.T) {
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", templatePath))
 
-		foundFile, err := findPathWithPattern(fspath.DirFS(d), dsDir, templatePath)
+		foundFile, err := findPathAtDirectory(fspath.DirFS(d), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
 		require.Equal(t, filepath.ToSlash(path.Join(dsDir, templatePath)), foundFile)
@@ -204,7 +204,7 @@ func TestFindPathWithPattern(t *testing.T) {
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", templatePath+".link"))
 
-		foundFile, err := findPathWithPattern(fspath.DirFS(d), dsDir, templatePath)
+		foundFile, err := findPathAtDirectory(fspath.DirFS(d), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
 		require.Equal(t, filepath.ToSlash(path.Join(dsDir, templatePath+".link")), foundFile)
@@ -217,7 +217,7 @@ func TestFindPathWithPattern(t *testing.T) {
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", prefixedFile))
 
-		foundFile, err := findPathWithPattern(fspath.DirFS(d), dsDir, templatePath)
+		foundFile, err := findPathAtDirectory(fspath.DirFS(d), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
 		require.Equal(t, filepath.ToSlash(path.Join(dsDir, prefixedFile)), foundFile)
@@ -230,7 +230,7 @@ func TestFindPathWithPattern(t *testing.T) {
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", prefixedFile))
 
-		foundFile, err := findPathWithPattern(fspath.DirFS(d), dsDir, templatePath)
+		foundFile, err := findPathAtDirectory(fspath.DirFS(d), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
 		require.Equal(t, filepath.ToSlash(path.Join(dsDir, prefixedFile)), foundFile)
@@ -239,7 +239,7 @@ func TestFindPathWithPattern(t *testing.T) {
 	t.Run("no match found", func(t *testing.T) {
 		templatePath := "nonexistent.yml.hbs"
 
-		foundFile, err := findPathWithPattern(fspath.DirFS(d), dsDir, templatePath)
+		foundFile, err := findPathAtDirectory(fspath.DirFS(d), dsDir, templatePath)
 		require.NoError(t, err)
 		require.Empty(t, foundFile)
 	})
@@ -257,7 +257,7 @@ func TestFindPathWithPattern(t *testing.T) {
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", prefixedFile))
 
-		foundFile, err := findPathWithPattern(fspath.DirFS(d), dsDir, templatePath)
+		foundFile, err := findPathAtDirectory(fspath.DirFS(d), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
 		require.Equal(t, filepath.ToSlash(path.Join(dsDir, exactFile)), foundFile)
@@ -276,7 +276,7 @@ func TestFindPathWithPattern(t *testing.T) {
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", suffixFile))
 
-		foundFile, err := findPathWithPattern(fspath.DirFS(d), dsDir, templatePath)
+		foundFile, err := findPathAtDirectory(fspath.DirFS(d), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
 		require.Equal(t, filepath.ToSlash(path.Join(dsDir, linkFile)), foundFile)
