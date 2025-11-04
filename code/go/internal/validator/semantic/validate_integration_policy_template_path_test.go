@@ -223,6 +223,19 @@ func TestFindPathWithPattern(t *testing.T) {
 		require.Equal(t, filepath.ToSlash(path.Join(dsDir, "agent", "stream", prefixedFile)), foundFile)
 	})
 
+	t.Run("match with prefix and .link extension", func(t *testing.T) {
+		templatePath := "stream.yml.hbs"
+		prefixedFile := "prefixstream.yml.hbs.link"
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", prefixedFile), []byte("content"), 0o644)
+		require.NoError(t, err)
+		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", prefixedFile))
+
+		foundFile, err := findPathWithPattern(fspath.DirFS(d), dsDir, templatePath)
+		require.NoError(t, err)
+		require.NotEmpty(t, foundFile)
+		require.Equal(t, filepath.ToSlash(path.Join(dsDir, "agent", "stream", prefixedFile)), foundFile)
+	})
+
 	t.Run("no match found", func(t *testing.T) {
 		templatePath := "nonexistent.yml.hbs"
 
