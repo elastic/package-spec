@@ -5,10 +5,10 @@
 package semantic
 
 import (
-	"errors"
 	"fmt"
 	"io/fs"
 	"path"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -148,23 +148,47 @@ func validateInputWithStreams(fsys fspath.FS, input string, dsMap map[string]dat
 				stream.TemplatePath = defaultStreamTemplatePath
 			}
 
-			_, err := fs.ReadFile(fsys, path.Join(dsDir, "agent", "stream", stream.TemplatePath))
+			dir := path.Join(dsDir, "agent", "stream")
+			foundFile, err := findPathAtDirectory(fsys, dir, stream.TemplatePath)
 			if err != nil {
-				if errors.Is(err, fs.ErrNotExist) {
-					// fallback to glob pattern matching in case the default template path is customized with a prefix
-					matches, err := fs.Glob(fsys, path.Join(dsDir, "agent", "stream", "*"+stream.TemplatePath))
-					if err != nil {
-						return err
-					}
-					if len(matches) == 0 {
-						return errTemplateNotFound
-					}
-					continue
-				}
 				return err
 			}
+			if foundFile == "" {
+				return errTemplateNotFound
+			}
+
+			return nil
 		}
 	}
 
 	return nil
+}
+
+// findPathAtDirectory looks for a file matching the templatePath in the given directory (dir)
+// It checks for exact matches, files ending with the templatePath, or templatePath + ".link"
+func findPathAtDirectory(fsys fspath.FS, dir, templatePath string) (string, error) {
+	// Check for exact match, files ending with stream.TemplatePath, or stream.TemplatePath + ".link"
+	entries, err := fs.ReadDir(fsys, dir)
+	if err != nil {
+		return "", err
+	}
+
+	// Filter matches to ensure they match our criteria:
+	// 1. Exact name match
+	// 2. Ends with stream.TemplatePath
+	// 3. Equals stream.TemplatePath + ".link"
+	var foundFile string
+	for _, entry := range entries {
+		name := entry.Name()
+		if name == templatePath || name == templatePath+".link" {
+			foundFile = path.Join(dir, name)
+			break
+		}
+		// fallback to check for suffix match, in case the path is prefixed
+		if strings.HasSuffix(name, templatePath) || strings.HasSuffix(name, templatePath+".link") {
+			foundFile = path.Join(dir, name)
+			break
+		}
+	}
+	return foundFile, nil
 }
