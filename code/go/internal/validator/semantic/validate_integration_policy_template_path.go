@@ -192,7 +192,7 @@ func findPathWithPattern(fsys fspath.FS, dsDir, templatePath string) (string, er
 			foundFile = match
 			break
 		}
-		// fallbak to check for suffix match, in case the path is prefixed
+		// fallback to check for suffix match, in case the path is prefixed
 		if strings.HasSuffix(match, templatePath) {
 			foundFile = match
 			break
