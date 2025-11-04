@@ -15,7 +15,7 @@
     - description: Require defining agent version constraints in input and integration packages.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/999
-- version: 3.5.2-next
+- version: 3.5.2
   changes:
     - description: Fix validation of integration package policy_template paths with linked files.
       type: bugfix
