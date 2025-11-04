@@ -150,7 +150,8 @@ func validateInputWithStreams(fsys fspath.FS, input string, dsMap map[string]dat
 				stream.TemplatePath = defaultStreamTemplatePath
 			}
 
-			foundFile, err := findPathWithPattern(fsys, dsDir, stream.TemplatePath)
+			dir := path.Join(dsDir, "agent", "stream")
+			foundFile, err := findPathWithPattern(fsys, dir, stream.TemplatePath)
 			if err != nil {
 				return err
 			}
@@ -171,11 +172,11 @@ func validateInputWithStreams(fsys fspath.FS, input string, dsMap map[string]dat
 	return nil
 }
 
-// findPathWithPattern looks for a file matching the templatePath in the given data stream directory
+// findPathWithPattern looks for a file matching the templatePath in the given directory (dir)
 // It checks for exact matches, files ending with the templatePath, or templatePath + ".link"
-func findPathWithPattern(fsys fspath.FS, dsDir, templatePath string) (string, error) {
+func findPathWithPattern(fsys fspath.FS, dir, templatePath string) (string, error) {
 	// Check for exact match, files ending with stream.TemplatePath, or stream.TemplatePath + ".link"
-	pattern := path.Join(dsDir, "agent", "stream", "*"+templatePath+"*")
+	pattern := path.Join(dir, "*"+templatePath+"*")
 	matches, err := fs.Glob(fsys, pattern)
 	if err != nil {
 		return "", err

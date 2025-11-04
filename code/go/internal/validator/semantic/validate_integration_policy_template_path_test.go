@@ -182,7 +182,7 @@ streams:
 func TestFindPathWithPattern(t *testing.T) {
 	d := t.TempDir()
 
-	dsDir := filepath.ToSlash(path.Join("data_stream", "logs"))
+	dsDir := filepath.ToSlash(path.Join("data_stream", "logs", "agent", "stream"))
 	err := os.MkdirAll(filepath.Join(d, "data_stream", "logs", "agent", "stream"), 0o755)
 	require.NoError(t, err)
 
@@ -195,7 +195,7 @@ func TestFindPathWithPattern(t *testing.T) {
 		foundFile, err := findPathWithPattern(fspath.DirFS(d), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
-		require.Equal(t, filepath.ToSlash(path.Join(dsDir, "agent", "stream", templatePath)), foundFile)
+		require.Equal(t, filepath.ToSlash(path.Join(dsDir, templatePath)), foundFile)
 	})
 
 	t.Run("match with .link extension", func(t *testing.T) {
@@ -207,7 +207,7 @@ func TestFindPathWithPattern(t *testing.T) {
 		foundFile, err := findPathWithPattern(fspath.DirFS(d), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
-		require.Equal(t, filepath.ToSlash(path.Join(dsDir, "agent", "stream", templatePath+".link")), foundFile)
+		require.Equal(t, filepath.ToSlash(path.Join(dsDir, templatePath+".link")), foundFile)
 	})
 
 	t.Run("match with prefix", func(t *testing.T) {
@@ -220,7 +220,7 @@ func TestFindPathWithPattern(t *testing.T) {
 		foundFile, err := findPathWithPattern(fspath.DirFS(d), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
-		require.Equal(t, filepath.ToSlash(path.Join(dsDir, "agent", "stream", prefixedFile)), foundFile)
+		require.Equal(t, filepath.ToSlash(path.Join(dsDir, prefixedFile)), foundFile)
 	})
 
 	t.Run("match with prefix and .link extension", func(t *testing.T) {
@@ -233,7 +233,7 @@ func TestFindPathWithPattern(t *testing.T) {
 		foundFile, err := findPathWithPattern(fspath.DirFS(d), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
-		require.Equal(t, filepath.ToSlash(path.Join(dsDir, "agent", "stream", prefixedFile)), foundFile)
+		require.Equal(t, filepath.ToSlash(path.Join(dsDir, prefixedFile)), foundFile)
 	})
 
 	t.Run("no match found", func(t *testing.T) {
@@ -260,7 +260,7 @@ func TestFindPathWithPattern(t *testing.T) {
 		foundFile, err := findPathWithPattern(fspath.DirFS(d), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
-		require.Equal(t, filepath.ToSlash(path.Join(dsDir, "agent", "stream", exactFile)), foundFile)
+		require.Equal(t, filepath.ToSlash(path.Join(dsDir, exactFile)), foundFile)
 	})
 
 	t.Run("link file takes precedence over suffix match", func(t *testing.T) {
@@ -279,6 +279,6 @@ func TestFindPathWithPattern(t *testing.T) {
 		foundFile, err := findPathWithPattern(fspath.DirFS(d), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
-		require.Equal(t, filepath.ToSlash(path.Join(dsDir, "agent", "stream", linkFile)), foundFile)
+		require.Equal(t, filepath.ToSlash(path.Join(dsDir, linkFile)), foundFile)
 	})
 }
