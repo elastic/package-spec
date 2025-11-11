@@ -4,6 +4,9 @@
 ##
 - version: 3.6.0-next
   changes:
+    - description: Make support for alert rule templates more permissive.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1012
     # Pending on https://github.com/elastic/kibana/pull/186974
     - description: Add support for `slo` assets.
       type: enhancement
