@@ -1,22 +1,29 @@
 ---
 description: Pipeline for processing sample logs
 processors:
-- set:
-    field: sample_field
-    value: "1"
-- set:
-    tag: valid_tag
-    field: sample_field
-    value: "1"
-- set:
-    tag: set_sample_field
-    field: sample_field
-    value: "1"
-- set:
-    tag: set_sample_field
-    field: sample_field
-    value: "1"
+  - set:
+      field: sample_field
+      value: "1"
+  - set:
+      tag: valid_tag
+      field: sample_field
+      value: "1"
+  - set:
+      tag: set_sample_field
+      field: sample_field
+      value: "1"
+  - set:
+      tag: set_sample_field
+      field: sample_field
+      value: "1"
 on_failure:
-- set:
-    field: error.message
-    value: '{{ _ingest.on_failure_message }}'
+  - set:
+      field: event.kind
+      value: pipeline_error
+  - set:
+      field: error.message
+      value: >-
+        Processor '{{{ _ingest.on_failure_processor_type }}}'
+        with tag '{{{ _ingest.on_failure_processor_tag }}}'
+        in pipeline '{{{ _ingest.pipeline }}}'
+        failed with message '{{{ _ingest.on_failure_message }}}'

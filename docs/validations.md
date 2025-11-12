@@ -1,19 +1,21 @@
 # Validation Codes
 
-| Validation          | Short description                     |
-|---------------------|---------------------------------------|
-| **[JSE][JSE00001]** | **JSON Schema Errors**                |
-| [JSE00001]          | Rename message to event.original      |
-| **[PSR][PSR00001]** | **Package Spec Rule**                 |
-| [PSR00001]          | Non GA spec used in GA package        |
-| [PSR00002]          | Prerelease feature used in GA package |
-| **[SVR][SVR00001]** | **Semantic Validation Rules**         |
-| [SVR00001]          | Dashboard with query but no filter    |
-| [SVR00002]          | Dashboard without filter              |
-| [SVR00003]          | Dangling object IDs                   |
-| [SVR00004]          | Visualization by value                |
-| [SVR00005]          | Minimum Kibana version                |
-| [SVR00006]          | Processor tag is required             |
+| Validation          | Short description                               |
+|---------------------|-------------------------------------------------|
+| **[JSE][JSE00001]** | **JSON Schema Errors**                          |
+| [JSE00001]          | Rename message to event.original                |
+| **[PSR][PSR00001]** | **Package Spec Rule**                           |
+| [PSR00001]          | Non GA spec used in GA package                  |
+| [PSR00002]          | Prerelease feature used in GA package           |
+| **[SVR][SVR00001]** | **Semantic Validation Rules**                   |
+| [SVR00001]          | Dashboard with query but no filter              |
+| [SVR00002]          | Dashboard without filter                        |
+| [SVR00003]          | Dangling object IDs                             |
+| [SVR00004]          | Visualization by value                          |
+| [SVR00005]          | Minimum Kibana version                          |
+| [SVR00006]          | Processor tag is required                       |
+| [SVR00007]          | Pipeline failure handler must set event.kind    |
+| [SVR00008]          | Pipeline failure handler must set error.message |
 
 ## JSE00001 - Rename message to event.original
 [JSE00001]: #jse00001---rename-message-to-eventoriginal
@@ -69,4 +71,59 @@ set:
   tag: set_event_category
   field: event.category
   value: [network]
+```
+
+## SVR00007 - Pipeline failure handler must set event.kind
+[SVR00007]: #svr00007---pipeline-failure-handler-must-set-eventkind
+
+**Available since [3.6.0](https://github.com/elastic/package-spec/releases/tag/v3.6.0)**
+
+The global on_failure handler for an ingest pipeline must set `event.kind` to
+`pipeline_error`. This value indicates that an error occurred during the
+ingestion of this event, and that event data may be missing, inconsistent,
+or incorrect. 
+
+```yaml
+on_failure:
+  - set:
+      field: event.kind
+      value: pipeline_error
+```
+
+## SVR00008 - Pipeline failure handler must set error.message
+[SVR00008]: #svr00008---pipeline-failure-handler-must-set-errormessage
+
+**Available since [3.6.0](https://github.com/elastic/package-spec/releases/tag/v3.6.0)**
+
+The global on_failure handler for an ingest pipeline must set or append to
+`error.message` and the value must include the following:
+
+- `_ingest.on_failure_processor_type`
+- `_ingest.on_failure_processor_tag`
+- `_ingest.on_failure_message`
+- `_ingest.pipeline`
+
+In cases where more than one `error.message` value is expected or could occur,
+the `append` processor should be used.
+
+```yaml
+on_failure:
+  - append:
+      field: error.message
+      value: >-
+        Processor '{{{ _ingest.on_failure_processor_type }}}'
+        with tag '{{{ _ingest.on_failure_processor_tag }}}'
+        in pipeline '{{{ _ingest.pipeline }}}'
+        failed with message '{{{ _ingest.on_failure_message }}}'
+```
+
+```yaml
+on_failure:
+  - set:
+      field: error.message
+      value: >-
+        Processor '{{{ _ingest.on_failure_processor_type }}}'
+        with tag '{{{ _ingest.on_failure_processor_tag }}}'
+        in pipeline '{{{ _ingest.pipeline }}}'
+        failed with message '{{{ _ingest.on_failure_message }}}'
 ```

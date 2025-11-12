@@ -22,4 +22,6 @@ const (
 	CodeVisualizationByValue                = "SVR00004"
 	CodeMinimumKibanaVersion                = "SVR00005"
 	CodePipelineTagRequired                 = "SVR00006"
+	CodePipelineOnFailureEventKind          = "SVR00007"
+	CodePipelineOnFailureMessage            = "SVR00008"
 )

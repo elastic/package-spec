@@ -225,6 +225,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateMinimumAgentVersion},
 		{fn: semantic.ValidateIntegrationPolicyTemplates, types: []string{"integration"}},
 		{fn: semantic.ValidatePipelineTags, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidatePipelineOnFailure, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
 	}
 
 	var validationRules validationRules

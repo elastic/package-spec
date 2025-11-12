@@ -863,6 +863,19 @@ func TestValidateIngestPipelines(t *testing.T) {
 				"set processor at line 15 has duplicate tag value: \"set_sample_field\"",
 			},
 		},
+		"bad_pipeline_on_failure": {
+			"missing": []string{
+				`pipeline on_failure handler must set event.kind to "pipeline_error" (SVR00007)`,
+				`pipeline on_failure handler must set error.message (SVR00008)`,
+			},
+			"incorrect": []string{
+				`pipeline on_failure handler must set event.kind to "pipeline_error" (SVR00007)`,
+				`pipeline on_failure error.message must include "_ingest.on_failure_processor_type" (SVR00008)`,
+				`pipeline on_failure error.message must include "_ingest.on_failure_processor_tag" (SVR00008)`,
+				`pipeline on_failure error.message must include "_ingest.on_failure_message" (SVR00008)`,
+				`pipeline on_failure error.message must include "_ingest.pipeline" (SVR00008)`,
+			},
+		},
 	}
 
 	for pkgName, pipelines := range tests {
