@@ -15,7 +15,7 @@
     - description: Require defining agent version constraints in input and integration packages.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/999
-- version: 3.5.4-next
+- version: 3.5.3-next
   changes:
     - description: Allow to define the message field in an array in the remove procesor for event.original.
       type: enhancement
