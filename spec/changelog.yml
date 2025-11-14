@@ -20,6 +20,9 @@
     - description: Make support for alert rule templates more permissive.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1012
+    - description: Allow to define the message field in an array in the remove procesor for event.original.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1013
 - version: 3.5.2
   changes:
     - description: Fix validation of policy_template paths with linked files.
