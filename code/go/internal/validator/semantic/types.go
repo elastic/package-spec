@@ -91,6 +91,50 @@ func (r *runtimeField) UnmarshalYAML(value *yaml.Node) error {
 	return r.unmarshalString(value.Value)
 }
 
+type position struct {
+	file   string
+	line   int
+	column int
+}
+
+func (p position) String() string {
+	return fmt.Sprintf("%s:%d:%d", p.file, p.line, p.column)
+}
+
+type processor struct {
+	Type       string
+	Attributes map[string]any
+	OnFailure  []*processor
+
+	position position
+}
+
+func (p *processor) UnmarshalYAML(value *yaml.Node) error {
+	var procMap map[string]struct {
+		Attributes map[string]any `yaml:",inline"`
+		OnFailure  []*processor   `yaml:"on_failure"`
+	}
+	if err := value.Decode(&procMap); err != nil {
+		return err
+	}
+
+	for k, v := range procMap {
+		p.Type = k
+		p.Attributes = v.Attributes
+		p.OnFailure = v.OnFailure
+		break
+	}
+
+	p.position.line = value.Line
+	p.position.column = value.Column
+
+	return nil
+}
+
+type ingestPipeline struct {
+	Processors []*processor `yaml:"processors"`
+}
+
 type field struct {
 	Name       string `yaml:"name"`
 	Type       string `yaml:"type"`
@@ -106,6 +150,12 @@ type field struct {
 }
 
 type fieldFileMetadata struct {
+	dataStream   string
+	filePath     string
+	fullFilePath string
+}
+
+type pipelineFileMetadata struct {
 	dataStream   string
 	filePath     string
 	fullFilePath string
@@ -219,6 +269,23 @@ func readFieldsFolder(fsys fspath.FS, fieldsDir string) ([]string, error) {
 	return fieldsFiles, nil
 }
 
+func readPipelinesFolder(fsys fspath.FS, pipelinesDir string) ([]string, error) {
+	var pipelineFiles []string
+	entries, err := fs.ReadDir(fsys, pipelinesDir)
+	if errors.Is(err, os.ErrNotExist) {
+		return []string{}, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("can't list pipelines directory (path: %s): %w", fsys.Path(pipelinesDir), err)
+	}
+
+	for _, v := range entries {
+		pipelineFiles = append(pipelineFiles, path.Join(pipelinesDir, v.Name()))
+	}
+
+	return pipelineFiles, nil
+}
+
 func unmarshalFields(fsys fspath.FS, fieldsPath string) (fields, error) {
 	content, err := fs.ReadFile(fsys, fieldsPath)
 	if err != nil {
@@ -247,4 +314,24 @@ func listDataStreams(fsys fspath.FS) ([]string, error) {
 		list[i] = dataStream.Name()
 	}
 	return list, nil
+}
+
+func listPipelineFiles(fsys fspath.FS, dataStream string) ([]pipelineFileMetadata, error) {
+	var pipelineFileMetadatas []pipelineFileMetadata
+
+	ingestPipelineDir := path.Join(dataStreamDir, dataStream, "elasticsearch", "ingest_pipeline")
+	pipelineFiles, err := readPipelinesFolder(fsys, ingestPipelineDir)
+	if err != nil {
+		return nil, fmt.Errorf("cannot read pipeline files from integration package: %w", err)
+	}
+
+	for _, file := range pipelineFiles {
+		pipelineFileMetadatas = append(pipelineFileMetadatas, pipelineFileMetadata{
+			filePath:     file,
+			fullFilePath: fsys.Path(file),
+			dataStream:   dataStream,
+		})
+	}
+
+	return pipelineFileMetadatas, nil
 }
