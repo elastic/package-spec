@@ -17,6 +17,9 @@
       link: https://github.com/elastic/package-spec/pull/999
 - version: 3.5.3-next
   changes:
+    - description: Make support for alert rule templates more permissive.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1012
     - description: Allow to define the message field in an array in the remove procesor for event.original.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1013

@@ -1,0 +1,24 @@
+{
+    "id": "some-rule",
+    "type": "alerting_rule_template",
+    "attributes": {
+        "name": "[Something] Some rule",
+        "ruleTypeId": ".es-query",
+        "schedule": {
+            "interval": "1m"
+        },
+        "params": {
+            "searchType": "esqlQuery",
+            "timeWindowSize": 5,
+            "timeWindowUnit": "m",
+            "esqlQuery": {
+                "esql": "FROM metrics-something-default | STATS max=MAX(some_field) by some_dimension | WHERE max > 100"
+            },
+            "groupBy": "row",
+            "timeField": "@timestamp"
+        }
+    },
+    "managed": true,
+    "coreMigrationVersion": "8.8.0",
+    "typeMigrationVersion": "10.1.0"
+}
