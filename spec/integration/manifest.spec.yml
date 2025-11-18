@@ -124,7 +124,7 @@ spec:
           - notification
           # Metrics, logs, and traces collection
           - observability
-          # OpenTelemetry 
+          # OpenTelemetry
           - opentelemetry
           # Operating system monitoring
           - os_system
@@ -630,6 +630,13 @@ spec:
                     - ["default"]
                     - ["agentless"]
                     - ["default", "agentless"]
+                migrate_from:
+                  description: >
+                    Previous variable name to migrate value from.
+                    This is useful when renaming variables while maintaining existing user values.
+                  type: string
+                  examples:
+                    - old_input_name
                 required_vars:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/required_vars"
                 vars:

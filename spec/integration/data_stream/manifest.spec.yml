@@ -164,13 +164,6 @@ spec:
           default:
             description: Default value(s) for variable
             $ref: "#/definitions/input_variable_value"
-          migrate_from:
-            description: >
-              Previous variable name to migrate value from.
-              This is useful when renaming variables while maintaining existing user values.
-            type: string
-            examples:
-              - old_variable_name
         allOf:
          - if:
              properties:
