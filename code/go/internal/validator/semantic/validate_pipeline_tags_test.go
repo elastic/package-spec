@@ -85,7 +85,7 @@ processors:
       value: value2
 `,
 			errors: []string{
-				`file "default.yml" is invalid: set processor at line 7 has duplicate tag value: "set_1" (SVR00007)`,
+				`file "default.yml" is invalid: set processor at line 7 has duplicate tag value: "set_1"`,
 			},
 		},
 		{
@@ -103,7 +103,7 @@ processors:
             value: fail_value_1
 `,
 			errors: []string{
-				`file "default.yml" is invalid: set processor at line 3 has duplicate tag value: "set_1" (SVR00007)`,
+				`file "default.yml" is invalid: set processor at line 3 has duplicate tag value: "set_1"`,
 			},
 		},
 		{

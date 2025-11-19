@@ -14,7 +14,6 @@
 | [SVR00004]          | Visualization by value                |
 | [SVR00005]          | Minimum Kibana version                |
 | [SVR00006]          | Processor tag is required             |
-| [SVR00007]          | Processor tag duplicated in pipeline  |
 
 ## JSE00001 - Rename message to event.original
 [JSE00001]: #jse00001---rename-message-to-eventoriginal
@@ -62,7 +61,8 @@
 **Available since [3.6.0](https://github.com/elastic/package-spec/releases/tag/v3.6.0)**
 
 Every processor in an ingest pipeline must include a unique tag, which is used to
-annotate the processor in metrics and logs.
+annotate the processor in metrics and logs. Processors in the global pipeline
+on_failure handler are excluded from this check.
 
 ```yaml
 set:
@@ -70,11 +70,3 @@ set:
   field: event.category
   value: [network]
 ```
-
-## SVR00007 - Processor tag duplicated in pipeline
-[SVR00007]: #svr00007---processor-tag-duplicated-in-pipeline
-
-**Available since [3.6.0](https://github.com/elastic/package-spec/releases/tag/v3.6.0)**
-
-A processor tag must not be repeated in an ingest pipeline. A tag must uniquely
-identify a processor in a pipeline so it can be annotated in metrics and logs.

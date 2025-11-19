@@ -832,7 +832,7 @@ func TestValidateIngestPipelines(t *testing.T) {
 		"bad_pipeline_tags": {
 			"example": []string{
 				"set processor at line 4 missing required tag (SVR00006)",
-				"set processor at line 15 has duplicate tag value: \"set_sample_field\" (SVR00007)",
+				"set processor at line 15 has duplicate tag value: \"set_sample_field\"",
 			},
 		},
 	}

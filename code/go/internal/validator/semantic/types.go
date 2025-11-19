@@ -104,7 +104,7 @@ func (p position) String() string {
 type processor struct {
 	Type       string
 	Attributes map[string]any
-	OnFailure  []*processor
+	OnFailure  []processor
 
 	position position
 }
@@ -112,7 +112,7 @@ type processor struct {
 func (p *processor) UnmarshalYAML(value *yaml.Node) error {
 	var procMap map[string]struct {
 		Attributes map[string]any `yaml:",inline"`
-		OnFailure  []*processor   `yaml:"on_failure"`
+		OnFailure  []processor    `yaml:"on_failure"`
 	}
 	if err := value.Decode(&procMap); err != nil {
 		return err
@@ -132,7 +132,7 @@ func (p *processor) UnmarshalYAML(value *yaml.Node) error {
 }
 
 type ingestPipeline struct {
-	Processors []*processor `yaml:"processors"`
+	Processors []processor `yaml:"processors"`
 }
 
 type field struct {

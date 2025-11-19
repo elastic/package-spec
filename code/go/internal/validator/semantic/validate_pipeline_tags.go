@@ -53,7 +53,7 @@ func validatePipelineTags(pipeline *ingestPipeline, filename string) specerrors.
 
 	seen := map[string]struct{}{}
 	for _, proc := range pipeline.Processors {
-		procErrors := checkPipelineTag(proc, seen, filename)
+		procErrors := checkPipelineTag(&proc, seen, filename)
 		errors = append(errors, procErrors...)
 	}
 
@@ -64,7 +64,7 @@ func checkPipelineTag(proc *processor, seen map[string]struct{}, filename string
 	var errors specerrors.ValidationErrors
 
 	for _, subProc := range proc.OnFailure {
-		subErrors := checkPipelineTag(subProc, seen, filename)
+		subErrors := checkPipelineTag(&subProc, seen, filename)
 		errors = append(errors, subErrors...)
 	}
 
@@ -85,7 +85,7 @@ func checkPipelineTag(proc *processor, seen map[string]struct{}, filename string
 	}
 
 	if _, dup := seen[tag]; dup {
-		errors = append(errors, specerrors.NewStructuredError(fmt.Errorf("file %q is invalid: %s processor at line %d has duplicate tag value: %q", filename, proc.Type, proc.position.line, tag), specerrors.CodePipelineTagDuplicate))
+		errors = append(errors, specerrors.NewStructuredErrorf("file %q is invalid: %s processor at line %d has duplicate tag value: %q", filename, proc.Type, proc.position.line, tag))
 		return errors
 	}
 
