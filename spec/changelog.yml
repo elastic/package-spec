@@ -19,7 +19,7 @@
   changes:
     - description: Fix rule matching processor for event.original handling.
       type: bugfix
-      link: https://github.com/elastic/package-spec/pull/1013
+      link: https://github.com/elastic/package-spec/pull/1024/
 - version: 3.5.3
   changes:
     - description: Make support for alert rule templates more permissive.
