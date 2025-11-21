@@ -21,4 +21,5 @@ const (
 	CodeKibanaDanglingObjectsIDs            = "SVR00003"
 	CodeVisualizationByValue                = "SVR00004"
 	CodeMinimumKibanaVersion                = "SVR00005"
+	CodePipelineTagRequired                 = "SVR00006"
 )
