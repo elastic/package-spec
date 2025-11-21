@@ -37,6 +37,7 @@ func TestValidateFile(t *testing.T) {
 		"good_input_otel":                    {},
 		"good_content":                       {},
 		"good_lookup_index":                  {},
+		"good_alert_rule_templates":          {},
 		"deploy_custom_agent":                {},
 		"deploy_custom_agent_multi_services": {},
 		"deploy_docker":                      {},
@@ -410,6 +411,11 @@ func TestValidateItemNotAllowed(t *testing.T) {
 			"docs/knowledge_base": []string{
 				"nested_dir",
 				"file.txt",
+			},
+		},
+		"bad_alert_rule_templates": {
+			"kibana": []string{
+				"alerting_rule_template",
 			},
 		},
 	}

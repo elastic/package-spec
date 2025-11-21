@@ -18,8 +18,16 @@
     - description: Add pipeline tag validations.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/1010
-- version: 3.5.3-next
+- version: 3.5.4
   changes:
+    - description: Fix rule matching processor for event.original handling.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/1024/
+- version: 3.5.3
+  changes:
+    - description: Make support for alert rule templates more permissive.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1012
     - description: Allow to define the message field in an array in the remove procesor for event.original.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1013

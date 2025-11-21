@@ -1,0 +1,14 @@
+format_version: 3.3.0
+name: bad_alert_rule_templates
+title: "Bad Alert Rule Templates"
+version: 1.0.0
+description: "This package contains alerting rule templates with an unsupported 'format_version'."
+type: integration
+conditions:
+  kibana:
+    version: "^8.18.0"
+  elastic:
+    subscription: "basic"
+owner:
+  github: elastic/integrations
+  type: elastic

@@ -127,11 +127,15 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
 		},
 		{
-			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.field): processors.[0-9]+.remove.field does not match: "message"`),
+			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.field(.[0-9]+)?): processors.[0-9]+.remove.field(.[0-9]+)? does not match: "message"`),
 			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
 		},
 		{
 			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.if): processors.[0-9]+.remove.if does not match: "ctx\.event\?\.original != null"`),
+			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null'",
+		},
+		{
+			matcher: regexp.MustCompile(`(field processors.[0-9]+.remove): (ignore_missing|if) is required`),
 			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null'",
 		},
 	}
