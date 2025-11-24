@@ -2,6 +2,17 @@
 description: Pipeline for processing sample logs
 processors:
 - set:
+    field: sample_field
+    value: "1"
+- set:
+    tag: valid_tag
+    field: sample_field
+    value: "1"
+- set:
+    tag: set_sample_field
+    field: sample_field
+    value: "1"
+- set:
     tag: set_sample_field
     field: sample_field
     value: "1"
