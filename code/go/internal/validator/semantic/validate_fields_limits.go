@@ -5,8 +5,6 @@
 package semantic
 
 import (
-	"log"
-
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
@@ -45,7 +43,6 @@ func validateFieldsLimits(fsys fspath.FS, limit int) specerrors.ValidationErrors
 	}
 	var errs specerrors.ValidationErrors
 	for id, count := range counts {
-		log.Println("Data stream:", id, "Count:", count)
 		if count > limit {
 			if id != "" {
 				errs = append(errs, specerrors.NewStructuredErrorf("data stream %s has more than %d fields (%d)", id, limit, count))

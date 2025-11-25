@@ -580,7 +580,7 @@ func TestValidateVersionIntegrity(t *testing.T) {
 func TestValidateDuplicatedFields(t *testing.T) {
 	tests := map[string]string{
 		"bad_duplicated_fields":       "field \"event.dataset\" is defined multiple times for data stream \"wrong\", found in: ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/ecs.yml",
-		"bad_duplicated_fields_input": "field \"event.dataset\" is defined multiple times for data stream \"\", found in: ../../../../test/packages/bad_duplicated_fields_input/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields_input/fields/ecs.yml",
+		"bad_duplicated_fields_input": "field \"event.dataset\" is defined multiple times, found in: ../../../../test/packages/bad_duplicated_fields_input/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields_input/fields/ecs.yml",
 	}
 
 	for pkgName, expectedErrorMessage := range tests {
