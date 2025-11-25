@@ -11,14 +11,20 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
+type requiredField struct {
+	expectedType      string
+	forceInTransform  bool
+	forceInDataStream bool
+}
+
 // ValidateRequiredFields validates that required fields are present and have the expected
 // types.
 func ValidateRequiredFields(fsys fspath.FS) specerrors.ValidationErrors {
-	requiredFields := map[string]string{
-		"data_stream.type":      "constant_keyword",
-		"data_stream.dataset":   "constant_keyword",
-		"data_stream.namespace": "constant_keyword",
-		"@timestamp":            "date",
+	requiredFields := map[string]requiredField{
+		"data_stream.type":      {expectedType: "constant_keyword", forceInDataStream: true},
+		"data_stream.dataset":   {expectedType: "constant_keyword", forceInDataStream: true},
+		"data_stream.namespace": {expectedType: "constant_keyword", forceInDataStream: true},
+		"@timestamp":            {expectedType: "date", forceInTransform: true, forceInDataStream: true},
 	}
 
 	return validateRequiredFields(fsys, requiredFields)
@@ -28,7 +34,6 @@ type unexpectedTypeRequiredField struct {
 	field        string
 	expectedType string
 	foundType    string
-	dataStream   string
 	fullPath     string
 }
 
@@ -40,28 +45,52 @@ type notFoundRequiredField struct {
 	field        string
 	expectedType string
 	dataStream   string
+	transform    string
 }
 
 func (e notFoundRequiredField) Error() string {
-	message := fmt.Sprintf("expected field %q with type %q not found", e.field, e.expectedType)
+	message := fmt.Sprintf("expected field %q", e.field)
+	if e.expectedType != "" {
+		message = fmt.Sprintf("%s with type %q", message, e.expectedType)
+	}
+	message = fmt.Sprintf("%s not found", message)
 	if e.dataStream != "" {
 		message = fmt.Sprintf("%s in datastream %q", message, e.dataStream)
+	}
+	if e.transform != "" {
+		message = fmt.Sprintf("%s in transform %q", message, e.transform)
 	}
 	return message
 }
 
-func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) specerrors.ValidationErrors {
-	// map datastream/package -> field name -> found
+func validateRequiredFields(fsys fspath.FS, requiredFields map[string]requiredField) specerrors.ValidationErrors {
+	// map datastream/input package -> field name -> found
+	// if data stream is an empty string, it means it is an input package
 	foundFields := make(map[string]map[string]struct{})
+	// Created a new map to avoid collisions with data stream names
+	// map transform -> field name -> found
+	foundTransformFields := make(map[string]map[string]struct{})
 
 	checkField := func(metadata fieldFileMetadata, f field) specerrors.ValidationErrors {
-		if _, ok := foundFields[metadata.dataStream]; !ok {
-			foundFields[metadata.dataStream] = make(map[string]struct{})
+		if metadata.transform != "" {
+			if _, ok := foundTransformFields[metadata.transform]; !ok {
+				foundTransformFields[metadata.transform] = make(map[string]struct{})
+			}
+			foundTransformFields[metadata.transform][f.Name] = struct{}{}
+		} else {
+			// It is created a key with empty string if it is an input package
+			if _, ok := foundFields[metadata.dataStream]; !ok {
+				foundFields[metadata.dataStream] = make(map[string]struct{})
+			}
+			foundFields[metadata.dataStream][f.Name] = struct{}{}
 		}
-		foundFields[metadata.dataStream][f.Name] = struct{}{}
 
-		expectedType, found := requiredFields[f.Name]
+		expectedField, found := requiredFields[f.Name]
 		if !found {
+			return nil
+		}
+
+		if metadata.transform != "" && !expectedField.forceInTransform {
 			return nil
 		}
 
@@ -69,15 +98,14 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) sp
 		// not declared as external. External fields won't have a type in
 		// the definition.
 		// More info in https://github.com/elastic/elastic-package/issues/749
-		if f.External == "" && f.Type != expectedType {
+		if f.External == "" && f.Type != expectedField.expectedType {
 			return specerrors.ValidationErrors{
 				specerrors.NewStructuredError(
 					unexpectedTypeRequiredField{
 						field:        f.Name,
 						foundType:    f.Type,
-						dataStream:   metadata.dataStream,
 						fullPath:     metadata.fullFilePath,
-						expectedType: expectedType,
+						expectedType: expectedField.expectedType,
 					},
 					specerrors.UnassignedCode,
 				),
@@ -88,8 +116,11 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) sp
 	}
 	errs := validateFields(fsys, checkField)
 
-	// Using the data streams found here, since there could not be a data stream
-	// without the `fields` folder or an input package without that folder
+	// Validate that required fields exist in integration and input packages.
+	// Using the data streams found here, since all data streams must have a `fields` folder
+	// If a data stream is an empty string, it means it is an input package
+	// Fields folder is not mandatory for input packages, so we need to consider the case
+	// https://github.com/elastic/package-spec/pull/994
 	for dataStream, dataStreamFields := range foundFields {
 		for requiredName, requiredType := range requiredFields {
 			if _, found := dataStreamFields[requiredName]; !found {
@@ -97,9 +128,31 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) sp
 					specerrors.NewStructuredError(
 						notFoundRequiredField{
 							field:        requiredName,
-							expectedType: requiredType,
+							expectedType: requiredType.expectedType,
 							dataStream:   dataStream,
 						},
+						specerrors.UnassignedCode,
+					),
+				)
+			}
+		}
+	}
+
+	// Validate fields in transforms contain the required ones
+	for transform, transformFields := range foundTransformFields {
+		for requiredName, requiredType := range requiredFields {
+			if _, found := transformFields[requiredName]; !found {
+				notFoundError := notFoundRequiredField{
+					field:     requiredName,
+					transform: transform,
+				}
+
+				if requiredType.forceInTransform {
+					notFoundError.expectedType = requiredType.expectedType
+				}
+				errs = append(errs,
+					specerrors.NewStructuredError(
+						notFoundError,
 						specerrors.UnassignedCode,
 					),
 				)
