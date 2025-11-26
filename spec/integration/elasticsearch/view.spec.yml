@@ -1,0 +1,14 @@
+spec:
+  type: object
+  additionalProperties: false
+  properties:
+    name:
+      description: Name of the ES|QL view
+      type: string
+      pattern: '^[a-zA-Z0-9_\-]+$'
+    query:
+      description: ES|QL query defining the view
+      type: string
+  required:
+    - name
+    - query
