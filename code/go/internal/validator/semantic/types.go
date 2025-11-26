@@ -11,7 +11,6 @@ import (
 	"io/fs"
 	"os"
 	"path"
-	"path/filepath"
 	"strconv"
 
 	"gopkg.in/yaml.v3"
