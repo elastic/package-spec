@@ -12,19 +12,18 @@ import (
 )
 
 type requiredField struct {
-	expectedType      string
-	forceInTransform  bool
-	forceInDataStream bool
+	expectedType       string
+	enforceInTransform bool
 }
 
 // ValidateRequiredFields validates that required fields are present and have the expected
 // types.
 func ValidateRequiredFields(fsys fspath.FS) specerrors.ValidationErrors {
 	requiredFields := map[string]requiredField{
-		"data_stream.type":      {expectedType: "constant_keyword", forceInDataStream: true},
-		"data_stream.dataset":   {expectedType: "constant_keyword", forceInDataStream: true},
-		"data_stream.namespace": {expectedType: "constant_keyword", forceInDataStream: true},
-		"@timestamp":            {expectedType: "date", forceInTransform: true, forceInDataStream: true},
+		"data_stream.type":      {expectedType: "constant_keyword"},
+		"data_stream.dataset":   {expectedType: "constant_keyword"},
+		"data_stream.namespace": {expectedType: "constant_keyword"},
+		"@timestamp":            {expectedType: "date", enforceInTransform: true},
 	}
 
 	return validateRequiredFields(fsys, requiredFields)
@@ -90,7 +89,7 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]requiredFi
 			return nil
 		}
 
-		if metadata.transform != "" && !expectedField.forceInTransform {
+		if metadata.transform != "" && !expectedField.enforceInTransform {
 			return nil
 		}
 
@@ -147,7 +146,7 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]requiredFi
 					transform: transform,
 				}
 
-				if requiredType.forceInTransform {
+				if requiredType.enforceInTransform {
 					notFoundError.expectedType = requiredType.expectedType
 				}
 				errs = append(errs,
