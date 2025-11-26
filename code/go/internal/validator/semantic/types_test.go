@@ -95,6 +95,22 @@ func TestListFieldsFiles(t *testing.T) {
 					fullFilePath: filepath.FromSlash("../../../../../test/packages/good_v2/data_stream/skipped_tests/fields/some_fields.yml"),
 					dataStream:   "skipped_tests",
 				},
+				// transforms
+				fieldFileMetadata{
+					filePath:     "elasticsearch/transform/metadata_current/fields/fields.yml",
+					fullFilePath: filepath.FromSlash("../../../../../test/packages/good_v2/elasticsearch/transform/metadata_current/fields/fields.yml"),
+					transform:    "metadata_current",
+				},
+				fieldFileMetadata{
+					filePath:     "elasticsearch/transform/metadata_united/fields/base-fields.yml",
+					fullFilePath: filepath.FromSlash("../../../../../test/packages/good_v2/elasticsearch/transform/metadata_united/fields/base-fields.yml"),
+					transform:    "metadata_united",
+				},
+				fieldFileMetadata{
+					filePath:     "elasticsearch/transform/metadata_united/fields/fields.yml",
+					fullFilePath: filepath.FromSlash("../../../../../test/packages/good_v2/elasticsearch/transform/metadata_united/fields/fields.yml"),
+					transform:    "metadata_united",
+				},
 			},
 		},
 		{
