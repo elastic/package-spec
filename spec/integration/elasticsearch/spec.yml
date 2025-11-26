@@ -40,10 +40,10 @@ spec:
       $ref: "./transform/spec.yml"
     - description: Folder containing Elasticsearch ES|QL views
       type: folder
-      name: esql_views
+      name: esql_view
       required: false
       contents:
-        - description: ES|QL views definition in YAML
+        - description: ES|QL view definition in YAML
           type: file
           pattern: '^.+\.yml$'
           contentMediaType: "application/x-yaml"
