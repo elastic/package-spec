@@ -513,11 +513,14 @@ func TestValidateBadRuleIDs(t *testing.T) {
 
 func TestValidateMissingRequiredFields(t *testing.T) {
 	tests := map[string][]string{
-		"good":    {},
-		"good_v2": {},
+		"good":       {},
+		"good_v2":    {},
+		"good_input": {},
 		"missing_required_fields": {
 			`expected type "constant_keyword" for required field "data_stream.dataset", found "keyword" in "../../../../test/packages/missing_required_fields/data_stream/foo/fields/base-fields.yml"`,
 			`expected field "data_stream.type" with type "constant_keyword" not found in datastream "foo"`,
+			`expected field "data_stream.namespace" not found in transform "good_example_abc_1"`,
+			`expected type "date" for required field "@timestamp", found "long" in "../../../../test/packages/missing_required_fields/elasticsearch/transform/good_example_abc_1/fields/base-fields.yml"`,
 		},
 		"missing_required_fields_input": {
 			`expected type "constant_keyword" for required field "data_stream.dataset", found "keyword" in "../../../../test/packages/missing_required_fields_input/fields/base-fields.yml"`,
@@ -578,25 +581,44 @@ func TestValidateVersionIntegrity(t *testing.T) {
 }
 
 func TestValidateDuplicatedFields(t *testing.T) {
-	tests := map[string]string{
-		"bad_duplicated_fields":       "field \"event.dataset\" is defined multiple times for data stream \"wrong\", found in: ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/ecs.yml",
-		"bad_duplicated_fields_input": "field \"event.dataset\" is defined multiple times, found in: ../../../../test/packages/bad_duplicated_fields_input/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields_input/fields/ecs.yml",
+	tests := map[string][]string{
+		"good":       {},
+		"good_v2":    {},
+		"good_input": {},
+		"bad_duplicated_fields": {
+			"field \"event.dataset\" is defined multiple times for data stream \"wrong\", found in: ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/ecs.yml",
+			"field \"field1\" is defined multiple times for transform \"good_example_abc_1\", found in: ../../../../test/packages/bad_duplicated_fields/elasticsearch/transform/good_example_abc_1/fields/fields.yml, ../../../../test/packages/bad_duplicated_fields/elasticsearch/transform/good_example_abc_1/fields/more-fields.yml",
+		},
+		"bad_duplicated_fields_input": {
+			"field \"event.dataset\" is defined multiple times, found in: ../../../../test/packages/bad_duplicated_fields_input/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields_input/fields/ecs.yml",
+		},
 	}
 
-	for pkgName, expectedErrorMessage := range tests {
+	for pkgName, expectedErrorMessages := range tests {
 		t.Run(pkgName, func(t *testing.T) {
 			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			if len(expectedErrorMessages) == 0 {
+				assert.NoError(t, errs)
+				return
+			}
 			require.Error(t, errs)
 			vErrs, ok := errs.(specerrors.ValidationErrors)
 			require.True(t, ok)
 
-			assert.Len(t, vErrs, 1)
+			assert.Len(t, vErrs, len(expectedErrorMessages))
 
-			var errMessages []string
-			for _, vErr := range vErrs {
-				errMessages = append(errMessages, vErr.Error())
+			for _, expectedError := range expectedErrorMessages {
+				found := false
+				for _, foundError := range vErrs {
+					if foundError.Error() == expectedError {
+						found = true
+						break
+					}
+				}
+				if !found {
+					t.Errorf("expected error: %q (%v)", expectedError, errs)
+				}
 			}
-			require.Contains(t, errMessages, expectedErrorMessage)
 		})
 	}
 }
