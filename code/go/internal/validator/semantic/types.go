@@ -210,9 +210,8 @@ func listFieldsFiles(fsys fspath.FS) ([]fieldFileMetadata, error) {
 		return nil, err
 	}
 
-	transformDirectory := filepath.Join("elasticsearch", "transform")
 	for _, transform := range transforms {
-		fieldsDir := path.Join(transformDirectory, transform, "fields")
+		fieldsDir := path.Join("elasticsearch", "transform", transform, "fields")
 		transformFieldsFiles, err := readFieldsFolder(fsys, fieldsDir)
 		if err != nil {
 			return nil, fmt.Errorf("cannot read fields file from integration packages: %w", err)
@@ -280,7 +279,7 @@ func listDataStreams(fsys fspath.FS) ([]string, error) {
 }
 
 func listTransforms(fsys fspath.FS) ([]string, error) {
-	transformDirectory := filepath.Join("elasticsearch", "transform")
+	transformDirectory := path.Join("elasticsearch", "transform")
 	transforms, err := fs.ReadDir(fsys, transformDirectory)
 	if errors.Is(err, os.ErrNotExist) {
 		return nil, nil
