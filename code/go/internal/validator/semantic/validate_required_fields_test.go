@@ -123,7 +123,7 @@ func TestValidateRequiredFields(t *testing.T) {
 
 		errs := ValidateRequiredFields(fspath.DirFS(d))
 		// should data_stream.type, data_stream.dataset, data_stream.namespace fields be enforced as constant_keyword too?
-		require.Len(t, errs, 1)
+		require.Len(t, errs, 4)
 	})
 
 	t.Run("missing required fields in input package", func(t *testing.T) {

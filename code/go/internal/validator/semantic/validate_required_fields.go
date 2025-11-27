@@ -20,9 +20,9 @@ type requiredField struct {
 // types.
 func ValidateRequiredFields(fsys fspath.FS) specerrors.ValidationErrors {
 	requiredFields := map[string]requiredField{
-		"data_stream.type":      {expectedType: "constant_keyword"},
-		"data_stream.dataset":   {expectedType: "constant_keyword"},
-		"data_stream.namespace": {expectedType: "constant_keyword"},
+		"data_stream.type":      {expectedType: "constant_keyword", enforceInTransform: true},
+		"data_stream.dataset":   {expectedType: "constant_keyword", enforceInTransform: true},
+		"data_stream.namespace": {expectedType: "constant_keyword", enforceInTransform: true},
 		"@timestamp":            {expectedType: "date", enforceInTransform: true},
 	}
 
