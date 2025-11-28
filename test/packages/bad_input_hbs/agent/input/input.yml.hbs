@@ -1,0 +1,9 @@
+data_stream:
+  dataset: {{data_stream.dataset}}
+paths:
+{{#each paths as |path i|}}
+  - {{path}}
+exclude_files: [".gz$"]
+processors:
+  - add_locale: ~
+
