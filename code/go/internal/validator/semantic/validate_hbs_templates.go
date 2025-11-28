@@ -15,9 +15,12 @@ import (
 )
 
 var (
-	ErrInvalidHandlebarsTemplate = errors.New("invalid handlebars template")
+	errInvalidHandlebarsTemplate = errors.New("invalid handlebars template")
 )
 
+// ValidateHandlebarsFiles validates all Handlebars (.hbs) files in the package filesystem.
+// It returns a list of validation errors if any Handlebars files are invalid.
+// hbs are located in both the package root and data stream directories under the agent folder.
 func ValidateHandlebarsFiles(fsys fspath.FS) specerrors.ValidationErrors {
 	entries, err := getHandlebarsFiles(fsys)
 	if err != nil {
@@ -41,7 +44,7 @@ func ValidateHandlebarsFiles(fsys fspath.FS) specerrors.ValidationErrors {
 		err := validateFile(filePath)
 		if err != nil {
 			validationErrors = append(validationErrors, specerrors.NewStructuredErrorf(
-				"%w: file %s: %w", ErrInvalidHandlebarsTemplate, entry, err,
+				"%w: file %s: %w", errInvalidHandlebarsTemplate, entry, err,
 			))
 		}
 	}
