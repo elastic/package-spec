@@ -17,7 +17,7 @@
       link: https://github.com/elastic/package-spec/pull/999
     - description: Handlebars template files are now validated in input and integration packages.
       type: enhancement
-      link: TBD
+      link: https://github.com/elastic/package-spec/pull/1030
 - version: 3.5.4
   changes:
     - description: Fix rule matching processor for event.original handling.
