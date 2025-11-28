@@ -519,8 +519,8 @@ func TestValidateMissingRequiredFields(t *testing.T) {
 		"missing_required_fields": {
 			`expected type "constant_keyword" for required field "data_stream.dataset", found "keyword" in "../../../../test/packages/missing_required_fields/data_stream/foo/fields/base-fields.yml"`,
 			`expected field "data_stream.type" with type "constant_keyword" not found in datastream "foo"`,
-			`expected field "data_stream.namespace" with type "constant_keyword" not found in transform "good_example_abc_1"`,
-			`expected type "date" for required field "@timestamp", found "long" in "../../../../test/packages/missing_required_fields/elasticsearch/transform/good_example_abc_1/fields/base-fields.yml"`,
+			// `expected field "data_stream.namespace" with type "constant_keyword" not found in transform "good_example_abc_1"`,
+			// `expected type "date" for required field "@timestamp", found "long" in "../../../../test/packages/missing_required_fields/elasticsearch/transform/good_example_abc_1/fields/base-fields.yml"`,
 		},
 		"missing_required_fields_input": {
 			`expected type "constant_keyword" for required field "data_stream.dataset", found "keyword" in "../../../../test/packages/missing_required_fields_input/fields/base-fields.yml"`,

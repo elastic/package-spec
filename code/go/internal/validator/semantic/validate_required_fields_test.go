@@ -102,7 +102,8 @@ func TestValidateRequiredFields(t *testing.T) {
 		require.NoError(t, err)
 
 		errs := ValidateRequiredFields(fspath.DirFS(d))
-		require.Len(t, errs, 3)
+		// Ignored missing required fields in transform
+		require.Len(t, errs, 0)
 	})
 	t.Run("required fields with incorrect types in transform", func(t *testing.T) {
 		d := t.TempDir()
@@ -123,7 +124,9 @@ func TestValidateRequiredFields(t *testing.T) {
 
 		errs := ValidateRequiredFields(fspath.DirFS(d))
 		// should data_stream.type, data_stream.dataset, data_stream.namespace fields be enforced as constant_keyword too?
-		require.Len(t, errs, 4)
+		// should @timestamp be enforced as date too?
+		// Ignored incorrect types for required fields in transform
+		require.Len(t, errs, 0)
 	})
 
 	t.Run("missing required fields in input package", func(t *testing.T) {

@@ -72,17 +72,15 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]requiredFi
 
 	checkField := func(metadata fieldFileMetadata, f field) specerrors.ValidationErrors {
 		if metadata.transform != "" {
-			if _, ok := foundTransformFields[metadata.transform]; !ok {
-				foundTransformFields[metadata.transform] = make(map[string]struct{})
-			}
-			foundTransformFields[metadata.transform][f.Name] = struct{}{}
-		} else {
-			// It is created a key with empty string if it is an input package
-			if _, ok := foundFields[metadata.dataStream]; !ok {
-				foundFields[metadata.dataStream] = make(map[string]struct{})
-			}
-			foundFields[metadata.dataStream][f.Name] = struct{}{}
+			// TODO: remove other usages of foundTransformFields
+			// Skip required fields check for fields found in transforms
+			return nil
 		}
+		// It is created a key with empty string if it is an input package
+		if _, ok := foundFields[metadata.dataStream]; !ok {
+			foundFields[metadata.dataStream] = make(map[string]struct{})
+		}
+		foundFields[metadata.dataStream][f.Name] = struct{}{}
 
 		expectedField, found := requiredFields[f.Name]
 		if !found {
