@@ -7,11 +7,13 @@ package semantic
 import (
 	"errors"
 	"io/fs"
-	"strings"
+	"path"
+	"path/filepath"
 
 	"github.com/mailgun/raymond/v2"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -23,61 +25,75 @@ var (
 // It returns a list of validation errors if any Handlebars files are invalid.
 // hbs are located in both the package root and data stream directories under the agent folder.
 func ValidateHandlebarsFiles(fsys fspath.FS) specerrors.ValidationErrors {
-	entries, err := getHandlebarsFiles(fsys)
+	// template files are placed at /agent/input directory or
+	// at the datastream /agent/stream directory
+	inputDir := filepath.Join("agent", "input")
+	err := validateTemplateDir(fsys, inputDir)
 	if err != nil {
 		return specerrors.ValidationErrors{
-			specerrors.NewStructuredErrorf(
-				"error finding Handlebars files: %w", err,
-			),
+			specerrors.NewStructuredErrorf("%w in %s: %w", errInvalidHandlebarsTemplate, inputDir, err),
 		}
 	}
-	if len(entries) == 0 {
-		return nil
-	}
 
-	var validationErrors specerrors.ValidationErrors
-	for _, entry := range entries {
-		if !strings.HasSuffix(entry, ".hbs") {
+	datastreamEntries, err := fs.ReadDir(fsys, "data_stream")
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredErrorf("error reading data_stream directory: %w", err),
+		}
+	}
+	for _, dsEntry := range datastreamEntries {
+		if !dsEntry.IsDir() {
 			continue
 		}
-
-		filePath := fsys.Path(entry)
-		err := validateFile(filePath)
+		streamDir := filepath.Join("data_stream", dsEntry.Name(), "agent", "stream")
+		err := validateTemplateDir(fsys, streamDir)
 		if err != nil {
-			validationErrors = append(validationErrors, specerrors.NewStructuredErrorf(
-				"%w: file %s: %w", errInvalidHandlebarsTemplate, entry, err,
-			))
+			return specerrors.ValidationErrors{
+				specerrors.NewStructuredErrorf("%w in %s: %w", errInvalidHandlebarsTemplate, streamDir, err),
+			}
 		}
 	}
 
-	return validationErrors
+	return nil
 }
 
-// validateFile validates a single Handlebars file located at filePath.
+// validateTemplateDir validates all Handlebars files in the given directory.
+func validateTemplateDir(fsys fspath.FS, dir string) error {
+	entries, err := fs.ReadDir(fsys, dir)
+	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return err
+	}
+	for _, entry := range entries {
+		if filepath.Ext(entry.Name()) == ".hbs" {
+			err := validateHandlebarsEntry(fsys, dir, entry.Name())
+			if err != nil {
+				return err
+			}
+			continue
+		}
+		if filepath.Ext(entry.Name()) == ".link" {
+			linkFilePath := path.Join(dir, entry.Name())
+			linkFile, err := linkedfiles.NewLinkedFile(fsys.Path(linkFilePath))
+			if err != nil {
+				return err
+			}
+			err = validateHandlebarsEntry(fsys, dir, linkFile.IncludedFilePath)
+			if err != nil {
+				return err
+			}
+			continue
+		}
+	}
+	return nil
+}
+
+// validateHandlebarsEntry validates a single Handlebars file located at filePath.
 // it parses the file using the raymond library to check for syntax errors.
-func validateFile(filePath string) error {
-	if filePath == "" {
+func validateHandlebarsEntry(fsys fspath.FS, dir, entryName string) error {
+	if entryName == "" {
 		return nil
 	}
+	filePath := fsys.Path(path.Join(dir, entryName))
 	_, err := raymond.ParseFile(filePath)
 	return err
-}
-
-// getHandlebarsFiles returns all Handlebars (.hbs) files in the package filesystem.
-// It searches in both the package root and data stream directories under the agent folder.
-func getHandlebarsFiles(fsys fspath.FS) ([]string, error) {
-	entries := make([]string, 0)
-	pkgEntries, err := fs.Glob(fsys, "agent/**/*.hbs")
-	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return nil, err
-	}
-	entries = append(entries, pkgEntries...)
-
-	dataStreamEntries, err := fs.Glob(fsys, "data_stream/*/agent/**/*.hbs")
-	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return nil, err
-	}
-	entries = append(entries, dataStreamEntries...)
-
-	return entries, nil
 }
