@@ -912,6 +912,28 @@ func TestLinksAreBlocked(t *testing.T) {
 	t.Error("links should not be allowed in package")
 }
 
+func TestValidateHandlebarsFiles(t *testing.T) {
+	tests := map[string]string{
+		"bad_input_hbs":       "invalid handlebars template: file agent/input/input.yml.hbs: Parse error on line 10:\nExpecting OpenEndBlock, got: 'EOF'",
+		"bad_integration_hbs": "invalid handlebars template: file data_stream/foo/agent/stream/filestream.yml.hbs: Parse error on line 43:\nExpecting OpenEndBlock, got: 'EOF'",
+	}
+
+	for pkgName, expectedErrorMessage := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			require.Error(t, errs)
+			vErrs, ok := errs.(specerrors.ValidationErrors)
+			require.True(t, ok)
+
+			var errMessages []string
+			for _, vErr := range vErrs {
+				errMessages = append(errMessages, vErr.Error())
+			}
+			require.Contains(t, errMessages, expectedErrorMessage)
+		})
+	}
+}
+
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {
 	pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 
