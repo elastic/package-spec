@@ -1,15 +1,24 @@
 spec:
   additionalContents: false
   contents:
-  - description: Folder containing input definitions
-    type: folder
-    name: input
-    required: true
-    additionalContents: false
-    contents:
-    - description: Config template file for inputs defined in the policy_templates section of the top level manifest
-      type: file
-      sizeLimit: 2MB
-      pattern: '^.+\.yml\.hbs$'
+    - description: Folder containing input definitions
+      type: folder
+      name: input
       required: true
-      allowLink: true
+      additionalContents: false
+      contents:
+        - description: |
+            Config template file for inputs defined in the policy_templates section of the top level manifest.
+            The template should use standard Handlebars syntax (e.g., `{{vars.key}}`, `{{#if vars.condition}}`, `{{#each vars.items}}`)
+            and must compile to valid YAML.
+            Available Handlebars helpers include: 
+            - `contains` (checks if item is in array/string), 
+            - `escape_string` (wraps string in single quotes and escapes them), 
+            - `escape_multiline_string` (escapes multiline strings without wrapping), 
+            - `to_json` (converts object to JSON string), and 
+            - `url_encode` (URI encodes string).
+          type: file
+          sizeLimit: 2MB
+          pattern: '^.+\.yml\.hbs$'
+          required: true
+          allowLink: true
