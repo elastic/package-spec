@@ -107,6 +107,7 @@ type field struct {
 
 type fieldFileMetadata struct {
 	dataStream   string
+	transform    string
 	filePath     string
 	fullFilePath string
 }
@@ -180,6 +181,7 @@ func listFieldsFiles(fsys fspath.FS) ([]fieldFileMetadata, error) {
 					filePath:     file,
 					fullFilePath: fsys.Path(file),
 					dataStream:   dataStream,
+					transform:    "",
 				})
 		}
 	}
@@ -197,7 +199,33 @@ func listFieldsFiles(fsys fspath.FS) ([]fieldFileMetadata, error) {
 				filePath:     file,
 				fullFilePath: fsys.Path(file),
 				dataStream:   "",
+				transform:    "",
 			})
+	}
+
+	// transform definitions
+	transforms, err := listTransforms(fsys)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, transform := range transforms {
+		fieldsDir := path.Join("elasticsearch", "transform", transform, "fields")
+		transformFieldsFiles, err := readFieldsFolder(fsys, fieldsDir)
+		if err != nil {
+			return nil, fmt.Errorf("cannot read fields file from integration packages: %w", err)
+		}
+
+		for _, file := range transformFieldsFiles {
+			fieldsFilesMetadata = append(
+				fieldsFilesMetadata,
+				fieldFileMetadata{
+					filePath:     file,
+					fullFilePath: fsys.Path(file),
+					dataStream:   "",
+					transform:    transform,
+				})
+		}
 	}
 
 	return fieldsFilesMetadata, nil
@@ -245,6 +273,23 @@ func listDataStreams(fsys fspath.FS) ([]string, error) {
 	list := make([]string, len(dataStreams))
 	for i, dataStream := range dataStreams {
 		list[i] = dataStream.Name()
+	}
+	return list, nil
+}
+
+func listTransforms(fsys fspath.FS) ([]string, error) {
+	transformDirectory := path.Join("elasticsearch", "transform")
+	transforms, err := fs.ReadDir(fsys, transformDirectory)
+	if errors.Is(err, os.ErrNotExist) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("can't list transforms directory: %w", err)
+	}
+
+	list := make([]string, len(transforms))
+	for i, transform := range transforms {
+		list[i] = transform.Name()
 	}
 	return list, nil
 }

@@ -82,6 +82,15 @@ func TestLimitsValidation(t *testing.T) {
 			valid: false,
 		},
 		{
+			title: "fieldsPerDataStreamLimit exceeded in transform",
+			fsys: newMockFS().Good().WithFiles(
+				newMockFile("elasticsearch/transform/good/transform.yml").WithContent(transformYml),
+				newMockFile("elasticsearch/transform/good/fields/base-fields.yml").WithContent(fieldsYml),
+				newMockFile("elasticsearch/transform/good/fields/many-fields.yml").WithContent(generateFields(2500)),
+			),
+			valid: false,
+		},
+		{
 			title: "config template sizeLimit exceeded",
 			fsys: newMockFS().Good().WithFiles(
 				newMockFile("agent/input/stream.yml.hbs").WithSize(6 * spectypes.MegaByte),
@@ -142,6 +151,9 @@ var datastreamManifestYml string
 
 //go:embed testdata/limits/data_stream/foo/fields/base-fields.yml
 var fieldsYml string
+
+//go:embed testdata/limits/elasticsearch/transform/good/transform.yml
+var transformYml string
 
 func generateFields(n int) string {
 	var buf strings.Builder
