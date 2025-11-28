@@ -9,9 +9,10 @@ import (
 	"io/fs"
 	"strings"
 
+	"github.com/mailgun/raymond/v2"
+
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
-	"github.com/mailgun/raymond/v2"
 )
 
 var (
