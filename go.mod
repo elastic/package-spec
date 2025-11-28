@@ -13,6 +13,7 @@ require (
 	github.com/evanphx/json-patch/v5 v5.9.11
 	github.com/go-viper/mapstructure/v2 v2.4.0
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901
+	github.com/mailgun/raymond/v2 v2.0.48
 	github.com/otiai10/copy v1.14.1
 	github.com/stretchr/testify v1.11.1
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415
@@ -23,6 +24,8 @@ require (
 	gotest.tools/gotestsum v1.13.0
 	honnef.co/go/tools v0.6.1
 )
+
+require github.com/sirupsen/logrus v1.8.1 // indirect
 
 require (
 	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c // indirect
