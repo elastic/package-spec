@@ -8,7 +8,6 @@ import (
 	"errors"
 	"io/fs"
 	"path"
-	"path/filepath"
 
 	"github.com/mailgun/raymond/v2"
 
@@ -27,7 +26,7 @@ var (
 func ValidateHandlebarsFiles(fsys fspath.FS) specerrors.ValidationErrors {
 	// template files are placed at /agent/input directory or
 	// at the datastream /agent/stream directory
-	inputDir := filepath.Join("agent", "input")
+	inputDir := path.Join("agent", "input")
 	err := validateTemplateDir(fsys, inputDir)
 	if err != nil {
 		return specerrors.ValidationErrors{
@@ -45,7 +44,7 @@ func ValidateHandlebarsFiles(fsys fspath.FS) specerrors.ValidationErrors {
 		if !dsEntry.IsDir() {
 			continue
 		}
-		streamDir := filepath.Join("data_stream", dsEntry.Name(), "agent", "stream")
+		streamDir := path.Join("data_stream", dsEntry.Name(), "agent", "stream")
 		err := validateTemplateDir(fsys, streamDir)
 		if err != nil {
 			return specerrors.ValidationErrors{
@@ -64,14 +63,14 @@ func validateTemplateDir(fsys fspath.FS, dir string) error {
 		return err
 	}
 	for _, entry := range entries {
-		if filepath.Ext(entry.Name()) == ".hbs" {
+		if path.Ext(entry.Name()) == ".hbs" {
 			err := validateHandlebarsEntry(fsys, dir, entry.Name())
 			if err != nil {
 				return err
 			}
 			continue
 		}
-		if filepath.Ext(entry.Name()) == ".link" {
+		if path.Ext(entry.Name()) == ".link" {
 			linkFilePath := path.Join(dir, entry.Name())
 			linkFile, err := linkedfiles.NewLinkedFile(fsys.Path(linkFilePath))
 			if err != nil {
