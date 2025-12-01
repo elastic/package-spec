@@ -43,11 +43,7 @@ type notFoundRequiredField struct {
 }
 
 func (e notFoundRequiredField) Error() string {
-	message := fmt.Sprintf("expected field %q", e.field)
-	if e.expectedType != "" {
-		message = fmt.Sprintf("%s with type %q", message, e.expectedType)
-	}
-	message = fmt.Sprintf("%s not found", message)
+	message := fmt.Sprintf("expected field %q with type %q not found", e.field, e.expectedType)
 	if e.dataStream != "" {
 		message = fmt.Sprintf("%s in datastream %q", message, e.dataStream)
 	}
