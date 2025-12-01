@@ -7,6 +7,7 @@ package semantic
 import (
 	"errors"
 	"io/fs"
+	"os"
 	"path"
 
 	"github.com/mailgun/raymond/v2"
@@ -92,7 +93,22 @@ func validateHandlebarsEntry(fsys fspath.FS, dir, entryName string) error {
 	if entryName == "" {
 		return nil
 	}
-	filePath := fsys.Path(path.Join(dir, entryName))
-	_, err := raymond.ParseFile(filePath)
+
+	var content []byte
+	var err error
+
+	// First try to read from filesystem (works for regular files and files within zip)
+	filePath := path.Join(dir, entryName)
+	if content, err = fs.ReadFile(fsys, filePath); err != nil {
+		// If fs.ReadFile fails (likely due to linked file path outside filesystem boundary),
+		// fall back to absolute path approach like linkedfiles.FS does
+		absolutePath := fsys.Path(filePath)
+		if content, err = os.ReadFile(absolutePath); err != nil {
+			return err
+		}
+	}
+
+	// Parse from content string instead of file path
+	_, err = raymond.Parse(string(content))
 	return err
 }
