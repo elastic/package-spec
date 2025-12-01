@@ -601,6 +601,30 @@ func TestValidateDuplicatedFields(t *testing.T) {
 	}
 }
 
+func TestValidateElasticsearchEsqlViews(t *testing.T) {
+	tests := map[string]string{
+		"bad_esql_view_content":     "file \"../../../../test/packages/bad_esql_view_content/elasticsearch/esql_view/view.yml\" is invalid: field query: Invalid type. Expected: string, given: null",
+		"bad_esql_view_integration": "file \"../../../../test/packages/bad_esql_view_integration/elasticsearch/esql_view/view.yml\" is invalid: field query: Invalid type. Expected: string, given: null",
+	}
+
+	for pkgName, expectedErrorMessage := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			require.Error(t, errs)
+			vErrs, ok := errs.(specerrors.ValidationErrors)
+			require.True(t, ok)
+
+			assert.Len(t, vErrs, 1)
+
+			var errMessages []string
+			for _, vErr := range vErrs {
+				errMessages = append(errMessages, vErr.Error())
+			}
+			require.Contains(t, errMessages, expectedErrorMessage)
+		})
+	}
+}
+
 func TestValidateMinimumKibanaVersions(t *testing.T) {
 	tests := map[string][]string{
 		"good":       {},
