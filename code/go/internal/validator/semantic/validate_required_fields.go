@@ -11,19 +11,14 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
-type requiredField struct {
-	expectedType       string
-	enforceInTransform bool
-}
-
 // ValidateRequiredFields validates that required fields are present and have the expected
-// types.
+// types except for fields defined in transforms.
 func ValidateRequiredFields(fsys fspath.FS) specerrors.ValidationErrors {
-	requiredFields := map[string]requiredField{
-		"data_stream.type":      {expectedType: "constant_keyword", enforceInTransform: true},
-		"data_stream.dataset":   {expectedType: "constant_keyword", enforceInTransform: true},
-		"data_stream.namespace": {expectedType: "constant_keyword", enforceInTransform: true},
-		"@timestamp":            {expectedType: "date", enforceInTransform: true},
+	requiredFields := map[string]string{
+		"data_stream.type":      "constant_keyword",
+		"data_stream.dataset":   "constant_keyword",
+		"data_stream.namespace": "constant_keyword",
+		"@timestamp":            "date",
 	}
 
 	return validateRequiredFields(fsys, requiredFields)
@@ -62,32 +57,26 @@ func (e notFoundRequiredField) Error() string {
 	return message
 }
 
-func validateRequiredFields(fsys fspath.FS, requiredFields map[string]requiredField) specerrors.ValidationErrors {
+func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) specerrors.ValidationErrors {
 	// map datastream/input package -> field name -> found
 	// if data stream is an empty string, it means it is an input package
 	foundFields := make(map[string]map[string]struct{})
-	// Created a new map to avoid collisions with data stream names
-	// map transform -> field name -> found
-	foundTransformFields := make(map[string]map[string]struct{})
 
 	checkField := func(metadata fieldFileMetadata, f field) specerrors.ValidationErrors {
 		if metadata.transform != "" {
-			// TODO: remove other usages of foundTransformFields
 			// Skip required fields check for fields found in transforms
+			// as they are not mandatory there.
 			return nil
 		}
-		// It is created a key with empty string if it is an input package
+		// It is created a key with an empty string if it is an input package,
+		// since input packages don't have data streams.
 		if _, ok := foundFields[metadata.dataStream]; !ok {
 			foundFields[metadata.dataStream] = make(map[string]struct{})
 		}
 		foundFields[metadata.dataStream][f.Name] = struct{}{}
 
-		expectedField, found := requiredFields[f.Name]
+		expectedType, found := requiredFields[f.Name]
 		if !found {
-			return nil
-		}
-
-		if metadata.transform != "" && !expectedField.enforceInTransform {
 			return nil
 		}
 
@@ -95,14 +84,14 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]requiredFi
 		// not declared as external. External fields won't have a type in
 		// the definition.
 		// More info in https://github.com/elastic/elastic-package/issues/749
-		if f.External == "" && f.Type != expectedField.expectedType {
+		if f.External == "" && f.Type != expectedType {
 			return specerrors.ValidationErrors{
 				specerrors.NewStructuredError(
 					unexpectedTypeRequiredField{
 						field:        f.Name,
 						foundType:    f.Type,
 						fullPath:     metadata.fullFilePath,
-						expectedType: expectedField.expectedType,
+						expectedType: expectedType,
 					},
 					specerrors.UnassignedCode,
 				),
@@ -125,31 +114,9 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]requiredFi
 					specerrors.NewStructuredError(
 						notFoundRequiredField{
 							field:        requiredName,
-							expectedType: requiredType.expectedType,
+							expectedType: requiredType,
 							dataStream:   dataStream,
 						},
-						specerrors.UnassignedCode,
-					),
-				)
-			}
-		}
-	}
-
-	// Validate fields in transforms contain the required ones
-	for transform, transformFields := range foundTransformFields {
-		for requiredName, requiredType := range requiredFields {
-			if _, found := transformFields[requiredName]; !found {
-				notFoundError := notFoundRequiredField{
-					field:     requiredName,
-					transform: transform,
-				}
-
-				if requiredType.enforceInTransform {
-					notFoundError.expectedType = requiredType.expectedType
-				}
-				errs = append(errs,
-					specerrors.NewStructuredError(
-						notFoundError,
 						specerrors.UnassignedCode,
 					),
 				)
