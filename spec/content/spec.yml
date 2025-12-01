@@ -45,6 +45,11 @@ spec:
     name: kibana
     required: false
     $ref: "./kibana/spec.yml"
+  - description: Folder containing Elasticsearch assets provided by the package
+    type: folder
+    name: elasticsearch
+    required: false
+    $ref: "./elasticsearch/spec.yml"
   - description: Configuration file to process the results returned from the package validation. This file is just for package validation and it should be ignored when installing or using the package.
     type: file
     contentMediaType: "application/x-yaml"

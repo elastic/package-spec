@@ -15,7 +15,7 @@
     - description: Require defining agent version constraints in input and integration packages.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/999
-    - description: Add support for ES|QL query assets.
+    - description: Add support for ES|QL query assets in integration and content packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1028
 - version: 3.5.4
