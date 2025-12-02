@@ -342,6 +342,14 @@ func TestValidateFile(t *testing.T) {
 				"policy template \"sample\" references input template_path: error validating input \"logfile\": template file not found",
 			},
 		},
+		"bad_esql_view_content": {
+			"elasticsearch/esql_view/view.yml",
+			[]string{"field query: Invalid type. Expected: string, given: null"},
+		},
+		"bad_esql_view_integration": {
+			"elasticsearch/esql_view/view.yml",
+			[]string{"field query: Invalid type. Expected: string, given: null"},
+		},
 	}
 
 	for pkgName, test := range tests {
@@ -581,30 +589,6 @@ func TestValidateDuplicatedFields(t *testing.T) {
 	tests := map[string]string{
 		"bad_duplicated_fields":       "field \"event.dataset\" is defined multiple times for data stream \"wrong\", found in: ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/ecs.yml",
 		"bad_duplicated_fields_input": "field \"event.dataset\" is defined multiple times for data stream \"\", found in: ../../../../test/packages/bad_duplicated_fields_input/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields_input/fields/ecs.yml",
-	}
-
-	for pkgName, expectedErrorMessage := range tests {
-		t.Run(pkgName, func(t *testing.T) {
-			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
-			require.Error(t, errs)
-			vErrs, ok := errs.(specerrors.ValidationErrors)
-			require.True(t, ok)
-
-			assert.Len(t, vErrs, 1)
-
-			var errMessages []string
-			for _, vErr := range vErrs {
-				errMessages = append(errMessages, vErr.Error())
-			}
-			require.Contains(t, errMessages, expectedErrorMessage)
-		})
-	}
-}
-
-func TestValidateElasticsearchEsqlViews(t *testing.T) {
-	tests := map[string]string{
-		"bad_esql_view_content":     "file \"../../../../test/packages/bad_esql_view_content/elasticsearch/esql_view/view.yml\" is invalid: field query: Invalid type. Expected: string, given: null",
-		"bad_esql_view_integration": "file \"../../../../test/packages/bad_esql_view_integration/elasticsearch/esql_view/view.yml\" is invalid: field query: Invalid type. Expected: string, given: null",
 	}
 
 	for pkgName, expectedErrorMessage := range tests {
