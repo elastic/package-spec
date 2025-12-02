@@ -58,6 +58,10 @@ spec:
     $ref: "../integration/validation.spec.yml"
 
 versions:
+  - before: 3.6.0
+    patch:
+      - op: remove
+        path: "/contents/6/$ref" # remove elasticsearch folder
   - before: 3.3.1
     patch:
       - op: add
