@@ -1,0 +1,14 @@
+title: "Error logs in composable package."
+type: logs
+streams:
+  - package: filelog_otel
+    title: "Error logs"
+    description: |-
+      Collect error logs with OTel filelog receiver.
+    vars:
+      - name: paths
+        default:
+          - /var/log/nginx/error.log*
+      - name: tags
+        default:
+          - nginx-error
