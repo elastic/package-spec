@@ -29,6 +29,9 @@ something like this:
 5. No single PR may close the proposal issue. But as these PRs get resolved, the corresponding checklist item should be 
    checked off. The proposal issue is closed when all items are checked off.
 
+## Category Proposals
+
+Specific changes regarding categories can please use the [new Category Proposal issue](https://github.com/elastic/package-spec/issues/new/choose).
 
 ## Folder Item spec
 
