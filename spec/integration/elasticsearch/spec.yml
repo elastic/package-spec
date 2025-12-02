@@ -51,10 +51,6 @@ spec:
           $ref: "./view.spec.yml"
 
 versions:
-  - before: 3.6.0
-    patch:
-      - op: remove
-        path: "/contents/1/contents/2/$ref" # remove esql view validation as yaml
   - before: 3.0.0
     patch:
       - op: remove
