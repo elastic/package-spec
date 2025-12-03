@@ -62,7 +62,7 @@
       type: constant_keyword
       value: endpoint.metadata
     - name: namespace
-      type: keyword
+      type: constant_keyword
     - name: type
       type: constant_keyword
       value: metrics
