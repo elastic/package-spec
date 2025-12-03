@@ -18,6 +18,11 @@
     - description: Add pipeline tag validations.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/1010
+- version: 3.5.5-next
+  changes:
+    - description: Run validation semantic rules also in transform fields.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1027
 - version: 3.5.4
   changes:
     - description: Fix rule matching processor for event.original handling.
