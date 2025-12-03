@@ -15,9 +15,9 @@ title: "[Category Proposal] "
 
 Please, address the following to make sure the propsal is elegible:
 
-- [ ] New category must group at least 5 integrations.
+- [ ] New category must group at least 5 integrations, existing or planned. List them here.
 - [ ] Alternative existing categories in which these integrations are (currently) or could be (in the future) grouped.
-- [ ] Proof that this label is a well-known industry vocab and not jargon used by a few.
+- [ ] Proof that this label is a well-known industry term and not jargon used by a few.
   - Usage of the keyword in Gartner or Forrester industry reports.
   - Industry blogs using this label or keyword.
   - Customer mentioning this keyword.
