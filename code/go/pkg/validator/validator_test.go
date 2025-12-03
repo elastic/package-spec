@@ -857,6 +857,12 @@ func TestValidateIngestPipelines(t *testing.T) {
 				"field processors.2.remove.if: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null' (JSE00001)",
 			},
 		},
+		"bad_pipeline_tags": {
+			"example": []string{
+				"set processor at line 4 missing required tag (SVR00006)",
+				"set processor at line 15 has duplicate tag value: \"set_sample_field\"",
+			},
+		},
 	}
 
 	for pkgName, pipelines := range tests {
