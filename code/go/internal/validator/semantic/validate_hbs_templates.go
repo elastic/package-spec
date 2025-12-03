@@ -6,6 +6,7 @@ package semantic
 
 import (
 	"errors"
+	"fmt"
 	"io/fs"
 	"os"
 	"path"
@@ -31,7 +32,7 @@ func ValidateHandlebarsFiles(fsys fspath.FS) specerrors.ValidationErrors {
 	err := validateTemplateDir(fsys, inputDir)
 	if err != nil {
 		return specerrors.ValidationErrors{
-			specerrors.NewStructuredErrorf("%w in %s: %w", errInvalidHandlebarsTemplate, inputDir, err),
+			specerrors.NewStructuredErrorf("%w: %w", errInvalidHandlebarsTemplate, err),
 		}
 	}
 
@@ -49,7 +50,7 @@ func ValidateHandlebarsFiles(fsys fspath.FS) specerrors.ValidationErrors {
 		err := validateTemplateDir(fsys, streamDir)
 		if err != nil {
 			return specerrors.ValidationErrors{
-				specerrors.NewStructuredErrorf("%w in %s: %w", errInvalidHandlebarsTemplate, streamDir, err),
+				specerrors.NewStructuredErrorf("%w: %w", errInvalidHandlebarsTemplate, err),
 			}
 		}
 	}
@@ -61,13 +62,13 @@ func ValidateHandlebarsFiles(fsys fspath.FS) specerrors.ValidationErrors {
 func validateTemplateDir(fsys fspath.FS, dir string) error {
 	entries, err := fs.ReadDir(fsys, dir)
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return err
+		return fmt.Errorf("error trying to read :%s", dir)
 	}
 	for _, entry := range entries {
 		if path.Ext(entry.Name()) == ".hbs" {
 			err := validateHandlebarsEntry(fsys, dir, entry.Name())
 			if err != nil {
-				return err
+				return fmt.Errorf("error validating %s: %w", path.Join(dir, entry.Name()), err)
 			}
 			continue
 		}
@@ -75,11 +76,11 @@ func validateTemplateDir(fsys fspath.FS, dir string) error {
 			linkFilePath := path.Join(dir, entry.Name())
 			linkFile, err := linkedfiles.NewLinkedFile(fsys.Path(linkFilePath))
 			if err != nil {
-				return err
+				return fmt.Errorf("error reading linked file %s: %w", linkFilePath, err)
 			}
 			err = validateHandlebarsEntry(fsys, dir, linkFile.IncludedFilePath)
 			if err != nil {
-				return err
+				return fmt.Errorf("error validating %s: %w", path.Join(dir, linkFile.IncludedFilePath), err)
 			}
 			continue
 		}

@@ -914,9 +914,9 @@ func TestLinksAreBlocked(t *testing.T) {
 
 func TestValidateHandlebarsFiles(t *testing.T) {
 	tests := map[string]string{
-		"bad_input_hbs":              "invalid handlebars template in agent/input: Parse error on line 10:\nExpecting OpenEndBlock, got: 'EOF'",
-		"bad_integration_hbs":        "invalid handlebars template in data_stream/foo/agent/stream: Parse error on line 43:\nExpecting OpenEndBlock, got: 'EOF'",
-		"bad_integration_hbs_linked": "invalid handlebars template in data_stream/foo/agent/stream: Parse error on line 43:\nExpecting OpenEndBlock, got: 'EOF'",
+		"bad_input_hbs":              "invalid handlebars template: error validating agent/input/input.yml.hbs: Parse error on line 10:\nExpecting OpenEndBlock, got: 'EOF'",
+		"bad_integration_hbs":        "invalid handlebars template: error validating data_stream/foo/agent/stream/filestream.yml.hbs: Parse error on line 43:\nExpecting OpenEndBlock, got: 'EOF'",
+		"bad_integration_hbs_linked": "invalid handlebars template: error validating ../bad_integration_hbs/data_stream/foo/agent/stream/filestream.yml.hbs: Parse error on line 43:\nExpecting OpenEndBlock, got: 'EOF'",
 	}
 
 	for pkgName, expectedErrorMessage := range tests {
