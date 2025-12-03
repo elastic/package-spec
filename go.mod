@@ -25,8 +25,6 @@ require (
 	honnef.co/go/tools v0.6.1
 )
 
-require github.com/sirupsen/logrus v1.8.1 // indirect
-
 require (
 	github.com/BurntSushi/toml v1.4.1-0.20240526193622-a339e1f7089c // indirect
 	github.com/PaesslerAG/gval v1.0.0 // indirect
@@ -42,6 +40,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/otiai10/mint v1.6.3 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
 	golang.org/x/exp/typeparams v0.0.0-20231108232855-2478ac86f678 // indirect
