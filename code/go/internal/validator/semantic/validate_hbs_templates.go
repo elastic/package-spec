@@ -6,7 +6,6 @@ package semantic
 
 import (
 	"errors"
-	"fmt"
 	"io/fs"
 	"os"
 	"path"
@@ -29,8 +28,7 @@ func ValidateHandlebarsFiles(fsys fspath.FS) specerrors.ValidationErrors {
 	// template files are placed at /agent/input directory or
 	// at the datastream /agent/stream directory
 	inputDir := path.Join("agent", "input")
-	err := validateTemplateDir(fsys, inputDir)
-	if err != nil {
+	if err := validateTemplateDir(fsys, inputDir); err != nil {
 		return specerrors.ValidationErrors{
 			specerrors.NewStructuredErrorf("%w: %w", errInvalidHandlebarsTemplate, err),
 		}
@@ -59,16 +57,19 @@ func ValidateHandlebarsFiles(fsys fspath.FS) specerrors.ValidationErrors {
 }
 
 // validateTemplateDir validates all Handlebars files in the given directory.
-func validateTemplateDir(fsys fspath.FS, dir string) error {
+func validateTemplateDir(fsys fspath.FS, dir string) specerrors.ValidationErrors {
 	entries, err := fs.ReadDir(fsys, dir)
 	if err != nil && !errors.Is(err, fs.ErrNotExist) {
-		return fmt.Errorf("error trying to read :%s", dir)
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredErrorf("error trying to read :%s", dir),
+		}
 	}
+	var errs specerrors.ValidationErrors
 	for _, entry := range entries {
 		if path.Ext(entry.Name()) == ".hbs" {
 			err := validateHandlebarsEntry(fsys, dir, entry.Name())
 			if err != nil {
-				return fmt.Errorf("error validating %s: %w", path.Join(dir, entry.Name()), err)
+				errs = append(errs, specerrors.NewStructuredErrorf("error validating %s: %w", path.Join(dir, entry.Name()), err))
 			}
 			continue
 		}
@@ -76,16 +77,16 @@ func validateTemplateDir(fsys fspath.FS, dir string) error {
 			linkFilePath := path.Join(dir, entry.Name())
 			linkFile, err := linkedfiles.NewLinkedFile(fsys.Path(linkFilePath))
 			if err != nil {
-				return fmt.Errorf("error reading linked file %s: %w", linkFilePath, err)
+				errs = append(errs, specerrors.NewStructuredErrorf("error reading linked file %s: %w", linkFilePath, err))
+				continue
 			}
 			err = validateHandlebarsEntry(fsys, dir, linkFile.IncludedFilePath)
 			if err != nil {
-				return fmt.Errorf("error validating %s: %w", path.Join(dir, linkFile.IncludedFilePath), err)
+				errs = append(errs, specerrors.NewStructuredErrorf("error validating %s: %w", path.Join(dir, linkFile.IncludedFilePath), err))
 			}
-			continue
 		}
 	}
-	return nil
+	return errs
 }
 
 // validateHandlebarsEntry validates a single Handlebars file located at filePath.

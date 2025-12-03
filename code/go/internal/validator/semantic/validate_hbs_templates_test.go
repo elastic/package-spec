@@ -9,6 +9,7 @@ import (
 	"path"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
@@ -26,8 +27,8 @@ func TestValidateTemplateDir(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := fspath.DirFS(pkgDir)
-		err = validateTemplateDir(fsys, path.Join("agent", "input"))
-		require.NoError(t, err)
+		errs := validateTemplateDir(fsys, path.Join("agent", "input"))
+		require.Empty(t, errs)
 
 	})
 	t.Run("valid handlebars file", func(t *testing.T) {
@@ -45,8 +46,8 @@ func TestValidateTemplateDir(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := fspath.DirFS(pkgDir)
-		err = validateTemplateDir(fsys, path.Join("agent", "input"))
-		require.NoError(t, err)
+		errs := validateTemplateDir(fsys, path.Join("agent", "input"))
+		require.Empty(t, errs)
 	})
 	t.Run("invalid handlebars file", func(t *testing.T) {
 		tmpDir := t.TempDir()
@@ -63,8 +64,9 @@ func TestValidateTemplateDir(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := fspath.DirFS(pkgDir)
-		err = validateTemplateDir(fsys, path.Join("agent", "input"))
-		require.Error(t, err)
+		errs := validateTemplateDir(fsys, path.Join("agent", "input"))
+		require.NotEmpty(t, errs)
+		assert.Len(t, errs, 1)
 	})
 	t.Run("valid linked handlebars file", func(t *testing.T) {
 		tmpDir := t.TempDir()
@@ -89,8 +91,8 @@ func TestValidateTemplateDir(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := fspath.DirFS(pkgDir)
-		err = validateTemplateDir(fsys, path.Join("agent", "input"))
-		require.NoError(t, err)
+		errs := validateTemplateDir(fsys, path.Join("agent", "input"))
+		require.Empty(t, errs)
 
 	})
 	t.Run("invalid linked handlebars file", func(t *testing.T) {
@@ -116,7 +118,8 @@ func TestValidateTemplateDir(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := fspath.DirFS(pkgDir)
-		err = validateTemplateDir(fsys, path.Join("agent", "input"))
-		require.Error(t, err)
+		errs := validateTemplateDir(fsys, path.Join("agent", "input"))
+		require.NotEmpty(t, errs)
+		assert.Len(t, errs, 1)
 	})
 }
