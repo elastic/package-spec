@@ -342,6 +342,14 @@ func TestValidateFile(t *testing.T) {
 				"policy template \"sample\" references input template_path: error validating input \"logfile\": template file not found",
 			},
 		},
+		"bad_esql_view_content": {
+			"elasticsearch/esql_view/view.yml",
+			[]string{"field query: Invalid type. Expected: string, given: null"},
+		},
+		"bad_esql_view_integration": {
+			"elasticsearch/esql_view/view.yml",
+			[]string{"field query: Invalid type. Expected: string, given: null"},
+		},
 	}
 
 	for pkgName, test := range tests {
