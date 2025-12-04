@@ -1,0 +1,14 @@
+title: "Access logs in composable package."
+type: logs
+streams:
+  - package: filelog_otel
+    title: "Access logs"
+    description: |-
+      Collect access logs with OTel filelog receiver.
+    vars:
+      - name: paths
+        default:
+          - /var/log/nginx/access.log*
+      - name: tags
+        default:
+          - nginx-access
