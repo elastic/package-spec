@@ -51,7 +51,7 @@ spec:
           $ref: "./view.spec.yml"
 
 versions:
-  - before: 3.5.5
+  - before: 3.6.0
     patch:
       - op: remove
         path: "/contents/3/contents/0/$ref" # remove esql_view spec

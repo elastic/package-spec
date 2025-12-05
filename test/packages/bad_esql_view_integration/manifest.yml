@@ -1,4 +1,4 @@
-format_version: 3.5.5
+format_version: 3.6.0
 name: bad_esql_view_integration
 title: "New Package"
 version: 0.0.1
@@ -13,6 +13,8 @@ conditions:
     version: "^9.2.1"
   elastic:
     subscription: "basic"
+  agent:
+    version: "8.2.0 - 9.x"
 screenshots:
   - src: /img/sample-screenshot.png
     title: Sample screenshot

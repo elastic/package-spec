@@ -15,8 +15,7 @@
     - description: Require defining agent version constraints in input and integration packages.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/999
-- version: 3.5.5-next
-  changes:
+    # Peding on https://github.com/elastic/kibana/issues/244655
     - description: Add support for ES|QL query assets in integration and content packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1028
