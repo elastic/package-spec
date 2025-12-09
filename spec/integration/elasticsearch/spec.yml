@@ -54,7 +54,7 @@ versions:
   - before: 3.6.0
     patch:
       - op: remove
-        path: "/contents/3/contents/0/$ref" # remove esql_view spec
+        path: "/contents/3" # remove esql_view spec
   - before: 3.0.0
     patch:
       - op: remove
