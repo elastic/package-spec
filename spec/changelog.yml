@@ -15,6 +15,9 @@
     - description: Require defining agent version constraints in input and integration packages.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/999
+    - description: Add support for Kibana `slo_template` assets
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1000000000
 - version: 3.5.5-next
   changes:
     - description: Run validation semantic rules also in transform fields.
