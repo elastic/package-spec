@@ -15,6 +15,9 @@
     - description: Require defining agent version constraints in input and integration packages.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/999
+    - description: Add pipeline tag validations.
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/1010
     # Pending on https://github.com/elastic/kibana/issues/244655
     - description: Add support for ES|QL query assets in integration and content packages.
       type: enhancement

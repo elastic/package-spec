@@ -3,6 +3,7 @@ description: Pipeline for Microsoft DHCP
 
 processors:
   - rename:
+      tag: rename_foo_to_message
       field: foo
       target_field: message
       ignore_missing: true
