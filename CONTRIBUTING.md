@@ -39,8 +39,8 @@ in the package-spec repo requesting the addition of a new category.
 2. Github issue provides details related to the category i.e. label, position, solution, etc. Answers to all the points in
 the eligibility requirement and a plan or timeline to add a promised minimum set of integrations.
 3. Ecosystem team assesses the request and makes a decision based on data points provided in the GitHub issue
-4. If we are not able to address and the category doesn’t meet eligibility requirements, we as a business must assume that
-this category is more harmful to our UX than the value it provides, and hence, must not be added.
+4. If we are not able to address and the category doesn’t meet eligibility requirements, we can assume that
+this category is more harmful to the UX than the value it provides, and hence, it must not be added.
 5. If the decision is in favor of adding the category, the Ecosystem team will prioritize and work on the GitHub issue in
 one of the releases under planning (future releases)
 
