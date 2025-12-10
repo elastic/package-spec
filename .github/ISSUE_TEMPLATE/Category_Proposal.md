@@ -1,8 +1,8 @@
 ---
 name: Category Proposal
 about: For proposing and discussing a change to the list of categories available under the Elastic Package Specification
-labels: discuss
-title: "[Category Proposal] "
+labels: [discuss, Team:Ecosystem]
+title: "[Category Proposal]"
 ---
 
 *Please read the section on [Category Proposals in the Contributing Guide](../../CONTRIBUTING.md#category-proposals) and flesh out this issue accordingly. Thank you!*
