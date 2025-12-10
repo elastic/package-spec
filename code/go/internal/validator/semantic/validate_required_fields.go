@@ -12,7 +12,7 @@ import (
 )
 
 // ValidateRequiredFields validates that required fields are present and have the expected
-// types.
+// types except for fields defined in transforms.
 func ValidateRequiredFields(fsys fspath.FS) specerrors.ValidationErrors {
 	requiredFields := map[string]string{
 		"data_stream.type":      "constant_keyword",
@@ -28,7 +28,6 @@ type unexpectedTypeRequiredField struct {
 	field        string
 	expectedType string
 	foundType    string
-	dataStream   string
 	fullPath     string
 }
 
@@ -40,6 +39,7 @@ type notFoundRequiredField struct {
 	field        string
 	expectedType string
 	dataStream   string
+	transform    string
 }
 
 func (e notFoundRequiredField) Error() string {
@@ -47,14 +47,25 @@ func (e notFoundRequiredField) Error() string {
 	if e.dataStream != "" {
 		message = fmt.Sprintf("%s in datastream %q", message, e.dataStream)
 	}
+	if e.transform != "" {
+		message = fmt.Sprintf("%s in transform %q", message, e.transform)
+	}
 	return message
 }
 
 func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) specerrors.ValidationErrors {
-	// map datastream/package -> field name -> found
+	// map datastream/input package -> field name -> found
+	// if data stream is an empty string, it means it is an input package
 	foundFields := make(map[string]map[string]struct{})
 
 	checkField := func(metadata fieldFileMetadata, f field) specerrors.ValidationErrors {
+		if metadata.transform != "" {
+			// Skip required fields check for fields found in transforms
+			// as they are not mandatory there.
+			return nil
+		}
+		// It is created a key with an empty string if it is an input package,
+		// since input packages don't have data streams.
 		if _, ok := foundFields[metadata.dataStream]; !ok {
 			foundFields[metadata.dataStream] = make(map[string]struct{})
 		}
@@ -75,7 +86,6 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) sp
 					unexpectedTypeRequiredField{
 						field:        f.Name,
 						foundType:    f.Type,
-						dataStream:   metadata.dataStream,
 						fullPath:     metadata.fullFilePath,
 						expectedType: expectedType,
 					},
@@ -88,8 +98,11 @@ func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) sp
 	}
 	errs := validateFields(fsys, checkField)
 
-	// Using the data streams found here, since there could not be a data stream
-	// without the `fields` folder or an input package without that folder
+	// Validate that required fields exist in integration and input packages.
+	// Using the data streams found here, since all data streams must have a `fields` folder
+	// If a data stream is an empty string, it means it is an input package
+	// Fields folder is not mandatory for input packages, so we need to consider the case
+	// https://github.com/elastic/package-spec/pull/994
 	for dataStream, dataStreamFields := range foundFields {
 		for requiredName, requiredType := range requiredFields {
 			if _, found := dataStreamFields[requiredName]; !found {
