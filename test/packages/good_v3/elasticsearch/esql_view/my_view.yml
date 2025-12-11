@@ -1,0 +1,5 @@
+name: my_view
+query: |
+  FROM security_logs
+  | WHERE event.kind == \"alert\"
+  | STATS event_count = COUNT(), last_seen = MAX(@timestamp) BY `rule.name`"
