@@ -20,10 +20,10 @@ var (
 	errInvalidHandlebarsTemplate = errors.New("invalid handlebars template")
 )
 
-// ValidateHandlebarsFiles validates all Handlebars (.hbs) files in the package filesystem.
+// ValidateStaticHandlebarsFiles validates all Handlebars (.hbs) files in the package filesystem.
 // It returns a list of validation errors if any Handlebars files are invalid.
 // hbs are located in both the package root and data stream directories under the agent folder.
-func ValidateHandlebarsFiles(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateStaticHandlebarsFiles(fsys fspath.FS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	// template files are placed at /agent/input directory or
@@ -64,7 +64,7 @@ func validateTemplateDir(fsys fspath.FS, dir string) specerrors.ValidationErrors
 	var errs specerrors.ValidationErrors
 	for _, entry := range entries {
 		if path.Ext(entry.Name()) == ".hbs" {
-			err := validateHandlebarsEntry(fsys, dir, entry.Name())
+			err := validateStaticHandlebarsEntry(fsys, dir, entry.Name())
 			if err != nil {
 				errs = append(errs, specerrors.NewStructuredErrorf("%w: error validating %s: %w", errInvalidHandlebarsTemplate, path.Join(dir, entry.Name()), err))
 			}
@@ -77,7 +77,7 @@ func validateTemplateDir(fsys fspath.FS, dir string) specerrors.ValidationErrors
 				errs = append(errs, specerrors.NewStructuredErrorf("error reading linked file %s: %w", linkFilePath, err))
 				continue
 			}
-			err = validateHandlebarsEntry(fsys, dir, linkFile.IncludedFilePath)
+			err = validateStaticHandlebarsEntry(fsys, dir, linkFile.IncludedFilePath)
 			if err != nil {
 				errs = append(errs, specerrors.NewStructuredErrorf("%w: error validating %s: %w", errInvalidHandlebarsTemplate, path.Join(dir, linkFile.IncludedFilePath), err))
 			}
@@ -86,9 +86,9 @@ func validateTemplateDir(fsys fspath.FS, dir string) specerrors.ValidationErrors
 	return errs
 }
 
-// validateHandlebarsEntry validates a single Handlebars file located at filePath.
+// validateStaticHandlebarsEntry validates a single Handlebars file located at filePath.
 // it parses the file using the raymond library to check for syntax errors.
-func validateHandlebarsEntry(fsys fspath.FS, dir, entryName string) error {
+func validateStaticHandlebarsEntry(fsys fspath.FS, dir, entryName string) error {
 	if entryName == "" {
 		return nil
 	}
