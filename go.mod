@@ -5,6 +5,7 @@ go 1.24.0
 require (
 	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/PaesslerAG/jsonpath v0.1.1
+	github.com/aymerick/raymond v2.0.2+incompatible
 	github.com/boumenot/gocover-cobertura v1.4.0
 	github.com/creasty/defaults v1.8.0
 	github.com/elastic/go-licenser v0.4.2
@@ -13,7 +14,6 @@ require (
 	github.com/evanphx/json-patch/v5 v5.9.11
 	github.com/go-viper/mapstructure/v2 v2.4.0
 	github.com/joeshaw/multierror v0.0.0-20140124173710-69b34d4ec901
-	github.com/mailgun/raymond/v2 v2.0.48
 	github.com/otiai10/copy v1.14.1
 	github.com/stretchr/testify v1.11.1
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415
@@ -40,7 +40,6 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/otiai10/mint v1.6.3 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/sirupsen/logrus v1.8.1 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
 	golang.org/x/exp/typeparams v0.0.0-20231108232855-2478ac86f678 // indirect
@@ -52,4 +51,5 @@ require (
 	golang.org/x/text v0.17.0 // indirect
 	golang.org/x/tools/go/expect v0.1.1-deprecated // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

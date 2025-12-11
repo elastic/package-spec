@@ -10,8 +10,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/mailgun/raymond/v2"
-
+	"github.com/aymerick/raymond"
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
