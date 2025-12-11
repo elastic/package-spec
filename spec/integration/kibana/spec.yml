@@ -144,6 +144,10 @@ spec:
           contentMediaType: "application/json"
           pattern: '^.+\.json$'
 versions:
+  - before: 3.6.0
+    patch:
+      - op: remove
+        path: "/contents/14" # remove SLO definitions
   - before: 3.4.0
     patch:
       - op: remove
