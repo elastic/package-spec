@@ -4,10 +4,6 @@
 ##
 - version: 3.6.0-next
   changes:
-    # Pending on https://github.com/elastic/kibana/pull/186974
-    - description: Add support for `slo` assets.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/767
     # Pending on https://github.com/elastic/kibana/issues/220294
     - description: Add support for semantic_text field definition.
       type: enhancement
