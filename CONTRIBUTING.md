@@ -29,6 +29,20 @@ something like this:
 5. No single PR may close the proposal issue. But as these PRs get resolved, the corresponding checklist item should be 
    checked off. The proposal issue is closed when all items are checked off.
 
+## Category Proposals
+
+Any changes on the categories supported by the Elastic Package Specification has to be discussed. The process is:
+
+1. A solutions team or an integration author creates a
+[Category Proposal issue](https://github.com/elastic/package-spec/issues/new/choose)
+in the package-spec repo requesting the addition of a new category.
+2. Github issue provides details related to the category i.e. label, position, solution, etc. Answers to all the points in
+the eligibility requirement and a plan or timeline to add a promised minimum set of integrations.
+3. Ecosystem team assesses the request and makes a decision based on data points provided in the GitHub issue.
+4. If we are not able to address and the category doesn’t meet eligibility requirements, we can assume that
+this category is more harmful to the UX than the value it provides, and hence, it must not be added.
+5. If the decision is in favor of adding the category, the Ecosystem team will prioritize and work on the GitHub issue in
+one of the releases under planning (future releases).
 
 ## Folder Item spec
 
