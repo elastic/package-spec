@@ -49,6 +49,25 @@ func TestValidateTemplateDir(t *testing.T) {
 		errs := validateTemplateDir(fsys, path.Join("agent", "input"))
 		require.Empty(t, errs)
 	})
+
+	t.Run("valid handlebars file template with multiline", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		pkgDir := path.Join(tmpDir, "package")
+		err := os.MkdirAll(pkgDir, 0o755)
+		require.NoError(t, err)
+
+		templateDir := path.Join(pkgDir, "agent", "input")
+		err = os.MkdirAll(templateDir, 0o755)
+		require.NoError(t, err)
+		hbsFilePath := path.Join(templateDir, "template.hbs")
+		hbsContent := `audit_rules: "# Session data audit rules\n-a always,exit -F arch=b64 -S execve,execveat -k exec\n-a always,exit -F arch=b64 -S exit_group\n-a always,exit -F arch=b64 -S setsid\n{{escape_multiline_string audit_rules}}"`
+		err = os.WriteFile(hbsFilePath, []byte(hbsContent), 0o644)
+		require.NoError(t, err)
+
+		fsys := fspath.DirFS(pkgDir)
+		errs := validateTemplateDir(fsys, path.Join("agent", "input"))
+		require.Empty(t, errs)
+	})
 	t.Run("invalid handlebars file", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		pkgDir := path.Join(tmpDir, "package")
