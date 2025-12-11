@@ -109,6 +109,15 @@ type processor struct {
 	position position
 }
 
+func (p *processor) GetAttributeString(key string) (string, bool) {
+	s, ok := p.Attributes[key].(string)
+	if !ok {
+		return "", false
+	}
+
+	return s, true
+}
+
 func (p *processor) UnmarshalYAML(value *yaml.Node) error {
 	var procMap map[string]struct {
 		Attributes map[string]any `yaml:",inline"`
@@ -133,6 +142,7 @@ func (p *processor) UnmarshalYAML(value *yaml.Node) error {
 
 type ingestPipeline struct {
 	Processors []processor `yaml:"processors"`
+	OnFailure  []processor `yaml:"on_failure"`
 }
 
 type field struct {
