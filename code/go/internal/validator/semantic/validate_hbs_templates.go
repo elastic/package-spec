@@ -11,6 +11,7 @@ import (
 	"path"
 
 	"github.com/aymerick/raymond"
+
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
