@@ -5,6 +5,7 @@ go 1.24.0
 require (
 	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/PaesslerAG/jsonpath v0.1.1
+	github.com/aymerick/raymond v2.0.2+incompatible
 	github.com/boumenot/gocover-cobertura v1.4.0
 	github.com/creasty/defaults v1.8.0
 	github.com/elastic/go-licenser v0.4.2
@@ -50,4 +51,5 @@ require (
 	golang.org/x/text v0.17.0 // indirect
 	golang.org/x/tools/go/expect v0.1.1-deprecated // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

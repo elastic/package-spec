@@ -27,6 +27,9 @@
     - description: Run validation semantic rules also in transform fields.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1027
+    - description: Run static validation for handlebars templates in input and integration packages.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1030
 - version: 3.5.4
   changes:
     - description: Fix rule matching processor for event.original handling.
