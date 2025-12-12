@@ -1,59 +1,59 @@
 spec:
   additionalContents: false
   contents:
-    - description: Folder containing Kibana dashboard assets
-      type: folder
-      name: dashboard
-      required: false
-      contents:
-        - description: A dashboard asset file
-          type: file
-          contentMediaType: "application/json"
-          pattern: '^{PACKAGE_NAME}-.+\.json$'
-          forbiddenPatterns:
-            - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
-    - description: File containing saved object tag definitions for assets
+  - description: Folder containing Kibana dashboard assets
+    type: folder
+    name: dashboard
+    required: false
+    contents:
+    - description: A dashboard asset file
       type: file
-      contentMediaType: "application/x-yaml"
-      name: "tags.yml"
-      required: false
-      $ref: "../../integration/kibana/tags.spec.yml"
-    - description: Folder containing security AI prompt assets
-      type: folder
-      name: "security_ai_prompt"
-      required: false
-      contents:
-        - description: A security AI prompt asset file
-          type: file
-          contentMediaType: "application/json"
-          pattern: '^{PACKAGE_NAME}-.+\.json$'
-    - description: Folder containing rules
-      type: folder
-      name: "security_rule"
-      required: false
-      contents:
-        - description: An individual rule file for the detection engine
-          type: file
-          contentMediaType: "application/json"
-          pattern: '^.+\.json$'
-    - description: Folder containing alerting rule templates
-      type: folder
-      name: "alerting_rule_template"
-      required: false
-      contents:
-        - description: An individual alerting rule template file
-          type: file
-          contentMediaType: "application/json"
-          pattern: '^.+\.json$'
-    - description: Folder containing SLO templates
-      type: folder
-      name: "slo_template"
-      required: false
-      contents:
-        - description: An individual SLO template file
-          type: file
-          contentMediaType: "application/json"
-          pattern: '^.+\.json$'
+      contentMediaType: "application/json"
+      pattern: '^{PACKAGE_NAME}-.+\.json$'
+      forbiddenPatterns:
+        - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
+  - description: File containing saved object tag definitions for assets
+    type: file
+    contentMediaType: "application/x-yaml"
+    name: "tags.yml"
+    required: false
+    $ref: "../../integration/kibana/tags.spec.yml"
+  - description: Folder containing security AI prompt assets
+    type: folder
+    name: "security_ai_prompt"
+    required: false
+    contents:
+      - description: A security AI prompt asset file
+        type: file
+        contentMediaType: "application/json"
+        pattern: '^{PACKAGE_NAME}-.+\.json$'
+  - description: Folder containing rules
+    type: folder
+    name: "security_rule"
+    required: false
+    contents:
+    - description: An individual rule file for the detection engine
+      type: file
+      contentMediaType: "application/json"
+      pattern: '^.+\.json$'
+  - description: Folder containing alerting rule templates
+    type: folder
+    name: "alerting_rule_template"
+    required: false
+    contents:
+    - description: An individual alerting rule template file
+      type: file
+      contentMediaType: "application/json"
+      pattern: '^.+\.json$'
+  - description: Folder containing SLO templates
+    type: folder
+    name: "slo_template"
+    required: false
+    contents:
+      - description: An individual SLO template file
+        type: file
+        contentMediaType: "application/json"
+        pattern: '^.+\.json$'
 versions:
   - before: 3.6.0
     patch:

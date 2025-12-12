@@ -6,46 +6,46 @@ spec:
   type: array
   description: Tags automatically added to saved object assets.
   items:
-    type: object
-    additionalProperties: false
-    properties:
-      text:
-        description: Tag name.
-        type: string
-      asset_types:
-        description: >
-          This tag will be added to all the assets of these types included in the package.
-          If two or more pacakges define the same tag, there will be just one tag created in Kibana and
-          all the assets will be using the same tag.
-        type: array
-        items:
-          type: string
-          enum: # added the same types that are allowed under kibana folder
-            - dashboard
-            - visualization
-            - search
-            - map
-            - lens
-            - index_pattern
-            - security_rule
-            - csp_rule_template
-            - alerting_rule_template
-            - slo_template
-            - ml_module
-            - osquery_pack_asset
-            - osquery_saved_query
-      asset_ids:
-        description: >
-          Asset IDs where this tag is going to be added.
-          If two or more pacakges define the same tag, there will be just one tag created in Kibana and
-          all the assets will be using the same tag.
-        type: array
-        items:
-          type: string
-    oneOf:
-      - required:
+     type: object
+     additionalProperties: false
+     properties:
+       text:
+         description: Tag name.
+         type: string
+       asset_types:
+         description: >
+           This tag will be added to all the assets of these types included in the package.
+           If two or more pacakges define the same tag, there will be just one tag created in Kibana and
+           all the assets will be using the same tag.
+         type: array
+         items:
+           type: string
+           enum: # added the same types that are allowed under kibana folder
+             - dashboard
+             - visualization
+             - search
+             - map
+             - lens
+             - index_pattern
+             - security_rule
+             - csp_rule_template
+             - alerting_rule_template
+             - slo_template
+             - ml_module
+             - osquery_pack_asset
+             - osquery_saved_query
+       asset_ids:
+         description: >
+           Asset IDs where this tag is going to be added.
+           If two or more pacakges define the same tag, there will be just one tag created in Kibana and
+           all the assets will be using the same tag.
+         type: array
+         items:
+           type: string
+     oneOf:
+       - required:
           - text
           - asset_types
-      - required:
+       - required:
           - text
           - asset_ids
