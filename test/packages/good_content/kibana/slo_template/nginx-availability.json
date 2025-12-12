@@ -1,11 +1,11 @@
 {
   "attributes": {
-    "name": "Admin Console Availability",
-    "description": "",
+    "name": "Nginx Availability",
+    "description": "Nginx availability SLO over the past 7 days",
     "indicator": {
       "type": "sli.kql.custom",
       "params": {
-        "index": "kbn-data-forge-fake_stack.admin-console-*",
+        "index": "logs-nginx-*",
         "filter": "",
         "good": "http.response.status_code < 500",
         "total": "http.response.status_code : *",
@@ -18,12 +18,11 @@
       "type": "rolling"
     },
     "objective": {
-      "target": 0.99
+      "target": 0.95
     },
-    "tags": [],
-    "groupBy": "url.domain"
+    "tags": ["nginx"],
+    "groupBy": ["url.domain"]
   },
-  "id": "good_content-slo-abc-1",
-  "references": [],
-  "type": "slo"
+  "id": "nginx-availability",
+  "type": "slo_template"
 }
