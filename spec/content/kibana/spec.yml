@@ -45,12 +45,12 @@ spec:
           type: file
           contentMediaType: "application/json"
           pattern: '^.+\.json$'
-    - description: Folder containing slo templates
+    - description: Folder containing SLO templates
       type: folder
       name: "slo_template"
       required: false
       contents:
-        - description: An individual slo template file
+        - description: An individual SLO template file
           type: file
           contentMediaType: "application/json"
           pattern: '^.+\.json$'
