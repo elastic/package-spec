@@ -100,6 +100,9 @@ func validateStaticHandlebarsEntry(fsys fspath.FS, dir, entryName string) error 
 	// First try to read from filesystem (works for regular files and files within zip)
 	filePath := path.Join(dir, entryName)
 	if content, err = fs.ReadFile(fsys, filePath); err != nil {
+		if !errors.Is(err, fs.ErrInvalid) {
+			return err
+		}
 		// If fs.ReadFile fails (likely due to linked file path outside filesystem boundary),
 		// fall back to absolute path approach like linkedfiles.FS does
 		absolutePath := fsys.Path(filePath)
