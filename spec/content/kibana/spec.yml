@@ -50,7 +50,7 @@ spec:
     name: "slo_template"
     required: false
     contents:
-      - description: An individual SLO template file
+      - description: Individual SLO template files
         type: file
         contentMediaType: "application/json"
         pattern: '^.+\.json$'
