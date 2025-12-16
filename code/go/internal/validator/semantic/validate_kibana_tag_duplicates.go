@@ -31,6 +31,9 @@ type sharedTag struct {
 	Name string `yaml:"text"`
 }
 
+// ValidateKibanaTagDuplicates checks for duplicate Kibana tag names
+// between the kibana/tags.yml file and the tags defined in the package's kibana/tag/*.json files.
+// It returns a list of validation errors if any duplicates are found.
 func ValidateKibanaTagDuplicates(fsys fspath.FS) specerrors.ValidationErrors {
 	tagMap, errs := getKibanaTagsYMLMap(fsys)
 	if len(errs) > 0 {

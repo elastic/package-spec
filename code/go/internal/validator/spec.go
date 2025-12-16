@@ -226,6 +226,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateIntegrationPolicyTemplates, types: []string{"integration"}},
 		{fn: semantic.ValidatePipelineTags, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
 		{fn: semantic.ValidateStaticHandlebarsFiles, types: []string{"integration", "input"}},
+		{fn: semantic.ValidateKibanaTagDuplicates, types: []string{"integration"}},
 	}
 
 	var validationRules validationRules

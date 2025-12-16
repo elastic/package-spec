@@ -971,6 +971,27 @@ func TestValidateHandlebarsFiles(t *testing.T) {
 	}
 }
 
+func TestValidateKibanaTagDuplicates(t *testing.T) {
+	tests := map[string]string{
+		"bad_kibana_tag_duplicate": "tag name 'Security Solution' used in package tag kibana/tag/bad_tag-security-solution-default.json is already defined in tags.yml",
+	}
+
+	for pkgName, expectedErrorMessage := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			require.Error(t, errs)
+			vErrs, ok := errs.(specerrors.ValidationErrors)
+			require.True(t, ok)
+
+			var errMessages []string
+			for _, vErr := range vErrs {
+				errMessages = append(errMessages, vErr.Error())
+			}
+			require.Contains(t, errMessages, expectedErrorMessage)
+		})
+	}
+}
+
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {
 	pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 
