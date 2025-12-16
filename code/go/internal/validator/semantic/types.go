@@ -311,7 +311,7 @@ func readPipelinesFolder(fsys fspath.FS, pipelinesDir string) ([]string, error) 
 	var pipelineFiles []string
 	entries, err := fs.ReadDir(fsys, pipelinesDir)
 	if errors.Is(err, os.ErrNotExist) {
-		return []string{}, nil
+		return nil, nil
 	}
 	if err != nil {
 		return nil, fmt.Errorf("can't list pipelines directory (path: %s): %w", fsys.Path(pipelinesDir), err)
@@ -372,21 +372,40 @@ func listTransforms(fsys fspath.FS) ([]string, error) {
 
 }
 
-func listPipelineFiles(fsys fspath.FS, dataStream string) ([]pipelineFileMetadata, error) {
+func listPipelineFiles(fsys fspath.FS) ([]pipelineFileMetadata, error) {
 	var pipelineFileMetadatas []pipelineFileMetadata
 
-	ingestPipelineDir := path.Join(dataStreamDir, dataStream, "elasticsearch", "ingest_pipeline")
-	pipelineFiles, err := readPipelinesFolder(fsys, ingestPipelineDir)
-	if err != nil {
-		return nil, fmt.Errorf("cannot read pipeline files from integration package: %w", err)
+	type pipelineDirMetadata struct {
+		dir        string
+		dataStream string
 	}
 
-	for _, file := range pipelineFiles {
-		pipelineFileMetadatas = append(pipelineFileMetadatas, pipelineFileMetadata{
-			filePath:     file,
-			fullFilePath: fsys.Path(file),
-			dataStream:   dataStream,
+	dirs := []pipelineDirMetadata{{dir: ""}}
+
+	dataStreams, err := listDataStreams(fsys)
+	if err != nil {
+		return nil, specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
+	}
+	for _, dataStream := range dataStreams {
+		dirs = append(dirs, pipelineDirMetadata{
+			dir:        path.Join(dataStreamDir, dataStream),
+			dataStream: dataStream,
 		})
+	}
+
+	for _, d := range dirs {
+		pipelinePath := path.Join(d.dir, "elasticsearch", "ingest_pipeline")
+		pipelineFiles, err := readPipelinesFolder(fsys, pipelinePath)
+		if err != nil {
+			return nil, fmt.Errorf("cannot read pipeline files from integration package: %w", err)
+		}
+		for _, file := range pipelineFiles {
+			pipelineFileMetadatas = append(pipelineFileMetadatas, pipelineFileMetadata{
+				filePath:     file,
+				fullFilePath: fsys.Path(file),
+				dataStream:   d.dataStream,
+			})
+		}
 	}
 
 	return pipelineFileMetadatas, nil
