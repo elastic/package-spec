@@ -22,6 +22,9 @@
     - description: Add support for ES|QL query assets in integration and content packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1028
+    - description: Add pipeline global on_failure validations.
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/1038
 - version: 3.5.5-next
   changes:
     - description: Run validation semantic rules also in transform fields.
