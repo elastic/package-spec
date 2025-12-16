@@ -78,7 +78,10 @@ func validateKibanaJSONTags(fsys fspath.FS, tagMap map[string]struct{}) specerro
 	errs := make(specerrors.ValidationErrors, 0)
 	err := fs.WalkDir(fsys, tagDir, func(filePath string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
-			return walkErr
+			if !errors.Is(walkErr, fs.ErrNotExist) {
+				return walkErr
+			}
+			return nil
 		}
 		if d.IsDir() || path.Ext(filePath) != ".json" {
 			return nil
