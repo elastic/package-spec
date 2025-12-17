@@ -75,6 +75,6 @@ set:
 ## SVR00007 - Kibana tag is duplicate
 [SVR00007]: #svr00007---kibana-tag-is-duplicate
 
-**Available since [TBD]()**
+**Available since [3.5.5](https://github.com/elastic/package-spec/releases/tag/v3.5.5)**
 
 Kibana tags declared under `kibana/tags.yml` are duplicated or package tags under `kibana/tag` directory are sharing the same id.
