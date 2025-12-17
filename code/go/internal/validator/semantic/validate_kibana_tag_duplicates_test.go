@@ -10,17 +10,18 @@ import (
 	"testing"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetKibanaTagsYMLMap(t *testing.T) {
+func TestGetValidatedSharedKibanaTags(t *testing.T) {
 	t.Run("no tags.yml file", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		fsys := fspath.DirFS(tmpDir)
 
-		tagMap, errs := getKibanaTagsYMLMap(fsys)
+		tags, errs := getValidatedSharedKibanaTags(fsys)
 		require.Empty(t, errs)
-		require.Empty(t, tagMap)
+		assert.Empty(t, tags)
 	})
 
 	t.Run("with tags.yml file and duplicates", func(t *testing.T) {
@@ -38,16 +39,16 @@ func TestGetKibanaTagsYMLMap(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := fspath.DirFS(tmpDir)
-		tagMap, errs := getKibanaTagsYMLMap(fsys)
+		tags, errs := getValidatedSharedKibanaTags(fsys)
 		require.Len(t, errs, 1)
-		require.Contains(t, errs[0].Error(), "duplicate tag name 'tag1' found in kibana/tags.yml")
-		require.Len(t, tagMap, 2)
-		require.Contains(t, tagMap, "tag1")
-		require.Contains(t, tagMap, "tag2")
+		assert.Contains(t, errs[0].Error(), "duplicate tag name 'tag1' found (SVR00007)")
+		require.Len(t, tags, 2)
+		assert.Contains(t, tags, "tag1")
+		assert.Contains(t, tags, "tag2")
 	})
 }
 
-func TestValidateKibanaJSONTags(t *testing.T) {
+func TestValidateKibanaPackageTagsDuplicates(t *testing.T) {
 	t.Run("with duplicate tags in JSON files", func(t *testing.T) {
 		tmpDir := t.TempDir()
 		kibanaTagDir := path.Join(tmpDir, "kibana", "tag")
@@ -75,12 +76,10 @@ func TestValidateKibanaJSONTags(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := fspath.DirFS(tmpDir)
-		tagMap := map[string]struct{}{
-			"tagB": {},
-		}
-		errs := validateKibanaJSONTags(fsys, tagMap)
+		tags := []string{"tagB"}
+		errs := validateKibanaPackageTagsDuplicates(fsys, tags)
 		require.Len(t, errs, 1)
-		require.Contains(t, errs[0].Error(), "duplicate tag name 'tagA' found in package tag")
+		assert.Contains(t, errs[0].Error(), "duplicate package tag name 'tagA'")
 	})
 
 	t.Run("with tag in JSON already defined in tags.yml", func(t *testing.T) {
@@ -100,12 +99,10 @@ func TestValidateKibanaJSONTags(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := fspath.DirFS(tmpDir)
-		tagMap := map[string]struct{}{
-			"tagB": {},
-		}
-		errs := validateKibanaJSONTags(fsys, tagMap)
+		tags := []string{"tagB"}
+		errs := validateKibanaPackageTagsDuplicates(fsys, tags)
 		require.Len(t, errs, 1)
-		require.Contains(t, errs[0].Error(), "tag name 'tagB' used in package tag")
+		assert.Contains(t, errs[0].Error(), "tag name 'tagB' is already defined in tags.yml (SVR00007)")
 	})
 
 	t.Run("with unique tags in JSON files", func(t *testing.T) {
@@ -135,10 +132,8 @@ func TestValidateKibanaJSONTags(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := fspath.DirFS(tmpDir)
-		tagMap := map[string]struct{}{
-			"tagC": {},
-		}
-		errs := validateKibanaJSONTags(fsys, tagMap)
+		tags := []string{"tagC"}
+		errs := validateKibanaPackageTagsDuplicates(fsys, tags)
 		require.Empty(t, errs)
 	})
 }

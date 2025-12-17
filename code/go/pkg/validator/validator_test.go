@@ -350,6 +350,14 @@ func TestValidateFile(t *testing.T) {
 			"elasticsearch/esql_view/view.yml",
 			[]string{"field query: Invalid type. Expected: string, given: null"},
 		},
+		"bad_content_duplicate_tags": {
+			"kibana/tags.yml",
+			[]string{"duplicate tag name 'Tag One' found (SVR00007)"},
+		},
+		"bad_kibana_tag_duplicate": {
+			"kibana/tag/bad_tag-security-solution-default.json",
+			[]string{"tag name 'Security Solution' is already defined in tags.yml (SVR00007)"},
+		},
 	}
 
 	for pkgName, test := range tests {
@@ -958,28 +966,6 @@ func TestValidateHandlebarsFiles(t *testing.T) {
 	for pkgName, expectedErrorMessage := range tests {
 		t.Run(pkgName, func(t *testing.T) {
 			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
-			require.Error(t, errs)
-			vErrs, ok := errs.(specerrors.ValidationErrors)
-			require.True(t, ok)
-
-			var errMessages []string
-			for _, vErr := range vErrs {
-				errMessages = append(errMessages, vErr.Error())
-			}
-			require.Contains(t, errMessages, expectedErrorMessage)
-		})
-	}
-}
-
-func TestValidateKibanaTagDuplicates(t *testing.T) {
-	tests := map[string]string{
-		"bad_content_duplicate_tags": "duplicate tag name 'Tag One' found in kibana/tags.yml",
-		"bad_kibana_tag_duplicate":  "tag name 'Security Solution' used in package tag kibana/tag/bad_tag-security-solution-default.json is already defined in tags.yml",
-	}
-
-	for pkgName, expectedErrorMessage := range tests {
-		t.Run(pkgName, func(t *testing.T) {
-			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			require.Error(t, errs)
 			vErrs, ok := errs.(specerrors.ValidationErrors)
 			require.True(t, ok)
