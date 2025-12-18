@@ -6,7 +6,7 @@ package semantic
 
 import (
 	"os"
-	"path"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -27,11 +27,11 @@ func TestGetValidatedSharedKibanaTags(t *testing.T) {
 
 	t.Run("with tags.yml file and duplicates", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		kibanaDir := path.Join(tmpDir, "kibana")
+		kibanaDir := filepath.Join(tmpDir, "kibana")
 		err := os.MkdirAll(kibanaDir, 0o755)
 		require.NoError(t, err)
 
-		tagsYMLPath := path.Join(kibanaDir, "tags.yml")
+		tagsYMLPath := filepath.Join(kibanaDir, "tags.yml")
 		tagsYMLContent := `- text: tag1
 - text: tag2
 - text: tag1
@@ -52,11 +52,11 @@ func TestGetValidatedSharedKibanaTags(t *testing.T) {
 func TestValidateKibanaPackageTagsDuplicates(t *testing.T) {
 	t.Run("with duplicate tags in JSON files", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		kibanaTagDir := path.Join(tmpDir, "kibana", "tag")
+		kibanaTagDir := filepath.Join(tmpDir, "kibana", "tag")
 		err := os.MkdirAll(kibanaTagDir, 0o755)
 		require.NoError(t, err)
 
-		tag1Path := path.Join(kibanaTagDir, "tag1.json")
+		tag1Path := filepath.Join(kibanaTagDir, "tag1.json")
 		tag1Content := `{
   "attributes": {
 	"name": "tagA"
@@ -66,7 +66,7 @@ func TestValidateKibanaPackageTagsDuplicates(t *testing.T) {
 		err = os.WriteFile(tag1Path, []byte(tag1Content), 0o644)
 		require.NoError(t, err)
 
-		tag2Path := path.Join(kibanaTagDir, "tag2.json")
+		tag2Path := filepath.Join(kibanaTagDir, "tag2.json")
 		tag2Content := `{
   "attributes": {
 	"name": "tagA"
@@ -85,11 +85,11 @@ func TestValidateKibanaPackageTagsDuplicates(t *testing.T) {
 
 	t.Run("with tag in JSON already defined in tags.yml", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		kibanaTagDir := path.Join(tmpDir, "kibana", "tag")
+		kibanaTagDir := filepath.Join(tmpDir, "kibana", "tag")
 		err := os.MkdirAll(kibanaTagDir, 0o755)
 		require.NoError(t, err)
 
-		tag1Path := path.Join(kibanaTagDir, "tag1.json")
+		tag1Path := filepath.Join(kibanaTagDir, "tag1.json")
 		tag1Content := `{
   "attributes": {
 	"name": "tagB"
@@ -108,11 +108,11 @@ func TestValidateKibanaPackageTagsDuplicates(t *testing.T) {
 
 	t.Run("with unique tags in JSON files", func(t *testing.T) {
 		tmpDir := t.TempDir()
-		kibanaTagDir := path.Join(tmpDir, "kibana", "tag")
+		kibanaTagDir := filepath.Join(tmpDir, "kibana", "tag")
 		err := os.MkdirAll(kibanaTagDir, 0o755)
 		require.NoError(t, err)
 
-		tag1Path := path.Join(kibanaTagDir, "tag1.json")
+		tag1Path := filepath.Join(kibanaTagDir, "tag1.json")
 		tag1Content := `{
   "attributes": {
 	"name": "tagA"
@@ -122,7 +122,7 @@ func TestValidateKibanaPackageTagsDuplicates(t *testing.T) {
 		err = os.WriteFile(tag1Path, []byte(tag1Content), 0o644)
 		require.NoError(t, err)
 
-		tag2Path := path.Join(kibanaTagDir, "tag2.json")
+		tag2Path := filepath.Join(kibanaTagDir, "tag2.json")
 		tag2Content := `{
   "attributes": {
 	"name": "tagB"

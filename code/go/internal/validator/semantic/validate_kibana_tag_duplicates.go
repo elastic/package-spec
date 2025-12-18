@@ -84,7 +84,6 @@ func getValidatedSharedKibanaTags(fsys fspath.FS) ([]string, specerrors.Validati
 }
 
 func validateKibanaPackageTagsDuplicates(fsys fspath.FS, sharedTagNames []string) specerrors.ValidationErrors {
-
 	entries, err := fs.ReadDir(fsys, path.Join("kibana", "tag"))
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
