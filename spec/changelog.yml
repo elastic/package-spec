@@ -18,7 +18,6 @@
     - description: Add support for ES|QL query assets in integration and content packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1028
-    # Pending on https://github.com/elastic/kibana/issues/245899
     - description: Add support for Kibana `slo_template` assets
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1037
