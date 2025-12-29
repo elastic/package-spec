@@ -22,7 +22,7 @@
     - description: Add support for Kibana `slo_template` assets
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1037
-- version: 3.5.5-next
+- version: 3.5.5
   changes:
     - description: Run validation semantic rules also in transform fields.
       type: enhancement
