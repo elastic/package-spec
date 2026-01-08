@@ -12,6 +12,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// ValidateIntegrationInputsDeprecation checks that if all inputs in an integration package are deprecated,
+// then the integration package itself must be marked as deprecated.
 func ValidateIntegrationInputsDeprecation(fsys fspath.FS) specerrors.ValidationErrors {
 
 	type manifest struct {
