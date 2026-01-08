@@ -16,32 +16,25 @@ import (
 
 // ValidatePipelineTags validates ingest pipeline processor tags.
 func ValidatePipelineTags(fsys fspath.FS) specerrors.ValidationErrors {
-	dataStreams, err := listDataStreams(fsys)
+	var errors specerrors.ValidationErrors
+	pipelineFiles, err := listPipelineFiles(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
-	var errors specerrors.ValidationErrors
-	for _, dataStream := range dataStreams {
-		pipelineFiles, err := listPipelineFiles(fsys, dataStream)
+	for _, pipelineFile := range pipelineFiles {
+		content, err := fs.ReadFile(fsys, pipelineFile.filePath)
 		if err != nil {
 			return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 		}
 
-		for _, pipelineFile := range pipelineFiles {
-			content, err := fs.ReadFile(fsys, pipelineFile.filePath)
-			if err != nil {
-				return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
-			}
+		var pipeline ingestPipeline
+		if err = yaml.Unmarshal(content, &pipeline); err != nil {
+			return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
+		}
 
-			var pipeline ingestPipeline
-			if err = yaml.Unmarshal(content, &pipeline); err != nil {
-				return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
-			}
-
-			if vErrs := validatePipelineTags(&pipeline, pipelineFile.fullFilePath); len(vErrs) > 0 {
-				errors = append(errors, vErrs...)
-			}
+		if vErrs := validatePipelineTags(&pipeline, pipelineFile.fullFilePath); len(vErrs) > 0 {
+			errors = append(errors, vErrs...)
 		}
 	}
 
