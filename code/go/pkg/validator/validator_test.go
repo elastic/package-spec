@@ -350,6 +350,20 @@ func TestValidateFile(t *testing.T) {
 			"elasticsearch/esql_view/view.yml",
 			[]string{"field query: Invalid type. Expected: string, given: null"},
 		},
+		"deprecated_integration":              {},
+		"deprecated_input":                    {},
+		"deprecated_content":                  {},
+		"deprecated_integration_policy_input": {},
+		"deprecated_integration_policy":       {},
+		"deprecated_integration_stream_var":   {},
+		"bad_deprecation_description": {
+			"manifest.yml",
+			[]string{"field deprecated.description: Invalid type. Expected: string, given: null"},
+		},
+		"bad_deprecation_since": {
+			"manifest.yml",
+			[]string{"field deprecated: since is required"},
+		},
 	}
 
 	for pkgName, test := range tests {
