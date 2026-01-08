@@ -1,0 +1,7 @@
+- text: Tag One
+  asset_types:
+    - dashboard
+    - search
+- text: Tag One
+  asset_types:
+    - visualization
