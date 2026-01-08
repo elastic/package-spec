@@ -23,7 +23,7 @@
       link: https://github.com/elastic/package-spec/pull/1037
     - description: Add support for deprecating packages or individual features (datastreams, inputs, policies).
       type: enhancement
-      link:
+      link: https://github.com/elastic/package-spec/pull/1053
 - version: 3.5.5
   changes:
     - description: Run validation semantic rules also in transform fields.
