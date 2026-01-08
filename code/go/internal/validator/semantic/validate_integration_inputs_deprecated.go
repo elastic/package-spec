@@ -7,9 +7,10 @@ package semantic
 import (
 	"io/fs"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
-	"gopkg.in/yaml.v3"
 )
 
 // ValidateIntegrationInputsDeprecation checks that if all inputs in an integration package are deprecated,
