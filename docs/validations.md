@@ -1,21 +1,22 @@
 # Validation Codes
 
-| Validation          | Short description                               |
-|---------------------|-------------------------------------------------|
-| **[JSE][JSE00001]** | **JSON Schema Errors**                          |
-| [JSE00001]          | Rename message to event.original                |
-| **[PSR][PSR00001]** | **Package Spec Rule**                           |
-| [PSR00001]          | Non GA spec used in GA package                  |
-| [PSR00002]          | Prerelease feature used in GA package           |
-| **[SVR][SVR00001]** | **Semantic Validation Rules**                   |
-| [SVR00001]          | Dashboard with query but no filter              |
-| [SVR00002]          | Dashboard without filter                        |
-| [SVR00003]          | Dangling object IDs                             |
-| [SVR00004]          | Visualization by value                          |
-| [SVR00005]          | Minimum Kibana version                          |
-| [SVR00006]          | Processor tag is required                       |
-| [SVR00007]          | Pipeline failure handler must set event.kind    |
-| [SVR00008]          | Pipeline failure handler must set error.message |
+| Validation          | Short description                     |
+|---------------------|---------------------------------------|
+| **[JSE][JSE00001]** | **JSON Schema Errors**                |
+| [JSE00001]          | Rename message to event.original      |
+| **[PSR][PSR00001]** | **Package Spec Rule**                 |
+| [PSR00001]          | Non GA spec used in GA package        |
+| [PSR00002]          | Prerelease feature used in GA package |
+| **[SVR][SVR00001]** | **Semantic Validation Rules**         |
+| [SVR00001]          | Dashboard with query but no filter    |
+| [SVR00002]          | Dashboard without filter              |
+| [SVR00003]          | Dangling object IDs                   |
+| [SVR00004]          | Visualization by value                |
+| [SVR00005]          | Minimum Kibana version                |
+| [SVR00006]          | Processor tag is required             |
+| [SVR00007]          | Kibana tag is duplicate               |
+| [SVR00008]          | Pipeline failure handler must set event.kind    |
+| [SVR00009]          | Pipeline failure handler must set error.message |
 
 ## JSE00001 - Rename message to event.original
 [JSE00001]: #jse00001---rename-message-to-eventoriginal
@@ -73,8 +74,15 @@ set:
   value: [network]
 ```
 
-## SVR00007 - Pipeline failure handler must set event.kind
-[SVR00007]: #svr00007---pipeline-failure-handler-must-set-eventkind
+## SVR00007 - Kibana tag is duplicate
+[SVR00007]: #svr00007---kibana-tag-is-duplicate
+
+**Available since [3.5.5](https://github.com/elastic/package-spec/releases/tag/v3.5.5)**
+
+Kibana tags declared under `kibana/tags.yml` are duplicated or package tags under `kibana/tag` directory are sharing the same id.
+
+## SVR00008 - Pipeline failure handler must set event.kind
+[SVR00008]: #svr00008---pipeline-failure-handler-must-set-eventkind
 
 **Available since [3.6.0](https://github.com/elastic/package-spec/releases/tag/v3.6.0)**
 
@@ -90,8 +98,8 @@ on_failure:
       value: pipeline_error
 ```
 
-## SVR00008 - Pipeline failure handler must set error.message
-[SVR00008]: #svr00008---pipeline-failure-handler-must-set-errormessage
+## SVR00009 - Pipeline failure handler must set error.message
+[SVR00009]: #svr00009---pipeline-failure-handler-must-set-errormessage
 
 **Available since [3.6.0](https://github.com/elastic/package-spec/releases/tag/v3.6.0)**
 

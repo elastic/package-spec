@@ -64,7 +64,7 @@ on_failure:
         failed with message '{{{ _ingest.on_failure_message }}}'
 `,
 			errors: []string{
-				`file "default.yml" is invalid: pipeline on_failure handler must set event.kind to "pipeline_error" (SVR00007)`,
+				`file "default.yml" is invalid: pipeline on_failure handler must set event.kind to "pipeline_error" (SVR00008)`,
 			},
 		},
 		{
@@ -83,7 +83,7 @@ on_failure:
         failed with message '{{{ _ingest.on_failure_message }}}'
 `,
 			errors: []string{
-				`file "default.yml" is invalid: pipeline on_failure handler must set event.kind to "pipeline_error" (SVR00007)`,
+				`file "default.yml" is invalid: pipeline on_failure handler must set event.kind to "pipeline_error" (SVR00008)`,
 			},
 		},
 		{
@@ -95,7 +95,7 @@ on_failure:
       value: pipeline_error
 `,
 			errors: []string{
-				`file "default.yml" is invalid: pipeline on_failure handler must set error.message (SVR00008)`,
+				`file "default.yml" is invalid: pipeline on_failure handler must set error.message (SVR00009)`,
 			},
 		},
 		{
@@ -110,10 +110,10 @@ on_failure:
       value: Pipeline failed
 `,
 			errors: []string{
-				`file "default.yml" is invalid: pipeline on_failure error.message must include "_ingest.on_failure_processor_type" (SVR00008)`,
-				`file "default.yml" is invalid: pipeline on_failure error.message must include "_ingest.on_failure_processor_tag" (SVR00008)`,
-				`file "default.yml" is invalid: pipeline on_failure error.message must include "_ingest.on_failure_message" (SVR00008)`,
-				`file "default.yml" is invalid: pipeline on_failure error.message must include "_ingest.pipeline" (SVR00008)`,
+				`file "default.yml" is invalid: pipeline on_failure error.message must include "_ingest.on_failure_processor_type" (SVR00009)`,
+				`file "default.yml" is invalid: pipeline on_failure error.message must include "_ingest.on_failure_processor_tag" (SVR00009)`,
+				`file "default.yml" is invalid: pipeline on_failure error.message must include "_ingest.on_failure_message" (SVR00009)`,
+				`file "default.yml" is invalid: pipeline on_failure error.message must include "_ingest.pipeline" (SVR00009)`,
 			},
 		},
 	}

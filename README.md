@@ -42,7 +42,7 @@ For a quick overview, these are the assets typically found in an Elastic Package
   * Alerting rule templates
   * Security rules
   * CSP (cloud security posture) rule templates
-  * SLOs
+  * SLO templates
   * Osquery pack assets.
   * Osquery saved queries.
   * Tags

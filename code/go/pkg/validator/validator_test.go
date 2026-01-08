@@ -181,8 +181,8 @@ func TestValidateFile(t *testing.T) {
 		"bad_saved_object_tags": {
 			"kibana/tags.yml",
 			[]string{
-				`field 0.asset_types.11: 0.asset_types.11 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "alerting_rule_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
-				`field 0.asset_types.12: 0.asset_types.12 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "alerting_rule_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
+				`field 0.asset_types.11: 0.asset_types.11 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "alerting_rule_template", "slo_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
+				`field 0.asset_types.12: 0.asset_types.12 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "alerting_rule_template", "slo_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
 				`field 1.asset_ids.1: Invalid type. Expected: string, given: integer`,
 				`field 2: text is required`,
 				`field 3: asset_types is required`,
@@ -349,6 +349,14 @@ func TestValidateFile(t *testing.T) {
 		"bad_esql_view_integration": {
 			"elasticsearch/esql_view/view.yml",
 			[]string{"field query: Invalid type. Expected: string, given: null"},
+		},
+		"bad_content_duplicate_tags": {
+			"kibana/tags.yml",
+			[]string{"duplicate tag name 'Tag One' found (SVR00007)"},
+		},
+		"bad_kibana_tag_duplicate": {
+			"kibana/tag/bad_tag-security-solution-default.json",
+			[]string{"tag name 'Security Solution' is already defined in tags.yml (SVR00007)"},
 		},
 	}
 
@@ -873,15 +881,15 @@ func TestValidateIngestPipelines(t *testing.T) {
 		},
 		"bad_pipeline_on_failure": {
 			"missing": []string{
-				`pipeline on_failure handler must set event.kind to "pipeline_error" (SVR00007)`,
-				`pipeline on_failure handler must set error.message (SVR00008)`,
+				`pipeline on_failure handler must set event.kind to "pipeline_error" (SVR00008)`,
+				`pipeline on_failure handler must set error.message (SVR00009)`,
 			},
 			"incorrect": []string{
-				`pipeline on_failure handler must set event.kind to "pipeline_error" (SVR00007)`,
-				`pipeline on_failure error.message must include "_ingest.on_failure_processor_type" (SVR00008)`,
-				`pipeline on_failure error.message must include "_ingest.on_failure_processor_tag" (SVR00008)`,
-				`pipeline on_failure error.message must include "_ingest.on_failure_message" (SVR00008)`,
-				`pipeline on_failure error.message must include "_ingest.pipeline" (SVR00008)`,
+				`pipeline on_failure handler must set event.kind to "pipeline_error" (SVR00008)`,
+				`pipeline on_failure error.message must include "_ingest.on_failure_processor_type" (SVR00009)`,
+				`pipeline on_failure error.message must include "_ingest.on_failure_processor_tag" (SVR00009)`,
+				`pipeline on_failure error.message must include "_ingest.on_failure_message" (SVR00009)`,
+				`pipeline on_failure error.message must include "_ingest.pipeline" (SVR00009)`,
 			},
 		},
 	}
