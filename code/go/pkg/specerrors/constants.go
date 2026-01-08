@@ -22,4 +22,5 @@ const (
 	CodeVisualizationByValue                = "SVR00004"
 	CodeMinimumKibanaVersion                = "SVR00005"
 	CodePipelineTagRequired                 = "SVR00006"
+	CodeKibanaTagDuplicates                 = "SVR00007"
 )

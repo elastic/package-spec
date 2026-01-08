@@ -350,6 +350,14 @@ func TestValidateFile(t *testing.T) {
 			"elasticsearch/esql_view/view.yml",
 			[]string{"field query: Invalid type. Expected: string, given: null"},
 		},
+		"bad_content_duplicate_tags": {
+			"kibana/tags.yml",
+			[]string{"duplicate tag name 'Tag One' found (SVR00007)"},
+		},
+		"bad_kibana_tag_duplicate": {
+			"kibana/tag/bad_tag-security-solution-default.json",
+			[]string{"tag name 'Security Solution' is already defined in tags.yml (SVR00007)"},
+		},
 		"deprecated_integration":              {},
 		"deprecated_input":                    {},
 		"deprecated_content":                  {},

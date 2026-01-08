@@ -14,6 +14,7 @@
 | [SVR00004]          | Visualization by value                |
 | [SVR00005]          | Minimum Kibana version                |
 | [SVR00006]          | Processor tag is required             |
+| [SVR00007]          | Kibana tag is duplicate               |
 
 ## JSE00001 - Rename message to event.original
 [JSE00001]: #jse00001---rename-message-to-eventoriginal
@@ -70,3 +71,10 @@ set:
   field: event.category
   value: [network]
 ```
+
+## SVR00007 - Kibana tag is duplicate
+[SVR00007]: #svr00007---kibana-tag-is-duplicate
+
+**Available since [3.5.5](https://github.com/elastic/package-spec/releases/tag/v3.5.5)**
+
+Kibana tags declared under `kibana/tags.yml` are duplicated or package tags under `kibana/tag` directory are sharing the same id.
