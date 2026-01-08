@@ -30,6 +30,7 @@ spec:
               - "breaking-change"
               - "bugfix"
               - "enhancement"
+              - "deprecation"
             link:
               description: Link to issue or PR describing change in detail.
               type: string
