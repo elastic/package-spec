@@ -380,6 +380,7 @@ func listPipelineFiles(fsys fspath.FS) ([]pipelineFileMetadata, error) {
 		dataStream string
 	}
 
+	// Empty directory is used here to read ingest pipelines defined in the package root.
 	dirs := []pipelineDirMetadata{{dir: ""}}
 
 	dataStreams, err := listDataStreams(fsys)
