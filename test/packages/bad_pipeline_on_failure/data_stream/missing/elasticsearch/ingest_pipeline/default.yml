@@ -1,0 +1,7 @@
+---
+description: Pipeline for processing sample logs
+processors:
+  - set:
+      tag: set_sample_field
+      field: sample_field
+      value: "1"
