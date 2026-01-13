@@ -23,4 +23,6 @@ const (
 	CodeMinimumKibanaVersion                = "SVR00005"
 	CodePipelineTagRequired                 = "SVR00006"
 	CodeKibanaTagDuplicates                 = "SVR00007"
+	CodePipelineOnFailureEventKind          = "SVR00008"
+	CodePipelineOnFailureMessage            = "SVR00009"
 )

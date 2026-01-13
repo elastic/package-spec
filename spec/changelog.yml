@@ -21,6 +21,9 @@
     - description: Add support for Kibana `slo_template` assets
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1037
+    - description: Add pipeline global on_failure validations.
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/1038
     - description: Add support for deprecating packages or individual features (datastreams, inputs, policies).
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1053

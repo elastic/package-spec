@@ -1,0 +1,14 @@
+---
+description: Pipeline for processing sample logs
+processors:
+  - set:
+      tag: set_sample_field
+      field: sample_field
+      value: "1"
+on_failure:
+  - set:
+      field: event.kind
+      value: metric
+  - set:
+      field: error.message
+      value: "Pipeline failed"
