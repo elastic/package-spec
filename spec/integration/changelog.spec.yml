@@ -43,3 +43,9 @@ spec:
     required:
     - version
     - changes
+
+versions:
+  - before: 3.6.0
+    patch:
+      - op: remove # deprecation change type
+        path: "/items/properties/changes/items/properties/type/enum/3"
