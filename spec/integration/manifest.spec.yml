@@ -741,7 +741,7 @@ versions:
         path: "/properties/policy_templates/items/properties/inputs/items/properties/deprecated"
       - op: remove # removes policy template deprecation info
         path: "/properties/policy_templates/items/properties/deprecated"
-      - op: remove # remove deprecated defintion
+      - op: remove # remove deprecated definition
         path: "/definitions/deprecated"
   - before: 3.3.2
     patch:
