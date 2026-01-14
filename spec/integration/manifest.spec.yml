@@ -506,6 +506,22 @@ spec:
         description:
           description: Reason of deprecation.
           type: string
+        replaced_by:
+          type: object
+          additionalProperties: false
+          properties:
+            package:
+              description: Name of the package that replaces the deprecated one.
+              type: string
+            input:
+              description: Name of the input that replaces the deprecated one.
+              type: string
+            policy_template:
+              description: Name of the policy template that replaces the deprecated one.
+              type: string
+            variable:
+              description: Name of the variable that replaces the deprecated one.
+              type: string         
       required:
         - since
         - description
