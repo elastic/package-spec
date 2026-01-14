@@ -372,6 +372,10 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{"field deprecated: since is required"},
 		},
+		"bad_deprecated_integration_policy_input": {
+			"manifest.yml",
+			[]string{"all inputs are deprecated but the integration package is not marked as deprecated"},
+		},
 	}
 
 	for pkgName, test := range tests {

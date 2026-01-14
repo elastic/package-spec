@@ -1,5 +1,5 @@
 format_version: 3.6.0
-name: deprecated_integration_policy_input
+name: bad_deprecated_integration_policy_input
 title: "New Package"
 version: 0.0.1
 source:
@@ -36,9 +36,6 @@ policy_templates:
         deprecated:
           since: "0.0.2"
           description: "This input is deprecated. Please use the new XYZ input."
-      - type: XYZ
-        title: Collect sample logs from instances
-        description: Collecting sample logs
 owner:
   github: elastic/integrations
   type: elastic
