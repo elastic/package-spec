@@ -20,6 +20,7 @@ type deprecatedInfo struct {
 		Package        string `yaml:"package,omitempty"`
 		PolicyTemplate string `yaml:"policy_template,omitempty"`
 		Input          string `yaml:"input,omitempty"`
+		DataStream     string `yaml:"data_stream,omitempty"`
 		Variable       string `yaml:"variable,omitempty"`
 	} `yaml:"replaced_by,omitempty"`
 }
@@ -88,7 +89,8 @@ func validatePackageManifestDeprecatedReplacedBy(fsys fspath.FS) specerrors.Vali
 func validateDataStreamsDeprecatedReplacedBy(fsys fspath.FS) specerrors.ValidationErrors {
 	// stream manifest structure
 	type streamManifest struct {
-		Streams []struct {
+		Deprecated *deprecatedInfo `yaml:"deprecated,omitempty"`
+		Streams    []struct {
 			Vars []struct {
 				Deprecated *deprecatedInfo `yaml:"deprecated,omitempty"`
 			} `yaml:"vars,omitempty"`
@@ -114,6 +116,13 @@ func validateDataStreamsDeprecatedReplacedBy(fsys fspath.FS) specerrors.Validati
 			errs = append(errs, specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(dsManifestPath), err))
 			continue
 		}
+		if sm.Deprecated != nil && sm.Deprecated.ReplacedBy != nil {
+			rb := sm.Deprecated.ReplacedBy
+			if rb.DataStream == "" {
+				errs = append(errs, specerrors.NewStructuredErrorf("file \"%s\" is invalid: deprecated.replaced_by.data_stream must be specified when deprecated.replaced_by is used", fsys.Path(dsManifestPath)))
+			}
+		}
+
 		for _, stream := range sm.Streams {
 			for _, v := range stream.Vars {
 				if v.Deprecated != nil && v.Deprecated.ReplacedBy != nil {
