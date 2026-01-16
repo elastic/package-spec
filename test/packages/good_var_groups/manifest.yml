@@ -45,6 +45,7 @@ var_groups:
     description: >
       Utilize AWS Access Keys or assume role to set up access
       for assessing your AWS environment's security posture.
+    required: true  # User MUST select an authentication method
     options:
       - name: direct_access_key
         title: Direct Access Keys

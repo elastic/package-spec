@@ -296,6 +296,18 @@ func TestValidateFile(t *testing.T) {
 				`duplicate option name "direct_access_key" in var_group "credential_type"`,
 			},
 		},
+		"bad_var_groups_required_var_in_required_group": {
+			"manifest.yml",
+			[]string{
+				`var "access_key_id" in required var_group "credential_type" should not have required: true (requirement is inferred from var_group)`,
+			},
+		},
+		"bad_var_groups_required_var_in_optional_group": {
+			"manifest.yml",
+			[]string{
+				`var "access_key_id" in non-required var_group "credential_type" should not have required: true (var_group is optional)`,
+			},
+		},
 		"bad_input_deployment_modes": {
 			"manifest.yml",
 			[]string{

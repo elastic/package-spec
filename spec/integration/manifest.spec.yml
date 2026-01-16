@@ -560,6 +560,15 @@ spec:
             type: string
             examples:
               - Select how you want to authenticate with AWS.
+          required:
+            description: >
+              Whether a selection is required for this var_group. When true, Fleet UI
+              will require the user to select an option, and all variables within the
+              selected option are treated as required (inferred). When false (default),
+              the entire var_group is optional. Variables within a var_group must not
+              have required: true - the requirement is controlled entirely by this field.
+            type: boolean
+            default: false
           options:
             description: Available options. First option is the default.
             type: array

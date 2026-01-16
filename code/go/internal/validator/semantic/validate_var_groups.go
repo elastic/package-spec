@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io/fs"
 	"path"
-	"slices"
 
 	"gopkg.in/yaml.v3"
 
@@ -21,6 +20,7 @@ import (
 // - vars referenced in options[].vars exist in the manifest vars array
 // - var_group names are unique
 // - option names within each var_group are unique
+// - vars in a var_group must not have required: true (requirement is controlled by var_group)
 func ValidateVarGroups(fsys fspath.FS) specerrors.ValidationErrors {
 	// Validate main manifest.
 	d, err := fs.ReadFile(fsys, "manifest.yml")
@@ -48,7 +48,8 @@ func ValidateVarGroups(fsys fspath.FS) specerrors.ValidationErrors {
 }
 
 type varGroupsManifestVar struct {
-	Name string `yaml:"name"`
+	Name     string `yaml:"name"`
+	Required bool   `yaml:"required"`
 }
 
 type varGroupOption struct {
@@ -57,8 +58,9 @@ type varGroupOption struct {
 }
 
 type varGroup struct {
-	Name    string           `yaml:"name"`
-	Options []varGroupOption `yaml:"options"`
+	Name     string           `yaml:"name"`
+	Required bool             `yaml:"required"`
+	Options  []varGroupOption `yaml:"options"`
 }
 
 type varGroupsManifest struct {
@@ -87,18 +89,12 @@ func validateVarGroupsManifest(filePath string, manifest varGroupsManifest) spec
 	var errs specerrors.ValidationErrors
 
 	// Collect all available vars from package, policy templates, and inputs
-	var availableVars []string
-	for _, v := range manifest.Vars {
-		availableVars = append(availableVars, v.Name)
-	}
+	var availableVars []varGroupsManifestVar
+	availableVars = append(availableVars, manifest.Vars...)
 	for _, template := range manifest.PolicyTemplates {
-		for _, v := range template.Vars {
-			availableVars = append(availableVars, v.Name)
-		}
+		availableVars = append(availableVars, template.Vars...)
 		for _, input := range template.Inputs {
-			for _, v := range input.Vars {
-				availableVars = append(availableVars, v.Name)
-			}
+			availableVars = append(availableVars, input.Vars...)
 		}
 	}
 
@@ -129,13 +125,9 @@ func validateDataStreamVarGroups(fsys fspath.FS, filePath string, pkgManifest va
 		}
 
 		// Collect available vars from both package manifest and stream-level vars
-		var availableVars []string
-		for _, v := range pkgManifest.Vars {
-			availableVars = append(availableVars, v.Name)
-		}
-		for _, v := range stream.Vars {
-			availableVars = append(availableVars, v.Name)
-		}
+		var availableVars []varGroupsManifestVar
+		availableVars = append(availableVars, pkgManifest.Vars...)
+		availableVars = append(availableVars, stream.Vars...)
 
 		streamID := stream.Title
 		if streamID == "" {
@@ -156,8 +148,14 @@ func validateDataStreamVarGroups(fsys fspath.FS, filePath string, pkgManifest va
 	return errs
 }
 
-func validateVarGroups(filePath string, varGroups []varGroup, availableVars []string) specerrors.ValidationErrors {
+func validateVarGroups(filePath string, varGroups []varGroup, availableVars []varGroupsManifestVar) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
+
+	// Build a map for quick var lookup
+	varMap := make(map[string]varGroupsManifestVar)
+	for _, v := range availableVars {
+		varMap[v.Name] = v
+	}
 
 	// Check for duplicate var_group names
 	seenGroupNames := make(map[string]bool)
@@ -175,10 +173,24 @@ func validateVarGroups(filePath string, varGroups []varGroup, availableVars []st
 			}
 			seenOptionNames[opt.Name] = true
 
-			// Validate that referenced vars exist
+			// Validate that referenced vars exist and check required consistency
 			for _, varName := range opt.Vars {
-				if !slices.Contains(availableVars, varName) {
+				varDef, exists := varMap[varName]
+				if !exists {
 					errs = append(errs, specerrors.NewStructuredErrorf("file \"%s\" is invalid: var %q referenced in var_group %q option %q is not defined", filePath, varName, vg.Name, opt.Name))
+					continue
+				}
+
+				// Validate that vars in a var_group do not have required: true
+				// The requirement is controlled entirely by the var_group:
+				// - If var_group is required, all vars are implicitly required (inferred)
+				// - If var_group is not required, the entire group is optional
+				if varDef.Required {
+					if vg.Required {
+						errs = append(errs, specerrors.NewStructuredErrorf("file \"%s\" is invalid: var %q in required var_group %q should not have required: true (requirement is inferred from var_group)", filePath, varName, vg.Name))
+					} else {
+						errs = append(errs, specerrors.NewStructuredErrorf("file \"%s\" is invalid: var %q in non-required var_group %q should not have required: true (var_group is optional)", filePath, varName, vg.Name))
+					}
 				}
 			}
 		}
