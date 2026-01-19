@@ -72,12 +72,12 @@ var_groups:
           - default
         # Cloud Connector-specific extensions (allowed by additionalProperties: true)
         provider: aws
-        iac_template_url: >-
-          https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate
-          ?templateURL=https://elastic-cloud-connectors.s3.amazonaws.com/cloudformation-aws-connector.yml
-          &stackName=Elastic-Cloud-Connector
+        iac_template_url: "https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?templateURL=https://elastic-cloud-connectors.s3.amazonaws.com/cloudformation-aws-connector.yml&stackName=Elastic-Cloud-Connector"
 
       - name: assume_role
+        title: Assume Role
+        description: Assume an IAM role using role ARN.
+        vars:
         title: Assume Role
         description: Assume an IAM role using role ARN.
         vars:
