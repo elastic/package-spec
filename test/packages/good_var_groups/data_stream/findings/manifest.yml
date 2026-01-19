@@ -77,6 +77,4 @@ streams:
               - default
             provider: aws
             iac_template_url: >-
-              https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate
-              ?templateURL=https://elastic-cloud-connectors.s3.amazonaws.com/cloudformation-aws-connector.yml
-              &stackName=Elastic-Cloud-Connector
+              https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?templateURL=https://elastic-cloud-connectors.s3.amazonaws.com/cloudformation-aws-connector.yml&stackName=Elastic-Cloud-Connector
