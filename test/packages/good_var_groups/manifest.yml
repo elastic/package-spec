@@ -78,9 +78,6 @@ var_groups:
         title: Assume Role
         description: Assume an IAM role using role ARN.
         vars:
-        title: Assume Role
-        description: Assume an IAM role using role ARN.
-        vars:
           - role_arn
         hide_in_deployment_modes:
           - agentless
