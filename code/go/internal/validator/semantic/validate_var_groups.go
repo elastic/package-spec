@@ -25,7 +25,7 @@ func ValidateVarGroups(fsys fspath.FS) specerrors.ValidationErrors {
 	// Validate main manifest.
 	d, err := fs.ReadFile(fsys, "manifest.yml")
 	if err != nil {
-		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path("manifest.yml"), err)}
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("failed to read file \"%s\": %w", fsys.Path("manifest.yml"), err)}
 	}
 
 	var manifest varGroupsManifest
