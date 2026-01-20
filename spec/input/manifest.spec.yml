@@ -112,6 +112,22 @@ spec:
       properties:
         index_template:
           $ref: "../integration/data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template"
+    available_types:
+      description: >
+        List of signal types available for this package. Only applicable for OTel input packages.
+        When specified, allows the package to collect multiple signal types from a single receiver.
+      type: array
+      items:
+        type: string
+        enum:
+          - logs
+          - metrics
+          - traces
+      minItems: 1
+      uniqueItems: true
+      examples:
+        - [logs, metrics]
+        - [logs, metrics, traces]
   required:
   - format_version
   - name
@@ -124,6 +140,10 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.7.0
+    patch:
+      - op: remove
+        path: "/properties/available_types"
   - before: 3.6.0
     patch:
       - op: remove

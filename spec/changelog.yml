@@ -2,6 +2,11 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
+- version: 3.7.0-next
+  changes:
+    - description: Add support for `available_types` field in input packages to support OTel packages with multiple signal types.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/1023
 - version: 3.6.0-next
   changes:
     # Pending on https://github.com/elastic/kibana/issues/220294
