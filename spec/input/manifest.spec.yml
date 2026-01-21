@@ -88,6 +88,22 @@ spec:
           template_path:
             description: "Path to Elasticsearch index template for stream."
             type: string
+          available_types:
+            description: >
+              List of signal types available for this policy template. Only applicable for OTel input packages (input: otelcol).
+              When specified, allows the policy template to collect multiple signal types from a single receiver.
+            type: array
+            items:
+              type: string
+              enum:
+                - logs
+                - metrics
+                - traces
+            minItems: 1
+            uniqueItems: true
+            examples:
+              - [logs, metrics]
+              - [logs, metrics, traces]
         required:
           - name
           - title
@@ -112,22 +128,6 @@ spec:
       properties:
         index_template:
           $ref: "../integration/data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template"
-    available_types:
-      description: >
-        List of signal types available for this package. Only applicable for OTel input packages.
-        When specified, allows the package to collect multiple signal types from a single receiver.
-      type: array
-      items:
-        type: string
-        enum:
-          - logs
-          - metrics
-          - traces
-      minItems: 1
-      uniqueItems: true
-      examples:
-        - [logs, metrics]
-        - [logs, metrics, traces]
   required:
   - format_version
   - name
@@ -143,7 +143,7 @@ versions:
   - before: 3.7.0
     patch:
       - op: remove
-        path: "/properties/available_types"
+        path: "/properties/policy_templates/items/properties/available_types"
   - before: 3.6.0
     patch:
       - op: remove

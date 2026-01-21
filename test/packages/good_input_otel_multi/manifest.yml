@@ -6,10 +6,6 @@ source:
   license: "Elastic-2.0"
 description: "OTel collector that can collect multiple signal types (logs, metrics, traces)."
 type: input
-available_types:
-  - logs
-  - metrics
-  - traces
 categories:
   - monitoring
   - opentelemetry
@@ -34,6 +30,10 @@ policy_templates:
     title: OTel Multi-Signal Receiver
     description: Collect logs, metrics, and traces using OTel Collector.
     input: otelcol
+    available_types:
+      - logs
+      - metrics
+      - traces
     template_path: input.yml.hbs
     vars:
       - name: period
