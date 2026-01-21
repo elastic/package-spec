@@ -521,6 +521,9 @@ spec:
               type: string
             variable:
               description: Name of the variable that replaces the deprecated one.
+              type: string
+            data_stream:
+              description: Name of the data stream that replaces the deprecated one.
               type: string         
       required:
         - since
