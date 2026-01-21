@@ -24,7 +24,7 @@
     - description: Add pipeline global on_failure validations.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/1038
-    - description: Add support for deprecating packages or individual features (policy_templates, inputs, data_streams, or variables).
+    - description: Add support for deprecating packages or individual features (policy_templates, inputs, data_streams or variables).
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1053
 - version: 3.5.6-next

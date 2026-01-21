@@ -137,9 +137,91 @@ policy_templates:
 		assert.Len(t, errs, 1)
 		assert.ErrorContains(t, errs, "input deprecated.replaced_by.input must be specified when deprecated.replaced_by is used")
 	})
+
+	t.Run("input_policy_template_deprecated_replaced_by_policy_template", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.WriteFile(filepath.Join(d, "manifest.yml"), []byte(`
+type: input
+policy_templates:
+  - deprecated:
+      since: '1.0.0'
+      description: 'This policy template is deprecated.'
+      replaced_by:
+        policy_template: 'new-policy-template'
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := validatePackageManifestDeprecatedReplacedBy(fspath.DirFS(d))
+		require.Empty(t, errs, "expected no validation errors")
+	})
+
+	t.Run("input_policy_template_deprecated_replaced_by_policy_template_error", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.WriteFile(filepath.Join(d, "manifest.yml"), []byte(`
+type: input
+policy_templates:
+  - deprecated:
+      since: '1.0.0'
+      description: 'This policy template is deprecated.'
+      replaced_by:
+        input: 'new-policy-template'
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := validatePackageManifestDeprecatedReplacedBy(fspath.DirFS(d))
+		require.NotEmpty(t, errs, "expected validation errors")
+		assert.Len(t, errs, 1)
+		assert.ErrorContains(t, errs, "policy_template deprecated.replaced_by.policy_template must be specified when deprecated.replaced_by is used")
+	})
 }
 
 func TestValidateDataStreamsDeprecatedReplacedBy(t *testing.T) {
+
+	t.Run("data_stream_deprecated_replaced_by_data_stream", func(t *testing.T) {
+		d := t.TempDir()
+		err := os.MkdirAll(filepath.Join(d, "data_stream", "test"), 0o755)
+		require.NoError(t, err)
+
+		err = os.WriteFile(filepath.Join(d, "data_stream", "test", "manifest.yml"), []byte(`
+deprecated:
+  since: '1.0.0'
+  description: 'This data stream is deprecated.'
+  replaced_by:
+    data_stream: 'new-data-stream'
+streams:
+  - vars:
+    - name: var_example
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := validateDataStreamsDeprecatedReplacedBy(fspath.DirFS(d))
+		require.Empty(t, errs, "expected no validation errors")
+	})
+
+	t.Run("data_stream_deprecated_replaced_by_data_stream_error", func(t *testing.T) {
+		d := t.TempDir()
+		err := os.MkdirAll(filepath.Join(d, "data_stream", "test"), 0o755)
+		require.NoError(t, err)
+
+		err = os.WriteFile(filepath.Join(d, "data_stream", "test", "manifest.yml"), []byte(`
+deprecated:
+  since: '1.0.0'
+  description: 'This data stream is deprecated.'
+  replaced_by:
+    variable: 'new-data-stream'
+streams:
+  - vars:
+    - name: var_example
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := validateDataStreamsDeprecatedReplacedBy(fspath.DirFS(d))
+		require.NotEmpty(t, errs, "expected validation errors")
+		assert.Len(t, errs, 1)
+		assert.ErrorContains(t, errs, "deprecated.replaced_by.data_stream must be specified when deprecated.replaced_by is used")
+	})
 	t.Run("stream_deprecated_variable_replaced_by_variable", func(t *testing.T) {
 		d := t.TempDir()
 		err := os.MkdirAll(filepath.Join(d, "data_stream", "test"), 0o755)
