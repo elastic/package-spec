@@ -14,7 +14,8 @@ conditions:
     capabilities:
       - observability
       - security
-  agent: {}
+  agent:
+    version: version  # This is an invalid version to test bad agent version handling
 vars:
   - name: package_password
     type: password
