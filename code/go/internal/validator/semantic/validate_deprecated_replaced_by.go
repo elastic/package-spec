@@ -14,8 +14,8 @@ import (
 )
 
 type deprecatedInfo struct {
-	Since       string `yaml:"since,omitempty"`
-	Description string `yaml:"description,omitempty"`
+	Since       string `yaml:"since"`
+	Description string `yaml:"description"`
 	ReplacedBy  *struct {
 		Package        string `yaml:"package,omitempty"`
 		PolicyTemplate string `yaml:"policy_template,omitempty"`
