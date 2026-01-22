@@ -88,6 +88,8 @@ spec:
           template_path:
             description: "Path to Elasticsearch index template for stream."
             type: string
+          deprecated:
+            $ref: "../integration/manifest.spec.yml#/definitions/deprecated"
         required:
           - name
           - title
@@ -112,6 +114,8 @@ spec:
       properties:
         index_template:
           $ref: "../integration/data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template"
+    deprecated:
+      $ref: "../integration/manifest.spec.yml#/definitions/deprecated"
   required:
   - format_version
   - name
@@ -128,6 +132,10 @@ versions:
     patch:
       - op: remove
         path: "/required/7" # removes requirement for conditions
+      - op: remove
+        path: "/properties/deprecated" # removes deprecated field for package
+      - op: remove
+        path: "/properties/policy_templates/items/properties/deprecated" # removes deprecated field for policy templates
   # Reserve otelcol input name before 3.5.0.
   - before: 3.5.0
     patch:
