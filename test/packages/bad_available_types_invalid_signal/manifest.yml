@@ -1,0 +1,33 @@
+format_version: 3.6.0
+name: bad_available_types_invalid_signal
+title: "Bad Available Types Invalid Signal"
+version: 0.0.1
+source:
+  license: "Elastic-2.0"
+description: "Input package with invalid signal types in available_types."
+type: input
+categories:
+  - monitoring
+  - opentelemetry
+conditions:
+  kibana:
+    version: "^9.2.0"
+  agent:
+    version: "^8.9.0"
+  elastic:
+    subscription: "basic"
+policy_templates:
+  - name: otelreceiver
+    type: metrics
+    title: OTel Receiver
+    description: OTel receiver with invalid signal types
+    input: otelcol
+    available_types:
+      - logs
+      - metrics
+      - synthetics
+      - invalid_type
+    template_path: input.yml.hbs
+owner:
+  github: elastic/ecosystem
+  type: elastic

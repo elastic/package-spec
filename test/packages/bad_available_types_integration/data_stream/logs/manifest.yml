@@ -1,0 +1,6 @@
+title: Logs data stream
+type: logs
+streams:
+  - input: logfile
+    title: Logs
+    description: Collect logs
