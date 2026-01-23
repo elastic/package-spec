@@ -359,6 +359,24 @@ func TestValidateFile(t *testing.T) {
 			"kibana/tag/bad_tag-security-solution-default.json",
 			[]string{"tag name 'Security Solution' is already defined in tags.yml (SVR00007)"},
 		},
+		"deprecated_integration":              {},
+		"deprecated_input":                    {},
+		"deprecated_content":                  {},
+		"deprecated_integration_policy_input": {},
+		"deprecated_integration_policy":       {},
+		"deprecated_integration_stream_var":   {},
+		"bad_deprecation_description": {
+			"manifest.yml",
+			[]string{"field deprecated.description: Invalid type. Expected: string, given: null"},
+		},
+		"bad_deprecation_since": {
+			"manifest.yml",
+			[]string{"field deprecated: since is required"},
+		},
+		"bad_deprecated_integration_policy_input": {
+			"manifest.yml",
+			[]string{"all inputs are deprecated but the integration package is not marked as deprecated"},
+		},
 	}
 
 	for pkgName, test := range tests {

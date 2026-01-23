@@ -164,6 +164,8 @@ spec:
           default:
             description: Default value(s) for variable
             $ref: "#/definitions/input_variable_value"
+          deprecated:
+            $ref: "../../integration/manifest.spec.yml#/definitions/deprecated"
         allOf:
          - if:
              properties:
@@ -645,10 +647,18 @@ spec:
         dynamic_namespace:
           description: When set to true, agents running this integration are granted data stream privileges for all namespaces of its type
           type: boolean
+    deprecated:
+      $ref: "../../integration/manifest.spec.yml#/definitions/deprecated"
   required:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.6.0
+    patch:
+      - op: remove # removes deprecated field for data stream
+        path: "/properties/deprecated"
+      - op: remove # remove deprecated field for vars
+        path: /definitions/vars/items/properties/deprecated
   - before: 3.5.0
     patch:
       # Require >=3.5.0 to use the duration variable type.
