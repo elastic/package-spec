@@ -28,6 +28,7 @@
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1053
     # Pending on https://github.com/elastic/kibana/pull/249449
+    # Pending on https://github.com/elastic/integrations/pull/16985
     - description: Add var_groups schema to support conditional variable groups for Cloud Connector integration.
       type: enhancement
       link: https://github.com/elastic/package-spec/issues/1054
