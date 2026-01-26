@@ -17,8 +17,6 @@ const (
 	otelcolInput string = "otelcol"
 )
 
-var validSignalTypes = []string{"logs", "metrics", "traces"}
-
 type availableTypesPolicyTemplate struct {
 	Name           string   `yaml:"name"`
 	Input          string   `yaml:"input"`
