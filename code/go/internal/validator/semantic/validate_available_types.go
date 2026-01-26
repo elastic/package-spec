@@ -67,7 +67,7 @@ func ValidateAvailableTypes(fsys fspath.FS) specerrors.ValidationErrors {
 		// Validate that available_types is only used with otelcol input
 		if policyTemplate.Input != otelcolInput {
 			errs = append(errs, specerrors.NewStructuredErrorf(
-				"file \"%s\" is invalid: policy template \"%s\" has available_types but does not use otelcol input (input: %q). available_types can only be used with OTel input packages (input: otelcol)",
+				"file \"%s\" is invalid: policy template \"%s\" has available_types but does not use otelcol input (input: %s). available_types can only be used with OTel input packages (input: otelcol)",
 				fsys.Path(manifestPath), policyTemplate.Name, policyTemplate.Input))
 		}
 

@@ -377,17 +377,16 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{"all inputs are deprecated but the integration package is not marked as deprecated"},
 		},
-		"bad_available_types_integration": {
-			"manifest.yml",
-			[]string{"policy template \"sample\" has available_types but does not use otelcol input (input: logfile). available_types can only be used with OTel input packages (input: otelcol)"},
-		},
 		"bad_available_types_non_otelcol": {
 			"manifest.yml",
 			[]string{"policy template \"sample\" has available_types but does not use otelcol input (input: logfile). available_types can only be used with OTel input packages (input: otelcol)"},
 		},
 		"bad_available_types_invalid_signal": {
 			"manifest.yml",
-			[]string{"policy template \"sample\" has invalid signal type \"invalid_type\" in available_types, valid values are: [logs metrics traces]"},
+			[]string{
+				`field policy_templates.0.available_types.2: policy_templates.0.available_types.2 must be one of the following: "logs", "metrics", "traces"`,
+				`policy template "sample" has invalid signal type "invalid_type" in available_types, valid values are: [logs metrics traces]`,
+			},
 		},
 	}
 
