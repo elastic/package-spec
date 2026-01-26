@@ -6,7 +6,6 @@ package semantic
 
 import (
 	"io/fs"
-	"slices"
 
 	"gopkg.in/yaml.v3"
 
@@ -69,15 +68,6 @@ func ValidateAvailableTypes(fsys fspath.FS) specerrors.ValidationErrors {
 			errs = append(errs, specerrors.NewStructuredErrorf(
 				"file \"%s\" is invalid: policy template \"%s\" has available_types but does not use otelcol input (input: %s). available_types can only be used with OTel input packages (input: otelcol)",
 				fsys.Path(manifestPath), policyTemplate.Name, policyTemplate.Input))
-		}
-
-		// Validate that all values in available_types are valid signal types
-		for _, signalType := range policyTemplate.AvailableTypes {
-			if !slices.Contains(validSignalTypes, signalType) {
-				errs = append(errs, specerrors.NewStructuredErrorf(
-					"file \"%s\" is invalid: policy template \"%s\" has invalid signal type %q in available_types, valid values are: %v",
-					fsys.Path(manifestPath), policyTemplate.Name, signalType, validSignalTypes))
-			}
 		}
 	}
 

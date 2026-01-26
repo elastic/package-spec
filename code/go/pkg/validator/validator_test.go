@@ -385,7 +385,6 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				`field policy_templates.0.available_types.2: policy_templates.0.available_types.2 must be one of the following: "logs", "metrics", "traces"`,
-				`policy template "sample" has invalid signal type "invalid_type" in available_types, valid values are: [logs metrics traces]`,
 			},
 		},
 	}
