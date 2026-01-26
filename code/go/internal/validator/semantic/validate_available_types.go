@@ -27,7 +27,7 @@ type availableTypesPolicyTemplate struct {
 }
 
 type availableTypesPackageManifest struct {
-	Type            string                        `yaml:"type"`
+	Type            string                         `yaml:"type"`
 	PolicyTemplates []availableTypesPolicyTemplate `yaml:"policy_templates"`
 }
 
