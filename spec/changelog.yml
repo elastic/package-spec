@@ -27,6 +27,7 @@
     - description: Add support for deprecating packages or individual features (policy_templates, inputs, data_streams or variables).
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1053
+      # Related to https://github.com/elastic/kibana/pull/250081
     - description: Add support for `available_types` field in input packages to support OTel packages with multiple signal types.
       type: enhancement
       link: https://github.com/elastic/package-spec/issues/1023
