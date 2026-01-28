@@ -124,14 +124,11 @@ spec:
   - version
   - type
   - owner
-  - conditions
 
 # JSON patches for newer versions should be placed on top
 versions:
   - before: 3.6.0
     patch:
-      - op: remove
-        path: "/required/7" # removes requirement for conditions
       - op: remove
         path: "/properties/deprecated" # removes deprecated field for package
       - op: remove

@@ -321,7 +321,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_agent_version_v3": {
 			"manifest.yml",
 			[]string{
-				"field conditions.agent: version is required",
+				"invalid agent.version condition: improper constraint: version",
 			},
 		},
 		"bad_integration_stream_template_path": {
