@@ -647,6 +647,11 @@ spec:
         dynamic_namespace:
           description: When set to true, agents running this integration are granted data stream privileges for all namespaces of its type
           type: boolean
+    categories:
+      description: >
+        Categories that describe the type of data collected by this data stream.
+        Used for telemetry and categorization purposes.
+      $ref: "../../integration/manifest.spec.yml#/definitions/categories"
     deprecated:
       $ref: "../../integration/manifest.spec.yml#/definitions/deprecated"
   required:
