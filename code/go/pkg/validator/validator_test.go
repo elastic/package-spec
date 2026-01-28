@@ -35,6 +35,7 @@ func TestValidateFile(t *testing.T) {
 		"good_v3":                            {},
 		"good_input":                         {},
 		"good_input_otel":                    {},
+		"good_input_otel_multi":              {},
 		"good_content":                       {},
 		"good_lookup_index":                  {},
 		"good_alert_rule_templates":          {},
@@ -375,6 +376,16 @@ func TestValidateFile(t *testing.T) {
 		"bad_deprecated_integration_policy_input": {
 			"manifest.yml",
 			[]string{"all inputs are deprecated but the integration package is not marked as deprecated"},
+		},
+		"bad_available_types_non_otelcol": {
+			"manifest.yml",
+			[]string{"policy template \"sample\" has available_types but does not use otelcol input (input: logfile). available_types can only be used with OTel input packages (input: otelcol)"},
+		},
+		"bad_available_types_invalid_signal": {
+			"manifest.yml",
+			[]string{
+				`field policy_templates.0.available_types.2: policy_templates.0.available_types.2 must be one of the following: "logs", "metrics", "traces"`,
+			},
 		},
 	}
 

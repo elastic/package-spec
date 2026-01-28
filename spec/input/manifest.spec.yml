@@ -88,6 +88,22 @@ spec:
           template_path:
             description: "Path to Elasticsearch index template for stream."
             type: string
+          available_types:
+            description: >
+              List of signal types available for this policy template. Only applicable for OTel input packages (input: otelcol).
+              When specified, allows the policy template to collect multiple signal types from a single receiver.
+            type: array
+            items:
+              type: string
+              enum:
+                - logs
+                - metrics
+                - traces
+            minItems: 1
+            uniqueItems: true
+            examples:
+              - [logs, metrics]
+              - [logs, metrics, traces]
           deprecated:
             $ref: "../integration/manifest.spec.yml#/definitions/deprecated"
         required:
@@ -132,7 +148,9 @@ versions:
       - op: remove
         path: "/properties/deprecated" # removes deprecated field for package
       - op: remove
-        path: "/properties/policy_templates/items/properties/deprecated" # removes deprecated field for policy templates
+        path: "/properties/policy_templates/items/properties/deprecated" # removes deprecated field for policy
+      - op: remove
+        path: "/properties/policy_templates/items/properties/available_types"
   # Reserve otelcol input name before 3.5.0.
   - before: 3.5.0
     patch:

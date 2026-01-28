@@ -1,0 +1,30 @@
+format_version: 3.6.0
+name: bad_available_types_non_otelcol
+title: "Bad Available Types Non-OTel"
+version: 0.0.1
+source:
+  license: "Elastic-2.0"
+description: "Input package with available_types but non-otelcol input."
+type: input
+categories:
+  - monitoring
+conditions:
+  kibana:
+    version: "^9.2.0"
+  agent:
+    version: "^8.9.0"
+  elastic:
+    subscription: "basic"
+policy_templates:
+  - name: sample
+    type: logs
+    title: Sample Template
+    description: Sample template with available_types but non-otelcol input
+    input: logfile
+    available_types:
+      - logs
+      - metrics
+    template_path: input.yml.hbs
+owner:
+  github: elastic/ecosystem
+  type: elastic
