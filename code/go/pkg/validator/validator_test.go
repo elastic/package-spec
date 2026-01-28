@@ -33,6 +33,7 @@ func TestValidateFile(t *testing.T) {
 		"good":                               {},
 		"good_v2":                            {},
 		"good_v3":                            {},
+		"good_var_groups":                    {},
 		"good_input":                         {},
 		"good_input_otel":                    {},
 		"good_content":                       {},
@@ -281,6 +282,30 @@ func TestValidateFile(t *testing.T) {
 				`field streams.0.required_vars.empty_name.0: name is required`,
 				`required var "api_key" in optional group is defined as always required`,
 				`required var "password" in optional group is not defined`,
+			},
+		},
+		"bad_var_groups_missing_var": {
+			"manifest.yml",
+			[]string{
+				`var "non_existent_var" referenced in var_group "credential_type" option "direct_access_key" is not defined`,
+			},
+		},
+		"bad_var_groups_duplicate_name": {
+			"manifest.yml",
+			[]string{
+				`duplicate option name "direct_access_key" in var_group "credential_type"`,
+			},
+		},
+		"bad_var_groups_required_var_in_required_group": {
+			"manifest.yml",
+			[]string{
+				`var "access_key_id" in required var_group "credential_type" should not have required: true (requirement is inferred from var_group)`,
+			},
+		},
+		"bad_var_groups_required_var_in_optional_group": {
+			"manifest.yml",
+			[]string{
+				`var "access_key_id" in non-required var_group "credential_type" should not have required: true (var_group is optional)`,
 			},
 		},
 		"bad_input_deployment_modes": {
