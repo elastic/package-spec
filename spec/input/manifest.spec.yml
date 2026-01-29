@@ -88,6 +88,10 @@ spec:
           template_path:
             description: "Path to Elasticsearch index template for stream."
             type: string
+          dynamic_signal_types:
+            description: "When enabled, decides the transforms and index templates that need to be created depending on the pipelines specified in the configuration."
+            type: boolean
+            default: false
           deprecated:
             $ref: "../integration/manifest.spec.yml#/definitions/deprecated"
         required:
