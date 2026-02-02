@@ -86,7 +86,7 @@ policy_templates:
 		assert.Contains(t, errs[0].Error(), "got 'logfile'")
 	})
 
-	t.Run("valid_non_input_package_skipped", func(t *testing.T) {
+	t.Run("invalid_non_input_package_with_dynamic_signal_types", func(t *testing.T) {
 		d := t.TempDir()
 
 		err := os.WriteFile(d+"/manifest.yml", []byte(`
@@ -98,7 +98,23 @@ policy_templates:
 		require.NoError(t, err)
 
 		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
-		require.Empty(t, errs, "expected no validation errors for non-input packages")
+		require.NotEmpty(t, errs, "expected validation errors for non-input packages")
+		assert.Len(t, errs, 1)
+		assert.Contains(t, errs[0].Error(), "dynamic_signal_types is only allowed for input type packages")
+	})
+
+	t.Run("valid_non_input_package_without_dynamic_signal_types", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.WriteFile(d+"/manifest.yml", []byte(`
+type: integration
+policy_templates:
+  - name: apache
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		require.Empty(t, errs, "expected no validation errors for non-input packages without field")
 	})
 
 	t.Run("valid_non_otelcol_without_dynamic_signal_types", func(t *testing.T) {

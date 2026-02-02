@@ -20,7 +20,7 @@ const (
 type inputPolicyTemplateWithDynamic struct {
 	Name               string `yaml:"name"`
 	Input              string `yaml:"input"`
-	DynamicSignalTypes *bool  `yaml:"dynamic_signal_types"` // pointer to detect if set
+	DynamicSignalTypes bool   `yaml:"dynamic_signal_types"` // true or false
 }
 
 type inputPackageManifestDynamic struct {
@@ -46,14 +46,17 @@ func ValidateInputDynamicSignalTypes(fsys fspath.FS) specerrors.ValidationErrors
 			specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to parse manifest: %w", fsys.Path(manifestPath), err)}
 	}
 
-	// Only validate input type packages
-	if manifest.Type != inputPackageType {
-		return nil
-	}
-
 	for _, policyTemplate := range manifest.PolicyTemplates {
-		// Only check if dynamic_signal_types is explicitly set to true
-		if policyTemplate.DynamicSignalTypes != nil && *policyTemplate.DynamicSignalTypes {
+		// Check if dynamic_signal_types is explicitly set
+		if policyTemplate.DynamicSignalTypes {
+			// Must be input package type
+			if manifest.Type != inputPackageType {
+				errs = append(errs, specerrors.NewStructuredErrorf(
+					"file \"%s\" is invalid: policy template \"%s\": dynamic_signal_types is only allowed for input type packages",
+					fsys.Path(manifestPath), policyTemplate.Name))
+				continue
+			}
+			// Must be otelcol input
 			if policyTemplate.Input != otelcolInputType {
 				errs = append(errs, specerrors.NewStructuredErrorf(
 					"file \"%s\" is invalid: policy template \"%s\": dynamic_signal_types is only allowed when input is 'otelcol', got '%s'",
