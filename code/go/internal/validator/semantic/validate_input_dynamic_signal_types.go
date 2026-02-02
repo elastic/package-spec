@@ -5,7 +5,6 @@
 package semantic
 
 import (
-	"errors"
 	"io/fs"
 
 	"gopkg.in/yaml.v3"
@@ -18,11 +17,6 @@ const (
 	otelcolInputType string = "otelcol"
 )
 
-var (
-	errDynamicSignalTypesNotAllowedForPackageType = errors.New("dynamic_signal_types is only allowed for input type packages")
-	errDynamicSignalTypesRequiresOtelcol           = errors.New("dynamic_signal_types is only allowed when input is 'otelcol'")
-)
-
 type inputPolicyTemplateWithDynamic struct {
 	Name               string `yaml:"name"`
 	Input              string `yaml:"input"`
@@ -30,7 +24,7 @@ type inputPolicyTemplateWithDynamic struct {
 }
 
 type inputPackageManifestDynamic struct {
-	Type            string                            `yaml:"type"`
+	Type            string                           `yaml:"type"`
 	PolicyTemplates []inputPolicyTemplateWithDynamic `yaml:"policy_templates"`
 }
 
