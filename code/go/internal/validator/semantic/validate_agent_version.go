@@ -5,7 +5,6 @@
 package semantic
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/Masterminds/semver/v3"
@@ -34,7 +33,7 @@ func ValidateMinimumAgentVersion(fsys fspath.FS) specerrors.ValidationErrors {
 
 	if agentVersionCondition != "" {
 		if _, err := semver.NewConstraint(agentVersionCondition); err != nil {
-			return specerrors.ValidationErrors{specerrors.NewStructuredError(errors.Join(err, errInvalidAgentVersionCondition), specerrors.UnassignedCode)}
+			return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w: %w", fsys.Path(manifest.Name()), errInvalidAgentVersionCondition, err)}
 		}
 	}
 

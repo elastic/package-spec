@@ -55,12 +55,10 @@ spec:
         contentMediaType: "application/json"
         pattern: '^.+\.json$'
 versions:
-  - before: 3.6.0
+  - before: 3.5.0
     patch:
       - op: remove
         path: "/contents/5" # remove SLO template definitions
-  - before: 3.5.0
-    patch:
       - op: remove
         path: "/contents/4" # remove alerting rule template definitions
   - before: 3.4.0
