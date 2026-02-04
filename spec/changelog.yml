@@ -21,6 +21,11 @@
     - description: Add support for deprecating packages or individual features (policy_templates, inputs, data_streams or variables).
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1053
+    # Pending on https://github.com/elastic/kibana/pull/249449
+    # Pending on https://github.com/elastic/integrations/pull/16985
+    - description: Add var_groups schema to support conditional variable groups for Cloud Connector integration.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/1054
     # Pending on https://github.com/elastic/kibana/pull/251205
     - description: Allow to set time series index mode in input packages.
       type: enhancement

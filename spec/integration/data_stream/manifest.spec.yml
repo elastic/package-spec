@@ -601,6 +601,8 @@ spec:
             $ref: "#/definitions/required_vars"
           vars:
             $ref: "#/definitions/vars"
+          var_groups:
+            $ref: "../../integration/manifest.spec.yml#/definitions/var_groups"
           enabled:
             description: Is stream enabled?
             type: boolean
@@ -666,6 +668,8 @@ versions:
         path: "/properties/deprecated"
       - op: remove # remove deprecated field for vars
         path: /definitions/vars/items/properties/deprecated
+      - op: remove
+        path: "/properties/streams/items/properties/var_groups" # removes var_groups from streams
   - before: 3.5.0
     patch:
       # Require >=3.5.0 to use the duration variable type.
