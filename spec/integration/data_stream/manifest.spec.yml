@@ -649,8 +649,8 @@ spec:
           type: boolean
     categories:
       description: >
-        Categories that describe the type of data collected by this data stream.
-        Used for telemetry and categorization purposes.
+        Optional categories that describe the type of data collected by this data stream.
+        Used for telemetry and categorization purposes. Skip if integration-level categories are appropriate.
       $ref: "../../integration/manifest.spec.yml#/definitions/categories"
     deprecated:
       $ref: "../../integration/manifest.spec.yml#/definitions/deprecated"
