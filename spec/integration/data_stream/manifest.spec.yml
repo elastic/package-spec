@@ -238,6 +238,15 @@ spec:
         required:
           - name
           - type
+    elasticsearch_index_mode:
+      description: |-
+        Index mode to use. Index mode can be used to enable use case specific functionalities.
+        This setting must be installed in the composable index template, not in the package component templates.
+      type: string
+      enum:
+      - "time_series" # Enables time series data streams https://www.elastic.co/guide/en/elasticsearch/reference/master/tsds.html
+      examples:
+      - "time_series"
     elasticsearch_index_template:
       description: Index template definition
       type: object
@@ -607,14 +616,7 @@ spec:
       additionalProperties: false
       properties:
         index_mode:
-          description: |-
-            Index mode to use. Index mode can be used to enable use case specific functionalities.
-            This setting must be installed in the composable index template, not in the package component templates.
-          type: string
-          enum:
-          - "time_series" # Enables time series data streams https://www.elastic.co/guide/en/elasticsearch/reference/master/tsds.html
-          examples:
-          - "time_series"
+          $ref: "#/definitions/elasticsearch_index_mode"
         index_template:
           $ref: "#/definitions/elasticsearch_index_template"
         privileges:
