@@ -36,6 +36,9 @@
     - description: Add version patches to exclude `slo_template` assets for spec versions before 3.4.0.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1064
+    - description: Add categories to data_stream
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1065
 - version: 3.5.5
   changes:
     - description: Run validation semantic rules also in transform fields.
