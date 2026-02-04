@@ -112,6 +112,8 @@ spec:
       type: object
       additionalProperties: false
       properties:
+        index_mode:
+          $ref: "../integration/data_stream/manifest.spec.yml#/definitions/elasticsearch_index_mode"
         index_template:
           $ref: "../integration/data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template"
     deprecated:
@@ -124,14 +126,13 @@ spec:
   - version
   - type
   - owner
-  - conditions
 
 # JSON patches for newer versions should be placed on top
 versions:
   - before: 3.6.0
     patch:
       - op: remove
-        path: "/required/7" # removes requirement for conditions
+        path: "/properties/elasticsearch/properties/index_mode" # Fleet needs to check that it is not enabled in non-metrics data streams
       - op: remove
         path: "/properties/deprecated" # removes deprecated field for package
       - op: remove

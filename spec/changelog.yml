@@ -8,9 +8,6 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
-    - description: Require defining agent version constraints in input and integration packages.
-      type: breaking-change
-      link: https://github.com/elastic/package-spec/pull/999
     - description: Add pipeline tag validations.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/1010
@@ -18,9 +15,6 @@
     - description: Add support for ES|QL query assets in integration and content packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1028
-    - description: Add support for Kibana `slo_template` assets
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/1037
     - description: Add pipeline global on_failure validations.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/1038
@@ -32,11 +26,24 @@
     - description: Add var_groups schema to support conditional variable groups for Cloud Connector integration.
       type: enhancement
       link: https://github.com/elastic/package-spec/issues/1054
+    # Pending on https://github.com/elastic/kibana/pull/251205
+    - description: Allow to set time series index mode in input packages.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1066
 - version: 3.5.6-next
   changes:
     - description: Add validation for Kibana tag duplicates.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1042
+    - description: Add support for Kibana `slo_template` assets
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1037
+    - description: Add version patches to exclude `slo_template` assets for spec versions before 3.4.0.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1064
+    - description: Add categories to data_stream
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1065
 - version: 3.5.5
   changes:
     - description: Run validation semantic rules also in transform fields.

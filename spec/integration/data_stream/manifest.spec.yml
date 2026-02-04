@@ -238,6 +238,15 @@ spec:
         required:
           - name
           - type
+    elasticsearch_index_mode:
+      description: |-
+        Index mode to use. Index mode can be used to enable use case specific functionalities.
+        This setting must be installed in the composable index template, not in the package component templates.
+      type: string
+      enum:
+      - "time_series" # Enables time series data streams https://www.elastic.co/guide/en/elasticsearch/reference/master/tsds.html
+      examples:
+      - "time_series"
     elasticsearch_index_template:
       description: Index template definition
       type: object
@@ -609,14 +618,7 @@ spec:
       additionalProperties: false
       properties:
         index_mode:
-          description: |-
-            Index mode to use. Index mode can be used to enable use case specific functionalities.
-            This setting must be installed in the composable index template, not in the package component templates.
-          type: string
-          enum:
-          - "time_series" # Enables time series data streams https://www.elastic.co/guide/en/elasticsearch/reference/master/tsds.html
-          examples:
-          - "time_series"
+          $ref: "#/definitions/elasticsearch_index_mode"
         index_template:
           $ref: "#/definitions/elasticsearch_index_template"
         privileges:
@@ -649,6 +651,11 @@ spec:
         dynamic_namespace:
           description: When set to true, agents running this integration are granted data stream privileges for all namespaces of its type
           type: boolean
+    categories:
+      description: >
+        Optional categories that describe the type of data collected by this data stream.
+        Used for telemetry and categorization purposes. Skip if integration-level categories are appropriate.
+      $ref: "../../integration/manifest.spec.yml#/definitions/categories"
     deprecated:
       $ref: "../../integration/manifest.spec.yml#/definitions/deprecated"
   required:
