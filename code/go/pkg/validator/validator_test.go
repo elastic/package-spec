@@ -38,6 +38,7 @@ func TestValidateFile(t *testing.T) {
 		"good_input_otel":                    {},
 		"good_input_dynamic_signal_type":     {},
 		"good_content":                       {},
+		"good_composable":                    {},
 		"good_lookup_index":                  {},
 		"good_alert_rule_templates":          {},
 		"deploy_custom_agent":                {},
