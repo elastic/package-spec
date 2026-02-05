@@ -36,6 +36,7 @@ func TestValidateFile(t *testing.T) {
 		"good_var_groups":                    {},
 		"good_input":                         {},
 		"good_input_otel":                    {},
+		"good_input_dynamic_signal_type":     {},
 		"good_content":                       {},
 		"good_lookup_index":                  {},
 		"good_alert_rule_templates":          {},
@@ -334,6 +335,25 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				"field policy_templates.0.input: Must not be present",
+			},
+		},
+		"bad_input_dynamic_signal_types_non_otel": {
+			"manifest.yml",
+			[]string{
+				"policy template \"sample\": dynamic_signal_types is only allowed when input is 'otelcol', got 'logfile'",
+			},
+		},
+		"bad_integration_dynamic_signal_types": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0: Additional property dynamic_signal_types is not allowed",
+				"policy template \"sample\": dynamic_signal_types is only allowed for input type packages",
+			},
+		},
+		"bad_input_dynamic_signal_types_old_version": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0: Additional property dynamic_signal_types is not allowed",
 			},
 		},
 		"bad_input_template_path": {

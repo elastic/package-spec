@@ -88,6 +88,10 @@ spec:
           template_path:
             description: "Path to Elasticsearch index template for stream."
             type: string
+          dynamic_signal_types:
+            description: "When enabled, decides the transforms and index templates that need to be created depending on the pipelines specified in the configuration."
+            type: boolean
+            default: false
           deprecated:
             $ref: "../integration/manifest.spec.yml#/definitions/deprecated"
         required:
@@ -131,6 +135,8 @@ spec:
 versions:
   - before: 3.6.0
     patch:
+      - op: remove
+        path: "/properties/policy_templates/items/properties/dynamic_signal_types" # removes dynamic_signal_types field for policy templates
       - op: remove
         path: "/properties/elasticsearch/properties/index_mode" # Fleet needs to check that it is not enabled in non-metrics data streams
       - op: remove
