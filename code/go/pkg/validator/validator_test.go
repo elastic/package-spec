@@ -40,6 +40,7 @@ func TestValidateFile(t *testing.T) {
 		"good_content":                       {},
 		"good_lookup_index":                  {},
 		"good_alert_rule_templates":          {},
+		"good_requires":                      {},
 		"deploy_custom_agent":                {},
 		"deploy_custom_agent_multi_services": {},
 		"deploy_docker":                      {},
@@ -233,6 +234,19 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				`field policy_templates.0.deployment_modes.agentless.resources.requests: Additional property disk is not allowed`,
+			},
+		},
+		"bad_requires": {
+			"manifest.yml",
+			[]string{
+				`field requires.content.0.name: Does not match pattern '^[a-z0-9_]+$'`,
+				`field requires.input.0: version is required`,
+			},
+		},
+		"bad_requires_old_version": {
+			"manifest.yml",
+			[]string{
+				`field (root): Additional property requires is not allowed`,
 			},
 		},
 		"bad_input_dataset_vars": {
