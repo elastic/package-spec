@@ -114,7 +114,8 @@ of the changed specification must be determined as follows:
     lead to a change in the behaviour of the installed package.
 
 If the change is in a schema file, add a JSON patch in the `versions` section to
-continue supporting the previous format.
+continue supporting the previous format. See the [Version Patches section in CONTRIBUTING.md](./CONTRIBUTING.md#version-patches)
+for detailed guidelines and examples.
 
 If the change is in semantic rules, add a constraint in the rule, so they only
 apply on the indicated version range and package types.
@@ -123,6 +124,9 @@ Remember to add a changelog entry in `spec/changelog.yml` for any change in the
 spec. If no section exists for the version determined by the above rules, please
 add the new section. Multiple `next` versions may exist at the same moment if
 multiple versions are in development.
+
+For detailed instructions on testing your changes, adding test packages, and avoiding
+common pitfalls, please refer to the [Development section in CONTRIBUTING.md](./CONTRIBUTING.md#development).
 
 ## Version Compatibility between Packages and Specifications
 
