@@ -76,6 +76,34 @@ versions:
 
 ## Test Packages
 
+### Creating Test Packages
+
+⚠️ **IMPORTANT: Always use elastic-package when available!**
+
+The `elastic-package` tool should be your first choice for creating test packages. It ensures correct file structure and content.
+
+**Using elastic-package (REQUIRED METHOD)**: 
+
+```bash
+cd test/packages
+elastic-package create package
+```
+
+The tool will prompt interactively for package details:
+- Package type (input/integration/content)
+- Package name, title, description
+- License (Apache-2.0 for test packages)
+- Kibana version constraint (use ^8.0.0)
+- Subscription level (basic)
+- Owner (elastic/foobar for test packages)
+- Categories
+
+**After creation**:
+- Adjust `format_version` in manifest.yml if testing features requiring a specific spec version
+- Modify the manifest to include the specific field(s) you're testing
+
+**Manual creation (ONLY if elastic-package unavailable)**: Create the required files or copy them from existing packages in the "test/packages" directory. This method is error-prone and should be avoided.
+
 ### Required Files for Integration Packages
 
 Every test package must have:
@@ -138,10 +166,11 @@ tests := map[string]struct {
 ```
 
 **Pattern for adding tests**:
-1. Create test package directory structure
-2. Add entry to validator_test.go map
-3. For good packages: empty struct `{}`
-4. For bad packages: specify file and expected error messages
+1. **Create test package** using `elastic-package create package` (see "Creating Test Packages" section)
+2. Modify the generated manifest.yml to include/test the specific field(s)
+3. Add entry to validator_test.go map
+4. For good packages: empty struct `{}`
+5. For bad packages: specify file and expected error messages
 
 **Note**: Use tabs for indentation in Go files, not spaces!
 
@@ -175,11 +204,14 @@ go test -v -run "TestValidateFile/my_test" ./code/go/pkg/validator/...
 go test ./code/go/...
 ```
 
-### Add license headers to Go files
+### Format Go files
 
+Add license headers:
 ```bash
 make -C code/go update
 ```
+
+Format with `gofmt`.
 
 ## Changelog Management
 
@@ -322,9 +354,10 @@ ls -la test/packages/good/
            path: "/definitions/my_field_type"
    ```
 
-4. **Create test packages**:
+4. **Create test packages** using `elastic-package create package`:
    - `test/packages/good_my_field/` - Valid usage
    - `test/packages/bad_my_field/` - Invalid usage
+   - After creation, modify manifest.yml to include/test the new field
 
 5. **Add test cases** in `validator_test.go`
 
