@@ -54,6 +54,35 @@ spec:
 2. **Properties**: Top-level fields in the manifest, often referencing definitions via `$ref`
 3. **Patterns**: Use regex patterns for field validation (e.g., `'^[a-z0-9_]+$'`)
 4. **AdditionalProperties**: Set to `false` to disallow undeclared fields
+5. **DRY Principle**: Define reusable fields once in definitions and reference them with `$ref` across multiple locations
+6. **Cross-file References**: Use relative paths for references across spec files (e.g., `$ref: "../integration/manifest.spec.yml#/definitions/my_field"`)
+
+### Sharing Definitions Across Spec Files
+
+When a field is used in multiple locations, define it once and reference it:
+
+```yaml
+# In spec/integration/manifest.spec.yml
+definitions:
+  my_common_field:
+    description: A field used in multiple places
+    type: string
+
+# In spec/input/manifest.spec.yml
+properties:
+  field:
+    $ref: "../integration/manifest.spec.yml#/definitions/my_common_field"
+
+# In spec/integration/data_stream/manifest.spec.yml
+properties:
+  field:
+    $ref: "../../integration/manifest.spec.yml#/definitions/my_common_field"
+```
+
+**Benefits**:
+- Single source of truth for field definitions
+- Consistent descriptions and validation across all uses
+- Easier maintenance and updates
 
 ### Version Patches
 
@@ -69,10 +98,12 @@ versions:
         path: "/definitions/my_new_definition"
 ```
 
-**Important**: 
+**Important**:
 - Patches go at the TOP of the versions list (newer versions first)
-- Remove both the property AND its definition(s) if they are not used anywhere else
-- Order matters: remove properties before definitions they depend on
+- Remove both the property references AND shared definition(s) if they are not used elsewhere
+- When using shared definitions via `$ref`, remove the definition only after removing all references to it
+- Order matters: remove property references before the definitions they depend on
+- For shared definitions used across files, ensure the definition is removed in the file where it's defined
 
 ## Test Packages
 
@@ -82,7 +113,7 @@ versions:
 
 The `elastic-package` tool should be your first choice for creating test packages. It ensures correct file structure and content.
 
-**Using elastic-package (REQUIRED METHOD)**: 
+**Using elastic-package (REQUIRED METHOD)**:
 
 ```bash
 cd test/packages
@@ -113,6 +144,34 @@ test/packages/my_package/
 ├── changelog.yml         # Version changelog
 └── docs/
     └── README.md         # Documentation
+```
+
+**For integration packages with data streams**, also ensure:
+- Valid ingest pipelines with proper error handling (on_failure handler)
+- Pipeline processors must have tags (SVR00006)
+- on_failure must set `event.kind` to `pipeline_error` (SVR00008)
+- on_failure error.message must include `_ingest.on_failure_processor_type`, `_ingest.on_failure_processor_tag`, and `_ingest.pipeline` (SVR00009)
+
+Example minimal pipeline:
+```yaml
+---
+description: Pipeline description
+processors:
+  - set:
+      tag: set_field_name
+      field: my.field
+      value: test
+on_failure:
+  - set:
+      field: event.kind
+      value: pipeline_error
+  - set:
+      field: error.message
+      value: >-
+        Processor '{{{ _ingest.on_failure_processor_type }}}'
+        with tag '{{{ _ingest.on_failure_processor_tag }}}'
+        in pipeline '{{{ _ingest.pipeline }}}'
+        failed with message '{{{ _ingest.on_failure_message }}}'
 ```
 
 ### Manifest Requirements for Spec 3.6.0+
@@ -274,11 +333,15 @@ properties:
 ## Common Pitfalls
 
 1. **Forgetting version patches**: New features must be removed for older versions
-2. **Missing test package files**: changelog.yml and docs/README.md are required
-3. **Wrong conditions format**: Use nested structure for spec 3.0+ (`conditions.kibana.version` not `conditions.kibana:version`)
-4. **Test version mismatch**: Use 0.0.1 for test packages to avoid GA version warnings
-5. **Order of patches**: Remove properties before their definitions in version patches
-6. **Changelog placement**: Add entries at the BOTTOM of the current version section
+2. **Not using shared definitions**: Define common fields once and reference with `$ref` instead of duplicating
+3. **Wrong patch order for shared definitions**: Remove all property references before removing the shared definition
+4. **Missing test package files**: changelog.yml and docs/README.md are required
+5. **Invalid pipelines**: Integration packages with data streams need proper ingest pipelines with on_failure handlers
+6. **Missing pipeline tags**: All processors in pipelines must have a `tag` field
+7. **Wrong conditions format**: Use nested structure for spec 3.0+ (`conditions.kibana.version` not `conditions.kibana:version`)
+8. **Test version mismatch**: Use 0.0.1 for test packages to avoid GA version warnings
+9. **Changelog placement**: Add entries at the BOTTOM of the current version section
+10. **Creating test packages manually**: Always use `elastic-package create package` when available
 
 ## Git Workflow
 
@@ -328,44 +391,62 @@ ls -la test/packages/good/
 
 ## Example: Adding a New Field
 
-1. **Add definition** in spec files under "spec" directory:
+1. **Decide where to define it**:
+   - If used in only one location: define it inline where it's used
+   - If used in multiple locations: define once in `spec/integration/manifest.spec.yml#/definitions` and reference with `$ref`
+
+2. **Add definition** (for shared fields):
    ```yaml
+   # In spec/integration/manifest.spec.yml
    definitions:
      my_field_type:
+       description: Description of the field
        type: object
        properties: ...
    ```
 
-2. **Add property** referencing the definition:
+3. **Add property** referencing the definition:
    ```yaml
+   # In the same file
    properties:
      my_field:
        $ref: "#/definitions/my_field_type"
+
+   # In a different file (adjust path as needed)
+   properties:
+     my_field:
+       $ref: "../integration/manifest.spec.yml#/definitions/my_field_type"
    ```
 
-3. **Add version patch** (if feature is version-gated):
+4. **Add version patch** (if feature is version-gated):
    ```yaml
    versions:
      - before: 3.X.0
        patch:
+         # Remove all property references first
          - op: remove
            path: "/properties/my_field"
+         - op: remove
+           path: "/other/location/properties/my_field"
+         # Then remove the shared definition (only if not used elsewhere)
          - op: remove
            path: "/definitions/my_field_type"
    ```
 
-4. **Create test packages** using `elastic-package create package`:
+5. **Update validation code if needed**: Check if there's custom validation logic in `code/go/internal/validator/semantic/` that needs updating
+
+6. **Create test packages** using `elastic-package create package`:
    - `test/packages/good_my_field/` - Valid usage
    - `test/packages/bad_my_field/` - Invalid usage
    - After creation, modify manifest.yml to include/test the new field
 
-5. **Add test cases** in `validator_test.go`
+7. **Add test cases** in `validator_test.go`
 
-6. **Update changelog** in `spec/changelog.yml`
+8. **Update changelog** in `spec/changelog.yml`
 
-7. **Validate spec files**: `go test ./code/go/internal`
+9. **Validate spec files**: `go test ./code/go/internal`
 
-8. **Run package tests**: `go test ./code/go/pkg/validator/...`
+10. **Run package tests**: `go test ./code/go/pkg/validator/...`
 
 ## Notes
 
@@ -373,4 +454,7 @@ ls -la test/packages/good/
 - All integration tests must pass before changes are accepted
 - The project uses Go modules for dependency management
 - Test packages should follow the same structure as real packages
-- Use `-count=1` flag instead of `go clean -testcache` to bypass test cache.
+- Use `-count=1` flag instead of `go clean -testcache` to bypass test cache
+- When adding fields used in multiple places, use shared definitions via `$ref` to avoid duplication
+- Integration packages require valid ingest pipelines with proper error handling
+- Custom validation logic may exist in Go code (`code/go/internal/validator/semantic/`) beyond JSON schema validation
