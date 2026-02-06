@@ -524,6 +524,43 @@ spec:
       required:
         - since
         - description
+    package_dependency:
+      description: A package dependency with name and version.
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          description: Name of the required package.
+          type: string
+          pattern: '^[a-z0-9_]+$'
+          examples:
+            - sql_input
+            - elastic_agent
+        version:
+          description: Version constraint for the required package.
+          type: string
+          examples:
+            - "^1.0.0"
+            - ">=2.0.0"
+            - "~1.2.3"
+      required:
+        - name
+        - version
+    requires:
+      description: Dependencies that this package requires to function properly.
+      type: object
+      additionalProperties: false
+      properties:
+        input:
+          description: List of required input packages.
+          type: array
+          items:
+            $ref: "#/definitions/package_dependency"
+        content:
+          description: List of required content packages.
+          type: array
+          items:
+            $ref: "#/definitions/package_dependency"
     var_groups:
       description: >
         Defines mutually exclusive groups of variables. When an option is selected,
@@ -813,6 +850,8 @@ spec:
               type: array
               items:
                 type: string
+    requires:
+      $ref: "#/definitions/requires"
     deprecated:
       $ref: "#/definitions/deprecated"
   required:
@@ -847,6 +886,12 @@ spec:
 versions:
   - before: 3.6.0
     patch:
+      - op: remove # removes requires property
+        path: "/properties/requires"
+      - op: remove # removes requires definition
+        path: "/definitions/requires"
+      - op: remove # removes package_dependency definition
+        path: "/definitions/package_dependency"
       - op: remove # removes package deprecation info
         path: "/properties/deprecated"
       - op: remove # removes policy template input deprecation info

@@ -33,6 +33,9 @@
     - description: Add support for dynamic_signal_types field in input package policy templates for OTel input type.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1067
+    - description: Add support for package dependencies in integration packages via requires field with input and content package types.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/TBD
 - version: 3.5.6
   changes:
     - description: Add validation for Kibana tag duplicates.
