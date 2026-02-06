@@ -264,6 +264,20 @@ git log --oneline -5         # Recent commits
 - `code/go/pkg/validator/validator_test.go` - Test case definitions
 - `test/packages/` - Test package examples
 
+## Real Package Examples
+
+For real-world examples of integration packages, see the [elastic/integrations](https://github.com/elastic/integrations) repository. This repository contains hundreds of production integration packages that demonstrate:
+- Complex manifest structures
+- Real-world data stream configurations
+- Production-ready ingest pipelines
+- Dashboards and visualizations
+- Complete package documentation
+
+When implementing new spec features, it's helpful to:
+1. Look at similar features in existing packages
+2. Test your spec changes against real packages
+3. Study package patterns used across different integrations
+
 ## Useful Commands
 
 ```bash
