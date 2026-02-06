@@ -37,6 +37,9 @@ func TestValidateFile(t *testing.T) {
 		"good_input":                         {},
 		"good_input_otel":                    {},
 		"good_input_dynamic_signal_type":     {},
+		"good_input_template_paths":          {},
+		"good_integration_input_template_paths": {},
+		"good_integration_stream_template_paths": {},
 		"good_content":                       {},
 		"good_lookup_index":                  {},
 		"good_alert_rule_templates":          {},
@@ -361,6 +364,13 @@ func TestValidateFile(t *testing.T) {
 			[]string{
 				"field policy_templates.0: template_path is required",
 				"policy template \"sql_query\" references template_path \"\": template_path is required for input type packages",
+			},
+		},
+		"bad_input_both_template_path": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0: Must not be present",
+				"policy template \"sample\" references template_path \"input.yml.hbs\": template file not found",
 			},
 		},
 		"bad_agent_version_v3": {

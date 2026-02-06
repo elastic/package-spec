@@ -595,8 +595,9 @@ spec:
             - Collect Metrics from Linux servers with Elastic Agent.
             - Collect Logs from Apache Web Server using Elastic Agent.
           template_path:
-            description: "Path to Elasticsearch index template for stream."
-            type: string
+            $ref: "../../integration/manifest.spec.yml#/definitions/template_path"
+          template_paths:
+            $ref: "../../integration/manifest.spec.yml#/definitions/template_paths"
           required_vars:
             $ref: "#/definitions/required_vars"
           vars:
@@ -664,6 +665,8 @@ spec:
 versions:
   - before: 3.6.0
     patch:
+      - op: remove # removes template_paths field for streams
+        path: "/properties/streams/items/properties/template_paths"
       - op: remove # removes deprecated field for data stream
         path: "/properties/deprecated"
       - op: remove # remove deprecated field for vars
