@@ -2,31 +2,31 @@
 
 ## Change Proposals
 
-Any changes to Elastic Stack products or Elastic Packages that require changes to the Elastic Package Specification 
+Any changes to Elastic Stack products or Elastic Packages that require changes to the Elastic Package Specification
 must be discussed first and then safely implemented across impacted products. At a high level, this process looks
 something like this:
 
-1. Propose your change via a [new Change Proposal issue](https://github.com/elastic/package-spec/issues/new/choose) 
-   in the `package-spec` repository (i.e. this repository). This gives us an opportunity to understand which parts of the 
-   Elastic Stack might be impacted by this change and pull in relevant experts to get their opinions. The initial proposal 
+1. Propose your change via a [new Change Proposal issue](https://github.com/elastic/package-spec/issues/new/choose)
+   in the `package-spec` repository (i.e. this repository). This gives us an opportunity to understand which parts of the
+   Elastic Stack might be impacted by this change and pull in relevant experts to get their opinions. The initial proposal
    should cover these areas:
    - What problem the proposal is solving. This provides context and could help shape the solution.
-   - Where the solution will need to be implemented, i.e. which parts, if any, of the Elastic Stack will be impacted. It's 
+   - Where the solution will need to be implemented, i.e. which parts, if any, of the Elastic Stack will be impacted. It's
      okay if the initial proposal doesn't get this 100% right; the discussion in the proposal issue should provide clarity.
      Feel free to tag relevant experts to get their opinions.
 
 2. Discussion ensues and eventually we hope to reach some consensus.
 
-3. Once there's consensus on the proposal issue, modify the issue description to include an **ordered** checklist of 
-   tasks that need to be resolved to make the change happen in a safe way.  For example, maybe Kibana needs to implement 
+3. Once there's consensus on the proposal issue, modify the issue description to include an **ordered** checklist of
+   tasks that need to be resolved to make the change happen in a safe way.  For example, maybe Kibana needs to implement
    support for a new property in the Package Specification first, then only when that support is implemented, the Package
-   Specification can itself be modified, which would then allow packages to define this property and have these packages 
+   Specification can itself be modified, which would then allow packages to define this property and have these packages
    still be valid. At this point the proposal issue serves as a meta issue for the safe implementation of the change.
 
-4. File issues in each of the repositories corresponding to the checklist items and update the checklist with links to 
+4. File issues in each of the repositories corresponding to the checklist items and update the checklist with links to
    these issues.
 
-5. No single PR may close the proposal issue. But as these PRs get resolved, the corresponding checklist item should be 
+5. No single PR may close the proposal issue. But as these PRs get resolved, the corresponding checklist item should be
    checked off. The proposal issue is closed when all items are checked off.
 
 ## Category Proposals
@@ -83,7 +83,7 @@ Currently, the following custom formats are available:
 ## Development
 
 Download the latest main of `package-spec` repository:
-```bash 
+```bash
 git clone https://github.com/elastic/package-spec.git
 cd package-spec
 make test
@@ -92,14 +92,95 @@ make test
 While developing on a new branch, there are some [Makefile targets](./Makefile) available
 that will help you in this development phase:
 - `make update`: add required license header in all the needed files.
-- `make test`: run all the tests 
+- `make test`: run all the tests
 - `make check`: run lint and ensures that license headers are in-place.
 
-Remember to add unit tests or a test package under `test/packages/` folder where
-your changes can be checked.
+### Testing Your Changes
 
-Once your changes are ready to review, [submit a Pull Request](https://help.github.com/articles/creating-a-pull-request).
+When modifying spec files or the changelog, always validate the syntax with:
 
+```bash
+go test ./code/go/internal
+```
+
+This command validates:
+- Spec file syntax (manifest.spec.yml, etc.)
+- Changelog format and structure
+- Schema definitions and references
+- JSON patches for version compatibility
+
+This is **different** from package validation tests. The internal tests validate the specification
+itself, while package tests validate that packages conform to the specification.
+
+To run package validation tests:
+
+```bash
+# Test specific package validation
+go test -v -run "TestValidateFile/my_test" ./code/go/pkg/validator/...
+
+# Run all tests (includes both spec and package validation)
+go test ./code/go/...
+```
+
+### Adding Test Packages
+
+When adding new features to the specification, you should create test packages under the
+`test/packages/` folder to validate the new behavior. Each test package must have at least:
+
+```
+test/packages/my_package/
+├── manifest.yml          # Package manifest
+├── changelog.yml         # Version changelog
+└── docs/
+    └── README.md         # Documentation
+```
+
+After creating test packages, add corresponding test cases in `code/go/pkg/validator/validator_test.go`:
+
+#### Manifest Requirements
+
+For packages using spec version 3.6.0+, the manifest should follow this structure:
+
+```yaml
+format_version: 3.6.0      # Use the spec version you're targeting
+name: my_package            # Package name (lowercase letters, numbers, underscores)
+title: My Package           # Display title
+description: Description    # Full description
+version: 0.0.1              # Use 0.0.1 for test packages to avoid version warnings
+type: integration           # Package type (integration, input, or content)
+source:
+  license: "Apache-2.0"     # License identifier
+conditions:
+  kibana:                   # Note: nested structure for spec 3.0+
+    version: '^8.0.0'
+owner:
+  github: elastic/foobar    # GitHub owner
+  type: community           # Owner type: elastic, partner, or community
+```
+
+### Version Patches
+
+When adding new features to the specification, you must ensure backward compatibility by adding
+version patches. Version patches remove new features from older spec versions, allowing packages
+with older `format_version` values to continue validating correctly.
+
+Version patches are defined at the bottom of spec files (e.g., `spec/integration/manifest.spec.yml`):
+
+```yaml
+versions:
+  - before: 3.6.0
+    patch:
+      - op: remove
+        path: "/properties/my_new_field"
+      - op: remove
+        path: "/definitions/my_new_definition"
+```
+
+Guidelines:
+- Add patches at the top of the versions list (newer versions first).
+- Remove both the property and its definition(s) if they are not used elsewhere.
+- Order matters: remove properties before the definitions they reference.
+- Only remove definitions that are not used by other features.
 
 ### Testing with integrations repository
 
