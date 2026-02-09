@@ -119,7 +119,7 @@ To run package validation tests:
 go test -v -run "TestValidateFile/my_test" ./code/go/pkg/validator/...
 
 # Run all tests (includes both spec and package validation)
-go test ./code/go/...
+make test
 ```
 
 ### Adding Test Packages
@@ -135,7 +135,8 @@ test/packages/my_package/
     └── README.md         # Documentation
 ```
 
-#### Using elastic-package Tool (Recommended)
+After creating test packages, remember to add corresponding test cases in
+`code/go/pkg/validator/validator_test.go`.
 
 If the `elastic-package` tool is available, you can use it to scaffold test packages interactively:
 
@@ -146,14 +147,6 @@ elastic-package create package
 
 The tool will prompt for package details. After creation, you may need to adjust the `format_version`
 or any other content that you need for your test case.
-
-#### Manual Creation
-
-Alternatively, you can manually create the directory structure and files following the structure
-of existing test packages.
-
-After creating test packages (by either method), remember to add corresponding test cases in
-`code/go/pkg/validator/validator_test.go`.
 
 #### Manifest Requirements
 

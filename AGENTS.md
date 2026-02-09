@@ -166,7 +166,7 @@ go test ./code/go/...
 make -C code/go update
 
 # Format Go files
-gofmt -w code/go/
+make -C code/go format
 ```
 
 ## Changelog Management
