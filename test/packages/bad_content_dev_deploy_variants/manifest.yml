@@ -1,0 +1,36 @@
+format_version: 3.6.0
+name: bad_content_dev_deploy_variants
+title: Bad content package _dev deploy variants
+description: >
+  Content package with invalid _dev/deploy/variants.yml to ensure _dev is validated for content packages.
+
+version: 1.0.0
+type: content
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.16.0'
+  elastic:
+    subscription: 'basic'
+    capabilities:
+      - security
+discovery:
+  fields:
+    - name: process.pid
+  datasets:
+    - name: good_content.logs
+    - name: good_content.metrics
+screenshots:
+  - src: /img/kibana-system.png
+    title: kibana system
+    size: 1220x852
+    type: image/png
+icons:
+  - src: /img/system.svg
+    title: system
+    size: 1000x1000
+    type: image/svg+xml
+owner:
+  github: elastic/ecosystem
+  type: elastic

@@ -38,6 +38,7 @@ func TestValidateFile(t *testing.T) {
 		"good_input_otel":                    {},
 		"good_input_dynamic_signal_type":     {},
 		"good_content":                       {},
+		"good_content_with_dev":              {},
 		"good_lookup_index":                  {},
 		"good_alert_rule_templates":          {},
 		"deploy_custom_agent":                {},
@@ -66,6 +67,13 @@ func TestValidateFile(t *testing.T) {
 			},
 		},
 		"bad_deploy_variants": {
+			"_dev/deploy/variants.yml",
+			[]string{
+				"field (root): default is required",
+				"field variants: Invalid type. Expected: object, given: array",
+			},
+		},
+		"bad_content_dev_deploy_variants": {
 			"_dev/deploy/variants.yml",
 			[]string{
 				"field (root): default is required",

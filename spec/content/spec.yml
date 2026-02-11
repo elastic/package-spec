@@ -51,6 +51,12 @@ spec:
       name: "validation.yml"
       required: false
       $ref: "../integration/validation.spec.yml"
+    - description: Folder containing development resources
+      type: folder
+      name: _dev
+      required: false
+      visibility: private
+      $ref: "../integration/_dev/spec.yml"
     - description: Folder containing Elasticsearch assets provided by the package
       type: folder
       name: elasticsearch
@@ -61,7 +67,7 @@ versions:
   - before: 3.6.0
     patch:
       - op: remove
-        path: "/contents/7" # remove elasticsearch spec
+        path: "/contents/8" # remove elasticsearch spec
   - before: 3.3.1
     patch:
       - op: add

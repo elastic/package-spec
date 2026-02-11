@@ -11,3 +11,8 @@ spec:
       name: docs
       required: false
       $ref: "./docs/spec.yml"
+    - description: Folder containing Kibana dashboards as YML files
+      type: folder
+      name: kibana
+      required: false
+      $ref: "./kibana/spec.yml"

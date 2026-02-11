@@ -1,0 +1,36 @@
+format_version: 3.6.0
+name: good_content_with_dev
+title: Good content package with _dev
+description: >
+  Content package that includes a _dev directory for developer resources (e.g. experimental dashboards as YAML). Used to validate that content-only packages allow _dev.
+
+version: 1.0.0
+type: content
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.16.0'
+  elastic:
+    subscription: 'basic'
+    capabilities:
+      - security
+discovery:
+  fields:
+    - name: process.pid
+  datasets:
+    - name: good_content.logs
+    - name: good_content.metrics
+screenshots:
+  - src: /img/kibana-system.png
+    title: kibana system
+    size: 1220x852
+    type: image/png
+icons:
+  - src: /img/system.svg
+    title: system
+    size: 1000x1000
+    type: image/svg+xml
+owner:
+  github: elastic/ecosystem
+  type: elastic
