@@ -503,6 +503,11 @@ func TestValidateItemNotAllowed(t *testing.T) {
 				"alerting_rule_template",
 			},
 		},
+		"bad_content_dev_deploy_variants": {
+			"_dev": []string{
+				"deploy",
+			},
+		},
 	}
 
 	for pkgName, invalidItemsPerFolder := range tests {
