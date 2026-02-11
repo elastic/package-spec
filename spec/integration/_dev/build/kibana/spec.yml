@@ -1,8 +1,0 @@
-spec:
-  additionalContents: false
-  contents:
-    - description: YML file containing Kibana dashboard definition
-      type: file
-      contentMediaType: "application/x-yaml"
-      pattern: '^.+\.yml$'
-      required: false
