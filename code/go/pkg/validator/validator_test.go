@@ -74,11 +74,8 @@ func TestValidateFile(t *testing.T) {
 			},
 		},
 		"bad_content_dev_deploy_variants": {
-			"_dev/deploy/variants.yml",
-			[]string{
-				"field (root): default is required",
-				"field variants: Invalid type. Expected: object, given: array",
-			},
+			"_dev",
+			nil,
 		},
 		"missing_pipeline_dashes": {
 			"data_stream/foo/elasticsearch/ingest_pipeline/default.yml",
@@ -446,6 +443,20 @@ func TestValidateFile(t *testing.T) {
 					assert.Empty(t, result.UnusedProcessors, "There are unused exclusion checks in the validation.yml file")
 					errs = result.Processed
 				}
+			}
+
+			if pkgName == "bad_content_dev_deploy_variants" {
+				require.Error(t, errs)
+				vErrs, ok := errs.(specerrors.ValidationErrors)
+				require.True(t, ok)
+				var errMessages []string
+				for _, vErr := range vErrs {
+					errMessages = append(errMessages, vErr.Error())
+				}
+				devPath := filepath.Join(pkgRootPath, "_dev")
+				expectedMsg := "item [deploy] is not allowed in folder [" + devPath + "]"
+				require.Contains(t, errMessages, expectedMsg)
+				return
 			}
 
 			if test.expectedErrContains == nil {

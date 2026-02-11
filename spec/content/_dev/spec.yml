@@ -1,0 +1,9 @@
+spec:
+  additionalContents: false
+  developmentFolder: true
+  contents:
+    - description: Folder containing shared files.
+      type: folder
+      name: shared
+      required: false
+      $ref: "../../integration/_dev/shared/spec.yml"
