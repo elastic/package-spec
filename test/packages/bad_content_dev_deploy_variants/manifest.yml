@@ -4,7 +4,7 @@ title: Bad content package _dev deploy variants
 description: >
   Content package with invalid _dev/deploy/variants.yml to ensure _dev is validated for content packages.
 
-version: 1.0.0
+version: 0.1.0
 type: content
 source:
   license: "Apache-2.0"
