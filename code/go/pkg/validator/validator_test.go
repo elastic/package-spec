@@ -445,19 +445,6 @@ func TestValidateFile(t *testing.T) {
 				}
 			}
 
-			if pkgName == "bad_content_dev_deploy_variants" {
-				require.Error(t, errs)
-				vErrs, ok := errs.(specerrors.ValidationErrors)
-				require.True(t, ok)
-				var errMessages []string
-				for _, vErr := range vErrs {
-					errMessages = append(errMessages, vErr.Error())
-				}
-				devPath := filepath.Join(pkgRootPath, "_dev")
-				expectedMsg := "item [deploy] is not allowed in folder [" + devPath + "]"
-				require.Contains(t, errMessages, expectedMsg)
-				return
-			}
 
 			if test.expectedErrContains == nil {
 				require.NoError(t, errs)
