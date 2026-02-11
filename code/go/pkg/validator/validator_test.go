@@ -441,7 +441,6 @@ func TestValidateFile(t *testing.T) {
 				}
 			}
 
-
 			if test.expectedErrContains == nil {
 				require.NoError(t, errs)
 			} else {
