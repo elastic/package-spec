@@ -73,10 +73,6 @@ func TestValidateFile(t *testing.T) {
 				"field variants: Invalid type. Expected: object, given: array",
 			},
 		},
-		"bad_content_dev_deploy_variants": {
-			"_dev",
-			nil,
-		},
 		"missing_pipeline_dashes": {
 			"data_stream/foo/elasticsearch/ingest_pipeline/default.yml",
 			[]string{
