@@ -99,8 +99,8 @@ github.com/elastic/elastic-transport-go/v8 v8.8.0 h1:7k1Ua+qluFr6p1jfJjGDl97ssJS
 github.com/elastic/elastic-transport-go/v8 v8.8.0/go.mod h1:YLHer5cj0csTzNFXoNQ8qhtGY1GTvSqPnKWKaqQE3Hk=
 github.com/elastic/go-elasticsearch/v7 v7.17.10 h1:TCQ8i4PmIJuBunvBS6bwT2ybzVFxxUhhltAs3Gyu1yo=
 github.com/elastic/go-elasticsearch/v7 v7.17.10/go.mod h1:OJ4wdbtDNk5g503kvlHLyErCgQwwzmDtaFC4XyOxXA4=
-github.com/elastic/go-elasticsearch/v9 v9.3.0 h1:otUn+XTYKDKNB6pa/e1kjZ7hJgQemjsUHIkkurrGXRQ=
-github.com/elastic/go-elasticsearch/v9 v9.3.0/go.mod h1:B5u4H2jo2/v0+PrgbmIUdEyHdenFyavWtjciAFl7TA0=
+github.com/elastic/go-elasticsearch/v9 v9.3.1 h1:v5A9uFw0nLFA0luD3xAqliBXbscfuhch409HIinfhKY=
+github.com/elastic/go-elasticsearch/v9 v9.3.1/go.mod h1:B5u4H2jo2/v0+PrgbmIUdEyHdenFyavWtjciAFl7TA0=
 github.com/elastic/go-licenser v0.4.2 h1:bPbGm8bUd8rxzSswFOqvQh1dAkKGkgAmrPxbUi+Y9+A=
 github.com/elastic/go-licenser v0.4.2/go.mod h1:W8eH6FaZDR8fQGm+7FnVa7MxI1b/6dAqxz+zPB8nm5c=
 github.com/elastic/go-resource v0.2.0 h1:T92tw+THqISnCKaZBijlZMpEpCYkFkwsOgLQxKX6pqA=
