@@ -1,11 +1,6 @@
-{{- generatedHeader }}
-{{/*
-This template can be used as a starting point for writing documentation for your new integration. For each section, fill in the details
-described in the comments.
+# Good Integration Template Paths Integration for Elastic
 
-Find more detailed documentation guidelines in https://www.elastic.co/docs/extend/integrations/documentation-guidelines
-*/}}
-# Good Integration Stream Template Paths Integration for Elastic
+Test package for integration with multiple template paths in both inputs and streams.
 
 ## Overview
 {{/* Complete this section with a short summary of what data this integration collects and what use cases it enables */}}

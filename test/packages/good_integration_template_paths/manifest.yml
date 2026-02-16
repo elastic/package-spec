@@ -1,10 +1,10 @@
 format_version: 3.6.0
-name: good_integration_stream_template_paths
-title: "Good Integration Stream Template Paths"
+name: good_integration_template_paths
+title: "Good Integration Template Paths"
 version: 0.0.1
 source:
   license: "Apache-2.0"
-description: "Test package for integration stream with multiple template paths."
+description: "Test package for integration with multiple template paths (inputs and streams)."
 type: integration
 categories:
   - custom
@@ -29,8 +29,11 @@ policy_templates:
     description: Collect sample logs
     inputs:
       - type: logfile
-        title: Collect sample logs from instances
-        description: Collecting sample logs
+        title: Collect logs from files
+        description: Collecting logs from files with multiple templates
+        template_paths:
+          - template.yml.hbs
+          - example.yml.hbs
 owner:
   github: elastic/foobar
   type: community
