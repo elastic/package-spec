@@ -7,3 +7,8 @@ spec:
   properties:
     skip:
       $ref: "./../config.spec.yml#/definitions/skip"
+    requires:
+      description: Package dependencies required for this test with exact versions.
+      type: array
+      items:
+        $ref: "./../config.spec.yml#/definitions/package_requirement"

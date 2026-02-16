@@ -20,6 +20,22 @@ spec:
           type: string
           example: https://github.com/elastic/integrations/issues/520
       required: [ "reason", "link" ]
+    package_requirement:
+      description: A package requirement with an exact version.
+      type: object
+      additionalProperties: false
+      properties:
+        package:
+          description: Name of the required package.
+          type: string
+          pattern: '^[a-z0-9_]+$'
+        version:
+          description: Exact version of the package required.
+          type: string
+          pattern: '^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$'
+      required:
+        - package
+        - version
     vars:
       description: Variables defined for the test case.
       type:

@@ -80,6 +80,7 @@ versions:
 ```
 
 **Important**: Remove property references before the definitions they depend on.
+**Important**: This is not needed for development files (files under `_dev` directories)
 
 ## Test Packages
 
@@ -207,9 +208,12 @@ func validateMyRule(manifest pkgpath.File) specerrors.ValidationErrors {
 
 ### Testing Semantic Validators
 
-**Prefer using unit tests with t.TempDir() instead of testdata packages.**
+**Use unit tests with t.TempDir() for simple validation rules. For complex scenarios involving multiple files and directories, use test packages in test/packages/ tested via validator_test.go.**
 
-Example:
+#### Simple Unit Test Pattern
+
+For validators that check a single file or simple structure:
+
 ```go
 func TestValidateMyRule(t *testing.T) {
 	tests := map[string]struct {
@@ -251,6 +255,30 @@ invalid_field: value`,
 	}
 }
 ```
+
+#### Complex Test Package Pattern
+
+For validators that need complete package structures (multiple data streams, pipelines, kibana objects, etc.):
+
+1. Create test package in `test/packages/` using `elastic-package create package`
+2. Add test case to `code/go/pkg/validator/validator_test.go`:
+
+```go
+tests := map[string]struct {
+	invalidPkgFilePath  string
+	expectedErrContains []string
+}{
+	"good_my_feature": {},  // Valid package
+	"bad_my_feature": {
+		"manifest.yml",
+		[]string{`validation error message`},
+	},
+}
+```
+
+**When to use each approach:**
+- **Unit tests (t.TempDir)**: Single file validation, simple manifest checks, basic field validation
+- **Test packages**: Full package validation, multiple data streams, cross-file dependencies, complex pipeline/kibana object scenarios
 
 ### Registering Validators
 
