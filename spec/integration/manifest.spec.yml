@@ -524,6 +524,16 @@ spec:
       required:
         - since
         - description
+    package_reference:
+      description: >
+        Reference to an input package. When specified, configuration is inherited
+        from the referenced package. The package must be listed in the manifest's
+        requires section.
+      type: string
+      pattern: '^[a-z0-9_]+$'
+      examples:
+        - filelog_otel
+        - sql_input
     package_dependency:
       description: A package dependency with name and version.
       type: object
@@ -746,6 +756,8 @@ spec:
                   type: string
                   not:
                     const: otelcol
+                package:
+                  $ref: "#/definitions/package_reference"
                 title:
                   description: Title of input.
                   type: string
@@ -805,9 +817,11 @@ spec:
                   examples:
                     - credential_type: [cloud_connectors]
               required:
-                - type
                 - title
                 - description
+              oneOf:
+                - required: [type]
+                - required: [package]
           multiple:
             type: boolean
           icons:
@@ -892,6 +906,15 @@ versions:
         path: "/definitions/requires"
       - op: remove # removes package_dependency definition
         path: "/definitions/package_dependency"
+      - op: remove # removes package_reference definition
+        path: "/definitions/package_reference"
+      - op: remove # removes package field from policy template inputs
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/package"
+      - op: remove # removes oneOf constraint for type/package
+        path: "/properties/policy_templates/items/properties/inputs/items/oneOf"
+      - op: add # re-adds type as required for older versions
+        path: "/properties/policy_templates/items/properties/inputs/items/required/-"
+        value: type
       - op: remove # removes package deprecation info
         path: "/properties/deprecated"
       - op: remove # removes policy template input deprecation info

@@ -1,0 +1,42 @@
+format_version: 3.6.0
+name: good_package_reference_policy_template
+title: Package with package reference in policy template
+description: This integration package uses package field in policy template inputs.
+version: 0.0.1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+requires:
+  input:
+    - name: filelog_otel
+      version: "^1.0.0"
+    - name: sql_input
+      version: ">=2.0.0"
+policy_templates:
+  - name: apache
+    title: Apache logs and metrics
+    description: Collect logs and metrics from Apache instances
+    inputs:
+      - package: filelog_otel
+        title: Collect logs from Apache instances
+        description: Collecting Apache access and error logs
+      - type: apache/metrics
+        title: Collect metrics from Apache instances
+        description: Collecting Apache status metrics
+        multi: false
+        vars:
+          - name: hosts
+            type: url
+            url_allowed_schemes: ['http', 'https']
+            title: Hosts
+            multi: true
+            required: true
+            show_user: true
+            default:
+            - http://127.0.0.1
+owner:
+  github: elastic/foobar
+  type: community

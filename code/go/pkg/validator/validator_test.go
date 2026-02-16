@@ -41,6 +41,7 @@ func TestValidateFile(t *testing.T) {
 		"good_lookup_index":                  {},
 		"good_alert_rule_templates":          {},
 		"good_requires":                      {},
+		"good_package_reference_policy_template": {},
 		"deploy_custom_agent":                {},
 		"deploy_custom_agent_multi_services": {},
 		"deploy_docker":                      {},
@@ -247,6 +248,20 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				`field (root): Additional property requires is not allowed`,
+			},
+		},
+		"bad_package_field_old_version": {
+			"manifest.yml",
+			[]string{
+				`field policy_templates.0.inputs.0: type is required`,
+				`field policy_templates.0.inputs.0: Additional property package is not allowed`,
+			},
+		},
+		"bad_datastream_package_old_version": {
+			"data_stream/logs/manifest.yml",
+			[]string{
+				`field streams.0: input is required`,
+				`field streams.0: Additional property package is not allowed`,
 			},
 		},
 		"bad_input_dataset_vars": {

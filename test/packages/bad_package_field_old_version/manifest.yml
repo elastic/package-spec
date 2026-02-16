@@ -1,0 +1,22 @@
+format_version: 3.5.0
+name: bad_package_field_old_version
+title: Package with package field on old version
+description: This package uses package field on an old format version.
+version: 0.0.1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+policy_templates:
+  - name: apache
+    title: Apache logs and metrics
+    description: Collect logs and metrics from Apache instances
+    inputs:
+      - package: filelog_otel
+        title: Collect logs from Apache instances
+        description: Collecting Apache access and error logs
+owner:
+  github: elastic/foobar
+  type: community
