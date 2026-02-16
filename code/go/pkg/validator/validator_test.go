@@ -38,6 +38,7 @@ func TestValidateFile(t *testing.T) {
 		"good_input_otel":                        {},
 		"good_input_dynamic_signal_type":         {},
 		"good_content":                           {},
+		"good_content_with_dev":                  {},
 		"good_lookup_index":                      {},
 		"good_alert_rule_templates":              {},
 		"good_requires":                          {},
@@ -537,6 +538,11 @@ func TestValidateItemNotAllowed(t *testing.T) {
 		"bad_alert_rule_templates": {
 			"kibana": []string{
 				"alerting_rule_template",
+			},
+		},
+		"bad_content_dev_deploy_variants": {
+			"_dev": []string{
+				"deploy",
 			},
 		},
 	}
