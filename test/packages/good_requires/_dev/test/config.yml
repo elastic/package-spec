@@ -1,8 +1,8 @@
 system:
   requires:
     - package: sql_input
-      version: 1.2.5
+      version: 1.0.0
 policy:
   requires:
     - package: log_input
-      version: 2.1.0
+      version: 2.0.0

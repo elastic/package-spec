@@ -274,7 +274,7 @@ func TestValidateFile(t *testing.T) {
 			"_dev/test/config.yml",
 			[]string{
 				`policy.requires[0] references package "missing_package" which is not listed in manifest requires section`,
-				`system.requires[0] package "sql_input" version "1.5.0" does not satisfy constraint "^2.0.0"`,
+				`system.requires[0] package "sql_input" version "1.5.0" does not satisfy constraint "2.0.0"`,
 			},
 		},
 		"bad_input_dataset_vars": {

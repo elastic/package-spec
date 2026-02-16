@@ -12,7 +12,7 @@ conditions:
 requires:
   input:
     - name: sql_input
-      version: "^1.0.0"
+      version: "1.0.0"
 policy_templates:
   - name: example
     title: Example

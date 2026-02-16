@@ -42,32 +42,35 @@ func getRequiredPackages(manifest pkgpath.File) (map[string]bool, error) {
 	// Get input packages from requires.input
 	inputPackages, err := manifest.Values("$.requires.input")
 	if err == nil && inputPackages != nil {
-		if pkgArray, ok := inputPackages.([]interface{}); ok {
-			for _, pkg := range pkgArray {
-				if pkgMap, ok := pkg.(map[string]interface{}); ok {
-					if name, ok := pkgMap["name"].(string); ok {
-						requiredPackages[name] = true
-					}
-				}
-			}
-		}
+		extractPackageNamesFromRequires(inputPackages, requiredPackages)
 	}
 
 	// Get content packages from requires.content
 	contentPackages, err := manifest.Values("$.requires.content")
 	if err == nil && contentPackages != nil {
-		if pkgArray, ok := contentPackages.([]interface{}); ok {
-			for _, pkg := range pkgArray {
-				if pkgMap, ok := pkg.(map[string]interface{}); ok {
-					if name, ok := pkgMap["name"].(string); ok {
-						requiredPackages[name] = true
-					}
-				}
-			}
-		}
+		extractPackageNamesFromRequires(contentPackages, requiredPackages)
 	}
 
 	return requiredPackages, nil
+}
+
+func extractPackageNamesFromRequires(packages interface{}, requiredPackages map[string]bool) {
+	pkgArray, ok := packages.([]interface{})
+	if !ok {
+		return
+	}
+
+	for _, pkg := range pkgArray {
+		pkgMap, ok := pkg.(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		name, ok := pkgMap["name"].(string)
+		if ok {
+			requiredPackages[name] = true
+		}
+	}
 }
 
 func validatePolicyTemplatePackageReferences(fsys fspath.FS, manifest pkgpath.File, requiredPackages map[string]bool) specerrors.ValidationErrors {
@@ -78,37 +81,37 @@ func validatePolicyTemplatePackageReferences(fsys fspath.FS, manifest pkgpath.Fi
 		return nil
 	}
 
-	ptArray, ok := policyTemplates.([]interface{})
+	policyTemplateArray, ok := policyTemplates.([]interface{})
 	if !ok {
 		return nil
 	}
 
-	for ptIdx, pt := range ptArray {
-		ptMap, ok := pt.(map[string]interface{})
+	for templateIndex, template := range policyTemplateArray {
+		templateMap, ok := template.(map[string]interface{})
 		if !ok {
 			continue
 		}
 
-		inputs, ok := ptMap["inputs"].([]interface{})
+		inputs, ok := templateMap["inputs"].([]interface{})
 		if !ok {
 			continue
 		}
 
-		for inputIdx, input := range inputs {
+		for inputIndex, input := range inputs {
 			inputMap, ok := input.(map[string]interface{})
 			if !ok {
 				continue
 			}
 
-			pkgName, ok := inputMap["package"].(string)
-			if !ok || pkgName == "" {
+			packageName, ok := inputMap["package"].(string)
+			if !ok || packageName == "" {
 				continue
 			}
 
-			if !requiredPackages[pkgName] {
+			if !requiredPackages[packageName] {
 				errs = append(errs, specerrors.NewStructuredErrorf(
 					"file \"%s\" is invalid: policy_templates[%d].inputs[%d] references package \"%s\" which is not listed in requires section",
-					fsys.Path("manifest.yml"), ptIdx, inputIdx, pkgName))
+					fsys.Path("manifest.yml"), templateIndex, inputIndex, packageName))
 			}
 		}
 	}
@@ -117,15 +120,15 @@ func validatePolicyTemplatePackageReferences(fsys fspath.FS, manifest pkgpath.Fi
 }
 
 func validateDataStreamPackageReferences(fsys fspath.FS, requiredPackages map[string]bool) specerrors.ValidationErrors {
-	dsManifests, err := pkgpath.Files(fsys, "data_stream/*/manifest.yml")
+	dataStreamManifests, err := pkgpath.Files(fsys, "data_stream/*/manifest.yml")
 	if err != nil {
 		return specerrors.ValidationErrors{
 			specerrors.NewStructuredErrorf("error while searching for data stream manifests: %w", err)}
 	}
 
 	var errs specerrors.ValidationErrors
-	for _, dsManifest := range dsManifests {
-		streams, err := dsManifest.Values("$.streams")
+	for _, dataStreamManifest := range dataStreamManifests {
+		streams, err := dataStreamManifest.Values("$.streams")
 		if err != nil || streams == nil {
 			continue
 		}
@@ -135,21 +138,21 @@ func validateDataStreamPackageReferences(fsys fspath.FS, requiredPackages map[st
 			continue
 		}
 
-		for streamIdx, stream := range streamArray {
+		for streamIndex, stream := range streamArray {
 			streamMap, ok := stream.(map[string]interface{})
 			if !ok {
 				continue
 			}
 
-			pkgName, ok := streamMap["package"].(string)
-			if !ok || pkgName == "" {
+			packageName, ok := streamMap["package"].(string)
+			if !ok || packageName == "" {
 				continue
 			}
 
-			if !requiredPackages[pkgName] {
+			if !requiredPackages[packageName] {
 				errs = append(errs, specerrors.NewStructuredErrorf(
 					"file \"%s\" is invalid: streams[%d] references package \"%s\" which is not listed in manifest requires section",
-					dsManifest.Path(), streamIdx, pkgName))
+					dataStreamManifest.Path(), streamIndex, packageName))
 			}
 		}
 	}

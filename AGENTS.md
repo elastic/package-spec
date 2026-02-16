@@ -82,6 +82,32 @@ versions:
 **Important**: Remove property references before the definitions they depend on.
 **Important**: This is not needed for development files (files under `_dev` directories)
 
+#### Version Patch Comment Conventions
+
+Comments in version patches should:
+- Be placed on the `path` line, not the `op` line
+- Only be added for complex paths with array indices (e.g., `required/-`)
+- Be omitted for simple, self-explanatory paths
+
+```yaml
+# Good - comment on path line for array index
+- op: add
+  path: "/properties/policy_templates/items/required/-" # re-add type as required
+  value: type
+
+# Good - no comment for simple path
+- op: remove
+  path: "/properties/requires"
+
+# Bad - comment on op line
+- op: remove  # removes requires field
+  path: "/properties/requires"
+
+# Bad - redundant comment on simple path
+- op: remove
+  path: "/properties/requires"  # removes requires property
+```
+
 ## Test Packages
 
 ### Creating Test Packages
@@ -151,6 +177,34 @@ tests := map[string]struct {
 
 **Note**: Use tabs for indentation in Go files.
 
+## Compliance Testing
+
+Compliance tests are integration tests that verify package functionality in a real Kibana/Elasticsearch environment. They are located in `compliance/features/*.feature` files using Gherkin syntax.
+
+### Creating Compliance Tests
+
+Add a new feature file in `compliance/features/`:
+
+```gherkin
+Feature: Basic package types support
+  Basic tests with minimal packages
+
+  @3.3.0
+  Scenario: Basic content package can be installed
+   Given the "basic_content" package is installed
+     And prebuilt detection rules are loaded
+    Then there is a dashboard "basic_content-dashboard-abc-1"
+     And there is a detection rule "12cea9e9-5766-474d-a9dc-34ef7c7677c7"
+```
+
+**Version tags**: Use `@X.Y.Z` to indicate the minimum spec version required for the test. Tests tagged with versions higher than the current version won't be executed until that version is released.
+
+**Common patterns**:
+- Package installation: `Given the "package_name" package is installed`
+- Policy creation: `And a policy is created with "package_name" package`
+- Verification: `Then there is an index template "template_name" with pattern "pattern-*"`
+- Dependencies: `And the required input/content packages are installed`
+
 ## Semantic Validators
 
 Semantic validators implement custom validation logic beyond JSON schema constraints. They are located in `code/go/internal/validator/semantic/`.
@@ -205,7 +259,8 @@ func validateMyRule(manifest pkgpath.File) specerrors.ValidationErrors {
 3. **Query with JSONPath**: `file.Values("$.policy_templates[0].name")`
 4. **Type assertions**: Query results are `interface{}`, assert to expected types
 5. **Error handling**: Return structured errors with file paths and context
-6. **Use fsys.Path() for error messages**: When creating error messages, use `fsys.Path("relative/path")` to get the full package path, not just the relative path from a file object. This ensures error messages match the test framework's expectations.
+6. **Use descriptive variable names**: Avoid abbreviations in validators. Use full names like `packageName` (not `pkgName`), `dataStreamManifests` (not `dsManifests`), `templateIndex` (not `ptIdx`) for better readability.
+7. **Use fsys.Path() for error messages**: When creating error messages, use `fsys.Path("relative/path")` to get the full package path, not just the relative path from a file object. This ensures error messages match the test framework's expectations.
    ```go
    // Good - uses fsys.Path() for full package path
    specerrors.NewStructuredErrorf("file \"%s\" is invalid: %s", fsys.Path("_dev/test/config.yml"), err)

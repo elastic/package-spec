@@ -668,18 +668,18 @@ spec:
 versions:
   - before: 3.6.0
     patch:
-      - op: remove # removes deprecated field for data stream
+      - op: remove
         path: "/properties/deprecated"
-      - op: remove # remove deprecated field for vars
-        path: /definitions/vars/items/properties/deprecated
+      - op: remove
+        path: /definitions/vars/items/properties/deprecated # remove deprecated from vars
       - op: remove
         path: "/properties/streams/items/properties/var_groups" # removes var_groups from streams
-      - op: remove # removes package field from streams
+      - op: remove
         path: "/properties/streams/items/properties/package"
-      - op: remove # removes oneOf constraint for input/package
+      - op: remove
         path: "/properties/streams/items/oneOf"
-      - op: add # re-adds input as required for older versions
-        path: "/properties/streams/items/required/-"
+      - op: add
+        path: "/properties/streams/items/required/-" # re-add input as required
         value: input
   - before: 3.5.0
     patch:

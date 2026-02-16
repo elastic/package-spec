@@ -12,9 +12,9 @@ conditions:
 requires:
   input:
     - name: filelog_otel
-      version: "^1.0.0"
+      version: "1.0.0"
     - name: sql_input
-      version: ">=2.0.0"
+      version: "2.0.0"
 policy_templates:
   - name: apache
     title: Apache logs and metrics
