@@ -380,6 +380,9 @@ make -C code/go update
 
 # Format Go files
 make -C code/go format
+
+# Linting, required
+make check
 ```
 
 ## Changelog Management

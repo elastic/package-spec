@@ -17,11 +17,11 @@ import (
 
 func TestValidateTestPackageRequirements(t *testing.T) {
 	tests := map[string]struct {
-		manifest        string
-		testConfig      string
-		testConfigPath  string
-		expectError     bool
-		errorContains   string
+		manifest       string
+		testConfig     string
+		testConfigPath string
+		expectError    bool
+		errorContains  string
 	}{
 		"valid_integration_test_requirement": {
 			manifest: `name: test
