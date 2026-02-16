@@ -25,7 +25,7 @@ type: integration
 requires:
   input:
     - name: filelog_otel
-      version: "^1.0.0"
+      version: "1.0.0"
 policy_templates:
   - name: apache
     inputs:
@@ -48,7 +48,7 @@ type: integration
 requires:
   input:
     - name: filelog_otel
-      version: "^1.0.0"
+      version: "1.0.0"
 policy_templates:
   - name: apache
     inputs:
@@ -64,6 +64,31 @@ policy_templates:
 		assert.ErrorContains(t, errs, `policy_templates[0].inputs[0] references package "missing_package" which is not listed in requires section`)
 	})
 
+	t.Run("package_reference_to_content_package", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.WriteFile(filepath.Join(d, "manifest.yml"), []byte(`
+format_version: 3.6.0
+type: integration
+requires:
+  content:
+    - name: apache_otel
+      version: "^1.0.0"
+policy_templates:
+  - name: apache
+    inputs:
+      - package: apache_otel
+        title: Collect logs
+        description: Collecting Apache logs
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidatePackageReferences(fspath.DirFS(d))
+		require.NotEmpty(t, errs, "expected validation errors")
+		assert.Len(t, errs, 1)
+		assert.ErrorContains(t, errs, `policy_templates[0].inputs[0] references package "apache_otel" which is a content package, only input packages allowed`)
+	})
+
 	t.Run("valid_datastream_package_reference", func(t *testing.T) {
 		d := t.TempDir()
 
@@ -73,7 +98,7 @@ type: integration
 requires:
   input:
     - name: filelog_otel
-      version: "^1.0.0"
+      version: "1.0.0"
 `), 0o644)
 		require.NoError(t, err)
 
@@ -103,7 +128,7 @@ type: integration
 requires:
   input:
     - name: filelog_otel
-      version: "^1.0.0"
+      version: "1.0.0"
 `), 0o644)
 		require.NoError(t, err)
 
@@ -124,6 +149,38 @@ streams:
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.ErrorContains(t, errs, `streams[0] references package "missing_package" which is not listed in manifest requires section`)
+	})
+
+	t.Run("datastream_reference_to_content_package", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.WriteFile(filepath.Join(d, "manifest.yml"), []byte(`
+format_version: 3.6.0
+type: integration
+requires:
+  content:
+    - name: security_rules
+      version: "^1.0.0"
+`), 0o644)
+		require.NoError(t, err)
+
+		err = os.MkdirAll(filepath.Join(d, "data_stream", "alerts"), 0o755)
+		require.NoError(t, err)
+
+		err = os.WriteFile(filepath.Join(d, "data_stream", "alerts", "manifest.yml"), []byte(`
+title: Security alerts
+type: logs
+streams:
+  - package: security_rules
+    title: Security Alerts
+    description: Collect security alerts
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidatePackageReferences(fspath.DirFS(d))
+		require.NotEmpty(t, errs, "expected validation errors")
+		assert.Len(t, errs, 1)
+		assert.ErrorContains(t, errs, `streams[0] references package "security_rules" which is a content package, only input packages allowed`)
 	})
 
 	t.Run("no_requires_section", func(t *testing.T) {
@@ -156,7 +213,7 @@ type: integration
 requires:
   input:
     - name: valid_package
-      version: "^1.0.0"
+      version: "1.0.0"
 policy_templates:
   - name: apache
     inputs:

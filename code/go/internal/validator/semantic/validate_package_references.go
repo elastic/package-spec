@@ -5,13 +5,15 @@
 package semantic
 
 import (
+	"slices"
+
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidatePackageReferences checks that package references in policy templates and data streams
-// are listed in the manifest's requires section.
+// are listed in the manifest's requires section and are of the correct type (input packages only).
 func ValidatePackageReferences(fsys fspath.FS) specerrors.ValidationErrors {
 	manifest, err := readManifest(fsys)
 	if err != nil {
@@ -19,8 +21,8 @@ func ValidatePackageReferences(fsys fspath.FS) specerrors.ValidationErrors {
 			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path("manifest.yml"), err)}
 	}
 
-	// Build map of required packages
-	requiredPackages, err := getRequiredPackages(*manifest)
+	// Build lists of required packages by type
+	requiredPackages, err := getRequiredPackagesByType(*manifest)
 	if err != nil {
 		return specerrors.ValidationErrors{
 			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path("manifest.yml"), err)}
@@ -36,25 +38,34 @@ func ValidatePackageReferences(fsys fspath.FS) specerrors.ValidationErrors {
 	return errs
 }
 
-func getRequiredPackages(manifest pkgpath.File) (map[string]bool, error) {
-	requiredPackages := make(map[string]bool)
+// requiredPackages contains lists of required packages organized by type.
+type requiredPackages struct {
+	input   []string
+	content []string
+}
+
+func getRequiredPackagesByType(manifest pkgpath.File) (requiredPackages, error) {
+	packages := requiredPackages{
+		input:   []string{},
+		content: []string{},
+	}
 
 	// Get input packages from requires.input
 	inputPackages, err := manifest.Values("$.requires.input")
 	if err == nil && inputPackages != nil {
-		extractPackageNamesFromRequires(inputPackages, requiredPackages)
+		extractPackageNamesFromRequires(inputPackages, &packages.input)
 	}
 
 	// Get content packages from requires.content
 	contentPackages, err := manifest.Values("$.requires.content")
 	if err == nil && contentPackages != nil {
-		extractPackageNamesFromRequires(contentPackages, requiredPackages)
+		extractPackageNamesFromRequires(contentPackages, &packages.content)
 	}
 
-	return requiredPackages, nil
+	return packages, nil
 }
 
-func extractPackageNamesFromRequires(packages interface{}, requiredPackages map[string]bool) {
+func extractPackageNamesFromRequires(packages interface{}, result *[]string) {
 	pkgArray, ok := packages.([]interface{})
 	if !ok {
 		return
@@ -68,12 +79,12 @@ func extractPackageNamesFromRequires(packages interface{}, requiredPackages map[
 
 		name, ok := pkgMap["name"].(string)
 		if ok {
-			requiredPackages[name] = true
+			*result = append(*result, name)
 		}
 	}
 }
 
-func validatePolicyTemplatePackageReferences(fsys fspath.FS, manifest pkgpath.File, requiredPackages map[string]bool) specerrors.ValidationErrors {
+func validatePolicyTemplatePackageReferences(fsys fspath.FS, manifest pkgpath.File, requiredPackages requiredPackages) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	policyTemplates, err := manifest.Values("$.policy_templates")
@@ -108,7 +119,16 @@ func validatePolicyTemplatePackageReferences(fsys fspath.FS, manifest pkgpath.Fi
 				continue
 			}
 
-			if !requiredPackages[packageName] {
+			// Check if it's a content package (not allowed)
+			if slices.Contains(requiredPackages.content, packageName) {
+				errs = append(errs, specerrors.NewStructuredErrorf(
+					"file \"%s\" is invalid: policy_templates[%d].inputs[%d] references package \"%s\" which is a content package, only input packages allowed",
+					fsys.Path("manifest.yml"), templateIndex, inputIndex, packageName))
+				continue
+			}
+
+			// Check if it's in required input packages
+			if !slices.Contains(requiredPackages.input, packageName) {
 				errs = append(errs, specerrors.NewStructuredErrorf(
 					"file \"%s\" is invalid: policy_templates[%d].inputs[%d] references package \"%s\" which is not listed in requires section",
 					fsys.Path("manifest.yml"), templateIndex, inputIndex, packageName))
@@ -119,7 +139,7 @@ func validatePolicyTemplatePackageReferences(fsys fspath.FS, manifest pkgpath.Fi
 	return errs
 }
 
-func validateDataStreamPackageReferences(fsys fspath.FS, requiredPackages map[string]bool) specerrors.ValidationErrors {
+func validateDataStreamPackageReferences(fsys fspath.FS, requiredPackages requiredPackages) specerrors.ValidationErrors {
 	dataStreamManifests, err := pkgpath.Files(fsys, "data_stream/*/manifest.yml")
 	if err != nil {
 		return specerrors.ValidationErrors{
@@ -149,7 +169,16 @@ func validateDataStreamPackageReferences(fsys fspath.FS, requiredPackages map[st
 				continue
 			}
 
-			if !requiredPackages[packageName] {
+			// Check if it's a content package (not allowed)
+			if slices.Contains(requiredPackages.content, packageName) {
+				errs = append(errs, specerrors.NewStructuredErrorf(
+					"file \"%s\" is invalid: streams[%d] references package \"%s\" which is a content package, only input packages allowed",
+					dataStreamManifest.Path(), streamIndex, packageName))
+				continue
+			}
+
+			// Check if it's in required input packages
+			if !slices.Contains(requiredPackages.input, packageName) {
 				errs = append(errs, specerrors.NewStructuredErrorf(
 					"file \"%s\" is invalid: streams[%d] references package \"%s\" which is not listed in manifest requires section",
 					dataStreamManifest.Path(), streamIndex, packageName))
