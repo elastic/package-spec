@@ -119,7 +119,7 @@ func validateIntegrationTestRequirements(fsys fspath.FS, requiredPackages map[st
 							continue
 						}
 
-						err := validateTestRequirement(config.Path(), testType, idx, pkgName, version, requiredPackages)
+						err := validateTestRequirement(fsys.Path("_dev/test/config.yml"), testType, idx, pkgName, version, requiredPackages)
 						if err != nil {
 							errs = append(errs, err)
 						}
@@ -155,7 +155,7 @@ func validateDataStreamTestRequirements(fsys fspath.FS, requiredPackages map[str
 						continue
 					}
 
-					err := validateTestRequirement(config.Path(), "", idx, pkgName, version, requiredPackages)
+					err := validateTestRequirement(fsys.Path(config.Path()), "", idx, pkgName, version, requiredPackages)
 					if err != nil {
 						errs = append(errs, err)
 					}

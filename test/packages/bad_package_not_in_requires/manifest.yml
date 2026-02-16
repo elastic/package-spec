@@ -1,0 +1,26 @@
+format_version: 3.6.0
+name: bad_package_not_in_requires
+title: Package reference not in requires
+description: This package references a package in policy template that is not listed in requires.
+version: 0.0.1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+requires:
+  input:
+    - name: sql_input
+      version: "^1.0.0"
+policy_templates:
+  - name: example
+    title: Example
+    description: Example policy template
+    inputs:
+      - package: missing_package
+        title: Missing package reference
+        description: This references a package not in requires
+owner:
+  github: elastic/ecosystem
+  type: elastic

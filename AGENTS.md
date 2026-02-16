@@ -205,6 +205,14 @@ func validateMyRule(manifest pkgpath.File) specerrors.ValidationErrors {
 3. **Query with JSONPath**: `file.Values("$.policy_templates[0].name")`
 4. **Type assertions**: Query results are `interface{}`, assert to expected types
 5. **Error handling**: Return structured errors with file paths and context
+6. **Use fsys.Path() for error messages**: When creating error messages, use `fsys.Path("relative/path")` to get the full package path, not just the relative path from a file object. This ensures error messages match the test framework's expectations.
+   ```go
+   // Good - uses fsys.Path() for full package path
+   specerrors.NewStructuredErrorf("file \"%s\" is invalid: %s", fsys.Path("_dev/test/config.yml"), err)
+
+   // Bad - uses config.Path() which is relative within fsys
+   specerrors.NewStructuredErrorf("file \"%s\" is invalid: %s", config.Path(), err)
+   ```
 
 ### Testing Semantic Validators
 
