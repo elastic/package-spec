@@ -1,0 +1,43 @@
+format_version: 1.0.0
+name: good_integration_with_dev_tools
+title: Good integration package with _dev/tools
+description: This package validates support for _dev/tools in integration packages.
+version: 1.0.0
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana.version: '^8.0.0'
+  elastic.subscription: 'basic'
+policy_templates:
+  - name: apache
+    title: Apache logs and metrics
+    description: Collect logs and metrics from Apache instances
+    inputs:
+      - type: apache/metrics
+        title: Collect metrics from Apache instances
+        description: Collecting Apache status metrics
+        multi: false
+        vars:
+          - name: hosts
+            type: url
+            url_allowed_schemes: ['http', 'https']
+            title: Hosts
+            multi: true
+            required: true
+            show_user: true
+            default:
+              - http://127.0.0.1
+owner:
+  github: elastic/foobar
+icons:
+  - src: /img/system.svg
+    title: system
+    size: 1000x1000
+    type: image/svg+xml
+  - src: /img/system-dark.svg
+    title: system
+    size: 1000x1000
+    type: image/svg+xml
+    dark_mode: true
+elasticsearch.privileges.cluster: [monitor/main]

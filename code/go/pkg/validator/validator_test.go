@@ -39,6 +39,7 @@ func TestValidateFile(t *testing.T) {
 		"good_input_dynamic_signal_type":     {},
 		"good_content":                       {},
 		"good_content_with_dev":              {},
+		"good_integration_with_dev_tools":    {},
 		"good_lookup_index":                  {},
 		"good_alert_rule_templates":          {},
 		"deploy_custom_agent":                {},
