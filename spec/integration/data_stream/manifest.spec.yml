@@ -573,8 +573,6 @@ spec:
             - aws/metrics
             - s3
             - file
-            not:
-              const: otelcol
           title:
             description: >
               Title of the stream. It should include the source of the data that is
@@ -603,6 +601,8 @@ spec:
             $ref: "#/definitions/vars"
           var_groups:
             $ref: "../../integration/manifest.spec.yml#/definitions/var_groups"
+          dynamic_signal_types:
+            $ref: "../../integration/manifest.spec.yml#/definitions/dynamic_signal_types"
           enabled:
             description: Is stream enabled?
             type: boolean
@@ -664,6 +664,13 @@ spec:
 versions:
   - before: 3.6.0
     patch:
+      - op: add # forbid otelcol input type in integration data streams before 3.6.0
+        path: "/properties/streams/items/properties/input"
+        value:
+          not:
+            const: otelcol
+      - op: remove # removes dynamic_signal_types from data stream streams
+        path: "/properties/streams/items/properties/dynamic_signal_types"
       - op: remove # removes deprecated field for data stream
         path: "/properties/deprecated"
       - op: remove # remove deprecated field for vars

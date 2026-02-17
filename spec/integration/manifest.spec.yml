@@ -615,6 +615,10 @@ spec:
           - title
           - selector_title
           - options
+    dynamic_signal_types:
+      description: "When enabled, decides the transforms and index templates that need to be created depending on the pipelines specified in the configuration. This field is only allowed when the input type is 'otelcol'."
+      type: boolean
+      default: false
   properties:
     format_version:
       description: The version of the package specification format used by this package.
@@ -707,8 +711,6 @@ spec:
                 type:
                   description: Type of input.
                   type: string
-                  not:
-                    const: otelcol
                 title:
                   description: Title of input.
                   type: string
@@ -754,6 +756,8 @@ spec:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/required_vars"
                 vars:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
+                dynamic_signal_types:
+                  $ref: "#/definitions/dynamic_signal_types"
                 deprecated:
                   $ref: "#/definitions/deprecated"
                 hide_in_var_group_options:
@@ -847,6 +851,15 @@ spec:
 versions:
   - before: 3.6.0
     patch:
+      - op: add # forbid otelcol input type in integration packages before 3.6.0
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/type"
+        value:
+          not:
+            const: otelcol
+      - op: remove # removes dynamic_signal_types from integration package policy template inputs
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/dynamic_signal_types"
+      - op: remove # removes dynamic_signal_types definition
+        path: "/definitions/dynamic_signal_types"
       - op: remove # removes package deprecation info
         path: "/properties/deprecated"
       - op: remove # removes policy template input deprecation info

@@ -34,3 +34,9 @@ Feature: Basic package types support
      # Missing support in Kibana (Fleet) https://github.com/elastic/kibana/pull/186974
      And there is an SLO "good_content-slo-abc-1"
      And there is a detection rule "12cea9e9-5766-474d-a9dc-34ef7c7677c6"
+
+  @3.6.0
+  Scenario: Integration package with OTel input can be installed
+   Given the "good_v3" package is installed
+     And a policy is created with "good_v3" package, "1.1.0" version, "otel" template, "otelcol" input type and dataset "good_v3.otel_test"
+    Then there is an index template "logs-good_v3.otel_test" with pattern "logs-good_v3.otel_test.otel-*"
