@@ -50,10 +50,10 @@
       link: https://github.com/elastic/package-spec/pull/1091
     - description: Add support for auto_expand_replicas, max_result_window, and refresh_interval index settings in data stream templates.
       type: enhancement
-      link: TBD
+      link: https://github.com/elastic/package-spec/pull/1092  
     - description: Add support for `profiles` policy template type in input packages
       type: enhancement
-      link: TBD
+      link: https://github.com/elastic/package-spec/pull/1092 
 - version: 3.5.7
   changes:
     - description: Allow _dev directory for content-only packages; use _dev/shared for development files (e.g. dashboard YML sources).
