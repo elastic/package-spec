@@ -1,0 +1,55 @@
+{
+  "@timestamp": "2024-01-15T14:30:45.123456789Z",
+  "ecs": {
+    "version": "8.11.0"
+  },
+  "profiling": {
+    "project": {
+      "id": "test-profiling-project"
+    }
+  },
+  "host": {
+    "id": "host-12345",
+    "name": "profiling-host-01",
+    "ip": [
+      "192.168.1.100",
+      "10.0.0.5"
+    ]
+  },
+  "service": {
+    "name": "profiling-service"
+  },
+  "container": {
+    "name": "profiling-container",
+    "id": "container-67890"
+  },
+  "k8s": {
+    "namespace": {
+      "name": "profiling-namespace"
+    }
+  },
+  "process": {
+    "executable": {
+      "name": "java"
+    },
+    "thread": {
+      "name": "main"
+    }
+  },
+  "agent": {
+    "version": "8.11.0"
+  },
+  "os": {
+    "kernel": "Linux 5.4.0"
+  },
+  "tags": [
+    "profiling",
+    "performance",
+    "monitoring"
+  ],
+  "Stacktrace": {
+    "id": "stack-abc123",
+    "count": 42,
+    "sampling_frequency": 1000000
+  }
+}

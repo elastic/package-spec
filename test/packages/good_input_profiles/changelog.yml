@@ -1,0 +1,4 @@
+- version: 1.0.0
+  changes:
+    - description: Initial release for testing index settings and policy template type for profiling inputs.
+      type: enhancement
