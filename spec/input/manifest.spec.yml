@@ -55,6 +55,7 @@ spec:
               - logs
               - synthetics
               - traces
+              - profiles
             examples:
               - metrics
           title:
