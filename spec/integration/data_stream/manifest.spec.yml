@@ -263,6 +263,12 @@ spec:
               $ref: "#/definitions/index_template_setting_index"
             number_of_shards:
               $ref: "#/definitions/index_template_setting_number_of_shards"
+            auto_expand_replicas:
+              $ref: "#/definitions/index_template_setting_auto_expand_replicas"
+            max_result_window:
+              $ref: "#/definitions/index_template_setting_max_result_window"
+            refresh_interval:
+              $ref: "#/definitions/index_template_setting_refresh_interval"
         mappings:
           description: Mappings section of index template
           type: object
@@ -512,6 +518,32 @@ spec:
       type: integer
       minimum: 1
       default: 1
+    index_template_setting_auto_expand_replicas:
+      description: |
+        Auto-expand the number of replicas based on the number of data nodes in the cluster.
+        Set to a dash delimited lower and upper bound (e.g. 0-5) or use `all` for the upper bound (e.g. 0-all). Defaults to false (i.e. disabled).
+      type: string
+      examples:
+        - "0-1"
+        - "0-all"
+        - "false"
+    index_template_setting_max_result_window:
+      description: |
+        The maximum value of `from + size` for searches to this index. Defaults to 10000.
+        Search requests take heap memory and time proportional to `from + size` and this limits that memory.
+      type: integer
+      minimum: 1
+      examples:
+        - 50000
+    index_template_setting_refresh_interval:
+      description: |
+        How often to perform a refresh operation, which makes recent changes to the index visible to search. The value defaults to `1s` in Elastic Stack and `5s` in Serverless. In Serverless, `5s` is also the minimum value that can be set.
+        Can be set to `-1` to disable refresh.
+      type: string
+      examples:
+        - "10s"
+        - "1m"
+        - "-1"
   properties:
     dataset:
       description: Name of data set.
