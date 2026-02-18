@@ -13,6 +13,8 @@ requires:
   input:
     - name: sql_input
       # Missing version field
+    - name: filelog_otel
+      version: "^1.0.0"
   content:
     - name: elastic-agent-invalid
       version: "^1.0.0"
