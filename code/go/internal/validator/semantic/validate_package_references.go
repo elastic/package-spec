@@ -5,7 +5,6 @@
 package semantic
 
 import (
-	"fmt"
 	"slices"
 
 	"github.com/Masterminds/semver/v3"
@@ -215,8 +214,6 @@ func validateFixedVersions(fsys fspath.FS, requiredPackages requiredPackages) sp
 
 	// Validate that input packages have fixed versions, and no constraints.
 	for i, p := range requiredPackages.input {
-		fmt.Println(i, p)
-
 		if p.version == "" {
 			// Version presence controlled by the schema.
 			continue
