@@ -12,9 +12,9 @@ spec:
     name:
       description: The name of the package.
       type: string
-      pattern: '^[a-z0-9_]+$'
+      pattern: "^[a-z0-9_]+$"
       examples:
-      - apache
+        - apache
     title:
       $ref: "../integration/manifest.spec.yml#/definitions/title"
     description:
@@ -28,9 +28,9 @@ spec:
       description: The type of package.
       type: string
       enum:
-      - input
+        - input
       examples:
-      - input
+        - input
     categories:
       $ref: "../integration/manifest.spec.yml#/definitions/categories"
     conditions:
@@ -55,7 +55,7 @@ spec:
               - logs
               - synthetics
               - traces
-              - profiles
+              - profiling
             examples:
               - metrics
           title:
@@ -141,13 +141,13 @@ spec:
     deprecated:
       $ref: "../integration/manifest.spec.yml#/definitions/deprecated"
   required:
-  - format_version
-  - name
-  - title
-  - description
-  - version
-  - type
-  - owner
+    - format_version
+    - name
+    - title
+    - description
+    - version
+    - type
+    - owner
 
 # JSON patches for newer versions should be placed on top
 versions:
@@ -199,7 +199,7 @@ versions:
           deprecated: true # See https://github.com/elastic/package-spec/issues/298.
           type: string
           enum:
-          - basic
+            - basic
           default: basic
           examples:
-          - basic
+            - basic

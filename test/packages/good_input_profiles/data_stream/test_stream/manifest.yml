@@ -1,5 +1,5 @@
 title: Test Stream
-type: logs
+type: profiling
 dataset: good_input_profiles.test_stream
 elasticsearch:
   index_template:
@@ -22,7 +22,7 @@ elasticsearch:
             - "asc"
             - "asc"
             - "asc"
-            - "asc"  
+            - "asc"
             - "asc"
             - "desc"
     mappings:
