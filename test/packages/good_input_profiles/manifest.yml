@@ -22,7 +22,7 @@ icons:
     type: image/svg+xml
 policy_templates:
   - name: profilingreceiver
-    type: profiles
+    type: profiling
     title: OpenTelemetry Profiling receiver
     description: Collect profiling data
     input: otelcol
