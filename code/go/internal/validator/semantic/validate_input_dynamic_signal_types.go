@@ -180,8 +180,8 @@ func validateDataStreamManifests(fsys fspath.FS) specerrors.ValidationErrors {
 			// Must be otelcol input
 			if stream.Input != otelcolInputType {
 				errs = append(errs, specerrors.NewStructuredErrorf(
-					"file \"%s\" is invalid: stream with input type \"%s\": dynamic_signal_types is only allowed when input is 'otelcol'",
-					fsys.Path(manifestPath), stream.Input))
+					"file \"%s\" is invalid: stream with input type \"%s\": dynamic_signal_types is only allowed when input is '%s'",
+					fsys.Path(manifestPath), stream.Input, otelcolInputType))
 			}
 		}
 	}
