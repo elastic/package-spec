@@ -33,6 +33,10 @@
     - description: Add support for dynamic_signal_types field in input package policy templates for OTel input type.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1067
+    # Pending on https://github.com/elastic/kibana/issues/252939
+    - description: Add support for multiple template paths in input packages, integration inputs, and data streams.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1089
     # Pending on https://github.com/elastic/kibana/issues/252938
     - description: Add support for package dependencies in integration packages via requires field with input and content package types.
       type: enhancement

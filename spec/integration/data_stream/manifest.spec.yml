@@ -597,8 +597,9 @@ spec:
             - Collect Metrics from Linux servers with Elastic Agent.
             - Collect Logs from Apache Web Server using Elastic Agent.
           template_path:
-            description: "Path to Elasticsearch index template for stream."
-            type: string
+            $ref: "../../integration/manifest.spec.yml#/definitions/template_path"
+          template_paths:
+            $ref: "../../integration/manifest.spec.yml#/definitions/template_paths"
           required_vars:
             $ref: "#/definitions/required_vars"
           vars:
@@ -669,18 +670,20 @@ versions:
   - before: 3.6.0
     patch:
       - op: remove
-        path: "/properties/deprecated"
-      - op: remove
-        path: /definitions/vars/items/properties/deprecated # remove deprecated from vars
-      - op: remove
-        path: "/properties/streams/items/properties/var_groups" # removes var_groups from streams
-      - op: remove
         path: "/properties/streams/items/properties/package"
       - op: remove
         path: "/properties/streams/items/oneOf"
       - op: add
         path: "/properties/streams/items/required/-" # re-add input as required
         value: input
+      - op: remove # removes template_paths field for streams
+        path: "/properties/streams/items/properties/template_paths"
+      - op: remove # removes deprecated field for data stream
+        path: "/properties/deprecated"
+      - op: remove
+        path: "/definitions/vars/items/properties/deprecated"
+      - op: remove
+        path: "/properties/streams/items/properties/var_groups"
   - before: 3.5.0
     patch:
       # Require >=3.5.0 to use the duration variable type.
