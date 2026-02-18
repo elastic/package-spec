@@ -86,19 +86,34 @@ spec:
               - s3
               - file
           template_path:
-            description: "Path to Elasticsearch index template for stream."
-            type: string
+            $ref: "../integration/manifest.spec.yml#/definitions/template_path"
+          template_paths:
+            $ref: "../integration/manifest.spec.yml#/definitions/template_paths"
           dynamic_signal_types:
             $ref: "../integration/manifest.spec.yml#/definitions/dynamic_signal_types"
           deprecated:
             $ref: "../integration/manifest.spec.yml#/definitions/deprecated"
-        required:
-          - name
-          - title
-          - description
-          - type
-          - input
-          - template_path
+        oneOf:
+          - required:
+              - name
+              - title
+              - description
+              - type
+              - input
+              - template_path
+            not:
+              required:
+                - template_paths
+          - required:
+              - name
+              - title
+              - description
+              - type
+              - input
+              - template_paths
+            not:
+              required:
+                - template_path
     icons:
       $ref: "../integration/manifest.spec.yml#/definitions/icons"
     screenshots:
@@ -133,6 +148,19 @@ spec:
 versions:
   - before: 3.6.0
     patch:
+      - op: remove
+        path: "/properties/policy_templates/items/properties/template_paths" # removes template_paths field for policy templates
+      - op: remove
+        path: "/properties/policy_templates/items/oneOf" # removes oneOf constraint for template_path/template_paths
+      - op: add
+        path: "/properties/policy_templates/items/required"
+        value:
+          - name
+          - title
+          - description
+          - type
+          - input
+          - template_path
       - op: remove
         path: "/properties/policy_templates/items/properties/dynamic_signal_types" # removes dynamic_signal_types field for policy templates
       - op: remove
