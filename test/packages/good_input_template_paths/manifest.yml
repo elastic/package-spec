@@ -1,0 +1,48 @@
+format_version: 3.6.0
+name: good_input_template_paths
+title: "Good Input Template Paths"
+version: 0.0.1
+source:
+  license: "Apache-2.0"
+description: "Test package for input with multiple template paths."
+type: input
+categories:
+  - custom
+conditions:
+  kibana:
+    version: "^8.0.0"
+  elastic:
+    subscription: "basic"
+screenshots:
+  - src: /img/sample-screenshot.png
+    title: Sample screenshot
+    size: 600x600
+    type: image/png
+icons:
+  - src: /img/sample-logo.svg
+    title: Sample logo
+    size: 32x32
+    type: image/svg+xml
+policy_templates:
+  - name: sample
+    type: logs
+    title: Sample logs
+    description: Collect sample logs
+    input: logfile
+    template_paths:
+      - input1.yml.hbs
+      - input2.yml.hbs
+    vars:
+      - name: paths
+        type: text
+        title: Paths
+        multi: true
+        default:
+          - /var/log/*.log
+elasticsearch:
+  index_template:
+    mappings:
+      subobjects: false
+owner:
+  github: elastic/foobar
+  type: community
