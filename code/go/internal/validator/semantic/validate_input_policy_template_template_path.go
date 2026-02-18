@@ -28,8 +28,9 @@ var (
 )
 
 type inputPolicyTemplate struct {
-	Name         string `yaml:"name"`
-	TemplatePath string `yaml:"template_path"` // input type packages require this field
+	Name          string   `yaml:"name"`
+	TemplatePath  string   `yaml:"template_path"`  // input type packages require this field or template_paths
+	TemplatePaths []string `yaml:"template_paths"` // alternative to template_path for multiple templates
 }
 
 type inputPackageManifest struct { // package manifest
@@ -73,13 +74,28 @@ func ValidateInputPackagesPolicyTemplates(fsys fspath.FS) specerrors.ValidationE
 	return errs
 }
 
-// validateInputPackagePolicyTemplate validates the template_path at the policy template level for input type packages
-// if the template_path is empty, it returns an error as this field is required for input type packages
+// validateInputPackagePolicyTemplate validates the template_path or template_paths at the policy template level for input type packages
+// if both template_path and template_paths are empty, it returns an error as at least one is required for input type packages
 func validateInputPackagePolicyTemplate(fsys fspath.FS, policyTemplate inputPolicyTemplate) error {
-	if policyTemplate.TemplatePath == "" {
+	if policyTemplate.TemplatePath == "" && len(policyTemplate.TemplatePaths) == 0 {
 		return errRequiredTemplatePath
 	}
-	return validateAgentInputTemplatePath(fsys, policyTemplate.TemplatePath)
+
+	// Validate template_path if provided
+	if policyTemplate.TemplatePath != "" {
+		if err := validateAgentInputTemplatePath(fsys, policyTemplate.TemplatePath); err != nil {
+			return err
+		}
+	}
+
+	// Validate template_paths if provided
+	for _, tmplPath := range policyTemplate.TemplatePaths {
+		if err := validateAgentInputTemplatePath(fsys, tmplPath); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func validateAgentInputTemplatePath(fsys fspath.FS, tmplPath string) error {
