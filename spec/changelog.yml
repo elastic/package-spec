@@ -51,6 +51,7 @@
     - description: Add support for auto_expand_replicas, max_result_window, and refresh_interval index settings in data stream templates.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1092
+    # Pending on https://github.com/elastic/kibana/pull/254090
     - description: Add support for `profiles` policy template type in input packages
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1092
