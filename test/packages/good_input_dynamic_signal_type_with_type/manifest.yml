@@ -1,10 +1,10 @@
 format_version: 3.6.0
-name: input_dynamic_signal_type
-title: "Input package with dynamic_signal_types for OTel"
+name: input_dynamic_signal_type_with_type
+title: "Input package with dynamic_signal_types and type field"
 version: 0.0.1
 source:
   license: "Apache-2.0"
-description: "Input package with dynamic_signal_types enabled for otelcol input type."
+description: "Input package with dynamic_signal_types enabled and type field present to test that type is optional."
 type: input
 categories:
   - custom
@@ -22,6 +22,7 @@ icons:
     type: image/svg+xml
 policy_templates:
   - name: otel_logs
+    type: logs
     title: OTel logs
     description: Collect OTel logs
     input: otelcol

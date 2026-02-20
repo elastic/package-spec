@@ -116,6 +116,30 @@ spec:
             not:
               required:
                 - template_path
+          - required:
+              - name
+              - title
+              - description
+              - input
+              - template_path
+            properties:
+              dynamic_signal_types:
+                const: true
+            not:
+              required:
+                - template_paths
+          - required:
+              - name
+              - title
+              - description
+              - input
+              - template_paths
+            properties:
+              dynamic_signal_types:
+                const: true
+            not:
+              required:
+                - template_path
     icons:
       $ref: "../integration/manifest.spec.yml#/definitions/icons"
     screenshots:
