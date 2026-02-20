@@ -1,7 +1,7 @@
 format_version: 1.0.0
 name: good_integration_with_dev_tools
-title: Good integration package with _dev/tools
-description: This package validates support for _dev/tools in integration packages.
+title: Good integration package with _dev/scripts
+description: This package validates support for _dev/scripts in integration packages.
 version: 1.0.0
 type: integration
 source:

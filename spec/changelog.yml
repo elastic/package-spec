@@ -33,7 +33,7 @@
     - description: Add support for dynamic_signal_types field in input package policy templates for OTel input type.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1067
-    - description: Allow optional _dev/tools directory in integration packages for development tooling files.
+    - description: Allow optional _dev/scripts directory in integration, input, and content packages for development tooling files.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1090
 - version: 3.5.7
