@@ -393,7 +393,18 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				"field policy_templates.0: Additional property dynamic_signal_types is not allowed",
-				"policy template \"sample\": dynamic_signal_types is only allowed for input type packages",
+			},
+		},
+		"bad_integration_dynamic_signal_types_non_otel": {
+			"manifest.yml",
+			[]string{
+				"policy template \"sample\": input type \"logfile\": dynamic_signal_types is only allowed when input is 'otelcol'",
+			},
+		},
+		"bad_integration_otel_old_version": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0.inputs.0.type: Must not be present",
 			},
 		},
 		"bad_input_dynamic_signal_types_old_version": {
