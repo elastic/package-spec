@@ -401,6 +401,12 @@ func TestValidateFile(t *testing.T) {
 				"policy template \"sample\": input type \"logfile\": dynamic_signal_types is only allowed when input is 'otelcol'",
 			},
 		},
+		"bad_integration_otel_old_version": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0.inputs.0.type: Must not be present",
+			},
+		},
 		"bad_input_dynamic_signal_types_old_version": {
 			"manifest.yml",
 			[]string{

@@ -573,8 +573,6 @@ spec:
             - aws/metrics
             - s3
             - file
-            not:
-              const: otelcol
           package:
             $ref: "../../integration/manifest.spec.yml#/definitions/package_reference"
           title:

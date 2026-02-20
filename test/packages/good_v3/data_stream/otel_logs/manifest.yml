@@ -1,0 +1,18 @@
+title: OTel logs
+type: logs
+streams:
+  - input: otelcol
+    title: Collect logs via OTel receiver
+    description: Collecting logs via OpenTelemetry receiver
+    dynamic_signal_types: true
+    vars:
+      - name: receivers
+        type: yaml
+        title: OTLP Receivers Configuration
+        show_user: true
+        required: true
+        default: |
+          otlp:
+            protocols:
+              http:
+                endpoint: 0.0.0.0:4318
