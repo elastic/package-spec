@@ -80,6 +80,33 @@ versions:
 ```
 
 **Important**: Remove property references before the definitions they depend on.
+**Important**: This is not needed for development files (files under `_dev` directories)
+
+#### Version Patch Comment Conventions
+
+Comments in version patches should:
+- Be placed on the `path` line, not the `op` line
+- Only be added for complex paths with array indices (e.g., `required/-`)
+- Be omitted for simple, self-explanatory paths
+
+```yaml
+# Good - comment on path line for array index
+- op: add
+  path: "/properties/policy_templates/items/required/-" # re-add type as required
+  value: type
+
+# Good - no comment for simple path
+- op: remove
+  path: "/properties/requires"
+
+# Bad - comment on op line
+- op: remove  # removes requires field
+  path: "/properties/requires"
+
+# Bad - redundant comment on simple path
+- op: remove
+  path: "/properties/requires"  # removes requires property
+```
 
 ## Test Packages
 
@@ -150,6 +177,189 @@ tests := map[string]struct {
 
 **Note**: Use tabs for indentation in Go files.
 
+## Compliance Testing
+
+Compliance tests are integration tests that verify package functionality in a real Kibana/Elasticsearch environment. They are located in `compliance/features/*.feature` files using Gherkin syntax.
+
+### Creating Compliance Tests
+
+Add a new feature file in `compliance/features/`:
+
+```gherkin
+Feature: Basic package types support
+  Basic tests with minimal packages
+
+  @3.3.0
+  Scenario: Basic content package can be installed
+   Given the "basic_content" package is installed
+     And prebuilt detection rules are loaded
+    Then there is a dashboard "basic_content-dashboard-abc-1"
+     And there is a detection rule "12cea9e9-5766-474d-a9dc-34ef7c7677c7"
+```
+
+**Version tags**: Use `@X.Y.Z` to indicate the minimum spec version required for the test. Tests tagged with versions higher than the current version won't be executed until that version is released.
+
+**Common patterns**:
+- Package installation: `Given the "package_name" package is installed`
+- Policy creation: `And a policy is created with "package_name" package`
+- Verification: `Then there is an index template "template_name" with pattern "pattern-*"`
+- Dependencies: `And the required input/content packages are installed`
+
+## Semantic Validators
+
+Semantic validators implement custom validation logic beyond JSON schema constraints. They are located in `code/go/internal/validator/semantic/`.
+
+### Creating Semantic Validators
+
+**Key Patterns**:
+* Use `pkgpath.Files()` to read manifests and `file.Values("$.jsonpath")` to query YAML.
+* Reuse existing methods in the package if they are useful, even if they are
+  defined in the files of other semantic validators.
+
+Example structure:
+```go
+func ValidateMyRule(fsys fspath.FS) specerrors.ValidationErrors {
+	manifest, err := readManifest(fsys)
+	if err != nil {
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
+	}
+
+	// Validation logic
+	return validateMyRule(*manifest)
+}
+
+func readManifest(fsys fspath.FS) (*pkgpath.File, error) {
+	manifestPath := "manifest.yml"
+	f, err := pkgpath.Files(fsys, manifestPath)
+	if err != nil {
+		return nil, fmt.Errorf("can't locate manifest file: %w", err)
+	}
+	if len(f) != 1 {
+		return nil, fmt.Errorf("single manifest file expected")
+	}
+	return &f[0], nil
+}
+
+func validateMyRule(manifest pkgpath.File) specerrors.ValidationErrors {
+	val, err := manifest.Values("$.my.field")
+	if err != nil || val == nil {
+		return nil
+	}
+	// Type assertions and validation...
+}
+```
+
+### Best Practices
+
+1. **Split into helper functions**: Separate file reading/parsing from validation logic
+2. **Use pkgpath patterns**:
+   - `pkgpath.Files(fsys, "manifest.yml")` - single file
+   - `pkgpath.Files(fsys, "data_stream/*/manifest.yml")` - glob pattern
+3. **Query with JSONPath**: `file.Values("$.policy_templates[0].name")`
+4. **Type assertions**: Query results are `interface{}`, assert to expected types
+5. **Error handling**: Return structured errors with file paths and context
+6. **Use descriptive variable names**: Avoid abbreviations in validators. Use full names like `packageName` (not `pkgName`), `dataStreamManifests` (not `dsManifests`), `templateIndex` (not `ptIdx`) for better readability.
+7. **Use fsys.Path() for error messages**: When creating error messages, use `fsys.Path("relative/path")` to get the full package path, not just the relative path from a file object. This ensures error messages match the test framework's expectations.
+   ```go
+   // Good - uses fsys.Path() for full package path
+   specerrors.NewStructuredErrorf("file \"%s\" is invalid: %s", fsys.Path("_dev/test/config.yml"), err)
+
+   // Bad - uses config.Path() which is relative within fsys
+   specerrors.NewStructuredErrorf("file \"%s\" is invalid: %s", config.Path(), err)
+   ```
+
+### Testing Semantic Validators
+
+**Use unit tests with t.TempDir() for simple validation rules. For complex scenarios involving multiple files and directories, use test packages in test/packages/ tested via validator_test.go.**
+
+#### Simple Unit Test Pattern
+
+For validators that check a single file or simple structure:
+
+```go
+func TestValidateMyRule(t *testing.T) {
+	tests := map[string]struct {
+		manifest        string
+		expectError     bool
+		errorContains   string
+	}{
+		"valid": {
+			manifest: `name: test
+format_version: 3.6.0`,
+			expectError: false,
+		},
+		"invalid": {
+			manifest: `name: test
+format_version: 3.6.0
+invalid_field: value`,
+			expectError: true,
+			errorContains: "invalid_field",
+		},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			pkgRoot := t.TempDir()
+			err := os.WriteFile(filepath.Join(pkgRoot, "manifest.yml"),
+				[]byte(tc.manifest), 0644)
+			require.NoError(t, err)
+
+			fsys := fspath.DirFS(pkgRoot)
+			errs := ValidateMyRule(fsys)
+
+			if tc.expectError {
+				require.NotEmpty(t, errs)
+				require.Contains(t, errs[0].Error(), tc.errorContains)
+			} else {
+				require.Empty(t, errs)
+			}
+		})
+	}
+}
+```
+
+#### Complex Test Package Pattern
+
+For validators that need complete package structures (multiple data streams, pipelines, kibana objects, etc.):
+
+1. Create test package in `test/packages/` using `elastic-package create package`
+2. Add test case to `code/go/pkg/validator/validator_test.go`:
+
+```go
+tests := map[string]struct {
+	invalidPkgFilePath  string
+	expectedErrContains []string
+}{
+	"good_my_feature": {},  // Valid package
+	"bad_my_feature": {
+		"manifest.yml",
+		[]string{`validation error message`},
+	},
+}
+```
+
+**When to use each approach:**
+- **Unit tests (t.TempDir)**: Single file validation, simple manifest checks, basic field validation
+- **Test packages**: Full package validation, multiple data streams, cross-file dependencies, complex pipeline/kibana object scenarios
+
+### Registering Validators
+
+In `code/go/internal/validator/spec.go`:
+```go
+{
+	Func:    semantic.ValidateMyRule,
+	Type:    spectypes.Integration,
+	Version: semver.MustParse("3.6.0"),
+}
+```
+
+### Reference Examples
+
+- `validate_minimum_kibana_version.go` - Multiple validation functions, pkgpath patterns
+- `validate_package_references.go` - Policy templates and data streams validation
+- `validate_deprecated_replaced_by_test.go` - Unit testing with t.TempDir()
+
 ## Testing Commands
 
 ```bash
@@ -159,6 +369,9 @@ go test ./code/go/internal
 # Run specific test
 go test -v -run "TestValidateFile/my_test" ./code/go/pkg/validator/...
 
+# Run semantic validator tests
+go test -v ./code/go/internal/validator/semantic -run TestMyValidator
+
 # Run all tests
 go test ./code/go/...
 
@@ -167,6 +380,9 @@ make -C code/go update
 
 # Format Go files
 make -C code/go format
+
+# Linting, required
+make check
 ```
 
 ## Changelog Management

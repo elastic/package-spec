@@ -1,0 +1,8 @@
+data_stream:
+  {{#if data_stream.dataset}}
+  dataset: {{data_stream.dataset}}
+  {{/if}}
+paths:
+{{#each paths}}
+  - {{this}}
+{{/each}}
