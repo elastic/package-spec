@@ -174,6 +174,10 @@ versions:
         path: "/properties/deprecated" # removes deprecated field for package
       - op: remove
         path: "/properties/policy_templates/items/properties/deprecated" # removes deprecated field for policy templates
+      - op: remove
+        path: "/properties/policy_templates/items/properties/type/enum"
+        value:
+          - profiles # removes 'profiles' as a valid policy template type, since it requires Kibana version >= 9.4.0 support
   # Reserve otelcol input name before 3.5.0.
   - before: 3.5.0
     patch:
