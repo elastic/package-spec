@@ -41,6 +41,7 @@ func TestValidateFile(t *testing.T) {
 		"good_integration_template_paths":        {},
 		"good_content":                           {},
 		"good_content_with_dev":                  {},
+		"good_integration_with_dev_tools":        {},
 		"good_lookup_index":                      {},
 		"good_alert_rule_templates":              {},
 		"good_requires":                          {},
