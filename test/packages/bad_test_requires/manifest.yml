@@ -1,0 +1,26 @@
+format_version: 3.6.0
+name: bad_test_requires
+title: Test requires validation
+description: Test config with invalid package requirements.
+version: 0.0.1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+requires:
+  input:
+    - name: sql_input
+      version: "2.0.0"
+policy_templates:
+  - name: example
+    title: Example
+    description: Example policy template
+    inputs:
+      - type: logfile
+        title: Log file input
+        description: Collect logs from files
+owner:
+  github: elastic/ecosystem
+  type: elastic

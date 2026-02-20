@@ -1,0 +1,6 @@
+title: Apache access logs
+type: logs
+streams:
+  - package: filelog_otel
+    title: Apache Access Logs
+    description: Collect Apache access logs with input package

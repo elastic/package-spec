@@ -575,6 +575,8 @@ spec:
             - file
             not:
               const: otelcol
+          package:
+            $ref: "../../integration/manifest.spec.yml#/definitions/package_reference"
           title:
             description: >
               Title of the stream. It should include the source of the data that is
@@ -610,7 +612,9 @@ spec:
         required:
         - title
         - description
-        - input
+        oneOf:
+        - required: [input]
+        - required: [package]
     agent:
       $ref: "../../integration/manifest.spec.yml#/definitions/agent"
     elasticsearch:
@@ -665,14 +669,21 @@ spec:
 versions:
   - before: 3.6.0
     patch:
+      - op: remove
+        path: "/properties/streams/items/properties/package"
+      - op: remove
+        path: "/properties/streams/items/oneOf"
+      - op: add
+        path: "/properties/streams/items/required/-" # re-add input as required
+        value: input
       - op: remove # removes template_paths field for streams
         path: "/properties/streams/items/properties/template_paths"
       - op: remove # removes deprecated field for data stream
         path: "/properties/deprecated"
-      - op: remove # remove deprecated field for vars
-        path: /definitions/vars/items/properties/deprecated
       - op: remove
-        path: "/properties/streams/items/properties/var_groups" # removes var_groups from streams
+        path: "/definitions/vars/items/properties/deprecated"
+      - op: remove
+        path: "/properties/streams/items/properties/var_groups"
   - before: 3.5.0
     patch:
       # Require >=3.5.0 to use the duration variable type.

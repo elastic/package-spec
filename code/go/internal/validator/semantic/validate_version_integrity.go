@@ -47,17 +47,12 @@ func ValidateVersionIntegrity(fsys fspath.FS) specerrors.ValidationErrors {
 }
 
 func readManifestVersion(fsys fspath.FS) (string, error) {
-	manifestPath := "manifest.yml"
-	f, err := pkgpath.Files(fsys, manifestPath)
+	manifest, err := readManifest(fsys)
 	if err != nil {
-		return "", fmt.Errorf("can't locate manifest file: %w", err)
+		return "", err
 	}
 
-	if len(f) != 1 {
-		return "", errors.New("single manifest file expected")
-	}
-
-	val, err := f[0].Values("$.version")
+	val, err := manifest.Values("$.version")
 	if err != nil {
 		return "", fmt.Errorf("can't read manifest version: %w", err)
 	}

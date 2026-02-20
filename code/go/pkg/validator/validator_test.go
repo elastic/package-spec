@@ -30,31 +30,33 @@ func TestValidateFile(t *testing.T) {
 		invalidPkgFilePath  string
 		expectedErrContains []string
 	}{
-		"good":                               {},
-		"good_v2":                            {},
-		"good_v3":                            {},
-		"good_var_groups":                    {},
-		"good_input":                         {},
-		"good_input_otel":                    {},
-		"good_input_dynamic_signal_type":     {},
-		"good_input_template_paths":          {},
-		"good_integration_template_paths":    {},
-		"good_content":                       {},
-		"good_content_with_dev":              {},
-		"good_lookup_index":                  {},
-		"good_alert_rule_templates":          {},
-		"deploy_custom_agent":                {},
-		"deploy_custom_agent_multi_services": {},
-		"deploy_docker":                      {},
-		"deploy_terraform":                   {},
-		"missing_data_stream":                {},
-		"icons_dark_mode":                    {},
-		"ignored_malformed":                  {},
-		"custom_ilm_policy":                  {},
-		"profiling_symbolizer":               {},
-		"logs_synthetic_mode":                {},
-		"kibana_configuration_links":         {},
-		"with_links":                         {},
+		"good":                                   {},
+		"good_v2":                                {},
+		"good_v3":                                {},
+		"good_var_groups":                        {},
+		"good_input":                             {},
+		"good_input_otel":                        {},
+		"good_input_dynamic_signal_type":         {},
+		"good_input_template_paths":              {},
+		"good_integration_template_paths":        {},
+		"good_content":                           {},
+		"good_content_with_dev":                  {},
+		"good_lookup_index":                      {},
+		"good_alert_rule_templates":              {},
+		"good_requires":                          {},
+		"good_package_reference_policy_template": {},
+		"deploy_custom_agent":                    {},
+		"deploy_custom_agent_multi_services":     {},
+		"deploy_docker":                          {},
+		"deploy_terraform":                       {},
+		"missing_data_stream":                    {},
+		"icons_dark_mode":                        {},
+		"ignored_malformed":                      {},
+		"custom_ilm_policy":                      {},
+		"profiling_symbolizer":                   {},
+		"logs_synthetic_mode":                    {},
+		"kibana_configuration_links":             {},
+		"with_links":                             {},
 		"bad_duration_vars": {
 			"manifest.yml",
 			[]string{
@@ -236,6 +238,47 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				`field policy_templates.0.deployment_modes.agentless.resources.requests: Additional property disk is not allowed`,
+			},
+		},
+		"bad_requires": {
+			"manifest.yml",
+			[]string{
+				`field requires.content.0.name: Does not match pattern '^[a-z0-9_]+$'`,
+				`field requires.input.0: version is required`,
+				`field requires.input.1.version: version "^1.0.0" for package "filelog_otel" must be a valid semantic version, constraints are not allowed`,
+			},
+		},
+		"bad_requires_old_version": {
+			"manifest.yml",
+			[]string{
+				`field (root): Additional property requires is not allowed`,
+			},
+		},
+		"bad_package_field_old_version": {
+			"manifest.yml",
+			[]string{
+				`field policy_templates.0.inputs.0: type is required`,
+				`field policy_templates.0.inputs.0: Additional property package is not allowed`,
+			},
+		},
+		"bad_datastream_package_old_version": {
+			"data_stream/logs/manifest.yml",
+			[]string{
+				`field streams.0: input is required`,
+				`field streams.0: Additional property package is not allowed`,
+			},
+		},
+		"bad_package_not_in_requires": {
+			"manifest.yml",
+			[]string{
+				`policy_templates[0].inputs[0] references package "missing_package" which is not listed in requires section`,
+			},
+		},
+		"bad_test_requires": {
+			"_dev/test/config.yml",
+			[]string{
+				`policy.requires[0] references package "missing_package" which is not listed in manifest requires section`,
+				`system.requires[0] package "sql_input" version "1.5.0" does not satisfy constraint "2.0.0"`,
 			},
 		},
 		"bad_input_dataset_vars": {

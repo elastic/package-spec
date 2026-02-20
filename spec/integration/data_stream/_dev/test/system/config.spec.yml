@@ -167,3 +167,8 @@ spec:
         vars:
           description: Variables used to configure settings defined in the data stream manifest.
           $ref: "./../config.spec.yml#/definitions/vars"
+    requires:
+      description: Package dependencies required for this test with exact versions.
+      type: array
+      items:
+        $ref: "./../config.spec.yml#/definitions/package_requirement"
