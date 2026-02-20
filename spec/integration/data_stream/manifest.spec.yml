@@ -573,6 +573,10 @@ spec:
             - aws/metrics
             - s3
             - file
+            not:
+              const: otelcol
+          package:
+            $ref: "../../integration/manifest.spec.yml#/definitions/package_reference"
           title:
             description: >
               Title of the stream. It should include the source of the data that is
@@ -610,7 +614,9 @@ spec:
         required:
         - title
         - description
-        - input
+        oneOf:
+        - required: [input]
+        - required: [package]
     agent:
       $ref: "../../integration/manifest.spec.yml#/definitions/agent"
     elasticsearch:
@@ -673,11 +679,18 @@ versions:
       - op: remove
         path: "/properties/streams/items/properties/dynamic_signal_types"
       - op: remove
+        path: "/properties/streams/items/properties/package"
+      - op: remove
+        path: "/properties/streams/items/oneOf"
+      - op: add
+        path: "/properties/streams/items/required/-" # re-add input as required
+        value: input
+      - op: remove # removes template_paths field for streams
         path: "/properties/streams/items/properties/template_paths"
       - op: remove
         path: "/properties/deprecated"
       - op: remove
-        path: /definitions/vars/items/properties/deprecated
+        path: "/definitions/vars/items/properties/deprecated"
       - op: remove
         path: "/properties/streams/items/properties/var_groups"
   - before: 3.5.0
