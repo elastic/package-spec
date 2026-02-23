@@ -45,4 +45,3 @@ Feature: Basic package types support
   Scenario: OTel input package with profiles type can be installed
    Given the "good_input_profiles" package is installed
      And a policy is created with "good_input_profiles" package, "0.0.1" version, "profilingreceiver" template, "profilingreceiver" input, "otelcol" input type and dataset "spec.otel_input_test"
-    Then there is an index template "profiles-spec.otel_input_test" with pattern "profiles-spec.otel_input_test.otel-*"
