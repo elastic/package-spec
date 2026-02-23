@@ -1,0 +1,8 @@
+title: My logs
+type: logs
+categories:
+  - observability
+streams:
+  - input: logfile
+    title: My logs
+    description: Collect my logs
