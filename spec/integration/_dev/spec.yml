@@ -27,3 +27,8 @@ spec:
       name: shared
       required: false
       $ref: "./shared/spec.yml"
+    - description: Folder containing scripts used for development.
+      type: folder
+      name: scripts
+      required: false
+      $ref: "./scripts/spec.yml"
