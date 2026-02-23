@@ -37,7 +37,7 @@ func TestValidateFile(t *testing.T) {
 		"good_input":                             {},
 		"good_input_otel":                        {},
 		"good_input_dynamic_signal_type":         {},
-		"good_input_profiles":				      {},
+		"good_input_profiles":                    {},
 		"good_input_template_paths":              {},
 		"good_integration_template_paths":        {},
 		"good_content":                           {},
