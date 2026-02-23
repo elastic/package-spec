@@ -1,0 +1,11 @@
+receivers:
+{{receivers}}
+exporters:
+  {{#each exporters}}
+  {{this}}
+  {{/each}}
+service:
+  pipelines:
+    {{#each pipelines}}
+    {{this}}
+    {{/each}}
