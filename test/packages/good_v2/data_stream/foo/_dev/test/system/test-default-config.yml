@@ -1,2 +1,11 @@
 wait_for_data_timeout: 10m
 vars: ~
+
+samples:
+  - name: "one"
+    condition:
+      key: "sql.driver"
+      value: "mysql"
+  - name: "two"
+    condition:
+      key: "sql.driver"
