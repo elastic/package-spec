@@ -27,15 +27,6 @@ policy_templates:
         type: integer
         required: false
         description: Defines the sampling frequency.
-elasticsearch:
-  index_template:
-    settings:
-      number_of_shards: 1
-      auto_expand_replicas: "0-1"
-      max_result_window: 150000
-      refresh_interval: "10s"
-    mappings:
-      dynamic: false
 owner:
   github: elastic/ingest-otel-data
   type: elastic
