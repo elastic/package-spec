@@ -1,0 +1,80 @@
+title: Findings
+type: logs
+streams:
+  - input: aws-s3
+    template_path: aws-s3.yml.hbs
+    title: AWS S3 Findings
+    description: Collect findings from AWS S3 bucket
+    vars:
+      - name: bucket_arn
+        type: text
+        title: Bucket ARN
+        description: ARN of the S3 bucket
+        show_user: true
+        required: true
+      - name: access_key_id
+        type: text
+        title: Access Key ID
+        description: AWS access key ID for direct access
+        show_user: true
+        secret: false
+      - name: secret_access_key
+        type: password
+        title: Secret Access Key
+        description: AWS secret access key for direct access
+        show_user: true
+        secret: true
+      - name: session_token
+        type: password
+        title: Session Token
+        description: AWS session token for temporary credentials
+        show_user: true
+        secret: true
+      - name: role_arn
+        type: text
+        title: Role ARN
+        description: ARN of the IAM role to assume
+        show_user: true
+      - name: external_id
+        type: password
+        title: External ID
+        description: External ID for cross-account role assumption
+        show_user: true
+        secret: true
+    var_groups:
+      - name: credential_type
+        title: Setup Access
+        selector_title: Preferred method
+        description: >
+          Choose how to authenticate with AWS for collecting findings.
+        options:
+          - name: direct_access_key
+            title: Direct Access Keys
+            description: Use AWS access key ID and secret access key directly.
+            vars:
+              - access_key_id
+              - secret_access_key
+          - name: temporary_credentials
+            title: Temporary Credentials
+            description: Use temporary credentials with session token.
+            vars:
+              - access_key_id
+              - secret_access_key
+              - session_token
+          - name: assume_role
+            title: Assume Role
+            description: Assume an IAM role using role ARN.
+            vars:
+              - role_arn
+              - external_id
+          - name: cloud_connectors
+            title: Cloud Connector (recommended)
+            description: Use Elastic Cloud Connector for secure, agentless authentication.
+            vars:
+              - role_arn
+              - external_id
+            hide_in_deployment_modes:
+              - default
+            provider: aws
+            iac_template_url: >-
+              https://console.aws.amazon.com/cloudformation/home#/stacks/quickcreate?templateURL=https://elastic-cloud-connectors.s3.amazonaws.com/cloudformation-aws-connector.yml&stackName=Elastic-Cloud-Connector

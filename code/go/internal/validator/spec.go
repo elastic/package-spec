@@ -127,11 +127,15 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
 		},
 		{
-			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.field): processors.[0-9]+.remove.field does not match: "message"`),
+			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.field(.[0-9]+)?): processors.[0-9]+.remove.field(.[0-9]+)? does not match: "message"`),
 			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
 		},
 		{
 			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.if): processors.[0-9]+.remove.if does not match: "ctx\.event\?\.original != null"`),
+			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null'",
+		},
+		{
+			matcher: regexp.MustCompile(`(field processors.[0-9]+.remove): (ignore_missing|if) is required`),
 			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null'",
 		},
 	}
@@ -214,12 +218,22 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateDimensionsPresent, types: []string{"integration"}, since: semver.MustParse("3.0.1")},
 		{fn: semantic.ValidateCapabilitiesRequired, since: semver.MustParse("2.10.0")}, // capabilities definition was added in spec version 2.10.0
 		{fn: semantic.ValidateRequiredVarGroups},
+		{fn: semantic.ValidateVarGroups, since: semver.MustParse("3.6.0")},
 		{fn: semantic.ValidateDocsStructure},
 		{fn: semantic.ValidateDeploymentModes, types: []string{"integration"}},
 		{fn: semantic.ValidateDurationVariables, since: semver.MustParse("3.5.0")},
 		{fn: semantic.ValidateInputPackagesPolicyTemplates, types: []string{"input"}},
+		{fn: semantic.ValidateInputDynamicSignalTypes},
 		{fn: semantic.ValidateMinimumAgentVersion},
 		{fn: semantic.ValidateIntegrationPolicyTemplates, types: []string{"integration"}},
+		{fn: semantic.ValidatePipelineTags, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateStaticHandlebarsFiles, types: []string{"integration", "input"}},
+		{fn: semantic.ValidateKibanaTagDuplicates},
+		{fn: semantic.ValidatePipelineOnFailure, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateIntegrationInputsDeprecation, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateDeprecatedReplacedBy, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidatePackageReferences, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateTestPackageRequirements, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
 	}
 
 	var validationRules validationRules

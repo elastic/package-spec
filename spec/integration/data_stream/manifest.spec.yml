@@ -164,6 +164,8 @@ spec:
           default:
             description: Default value(s) for variable
             $ref: "#/definitions/input_variable_value"
+          deprecated:
+            $ref: "../../integration/manifest.spec.yml#/definitions/deprecated"
         allOf:
          - if:
              properties:
@@ -236,6 +238,15 @@ spec:
         required:
           - name
           - type
+    elasticsearch_index_mode:
+      description: |-
+        Index mode to use. Index mode can be used to enable use case specific functionalities.
+        This setting must be installed in the composable index template, not in the package component templates.
+      type: string
+      enum:
+      - "time_series" # Enables time series data streams https://www.elastic.co/guide/en/elasticsearch/reference/master/tsds.html
+      examples:
+      - "time_series"
     elasticsearch_index_template:
       description: Index template definition
       type: object
@@ -562,8 +573,8 @@ spec:
             - aws/metrics
             - s3
             - file
-            not:
-              const: otelcol
+          package:
+            $ref: "../../integration/manifest.spec.yml#/definitions/package_reference"
           title:
             description: >
               Title of the stream. It should include the source of the data that is
@@ -584,19 +595,26 @@ spec:
             - Collect Metrics from Linux servers with Elastic Agent.
             - Collect Logs from Apache Web Server using Elastic Agent.
           template_path:
-            description: "Path to Elasticsearch index template for stream."
-            type: string
+            $ref: "../../integration/manifest.spec.yml#/definitions/template_path"
+          template_paths:
+            $ref: "../../integration/manifest.spec.yml#/definitions/template_paths"
           required_vars:
             $ref: "#/definitions/required_vars"
           vars:
             $ref: "#/definitions/vars"
+          var_groups:
+            $ref: "../../integration/manifest.spec.yml#/definitions/var_groups"
+          dynamic_signal_types:
+            $ref: "../../integration/manifest.spec.yml#/definitions/dynamic_signal_types"
           enabled:
             description: Is stream enabled?
             type: boolean
         required:
         - title
         - description
-        - input
+        oneOf:
+        - required: [input]
+        - required: [package]
     agent:
       $ref: "../../integration/manifest.spec.yml#/definitions/agent"
     elasticsearch:
@@ -605,14 +623,7 @@ spec:
       additionalProperties: false
       properties:
         index_mode:
-          description: |-
-            Index mode to use. Index mode can be used to enable use case specific functionalities.
-            This setting must be installed in the composable index template, not in the package component templates.
-          type: string
-          enum:
-          - "time_series" # Enables time series data streams https://www.elastic.co/guide/en/elasticsearch/reference/master/tsds.html
-          examples:
-          - "time_series"
+          $ref: "#/definitions/elasticsearch_index_mode"
         index_template:
           $ref: "#/definitions/elasticsearch_index_template"
         privileges:
@@ -645,10 +656,41 @@ spec:
         dynamic_namespace:
           description: When set to true, agents running this integration are granted data stream privileges for all namespaces of its type
           type: boolean
+    categories:
+      description: >
+        Optional categories that describe the type of data collected by this data stream.
+        Used for telemetry and categorization purposes. Skip if integration-level categories are appropriate.
+      $ref: "../../integration/manifest.spec.yml#/definitions/categories"
+    deprecated:
+      $ref: "../../integration/manifest.spec.yml#/definitions/deprecated"
   required:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.6.0
+    patch:
+      - op: add
+        path: "/properties/streams/items/properties/input"
+        value:
+          not:
+            const: otelcol
+      - op: remove
+        path: "/properties/streams/items/properties/dynamic_signal_types"
+      - op: remove
+        path: "/properties/streams/items/properties/package"
+      - op: remove
+        path: "/properties/streams/items/oneOf"
+      - op: add
+        path: "/properties/streams/items/required/-" # re-add input as required
+        value: input
+      - op: remove # removes template_paths field for streams
+        path: "/properties/streams/items/properties/template_paths"
+      - op: remove
+        path: "/properties/deprecated"
+      - op: remove
+        path: "/definitions/vars/items/properties/deprecated"
+      - op: remove
+        path: "/properties/streams/items/properties/var_groups"
   - before: 3.5.0
     patch:
       # Require >=3.5.0 to use the duration variable type.

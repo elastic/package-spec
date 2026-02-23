@@ -82,6 +82,8 @@ spec:
       $ref: "../integration/manifest.spec.yml#/definitions/screenshots"
     owner:
       $ref: "../integration/manifest.spec.yml#/definitions/owner"
+    deprecated:
+      $ref: "../integration/manifest.spec.yml#/definitions/deprecated"
   required:
   - format_version
   - name
@@ -90,3 +92,10 @@ spec:
   - version
   - type
   - owner
+
+# JSON patches for newer versions should be placed on top
+versions:
+  - before: 3.6.0
+    patch:
+      - op: remove # remove deprecated field for package
+        path: "/properties/deprecated"

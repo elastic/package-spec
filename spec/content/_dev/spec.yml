@@ -1,0 +1,14 @@
+spec:
+  additionalContents: false
+  developmentFolder: true
+  contents:
+    - description: Folder containing shared files, including experimental dashboards-as-YML files for content-only packages.
+      type: folder
+      name: shared
+      required: false
+      $ref: "../../integration/_dev/shared/spec.yml"
+    - description: Folder containing scripts used for development.
+      type: folder
+      name: scripts
+      required: false
+      $ref: "../../integration/_dev/scripts/spec.yml"

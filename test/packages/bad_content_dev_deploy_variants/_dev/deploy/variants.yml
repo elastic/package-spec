@@ -1,0 +1,3 @@
+# Invalid: variants must be an object with a "default" key, not an array.
+variants:
+  - FOO: bar

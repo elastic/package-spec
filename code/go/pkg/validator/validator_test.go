@@ -30,26 +30,34 @@ func TestValidateFile(t *testing.T) {
 		invalidPkgFilePath  string
 		expectedErrContains []string
 	}{
-		"good":                               {},
-		"good_v2":                            {},
-		"good_v3":                            {},
-		"good_input":                         {},
-		"good_input_otel":                    {},
-		"good_content":                       {},
-		"good_lookup_index":                  {},
-		"good_alert_rule_templates":          {},
-		"deploy_custom_agent":                {},
-		"deploy_custom_agent_multi_services": {},
-		"deploy_docker":                      {},
-		"deploy_terraform":                   {},
-		"missing_data_stream":                {},
-		"icons_dark_mode":                    {},
-		"ignored_malformed":                  {},
-		"custom_ilm_policy":                  {},
-		"profiling_symbolizer":               {},
-		"logs_synthetic_mode":                {},
-		"kibana_configuration_links":         {},
-		"with_links":                         {},
+		"good":                                   {},
+		"good_v2":                                {},
+		"good_v3":                                {},
+		"good_var_groups":                        {},
+		"good_input":                             {},
+		"good_input_otel":                        {},
+		"good_input_dynamic_signal_type":         {},
+		"good_input_template_paths":              {},
+		"good_integration_template_paths":        {},
+		"good_content":                           {},
+		"good_content_with_dev":                  {},
+		"good_integration_with_dev_tools":        {},
+		"good_lookup_index":                      {},
+		"good_alert_rule_templates":              {},
+		"good_requires":                          {},
+		"good_package_reference_policy_template": {},
+		"deploy_custom_agent":                    {},
+		"deploy_custom_agent_multi_services":     {},
+		"deploy_docker":                          {},
+		"deploy_terraform":                       {},
+		"missing_data_stream":                    {},
+		"icons_dark_mode":                        {},
+		"ignored_malformed":                      {},
+		"custom_ilm_policy":                      {},
+		"profiling_symbolizer":                   {},
+		"logs_synthetic_mode":                    {},
+		"kibana_configuration_links":             {},
+		"with_links":                             {},
 		"bad_duration_vars": {
 			"manifest.yml",
 			[]string{
@@ -181,8 +189,8 @@ func TestValidateFile(t *testing.T) {
 		"bad_saved_object_tags": {
 			"kibana/tags.yml",
 			[]string{
-				`field 0.asset_types.11: 0.asset_types.11 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "alerting_rule_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
-				`field 0.asset_types.12: 0.asset_types.12 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "alerting_rule_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
+				`field 0.asset_types.11: 0.asset_types.11 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "alerting_rule_template", "slo_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
+				`field 0.asset_types.12: 0.asset_types.12 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "alerting_rule_template", "slo_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
 				`field 1.asset_ids.1: Invalid type. Expected: string, given: integer`,
 				`field 2: text is required`,
 				`field 3: asset_types is required`,
@@ -231,6 +239,47 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				`field policy_templates.0.deployment_modes.agentless.resources.requests: Additional property disk is not allowed`,
+			},
+		},
+		"bad_requires": {
+			"manifest.yml",
+			[]string{
+				`field requires.content.0.name: Does not match pattern '^[a-z0-9_]+$'`,
+				`field requires.input.0: version is required`,
+				`field requires.input.1.version: version "^1.0.0" for package "filelog_otel" must be a valid semantic version, constraints are not allowed`,
+			},
+		},
+		"bad_requires_old_version": {
+			"manifest.yml",
+			[]string{
+				`field (root): Additional property requires is not allowed`,
+			},
+		},
+		"bad_package_field_old_version": {
+			"manifest.yml",
+			[]string{
+				`field policy_templates.0.inputs.0: type is required`,
+				`field policy_templates.0.inputs.0: Additional property package is not allowed`,
+			},
+		},
+		"bad_datastream_package_old_version": {
+			"data_stream/logs/manifest.yml",
+			[]string{
+				`field streams.0: input is required`,
+				`field streams.0: Additional property package is not allowed`,
+			},
+		},
+		"bad_package_not_in_requires": {
+			"manifest.yml",
+			[]string{
+				`policy_templates[0].inputs[0] references package "missing_package" which is not listed in requires section`,
+			},
+		},
+		"bad_test_requires": {
+			"_dev/test/config.yml",
+			[]string{
+				`policy.requires[0] references package "missing_package" which is not listed in manifest requires section`,
+				`system.requires[0] package "sql_input" version "1.5.0" does not satisfy constraint "2.0.0"`,
 			},
 		},
 		"bad_input_dataset_vars": {
@@ -283,6 +332,30 @@ func TestValidateFile(t *testing.T) {
 				`required var "password" in optional group is not defined`,
 			},
 		},
+		"bad_var_groups_missing_var": {
+			"manifest.yml",
+			[]string{
+				`var "non_existent_var" referenced in var_group "credential_type" option "direct_access_key" is not defined`,
+			},
+		},
+		"bad_var_groups_duplicate_name": {
+			"manifest.yml",
+			[]string{
+				`duplicate option name "direct_access_key" in var_group "credential_type"`,
+			},
+		},
+		"bad_var_groups_required_var_in_required_group": {
+			"manifest.yml",
+			[]string{
+				`var "access_key_id" in required var_group "credential_type" should not have required: true (requirement is inferred from var_group)`,
+			},
+		},
+		"bad_var_groups_required_var_in_optional_group": {
+			"manifest.yml",
+			[]string{
+				`var "access_key_id" in non-required var_group "credential_type" should not have required: true (var_group is optional)`,
+			},
+		},
 		"bad_input_deployment_modes": {
 			"manifest.yml",
 			[]string{
@@ -311,6 +384,36 @@ func TestValidateFile(t *testing.T) {
 				"field policy_templates.0.input: Must not be present",
 			},
 		},
+		"bad_input_dynamic_signal_types_non_otel": {
+			"manifest.yml",
+			[]string{
+				"policy template \"sample\": dynamic_signal_types is only allowed when input is 'otelcol', got 'logfile'",
+			},
+		},
+		"bad_integration_dynamic_signal_types": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0: Additional property dynamic_signal_types is not allowed",
+			},
+		},
+		"bad_integration_dynamic_signal_types_non_otel": {
+			"manifest.yml",
+			[]string{
+				"policy template \"sample\": input type \"logfile\": dynamic_signal_types is only allowed when input is 'otelcol'",
+			},
+		},
+		"bad_integration_otel_old_version": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0.inputs.0.type: Must not be present",
+			},
+		},
+		"bad_input_dynamic_signal_types_old_version": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0: Additional property dynamic_signal_types is not allowed",
+			},
+		},
 		"bad_input_template_path": {
 			"manifest.yml",
 			[]string{
@@ -318,10 +421,17 @@ func TestValidateFile(t *testing.T) {
 				"policy template \"sql_query\" references template_path \"\": template_path is required for input type packages",
 			},
 		},
+		"bad_input_both_template_path": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0: Must not be present",
+				"policy template \"sample\" references template_path \"input.yml.hbs\": template file not found",
+			},
+		},
 		"bad_agent_version_v3": {
 			"manifest.yml",
 			[]string{
-				"field conditions.agent: version is required",
+				"invalid agent.version condition: improper constraint: version",
 			},
 		},
 		"bad_integration_stream_template_path": {
@@ -341,6 +451,40 @@ func TestValidateFile(t *testing.T) {
 			[]string{
 				"policy template \"sample\" references input template_path: error validating input \"logfile\": template file not found",
 			},
+		},
+		"bad_esql_view_content": {
+			"elasticsearch/esql_view/view.yml",
+			[]string{"field query: Invalid type. Expected: string, given: null"},
+		},
+		"bad_esql_view_integration": {
+			"elasticsearch/esql_view/view.yml",
+			[]string{"field query: Invalid type. Expected: string, given: null"},
+		},
+		"bad_content_duplicate_tags": {
+			"kibana/tags.yml",
+			[]string{"duplicate tag name 'Tag One' found (SVR00007)"},
+		},
+		"bad_kibana_tag_duplicate": {
+			"kibana/tag/bad_tag-security-solution-default.json",
+			[]string{"tag name 'Security Solution' is already defined in tags.yml (SVR00007)"},
+		},
+		"deprecated_integration":              {},
+		"deprecated_input":                    {},
+		"deprecated_content":                  {},
+		"deprecated_integration_policy_input": {},
+		"deprecated_integration_policy":       {},
+		"deprecated_integration_stream_var":   {},
+		"bad_deprecation_description": {
+			"manifest.yml",
+			[]string{"field deprecated.description: Invalid type. Expected: string, given: null"},
+		},
+		"bad_deprecation_since": {
+			"manifest.yml",
+			[]string{"field deprecated: since is required"},
+		},
+		"bad_deprecated_integration_policy_input": {
+			"manifest.yml",
+			[]string{"all inputs are deprecated but the integration package is not marked as deprecated"},
 		},
 	}
 
@@ -416,6 +560,11 @@ func TestValidateItemNotAllowed(t *testing.T) {
 		"bad_alert_rule_templates": {
 			"kibana": []string{
 				"alerting_rule_template",
+			},
+		},
+		"bad_content_dev_deploy_variants": {
+			"_dev": []string{
+				"deploy",
 			},
 		},
 	}
@@ -513,11 +662,14 @@ func TestValidateBadRuleIDs(t *testing.T) {
 
 func TestValidateMissingRequiredFields(t *testing.T) {
 	tests := map[string][]string{
-		"good":    {},
-		"good_v2": {},
+		"good":       {},
+		"good_v2":    {},
+		"good_input": {},
 		"missing_required_fields": {
 			`expected type "constant_keyword" for required field "data_stream.dataset", found "keyword" in "../../../../test/packages/missing_required_fields/data_stream/foo/fields/base-fields.yml"`,
 			`expected field "data_stream.type" with type "constant_keyword" not found in datastream "foo"`,
+			// `expected field "data_stream.namespace" with type "constant_keyword" not found in transform "good_example_abc_1"`,
+			// `expected type "date" for required field "@timestamp", found "long" in "../../../../test/packages/missing_required_fields/elasticsearch/transform/good_example_abc_1/fields/base-fields.yml"`,
 		},
 		"missing_required_fields_input": {
 			`expected type "constant_keyword" for required field "data_stream.dataset", found "keyword" in "../../../../test/packages/missing_required_fields_input/fields/base-fields.yml"`,
@@ -578,25 +730,44 @@ func TestValidateVersionIntegrity(t *testing.T) {
 }
 
 func TestValidateDuplicatedFields(t *testing.T) {
-	tests := map[string]string{
-		"bad_duplicated_fields":       "field \"event.dataset\" is defined multiple times for data stream \"wrong\", found in: ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/ecs.yml",
-		"bad_duplicated_fields_input": "field \"event.dataset\" is defined multiple times for data stream \"\", found in: ../../../../test/packages/bad_duplicated_fields_input/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields_input/fields/ecs.yml",
+	tests := map[string][]string{
+		"good":       {},
+		"good_v2":    {},
+		"good_input": {},
+		"bad_duplicated_fields": {
+			"field \"event.dataset\" is defined multiple times for data stream \"wrong\", found in: ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/ecs.yml",
+			"field \"field1\" is defined multiple times for transform \"good_example_abc_1\", found in: ../../../../test/packages/bad_duplicated_fields/elasticsearch/transform/good_example_abc_1/fields/fields.yml, ../../../../test/packages/bad_duplicated_fields/elasticsearch/transform/good_example_abc_1/fields/more-fields.yml",
+		},
+		"bad_duplicated_fields_input": {
+			"field \"event.dataset\" is defined multiple times, found in: ../../../../test/packages/bad_duplicated_fields_input/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields_input/fields/ecs.yml",
+		},
 	}
 
-	for pkgName, expectedErrorMessage := range tests {
+	for pkgName, expectedErrorMessages := range tests {
 		t.Run(pkgName, func(t *testing.T) {
 			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			if len(expectedErrorMessages) == 0 {
+				assert.NoError(t, errs)
+				return
+			}
 			require.Error(t, errs)
 			vErrs, ok := errs.(specerrors.ValidationErrors)
 			require.True(t, ok)
 
-			assert.Len(t, vErrs, 1)
+			assert.Len(t, vErrs, len(expectedErrorMessages))
 
-			var errMessages []string
-			for _, vErr := range vErrs {
-				errMessages = append(errMessages, vErr.Error())
+			for _, expectedError := range expectedErrorMessages {
+				found := false
+				for _, foundError := range vErrs {
+					if foundError.Error() == expectedError {
+						found = true
+						break
+					}
+				}
+				if !found {
+					t.Errorf("expected error: %q (%v)", expectedError, errs)
+				}
 			}
-			require.Contains(t, errMessages, expectedErrorMessage)
 		})
 	}
 }
@@ -835,6 +1006,25 @@ func TestValidateIngestPipelines(t *testing.T) {
 				"field processors.2.remove.if: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null' (JSE00001)",
 			},
 		},
+		"bad_pipeline_tags": {
+			"example": []string{
+				"set processor at line 4 missing required tag (SVR00006)",
+				"set processor at line 15 has duplicate tag value: \"set_sample_field\"",
+			},
+		},
+		"bad_pipeline_on_failure": {
+			"missing": []string{
+				`pipeline on_failure handler must set event.kind to "pipeline_error" (SVR00008)`,
+				`pipeline on_failure handler must set error.message (SVR00009)`,
+			},
+			"incorrect": []string{
+				`pipeline on_failure handler must set event.kind to "pipeline_error" (SVR00008)`,
+				`pipeline on_failure error.message must include "_ingest.on_failure_processor_type" (SVR00009)`,
+				`pipeline on_failure error.message must include "_ingest.on_failure_processor_tag" (SVR00009)`,
+				`pipeline on_failure error.message must include "_ingest.on_failure_message" (SVR00009)`,
+				`pipeline on_failure error.message must include "_ingest.pipeline" (SVR00009)`,
+			},
+		},
 	}
 
 	for pkgName, pipelines := range tests {
@@ -910,6 +1100,29 @@ func TestLinksAreBlocked(t *testing.T) {
 		}
 	}
 	t.Error("links should not be allowed in package")
+}
+
+func TestValidateHandlebarsFiles(t *testing.T) {
+	tests := map[string]string{
+		"bad_input_hbs":              "invalid handlebars template: error validating agent/input/input.yml.hbs: Parse error on line 10:\nExpecting OpenEndBlock, got: 'EOF'",
+		"bad_integration_hbs":        "invalid handlebars template: error validating data_stream/foo/agent/stream/filestream.yml.hbs: Parse error on line 43:\nExpecting OpenEndBlock, got: 'EOF'",
+		"bad_integration_hbs_linked": "invalid handlebars template: error validating ../bad_integration_hbs/data_stream/foo/agent/stream/filestream.yml.hbs: Parse error on line 43:\nExpecting OpenEndBlock, got: 'EOF'",
+	}
+
+	for pkgName, expectedErrorMessage := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			require.Error(t, errs)
+			vErrs, ok := errs.(specerrors.ValidationErrors)
+			require.True(t, ok)
+
+			var errMessages []string
+			for _, vErr := range vErrs {
+				errMessages = append(errMessages, vErr.Error())
+			}
+			require.Contains(t, errMessages, expectedErrorMessage)
+		})
+	}
 }
 
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {

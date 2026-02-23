@@ -227,10 +227,6 @@ spec:
               description: Elastic Agent versions compatible with this package.
               examples:
                 - "^9.5.0"
-          required:
-            - version
-      required:
-        - agent
     description:
       description: >
         A longer description of the package. It should describe, at least all the kinds of
@@ -455,6 +451,18 @@ spec:
         - Apache HTTP Server
         - MySQL
         - AWS
+    template_path:
+      description: Path of the config template.
+      type: string
+      examples:
+        - ./agent/input/template.yml.hbs
+    template_paths:
+      description: Paths of the config templates. Templates are rendered and merged sequentially; later templates override earlier ones for conflicting keys.
+      type: array
+      items:
+        type: string
+      examples:
+        - ["./agent/input/template1.yml.hbs", "./agent/input/template2.yml.hbs"]
     version:
       description: Version of the package, following semantic versioning. It can include pre-release labels.
       type: string
@@ -495,6 +503,184 @@ spec:
       required:
         - github
         - type
+    deprecated:
+      description: Information on deprecation of a package or an individual feature.
+      type: object
+      additionalProperties: false
+      properties:
+        since:
+          description: Version since when is deprecated.
+          $ref: "#/definitions/version"
+        description:
+          description: Reason of deprecation.
+          type: string
+        replaced_by:
+          type: object
+          additionalProperties: false
+          properties:
+            package:
+              description: Name of the package that replaces the deprecated one.
+              type: string
+            input:
+              description: Name of the input that replaces the deprecated one.
+              type: string
+            policy_template:
+              description: Name of the policy template that replaces the deprecated one.
+              type: string
+            variable:
+              description: Name of the variable that replaces the deprecated one.
+              type: string
+            data_stream:
+              description: Name of the data stream that replaces the deprecated one.
+              type: string         
+      required:
+        - since
+        - description
+    package_reference:
+      description: >
+        Reference to an input package. When specified, configuration is inherited
+        from the referenced package. The package must be listed in the manifest's
+        requires section.
+      type: string
+      pattern: '^[a-z0-9_]+$'
+      examples:
+        - filelog_otel
+        - sql_input
+    package_dependency:
+      description: A package dependency with name and version.
+      type: object
+      additionalProperties: false
+      properties:
+        name:
+          description: Name of the required package.
+          type: string
+          pattern: '^[a-z0-9_]+$'
+          examples:
+            - sql_input
+            - elastic_agent
+        version:
+          description: >
+            Version of the required package. For input packages, it is recommended to
+            use specific versions (e.g., "1.0.0") for consistency. For content packages,
+            version constraints (e.g., "^1.0.0") can be used to allow compatible updates.
+          type: string
+          examples:
+            - "1.0.0"
+            - "^1.0.0"
+            - "~1.2.3"
+      required:
+        - name
+        - version
+    requires:
+      description: Dependencies that this package requires to function properly.
+      type: object
+      additionalProperties: false
+      properties:
+        input:
+          description: List of required input packages.
+          type: array
+          items:
+            $ref: "#/definitions/package_dependency"
+        content:
+          description: List of required content packages.
+          type: array
+          items:
+            $ref: "#/definitions/package_dependency"
+    var_groups:
+      description: >
+        Defines mutually exclusive groups of variables. When an option is selected,
+        only the variables in that option's vars array are shown. The selected option
+        name is stored in the policy. Additional properties on options are allowed
+        for feature-specific extensions (e.g., Cloud Connector metadata).
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          name:
+            description: Unique identifier for this variable group selector.
+            type: string
+            pattern: '^[a-z][a-z0-9_]*$'
+            examples:
+              - credential_type
+          title:
+            description: Section header displayed in the UI (e.g., "Setup Access").
+            type: string
+            examples:
+              - Setup Access
+          selector_title:
+            description: Label for the dropdown selector (e.g., "Preferred method").
+            type: string
+            examples:
+              - Preferred method
+          description:
+            description: Help text explaining what this selector controls.
+            type: string
+            examples:
+              - Select how you want to authenticate with AWS.
+          required:
+            description: >
+              Whether a selection is required for this var_group. When true, Fleet UI
+              will require the user to select an option, and all variables within the
+              selected option are treated as required (inferred). When false (default),
+              the entire var_group is optional. Variables within a var_group must not
+              have required: true - the requirement is controlled entirely by this field.
+            type: boolean
+            default: false
+          options:
+            description: Available options. First option is the default.
+            type: array
+            minItems: 1
+            items:
+              type: object
+              additionalProperties: true
+              properties:
+                name:
+                  description: Unique identifier (stored in policy when selected).
+                  type: string
+                  pattern: '^[a-z][a-z0-9_]*$'
+                  examples:
+                    - direct_access_key
+                    - cloud_connectors
+                title:
+                  description: Display title shown in the dropdown.
+                  type: string
+                  examples:
+                    - Direct Access Keys
+                    - Cloud Connector (recommended)
+                description:
+                  description: Help text for this option.
+                  type: string
+                  examples:
+                    - Use AWS access key ID and secret access key directly.
+                vars:
+                  description: Variable names to display when this option is selected.
+                  type: array
+                  items:
+                    type: string
+                  examples:
+                    - [access_key_id, secret_access_key]
+                hide_in_deployment_modes:
+                  description: Deployment modes where this option is hidden.
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - default
+                      - agentless
+              required:
+                - name
+                - title
+                - vars
+        required:
+          - name
+          - title
+          - selector_title
+          - options
+    dynamic_signal_types:
+      description: "When enabled, decides the transforms and index templates that need to be created depending on the pipelines specified in the configuration. This field is only allowed when the input type is 'otelcol'."
+      type: boolean
+      default: false
   properties:
     format_version:
       description: The version of the package specification format used by this package.
@@ -587,8 +773,8 @@ spec:
                 type:
                   description: Type of input.
                   type: string
-                  not:
-                    const: otelcol
+                package:
+                  $ref: "#/definitions/package_reference"
                 title:
                   description: Title of input.
                   type: string
@@ -600,10 +786,9 @@ spec:
                   examples:
                     - Collecting Apache access and error logs
                 template_path:
-                  description: Path of the config template for the input.
-                  type: string
-                  examples:
-                    - ./agent/input/template.yml.hbs
+                  $ref: "#/definitions/template_path"
+                template_paths:
+                  $ref: "#/definitions/template_paths"
                 input_group:
                   description: Name of the input group
                   type: string
@@ -641,10 +826,27 @@ spec:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/required_vars"
                 vars:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
+                dynamic_signal_types:
+                  $ref: "#/definitions/dynamic_signal_types"
+                deprecated:
+                  $ref: "#/definitions/deprecated"
+                hide_in_var_group_options:
+                  description: >
+                    Filter out specific var_group options for this input.
+                    Keys are var_group names, values are arrays of option names to hide.
+                  type: object
+                  additionalProperties:
+                    type: array
+                    items:
+                      type: string
+                  examples:
+                    - credential_type: [cloud_connectors]
               required:
-                - type
                 - title
                 - description
+              oneOf:
+                - required: [type]
+                - required: [package]
           multiple:
             type: boolean
           icons:
@@ -653,6 +855,8 @@ spec:
             $ref: "#/definitions/screenshots"
           vars:
             $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
+          deprecated:
+            $ref: "#/definitions/deprecated"
         required:
           - name
           - title
@@ -663,6 +867,8 @@ spec:
       $ref: "#/definitions/screenshots"
     vars:
       $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
+    var_groups:
+      $ref: "#/definitions/var_groups"
     owner:
       $ref: "#/definitions/owner"
     agent:
@@ -683,6 +889,10 @@ spec:
               type: array
               items:
                 type: string
+    requires:
+      $ref: "#/definitions/requires"
+    deprecated:
+      $ref: "#/definitions/deprecated"
   required:
     - format_version
     - name
@@ -691,7 +901,6 @@ spec:
     - version
     - type
     - owner
-    - conditions
   allOf:
     - if:
         properties:
@@ -716,12 +925,53 @@ spec:
 versions:
   - before: 3.6.0
     patch:
+      # Support for otelcol and dynamic_signal_types in integration packages.
+      - op: add
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/type"
+        value:
+          not:
+            const: otelcol
       - op: remove
-        path: "/required/7" # removes requirement for conditions
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/dynamic_signal_types"
       - op: remove
-        path: "/definitions/conditions/required/0" # removes requirement for agent
+        path: "/definitions/dynamic_signal_types"
+      # Package dependencies.
       - op: remove
-        path: "/definitions/conditions/properties/agent/required/0" # removes requirement for version
+        path: "/properties/requires"
+      - op: remove
+        path: "/definitions/requires"
+      - op: remove
+        path: "/definitions/package_dependency"
+      - op: remove
+        path: "/definitions/package_reference"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/package"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/oneOf"
+      - op: add
+        path: "/properties/policy_templates/items/properties/inputs/items/required/-" # re-add type as required
+        value: type
+      # Multiple template paths.
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/template_paths"
+      - op: remove
+        path: "/definitions/template_paths"
+      # Package deprecation.
+      - op: remove
+        path: "/properties/deprecated"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/deprecated"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/deprecated"
+      - op: remove
+        path: "/definitions/deprecated"
+      # Switchable variable groups.
+      - op: remove
+        path: "/definitions/var_groups"
+      - op: remove
+        path: "/properties/var_groups"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/hide_in_var_group_options"
   - before: 3.3.2
     patch:
       - op: remove

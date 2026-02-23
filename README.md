@@ -42,7 +42,7 @@ For a quick overview, these are the assets typically found in an Elastic Package
   * Alerting rule templates
   * Security rules
   * CSP (cloud security posture) rule templates
-  * SLOs
+  * SLO templates
   * Osquery pack assets.
   * Osquery saved queries.
   * Tags
@@ -68,7 +68,7 @@ to [JSON Schema](https://json-schema.org/), but with a couple of differences:
 
 Expected package files, e.g. `manifest.yml` themselves have a structure to their contents. This structure is described in specification files using JSON schema (this is point 2. above). These specification files are also written as YAML for readability.
 
-Note that the specification files primarily define the structure (syntax) of a package's contents. To a limited extent they may also define some semantics, e.g. enumeration values for certain fields. Richer semantics, however, will need to be expressed as validation code.
+Note that the specification files primarily define the structure (syntax) of a package's contents. To a limited extent they may also define some semantics, e.g. enumeration values for certain fields. Richer semantics, however, will need to be expressed as [validation code](docs/validations.md).
 
 # Specification Versioning
 
@@ -114,7 +114,8 @@ of the changed specification must be determined as follows:
     lead to a change in the behaviour of the installed package.
 
 If the change is in a schema file, add a JSON patch in the `versions` section to
-continue supporting the previous format.
+continue supporting the previous format. See the [Version Patches section in CONTRIBUTING.md](./CONTRIBUTING.md#version-patches)
+for detailed guidelines and examples.
 
 If the change is in semantic rules, add a constraint in the rule, so they only
 apply on the indicated version range and package types.
@@ -123,6 +124,9 @@ Remember to add a changelog entry in `spec/changelog.yml` for any change in the
 spec. If no section exists for the version determined by the above rules, please
 add the new section. Multiple `next` versions may exist at the same moment if
 multiple versions are in development.
+
+For detailed instructions on testing your changes, adding test packages, and avoiding
+common pitfalls, please refer to the [Development section in CONTRIBUTING.md](./CONTRIBUTING.md#development).
 
 ## Version Compatibility between Packages and Specifications
 

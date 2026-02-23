@@ -1,0 +1,8 @@
+policy:
+  requires:
+    - package: missing_package
+      version: 1.0.0
+system:
+  requires:
+    - package: sql_input
+      version: 1.5.0

@@ -2,7 +2,7 @@ format_version: 3.6.0
 name: good_v3
 title: Good package
 description: This package is good for format version 3
-version: 1.0.1
+version: 1.1.0
 type: integration
 source:
   license: "Apache-2.0"
@@ -154,6 +154,20 @@ policy_templates:
           - name: bucket_name
             type: text
             title: S3 Bucket Name
+            show_user: true
+            required: true
+  - name: otel
+    title: OTel receiver
+    description: Collect metrics and logs via OpenTelemetry receiver
+    inputs:
+      - type: otelcol
+        title: Collect via OTel receiver
+        description: Collecting data via OpenTelemetry receiver
+        dynamic_signal_types: true
+        vars:
+          - name: receivers
+            type: yaml
+            title: OTLP Receivers
             show_user: true
             required: true
 owner:

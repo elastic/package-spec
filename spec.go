@@ -13,7 +13,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-//go:embed spec spec/integration/_dev spec/integration/data_stream/_dev spec/input/_dev docs_schema
+//go:embed spec spec/integration/_dev spec/integration/data_stream/_dev spec/input/_dev spec/content/_dev docs_schema
 var content embed.FS
 
 // FS returns an io/fs.FS for accessing the "package-spec/spec" contents.

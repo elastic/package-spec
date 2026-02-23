@@ -18,17 +18,6 @@ spec:
     name: "tags.yml"
     required: false
     $ref: "../../integration/kibana/tags.spec.yml"
-  - description: Folder containing Kibana SLO assets
-    type: folder
-    name: slo
-    required: false
-    contents:
-    - description: An SLO asset file
-      type: file
-      contentMediaType: "application/json"
-      pattern: '^{PACKAGE_NAME}-.+\.json$'
-      forbiddenPatterns:
-        - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
   - description: Folder containing security AI prompt assets
     type: folder
     name: "security_ai_prompt"
@@ -56,13 +45,20 @@ spec:
       type: file
       contentMediaType: "application/json"
       pattern: '^.+\.json$'
+  - description: Folder containing SLO templates
+    type: folder
+    name: "slo_template"
+    required: false
+    contents:
+      - description: Individual SLO template files
+        type: file
+        contentMediaType: "application/json"
+        pattern: '^.+\.json$'
 versions:
-  - before: 3.6.0
-    patch:
-      - op: remove
-        path: "/contents/2" # remove SLO definitions
   - before: 3.5.0
     patch:
+      - op: remove
+        path: "/contents/5" # remove SLO template definitions
       - op: remove
         path: "/contents/4" # remove alerting rule template definitions
   - before: 3.4.0
