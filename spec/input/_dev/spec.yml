@@ -17,7 +17,7 @@ spec:
       name: test
       required: false
       $ref: "./test/spec.yml"
-    - description: Folder containing scripts required for development.
+    - description: Folder containing scripts used for development.
       type: folder
       name: scripts
       required: false
