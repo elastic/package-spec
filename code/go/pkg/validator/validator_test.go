@@ -45,6 +45,7 @@ func TestValidateFile(t *testing.T) {
 		"good_alert_rule_templates":              {},
 		"good_requires":                          {},
 		"good_package_reference_policy_template": {},
+		"good_datastream_categories_match":       {},
 		"deploy_custom_agent":                    {},
 		"deploy_custom_agent_multi_services":     {},
 		"deploy_docker":                          {},
@@ -139,6 +140,12 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				"field (root): Additional property release is not allowed",
+			},
+		},
+		"bad_datastream_categories_mismatch": {
+			"manifest.yml",
+			[]string{
+				fmt.Sprintf(`policy template "mytemplate" categories [observability] do not match data stream "mylogs" manifest categories [security] (defined in "%sbad_datastream_categories_mismatch/data_stream/mylogs/manifest.yml")`, osTestBasePath),
 			},
 		},
 		"bad_custom_ilm_policy": {
