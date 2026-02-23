@@ -606,6 +606,14 @@ spec:
             $ref: "../../integration/manifest.spec.yml#/definitions/var_groups"
           dynamic_signal_types:
             $ref: "../../integration/manifest.spec.yml#/definitions/dynamic_signal_types"
+          migrate_from:
+            description: >
+              Previous input type to migrate configuration from.
+              This allows Fleet to automatically migrate the policy configuration when
+              replacing one input implementation with an equivalent one (e.g. httpjson to cel).
+            type: string
+            examples:
+              - httpjson
           enabled:
             description: Is stream enabled?
             type: boolean
@@ -691,6 +699,9 @@ versions:
         path: "/definitions/vars/items/properties/deprecated"
       - op: remove
         path: "/properties/streams/items/properties/var_groups"
+      # Input migration.
+      - op: remove
+        path: "/properties/streams/items/properties/migrate_from"
   - before: 3.5.0
     patch:
       # Require >=3.5.0 to use the duration variable type.

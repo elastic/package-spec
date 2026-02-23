@@ -474,6 +474,11 @@ func TestValidateFile(t *testing.T) {
 		"deprecated_integration_policy_input": {},
 		"deprecated_integration_policy":       {},
 		"deprecated_integration_stream_var":   {},
+		"good_migrate_from":                   {},
+		"bad_migrate_from": {
+			"manifest.yml",
+			[]string{`field policy_templates.0.inputs.0: Additional property migrate_from is not allowed`},
+		},
 		"bad_deprecation_description": {
 			"manifest.yml",
 			[]string{"field deprecated.description: Invalid type. Expected: string, given: null"},
