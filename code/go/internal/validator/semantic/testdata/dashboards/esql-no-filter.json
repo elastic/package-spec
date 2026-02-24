@@ -1,0 +1,108 @@
+{
+    "attributes": {
+        "description": "Dashboard with ES|QL panels and no traditional filter",
+        "kibanaSavedObjectMeta": {
+            "searchSourceJSON": {
+                "filter": [],
+                "query": {
+                    "language": "kuery",
+                    "query": ""
+                }
+            }
+        },
+        "optionsJSON": {
+            "hidePanelTitles": false,
+            "syncColors": false,
+            "syncCursor": true,
+            "syncTooltips": false,
+            "useMargins": true
+        },
+        "panelsJSON": [
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [],
+                        "state": {
+                            "adHocDataViews": {
+                                "d0cba3c10285422fb7222ad49ba7ebc9ae2f2a9d9241c7db23d0cfe7d419395f": {
+                                    "allowHidden": false,
+                                    "allowNoIndex": false,
+                                    "fieldFormats": {},
+                                    "id": "d0cba3c10285422fb7222ad49ba7ebc9ae2f2a9d9241c7db23d0cfe7d419395f",
+                                    "name": "logs-generic.otel*,traces-generic.otel*",
+                                    "runtimeFieldMap": {},
+                                    "sourceFilters": [],
+                                    "timeFieldName": "@timestamp",
+                                    "title": "logs-generic.otel*,traces-generic.otel*",
+                                    "type": "esql"
+                                }
+                            },
+                            "datasourceStates": {
+                                "textBased": {
+                                    "indexPatternRefs": [
+                                        {
+                                            "id": "d0cba3c10285422fb7222ad49ba7ebc9ae2f2a9d9241c7db23d0cfe7d419395f",
+                                            "timeField": "@timestamp",
+                                            "title": "logs-generic.otel*,traces-generic.otel*"
+                                        }
+                                    ],
+                                    "layers": {
+                                        "06f8550b-8a72-48b0-95f0-ed517951c793": {
+                                            "columns": [
+                                                {
+                                                    "columnId": "count",
+                                                    "fieldName": "count",
+                                                    "inMetricDimension": true,
+                                                    "meta": {
+                                                        "esType": "long",
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            ],
+                                            "index": "d0cba3c10285422fb7222ad49ba7ebc9ae2f2a9d9241c7db23d0cfe7d419395f",
+                                            "query": {
+                                                "esql": "FROM logs-generic.otel*,traces-generic.otel*\n| WHERE os.name == \"Android\"\n| STATS count=COUNT_DISTINCT(app.installation.id)"
+                                            },
+                                            "timeField": "@timestamp"
+                                        }
+                                    }
+                                }
+                            },
+                            "filters": [],
+                            "query": {
+                                "esql": "FROM logs-generic.otel*,traces-generic.otel*\n| WHERE os.name == \"Android\"\n| STATS count=COUNT_DISTINCT(app.installation.id)"
+                            },
+                            "visualization": {
+                                "layerId": "06f8550b-8a72-48b0-95f0-ed517951c793",
+                                "layerType": "data",
+                                "metricAccessor": "count"
+                            }
+                        },
+                        "title": "count",
+                        "visualizationType": "lnsMetric"
+                    },
+                    "filters": [],
+                    "hidePanelTitles": true,
+                    "query": {
+                        "esql": "FROM logs-generic.otel*,traces-generic.otel*\n| WHERE os.name == \"Android\"\n| STATS count=COUNT_DISTINCT(app.installation.id)"
+                    }
+                },
+                "gridData": {
+                    "h": 7,
+                    "i": "b41b95ed-69f8-499f-afad-9d00417f126f",
+                    "w": 8,
+                    "x": 40,
+                    "y": 0
+                },
+                "panelIndex": "b41b95ed-69f8-499f-afad-9d00417f126f",
+                "type": "lens"
+            }
+        ],
+        "timeRestore": false,
+        "title": "[OTel Android] ES|QL Dashboard",
+        "version": 1
+    },
+    "id": "otel-android-esql-dashboard",
+    "references": [],
+    "type": "dashboard"
+}

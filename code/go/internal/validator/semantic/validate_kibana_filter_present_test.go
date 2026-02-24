@@ -55,6 +55,12 @@ func TestCheckDashboardHasFilter(t *testing.T) {
 			dashboard: "testdata/dashboards/mysql-filter-in-panels-encoded.json",
 			valid:     true,
 		},
+
+		// ES|QL panels don't use traditional filters; they should pass.
+		{
+			dashboard: "testdata/dashboards/esql-no-filter.json",
+			valid:     true,
+		},
 	}
 
 	for _, c := range cases {

@@ -48,6 +48,9 @@
     - description: Allow otelcol input type and dynamic_signal_types field in integration packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1091
+    - description: Skip mandatory filter validation (SVR00002) for ES|QL panels, which handle data filtering via WHERE clauses.
+      type: bugfix
+      link: TBD
 - version: 3.5.7
   changes:
     - description: Allow _dev directory for content-only packages; use _dev/shared for development files (e.g. dashboard YML sources).

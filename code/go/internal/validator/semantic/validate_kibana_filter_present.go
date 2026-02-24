@@ -79,6 +79,9 @@ func findPanelsFilters(file pkgpath.File) error {
 		if !visualization.CanUseFilter() {
 			continue
 		}
+		if isESQLPanel(visualization) {
+			continue
+		}
 		hasFilters, err := visualization.HasFilters()
 		if err != nil {
 			return fmt.Errorf("error checking if visualization has filters: %w", err)
@@ -89,6 +92,37 @@ func findPanelsFilters(file pkgpath.File) error {
 	}
 
 	return nil
+}
+
+// isESQLPanel reports whether a panel uses an ES|QL query. ES|QL panels define
+// their own data filtering through WHERE clauses in the query itself, so the
+// traditional Kibana filter check does not apply to them.
+func isESQLPanel(v kbncontent.VisualizationDescriptor) bool {
+	esqlPaths := [][]string{
+		{"embeddableConfig", "attributes", "state", "query", "esql"},
+		{"embeddableConfig", "query", "esql"},
+	}
+	for _, path := range esqlPaths {
+		if _, ok := nestedMapLookup(v.Doc, path...); ok {
+			return true
+		}
+	}
+	return false
+}
+
+func nestedMapLookup(m map[string]interface{}, keys ...string) (interface{}, bool) {
+	var current interface{} = m
+	for _, key := range keys {
+		cm, ok := current.(map[string]interface{})
+		if !ok {
+			return nil, false
+		}
+		current, ok = cm[key]
+		if !ok {
+			return nil, false
+		}
+	}
+	return current, true
 }
 
 func findDashboardFilter(file pkgpath.File) error {
