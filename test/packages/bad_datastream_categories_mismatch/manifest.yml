@@ -1,0 +1,26 @@
+format_version: 3.6.0
+name: bad_datastream_categories_mismatch
+title: Bad package with mismatched datastream categories
+description: Policy template categories do not match the data stream manifest categories.
+version: 0.0.1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+policy_templates:
+  - name: mytemplate
+    title: My template
+    description: Collect my logs
+    data_streams:
+      - mylogs
+    categories:
+      - observability
+    inputs:
+      - type: logfile
+        title: Collect my logs
+        description: Collecting logs via log input
+owner:
+  github: elastic/foobar
+  type: community
