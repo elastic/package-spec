@@ -37,7 +37,6 @@ func TestValidateFile(t *testing.T) {
 		"good_input":                             {},
 		"good_input_otel":                        {},
 		"good_input_dynamic_signal_type":         {},
-		"good_input_dynamic_signal_type_with_type": {}, // Tests that type field is optional when dynamic_signal_types is true
 		"good_input_template_paths":              {},
 		"good_integration_template_paths":        {},
 		"good_content":                           {},
@@ -401,6 +400,12 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				"field policy_templates.0: Additional property dynamic_signal_types is not allowed",
+			},
+		},
+		"bad_input_dynamic_signal_type_with_type": {
+			"manifest.yml",
+			[]string{
+				"policy template \"otel_logs\": type field must not be set when dynamic_signal_types is true",
 			},
 		},
 		"bad_input_template_path": {

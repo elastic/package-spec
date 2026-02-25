@@ -20,6 +20,7 @@ func TestValidateInputDynamicSignalTypes(t *testing.T) {
 		d := t.TempDir()
 
 		err := os.WriteFile(d+"/manifest.yml", []byte(`
+format_version: 3.6.0
 type: input
 policy_templates:
   - name: otel_logs
@@ -37,6 +38,7 @@ policy_templates:
 		d := t.TempDir()
 
 		err := os.WriteFile(d+"/manifest.yml", []byte(`
+format_version: 3.6.0
 type: input
 policy_templates:
   - name: otel_logs
@@ -54,6 +56,7 @@ policy_templates:
 		d := t.TempDir()
 
 		err := os.WriteFile(d+"/manifest.yml", []byte(`
+format_version: 3.6.0
 type: input
 policy_templates:
   - name: otel_logs
@@ -70,6 +73,7 @@ policy_templates:
 		d := t.TempDir()
 
 		err := os.WriteFile(d+"/manifest.yml", []byte(`
+format_version: 3.6.0
 type: input
 policy_templates:
   - name: logfile
@@ -90,6 +94,7 @@ policy_templates:
 		d := t.TempDir()
 
 		err := os.WriteFile(d+"/manifest.yml", []byte(`
+format_version: 3.6.0
 type: integration
 policy_templates:
   - name: apache
@@ -137,6 +142,7 @@ policy_templates:
 		d := t.TempDir()
 
 		err := os.WriteFile(d+"/manifest.yml", []byte(`
+format_version: 3.6.0
 type: input
 policy_templates:
   - name: otel_logs
@@ -156,5 +162,62 @@ policy_templates:
 		assert.Contains(t, errs[0].Error(), "dynamic_signal_types is only allowed when input is 'otelcol'")
 		assert.Contains(t, errs[0].Error(), "file_logs")
 		assert.Contains(t, errs[0].Error(), "got 'logfile'")
+	})
+
+	t.Run("invalid_type_field_with_dynamic_signal_types_true", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.WriteFile(d+"/manifest.yml", []byte(`
+format_version: 3.6.0
+type: input
+policy_templates:
+  - name: otel_logs
+    type: logs
+    input: otelcol
+    template_path: input.yml.hbs
+    dynamic_signal_types: true
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		require.NotEmpty(t, errs, "expected validation errors")
+		assert.Len(t, errs, 1)
+		assert.Contains(t, errs[0].Error(), "type field must not be set when dynamic_signal_types is true")
+		assert.Contains(t, errs[0].Error(), "otel_logs")
+	})
+
+	t.Run("valid_type_field_without_dynamic_signal_types", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.WriteFile(d+"/manifest.yml", []byte(`
+type: input
+policy_templates:
+  - name: otel_logs
+    type: logs
+    input: otelcol
+    template_path: input.yml.hbs
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		require.Empty(t, errs, "expected no validation errors when type is present without dynamic_signal_types")
+	})
+
+	t.Run("valid_type_field_with_dynamic_signal_types_false", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.WriteFile(d+"/manifest.yml", []byte(`
+type: input
+policy_templates:
+  - name: otel_logs
+    type: logs
+    input: otelcol
+    template_path: input.yml.hbs
+    dynamic_signal_types: false
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		require.Empty(t, errs, "expected no validation errors when type is present with dynamic_signal_types: false")
 	})
 }

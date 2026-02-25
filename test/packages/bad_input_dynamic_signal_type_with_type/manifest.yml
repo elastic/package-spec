@@ -4,7 +4,7 @@ title: "Input package with dynamic_signal_types and type field"
 version: 0.0.1
 source:
   license: "Apache-2.0"
-description: "Input package with dynamic_signal_types enabled and type field present to test that type is optional."
+description: "Input package with dynamic_signal_types enabled and type field present to test validation error."
 type: input
 categories:
   - custom

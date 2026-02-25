@@ -22,7 +22,6 @@ icons:
     type: image/svg+xml
 policy_templates:
   - name: sample
-    type: logs
     title: Sample logs
     description: Collect sample logs
     input: logfile
