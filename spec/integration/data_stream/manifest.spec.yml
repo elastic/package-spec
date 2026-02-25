@@ -607,14 +607,7 @@ spec:
           dynamic_signal_types:
             $ref: "../../integration/manifest.spec.yml#/definitions/dynamic_signal_types"
           migrate_from:
-            description: >
-              Previous input type to migrate configuration from.
-              This allows Fleet to automatically migrate the policy configuration when
-              replacing one input implementation with an equivalent one.
-              This field should only be used for inputs that don't need agent's state persistence.
-            type: string
-            examples:
-              - httpjson
+            $ref: "../../integration/manifest.spec.yml#/definitions/migrate_from"
           enabled:
             description: Is stream enabled?
             type: boolean
