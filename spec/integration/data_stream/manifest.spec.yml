@@ -610,7 +610,8 @@ spec:
             description: >
               Previous input type to migrate configuration from.
               This allows Fleet to automatically migrate the policy configuration when
-              replacing one input implementation with an equivalent one (e.g. httpjson to cel).
+              replacing one input implementation with an equivalent one.
+              This field should only be used for inputs that don't need agent's state persistence.
             type: string
             examples:
               - httpjson
