@@ -19,7 +19,12 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
-const dataStreamDir = "data_stream"
+const (
+	dataStreamDir = "data_stream"
+
+	inputPackageType       = "input"
+	integrationPackageType = "integration"
+)
 
 type fields []field
 

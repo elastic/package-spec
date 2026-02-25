@@ -90,24 +90,6 @@ policy_templates:
 		assert.Contains(t, errs[0].Error(), "got 'logfile'")
 	})
 
-	t.Run("invalid_non_input_package_with_dynamic_signal_types", func(t *testing.T) {
-		d := t.TempDir()
-
-		err := os.WriteFile(d+"/manifest.yml", []byte(`
-format_version: 3.6.0
-type: integration
-policy_templates:
-  - name: apache
-    dynamic_signal_types: true
-`), 0o644)
-		require.NoError(t, err)
-
-		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
-		require.NotEmpty(t, errs, "expected validation errors for non-input packages")
-		assert.Len(t, errs, 1)
-		assert.Contains(t, errs[0].Error(), "dynamic_signal_types is only allowed for input type packages")
-	})
-
 	t.Run("valid_non_input_package_without_dynamic_signal_types", func(t *testing.T) {
 		d := t.TempDir()
 
@@ -219,5 +201,61 @@ policy_templates:
 
 		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
 		require.Empty(t, errs, "expected no validation errors when type is present with dynamic_signal_types: false")
+	})
+
+	t.Run("valid_integration_data_stream_with_otelcol_and_dynamic_signal_types", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.WriteFile(d+"/manifest.yml", []byte(`
+type: integration
+`), 0o644)
+		require.NoError(t, err)
+
+		// Create data_stream directory and manifest
+		err = os.Mkdir(d+"/data_stream", 0o755)
+		require.NoError(t, err)
+		err = os.Mkdir(d+"/data_stream/logs", 0o755)
+		require.NoError(t, err)
+
+		err = os.WriteFile(d+"/data_stream/logs/manifest.yml", []byte(`
+streams:
+  - input: otelcol
+    title: OTel Logs
+    description: Collect logs via OTel
+    dynamic_signal_types: true
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		require.Empty(t, errs, "expected no validation errors for data stream with otelcol")
+	})
+
+	t.Run("invalid_integration_data_stream_non_otelcol_with_dynamic_signal_types", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.WriteFile(d+"/manifest.yml", []byte(`
+type: integration
+`), 0o644)
+		require.NoError(t, err)
+
+		// Create data_stream directory and manifest
+		err = os.Mkdir(d+"/data_stream", 0o755)
+		require.NoError(t, err)
+		err = os.Mkdir(d+"/data_stream/logs", 0o755)
+		require.NoError(t, err)
+
+		err = os.WriteFile(d+"/data_stream/logs/manifest.yml", []byte(`
+streams:
+  - input: logfile
+    title: Log Files
+    description: Collect logs from files
+    dynamic_signal_types: true
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		require.NotEmpty(t, errs, "expected validation errors for data stream with non-otelcol")
+		assert.Len(t, errs, 1)
+		assert.Contains(t, errs[0].Error(), "dynamic_signal_types is only allowed when input is 'otelcol'")
 	})
 }
