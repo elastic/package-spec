@@ -1,7 +1,7 @@
-format_version: 3.1.4
+format_version: 3.6.0
 name: integration_dynamic_signal_types
 title: "Integration package with dynamic_signal_types field"
-version: 1.0.0
+version: 1.0.0-preview1
 source:
   license: "Apache-2.0"
 description: "This is an integration package with dynamic_signal_types field."

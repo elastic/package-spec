@@ -414,6 +414,12 @@ func TestValidateFile(t *testing.T) {
 				"field policy_templates.0: Additional property dynamic_signal_types is not allowed",
 			},
 		},
+		"bad_input_dynamic_signal_type_with_type": {
+			"manifest.yml",
+			[]string{
+				"policy template \"otel_logs\": type field must not be set when dynamic_signal_types is true",
+			},
+		},
 		"bad_input_template_path": {
 			"manifest.yml",
 			[]string{
