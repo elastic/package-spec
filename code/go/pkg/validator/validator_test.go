@@ -37,6 +37,7 @@ func TestValidateFile(t *testing.T) {
 		"good_input":                             {},
 		"good_input_otel":                        {},
 		"good_input_dynamic_signal_type":         {},
+		"good_input_profiles":                    {},
 		"good_input_template_paths":              {},
 		"good_integration_template_paths":        {},
 		"good_content":                           {},
@@ -382,6 +383,12 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				"field policy_templates.0.input: Must not be present",
+			},
+		},
+		"bad_input_profiles_non_otel": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0.input: policy_templates.0.input must be one of the following: \"otelcol\"",
 			},
 		},
 		"bad_input_dynamic_signal_types_non_otel": {

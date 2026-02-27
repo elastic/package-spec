@@ -1,0 +1,5 @@
+- version: 0.0.1
+  changes:
+    - type: enhancement
+      description: Initial release for testing input policy templates with type `profiles` with a non otelcol input type.
+      link: https://github.com/elastic/package-spec/pull/1092
