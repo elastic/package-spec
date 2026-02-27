@@ -110,15 +110,9 @@ spec:
           - oneOf:
               - required:
                   - type
-                not:
-                  required:
-                    - dynamic_signal_types
               - properties:
                   dynamic_signal_types:
                     const: true
-                not:
-                  required:
-                    - type
         required:
           - name
           - title
