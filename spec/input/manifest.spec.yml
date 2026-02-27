@@ -109,21 +109,24 @@ spec:
                   - template_path
           # Either type is required, or dynamic_signal_types must be true
           - oneOf:
+            - allOf:
               - required:
-                  - type
-              - properties:
-                  dynamic_signal_types:
-                    const: true
-          # If type is profiles, can only use otelcol inputs
-          - if:
-            properties:
-              type:
-                const: profiles
-            then:
+                - type
+              # If type is profiles, can only use otelcol inputs
+              - if:
+                  properties:
+                    type:
+                      const: profiles
+                then:
+                  properties:
+                    input:
+                      enum:
+                        - otelcol
+            - required:
+                - dynamic_signal_types
               properties:
-                input:
-                  enum:
-                    - otelcol
+                dynamic_signal_types:
+                  const: true
         required:
           - name
           - title
