@@ -50,7 +50,7 @@
       link: https://github.com/elastic/package-spec/pull/1091
     - description: Add deployer option to system benchmark configuration.
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/1
+      link: https://github.com/elastic/package-spec/pull/1099
 - version: 3.5.7
   changes:
     - description: Allow _dev directory for content-only packages; use _dev/shared for development files (e.g. dashboard YML sources).
