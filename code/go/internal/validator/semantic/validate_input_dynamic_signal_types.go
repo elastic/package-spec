@@ -105,12 +105,6 @@ func validateInputPackageDynamicSignalTypes(fsys fspath.FS, data []byte, manifes
 				fsys.Path(manifestPath), policyTemplate.Name, policyTemplate.Input))
 			continue
 		}
-		// Must not have type field set
-		if policyTemplate.Type != "" {
-			errs = append(errs, specerrors.NewStructuredErrorf(
-				"file \"%s\" is invalid: policy template \"%s\": type field must not be set when dynamic_signal_types is true",
-				fsys.Path(manifestPath), policyTemplate.Name))
-		}
 	}
 
 	return errs
