@@ -166,7 +166,7 @@ versions:
       - op: remove
         path: "/properties/policy_templates/items/properties/template_paths" # removes template_paths field for policy templates
       - op: remove
-        path: "/properties/policy_templates/items/allOf" # removes allOf constraint for template_path/template_paths and dynamic_signal_types/type
+        path: "/properties/policy_templates/items/allOf" # removes allOf constraint for template_path/template_paths, dynamic_signal_types/type, and profiles otelcol input
       - op: add
         path: "/properties/policy_templates/items/required"
         value:
