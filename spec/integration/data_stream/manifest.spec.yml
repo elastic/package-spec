@@ -606,6 +606,8 @@ spec:
             $ref: "../../integration/manifest.spec.yml#/definitions/var_groups"
           dynamic_signal_types:
             $ref: "../../integration/manifest.spec.yml#/definitions/dynamic_signal_types"
+          migrate_from:
+            $ref: "../../integration/manifest.spec.yml#/definitions/migrate_from"
           enabled:
             description: Is stream enabled?
             type: boolean
@@ -691,6 +693,9 @@ versions:
         path: "/definitions/vars/items/properties/deprecated"
       - op: remove
         path: "/properties/streams/items/properties/var_groups"
+      # Input migration.
+      - op: remove
+        path: "/properties/streams/items/properties/migrate_from"
   - before: 3.5.0
     patch:
       # Require >=3.5.0 to use the duration variable type.

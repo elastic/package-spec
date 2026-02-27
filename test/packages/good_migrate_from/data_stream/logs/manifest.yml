@@ -1,0 +1,17 @@
+title: "Sample Logs"
+type: logs
+streams:
+  - input: filestream
+    title: "Collect logs via filestream"
+    description: "Collect logs using the filestream input"
+    template_path: filestream.yml.hbs
+    migrate_from: logfile
+    vars:
+      - name: paths
+        type: text
+        title: "Paths"
+        multi: true
+        required: true
+        show_user: true
+        default:
+          - /var/log/*.log

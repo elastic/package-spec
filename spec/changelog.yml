@@ -48,6 +48,10 @@
     - description: Allow otelcol input type and dynamic_signal_types field in integration packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1091
+    # Pending on https://github.com/elastic/kibana/pull/242934
+    - description: Add support for migrating input types at integrations policy templates and data streams.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1021
 - version: 3.5.7
   changes:
     - description: Allow _dev directory for content-only packages; use _dev/shared for development files (e.g. dashboard YML sources).
