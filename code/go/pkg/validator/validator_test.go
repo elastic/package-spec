@@ -492,6 +492,13 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{"all inputs are deprecated but the integration package is not marked as deprecated"},
 		},
+		"good_deployer_system_benchmark": {},
+		"bad_deployer_system_benchmark": {
+			"_dev/benchmark/system/alert-benchmark.yml",
+			[]string{
+				"field deployer: deployer must be one of the following: \"docker\", \"tf\", \"k8s\"",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {

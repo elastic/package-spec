@@ -1,0 +1,5 @@
+errors:
+  exclude_checks:
+    - SVR00006
+    - SVR00008
+    - SVR00009
