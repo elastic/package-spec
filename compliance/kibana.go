@@ -20,8 +20,8 @@ import (
 )
 
 const (
-	apiAgentPolicyPath   = "/api/fleet/agent_policies"
-	apiPackagePolicyPath = "/api/fleet/package_policies"
+	apiAgentPolicyPath    = "/api/fleet/agent_policies"
+	apiPackagePolicyPath  = "/api/fleet/package_policies"
 	apiInputTemplatesPath = "/api/fleet/epm/templates/%s/%s/inputs"
 
 	apiGetSloPath                     = "/s/%s/api/observability/slos"
@@ -541,7 +541,7 @@ func (k *Kibana) MustExistInputTemplateWithOtelPipeline(packageName, packageVers
 	return nil
 }
 
-func (k *Kibana) getInputTemplates(packageName, packageVersion string) (*inputTemplatesResponse, error) { 
+func (k *Kibana) getInputTemplates(packageName, packageVersion string) (*inputTemplatesResponse, error) {
 	apiPath := fmt.Sprintf(apiInputTemplatesPath, packageName, packageVersion)
 	req, err := k.newRequest(http.MethodGet, apiPath, nil)
 	if err != nil {
@@ -554,14 +554,14 @@ func (k *Kibana) getInputTemplates(packageName, packageVersion string) (*inputTe
 
 	resp, err := k.client.Do(req)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return nil,fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+			return nil, fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
 		}
 		return nil, fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
 	}
