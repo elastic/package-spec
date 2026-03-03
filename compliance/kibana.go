@@ -523,6 +523,7 @@ func (k *Kibana) MustExistSavedObject(soType, id string) error {
 	return nil
 }
 
+// MustExistInputTemplateWithOtelPipeline checks if an OTel pipeline exists in the input templates for a given package and version.
 func (k *Kibana) MustExistInputTemplateWithOtelPipeline(packageName, packageVersion, pipelineName string) error {
 	inputTemplates, err := k.getInputTemplates(packageName, packageVersion)
 	if err != nil {
