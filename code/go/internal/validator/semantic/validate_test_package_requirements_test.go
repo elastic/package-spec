@@ -20,6 +20,7 @@ func TestValidateTestPackageRequirements(t *testing.T) {
 		manifest       string
 		testConfig     string
 		testConfigPath string
+		sourceDirs     []string
 		expectError    bool
 		errorContains  string
 	}{
@@ -28,7 +29,7 @@ func TestValidateTestPackageRequirements(t *testing.T) {
 format_version: 3.6.0
 requires:
   input:
-    - name: sql_input
+    - package: sql_input
       version: ^1.2.0`,
 			testConfig: `system:
   requires:
@@ -42,12 +43,12 @@ requires:
 format_version: 3.6.0
 requires:
   content:
-    - name: logs_package
+    - package: logs_package
       version: ~1.0.0`,
 			testConfig: `requires:
   - package: logs_package
     version: 1.0.3`,
-			testConfigPath: "data_stream/example/_dev/test/system/config.yml",
+			testConfigPath: "data_stream/example/_dev/test/system/test-default-config.yml",
 			expectError:    false,
 		},
 		"package_not_in_manifest": {
@@ -55,7 +56,7 @@ requires:
 format_version: 3.6.0
 requires:
   input:
-    - name: sql_input
+    - package: sql_input
       version: ^1.2.0`,
 			testConfig: `policy:
   requires:
@@ -70,7 +71,7 @@ requires:
 format_version: 3.6.0
 requires:
   input:
-    - name: sql_input
+    - package: sql_input
       version: ^2.0.0`,
 			testConfig: `system:
   requires:
@@ -85,7 +86,7 @@ requires:
 format_version: 3.6.0
 requires:
   input:
-    - name: sql_input
+    - package: sql_input
       version: ^1.0.0`,
 			testConfig: `system:
   requires:
@@ -100,10 +101,10 @@ requires:
 format_version: 3.6.0
 requires:
   input:
-    - name: pkg1
+    - package: pkg1
       version: ^1.0.0
   content:
-    - name: pkg2
+    - package: pkg2
       version: ~2.0.0`,
 			testConfig: `system:
   requires:
@@ -121,7 +122,7 @@ policy:
 format_version: 3.6.0
 requires:
   input:
-    - name: sql_input
+    - package: sql_input
       version: ^1.0.0`,
 			testConfig: `system:
   skip:
@@ -141,6 +142,46 @@ format_version: 3.6.0`,
 			expectError:    true,
 			errorContains:  "sql_input\" which is not listed in manifest requires",
 		},
+		"valid_source_path_requirement": {
+			manifest: `name: test
+format_version: 3.6.0`,
+			testConfig: `system:
+  requires:
+    - source: ../my_input_package`,
+			testConfigPath: "_dev/test/config.yml",
+			// source "../my_input_package" is relative to _dev/test/, resolves to _dev/my_input_package
+			sourceDirs:  []string{"_dev/my_input_package"},
+			expectError: false,
+		},
+		"invalid_source_path_requirement": {
+			manifest: `name: test
+format_version: 3.6.0`,
+			testConfig: `system:
+  requires:
+    - source: ../nonexistent_package`,
+			testConfigPath: "_dev/test/config.yml",
+			expectError:    true,
+			errorContains:  `source path to required package "../nonexistent_package" does not exist`,
+		},
+		"valid_datastream_source_path_requirement": {
+			manifest: `name: test
+format_version: 3.6.0`,
+			testConfig: `requires:
+  - source: ../my_content_package`,
+			testConfigPath: "data_stream/example/_dev/test/system/test-default-config.yml",
+			// source "../my_content_package" is relative to .../system/, resolves to .../test/my_content_package
+			sourceDirs:  []string{"data_stream/example/_dev/test/my_content_package"},
+			expectError: false,
+		},
+		"invalid_datastream_source_path_requirement": {
+			manifest: `name: test
+format_version: 3.6.0`,
+			testConfig: `requires:
+  - source: ../nonexistent_package`,
+			testConfigPath: "data_stream/example/_dev/test/system/test-default-config.yml",
+			expectError:    true,
+			errorContains:  `source path to required package "../nonexistent_package" does not exist`,
+		},
 	}
 
 	for name, tc := range tests {
@@ -150,6 +191,12 @@ format_version: 3.6.0`,
 			// Create manifest
 			err := os.WriteFile(filepath.Join(pkgRoot, "manifest.yml"), []byte(tc.manifest), 0644)
 			require.NoError(t, err)
+
+			// Create source directories referenced by source entries
+			for _, sourceDir := range tc.sourceDirs {
+				err = os.MkdirAll(filepath.Join(pkgRoot, sourceDir), 0755)
+				require.NoError(t, err)
+			}
 
 			// Create test config in appropriate path
 			testConfigFullPath := filepath.Join(pkgRoot, tc.testConfigPath)

@@ -6,6 +6,8 @@ package semantic
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/Masterminds/semver/v3"
 
@@ -51,7 +53,7 @@ func getRequiredPackagesWithConstraints(manifest pkgpath.File) (map[string]strin
 	if err == nil && inputPackages != nil {
 		if pkgArray, ok := inputPackages.([]interface{}); ok {
 			for i := 0; i < len(pkgArray); i++ {
-				name, err := manifest.Values(fmt.Sprintf("$.requires.input[%d].name", i))
+				name, err := manifest.Values(fmt.Sprintf("$.requires.input[%d].package", i))
 				if err != nil || name == nil {
 					continue
 				}
@@ -73,7 +75,7 @@ func getRequiredPackagesWithConstraints(manifest pkgpath.File) (map[string]strin
 	if err == nil && contentPackages != nil {
 		if pkgArray, ok := contentPackages.([]interface{}); ok {
 			for i := 0; i < len(pkgArray); i++ {
-				name, err := manifest.Values(fmt.Sprintf("$.requires.content[%d].name", i))
+				name, err := manifest.Values(fmt.Sprintf("$.requires.content[%d].package", i))
 				if err != nil || name == nil {
 					continue
 				}
@@ -114,14 +116,21 @@ func validateIntegrationTestRequirements(fsys fspath.FS, requiredPackages map[st
 					if reqMap, ok := req.(map[string]interface{}); ok {
 						pkgName, _ := reqMap["package"].(string)
 						version, _ := reqMap["version"].(string)
-
-						if pkgName == "" || version == "" {
+						if pkgName != "" && version != "" {
+							err := validateTestRequirementPackageVersion(fsys.Path("_dev/test/config.yml"), testType, idx, pkgName, version, requiredPackages)
+							if err != nil {
+								errs = append(errs, err)
+							}
 							continue
 						}
 
-						err := validateTestRequirement(fsys.Path("_dev/test/config.yml"), testType, idx, pkgName, version, requiredPackages)
-						if err != nil {
-							errs = append(errs, err)
+						source, _ := reqMap["source"].(string)
+						if source != "" {
+							err := validateTestRequirementSource(fsys.Path("_dev/test/config.yml"), source)
+							if err != nil {
+								errs = append(errs, err)
+							}
+							continue
 						}
 					}
 				}
@@ -133,31 +142,47 @@ func validateIntegrationTestRequirements(fsys fspath.FS, requiredPackages map[st
 }
 
 func validateDataStreamTestRequirements(fsys fspath.FS, requiredPackages map[string]string) specerrors.ValidationErrors {
-	testConfigs, err := pkgpath.Files(fsys, "data_stream/*/_dev/test/*/config.yml")
-	if err != nil {
-		return nil
+	var errs specerrors.ValidationErrors
+
+	patterns := []string{
+		"data_stream/*/_dev/test/system/test-*-config.yml",
+		"data_stream/*/_dev/test/policy/test-*.yml",
+		"data_stream/*/_dev/test/static/test-*-config.yml",
 	}
 
-	var errs specerrors.ValidationErrors
-	for _, config := range testConfigs {
-		requires, err := config.Values("$.requires")
-		if err != nil || requires == nil {
+	for _, pattern := range patterns {
+		testConfigs, err := pkgpath.Files(fsys, pattern)
+		if err != nil {
 			continue
 		}
 
-		if reqArray, ok := requires.([]interface{}); ok {
-			for idx, req := range reqArray {
-				if reqMap, ok := req.(map[string]interface{}); ok {
-					pkgName, _ := reqMap["package"].(string)
-					version, _ := reqMap["version"].(string)
+		for _, config := range testConfigs {
+			requires, err := config.Values("$.requires")
+			if err != nil || requires == nil {
+				continue
+			}
 
-					if pkgName == "" || version == "" {
-						continue
-					}
+			if reqArray, ok := requires.([]interface{}); ok {
+				for idx, req := range reqArray {
+					if reqMap, ok := req.(map[string]interface{}); ok {
+						pkgName, _ := reqMap["package"].(string)
+						version, _ := reqMap["version"].(string)
+						if pkgName != "" && version != "" {
+							err := validateTestRequirementPackageVersion(fsys.Path(config.Path()), "", idx, pkgName, version, requiredPackages)
+							if err != nil {
+								errs = append(errs, err)
+							}
+							continue
+						}
 
-					err := validateTestRequirement(fsys.Path(config.Path()), "", idx, pkgName, version, requiredPackages)
-					if err != nil {
-						errs = append(errs, err)
+						source, _ := reqMap["source"].(string)
+						if source != "" {
+							err := validateTestRequirementSource(fsys.Path(config.Path()), source)
+							if err != nil {
+								errs = append(errs, err)
+							}
+							continue
+						}
 					}
 				}
 			}
@@ -167,7 +192,7 @@ func validateDataStreamTestRequirements(fsys fspath.FS, requiredPackages map[str
 	return errs
 }
 
-func validateTestRequirement(configPath, testType string, idx int, pkgName, version string, requiredPackages map[string]string) *specerrors.StructuredError {
+func validateTestRequirementPackageVersion(configPath, testType string, idx int, pkgName, version string, requiredPackages map[string]string) *specerrors.StructuredError {
 	constraint, exists := requiredPackages[pkgName]
 	if !exists {
 		location := fmt.Sprintf("requires[%d]", idx)
@@ -214,5 +239,24 @@ func validateTestRequirement(configPath, testType string, idx int, pkgName, vers
 			configPath, location, pkgName, version, constraint)
 	}
 
+	return nil
+}
+
+// validateTestRequirementSource checks if the relative path exists. This could be done with "format: relative-path" in
+// the spec, but this format checker only works with relative files inside the package. In this case the source package
+// is going to be outside the current package.
+func validateTestRequirementSource(configFile, source string) *specerrors.StructuredError {
+	cleanSource := filepath.Clean(filepath.FromSlash(source))
+	if filepath.IsAbs(cleanSource) {
+		return specerrors.NewStructuredErrorf(
+			"file \"%s\" is invalid: source path to required package \"%s\" must be relative",
+			configFile, source)
+	}
+	targetPath := filepath.Join(filepath.Dir(configFile), filepath.FromSlash(source))
+	if _, err := os.Stat(targetPath); err != nil {
+		return specerrors.NewStructuredErrorf(
+			"file \"%s\" is invalid: source path to required package \"%s\" does not exist",
+			configFile, source)
+	}
 	return nil
 }
