@@ -2,6 +2,8 @@ system:
   requires:
     - package: sql_input
       version: 1.0.0
+    - source: ../../../good_input
 policy:
   requires:
-    - source: ../sql_input
+    - package: log_input
+      version: 2.0.0

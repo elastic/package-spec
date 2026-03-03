@@ -20,6 +20,7 @@ func TestValidateTestPackageRequirements(t *testing.T) {
 		manifest       string
 		testConfig     string
 		testConfigPath string
+		sourceDirs     []string
 		expectError    bool
 		errorContains  string
 	}{
@@ -148,7 +149,19 @@ format_version: 3.6.0`,
   requires:
     - source: ../my_input_package`,
 			testConfigPath: "_dev/test/config.yml",
-			expectError:    false,
+			// source "../my_input_package" is relative to _dev/test/, resolves to _dev/my_input_package
+			sourceDirs:  []string{"_dev/my_input_package"},
+			expectError: false,
+		},
+		"invalid_source_path_requirement": {
+			manifest: `name: test
+format_version: 3.6.0`,
+			testConfig: `system:
+  requires:
+    - source: ../nonexistent_package`,
+			testConfigPath: "_dev/test/config.yml",
+			expectError:    true,
+			errorContains:  `source path "../nonexistent_package" does not exist`,
 		},
 		"valid_datastream_source_path_requirement": {
 			manifest: `name: test
@@ -156,7 +169,18 @@ format_version: 3.6.0`,
 			testConfig: `requires:
   - source: ../my_content_package`,
 			testConfigPath: "data_stream/example/_dev/test/system/test-default-config.yml",
-			expectError:    false,
+			// source "../my_content_package" is relative to .../system/, resolves to .../test/my_content_package
+			sourceDirs:  []string{"data_stream/example/_dev/test/my_content_package"},
+			expectError: false,
+		},
+		"invalid_datastream_source_path_requirement": {
+			manifest: `name: test
+format_version: 3.6.0`,
+			testConfig: `requires:
+  - source: ../nonexistent_package`,
+			testConfigPath: "data_stream/example/_dev/test/system/test-default-config.yml",
+			expectError:    true,
+			errorContains:  `source path "../nonexistent_package" does not exist`,
 		},
 	}
 
@@ -167,6 +191,12 @@ format_version: 3.6.0`,
 			// Create manifest
 			err := os.WriteFile(filepath.Join(pkgRoot, "manifest.yml"), []byte(tc.manifest), 0644)
 			require.NoError(t, err)
+
+			// Create source directories referenced by source entries
+			for _, sourceDir := range tc.sourceDirs {
+				err = os.MkdirAll(filepath.Join(pkgRoot, sourceDir), 0755)
+				require.NoError(t, err)
+			}
 
 			// Create test config in appropriate path
 			testConfigFullPath := filepath.Join(pkgRoot, tc.testConfigPath)

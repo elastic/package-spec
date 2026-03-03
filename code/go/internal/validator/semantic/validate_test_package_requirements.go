@@ -6,6 +6,8 @@ package semantic
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 
 	"github.com/Masterminds/semver/v3"
 
@@ -114,14 +116,21 @@ func validateIntegrationTestRequirements(fsys fspath.FS, requiredPackages map[st
 					if reqMap, ok := req.(map[string]interface{}); ok {
 						pkgName, _ := reqMap["package"].(string)
 						version, _ := reqMap["version"].(string)
-
-						if pkgName == "" || version == "" {
+						if pkgName != "" && version != "" {
+							err := validateTestRequirementPackageVersion(fsys.Path("_dev/test/config.yml"), testType, idx, pkgName, version, requiredPackages)
+							if err != nil {
+								errs = append(errs, err)
+							}
 							continue
 						}
 
-						err := validateTestRequirement(fsys.Path("_dev/test/config.yml"), testType, idx, pkgName, version, requiredPackages)
-						if err != nil {
-							errs = append(errs, err)
+						source, _ := reqMap["source"].(string)
+						if source != "" {
+							err := validateTestRequirementSource(fsys.Path("_dev/test/config.yml"), source)
+							if err != nil {
+								errs = append(errs, err)
+							}
+							continue
 						}
 					}
 				}
@@ -158,14 +167,21 @@ func validateDataStreamTestRequirements(fsys fspath.FS, requiredPackages map[str
 					if reqMap, ok := req.(map[string]interface{}); ok {
 						pkgName, _ := reqMap["package"].(string)
 						version, _ := reqMap["version"].(string)
-
-						if pkgName == "" || version == "" {
+						if pkgName != "" && version != "" {
+							err := validateTestRequirementPackageVersion(fsys.Path(config.Path()), "", idx, pkgName, version, requiredPackages)
+							if err != nil {
+								errs = append(errs, err)
+							}
 							continue
 						}
 
-						err := validateTestRequirement(fsys.Path(config.Path()), "", idx, pkgName, version, requiredPackages)
-						if err != nil {
-							errs = append(errs, err)
+						source, _ := reqMap["source"].(string)
+						if source != "" {
+							err := validateTestRequirementSource(fsys.Path(config.Path()), source)
+							if err != nil {
+								errs = append(errs, err)
+							}
+							continue
 						}
 					}
 				}
@@ -176,7 +192,7 @@ func validateDataStreamTestRequirements(fsys fspath.FS, requiredPackages map[str
 	return errs
 }
 
-func validateTestRequirement(configPath, testType string, idx int, pkgName, version string, requiredPackages map[string]string) *specerrors.StructuredError {
+func validateTestRequirementPackageVersion(configPath, testType string, idx int, pkgName, version string, requiredPackages map[string]string) *specerrors.StructuredError {
 	constraint, exists := requiredPackages[pkgName]
 	if !exists {
 		location := fmt.Sprintf("requires[%d]", idx)
@@ -223,5 +239,15 @@ func validateTestRequirement(configPath, testType string, idx int, pkgName, vers
 			configPath, location, pkgName, version, constraint)
 	}
 
+	return nil
+}
+
+func validateTestRequirementSource(configFile, source string) *specerrors.StructuredError {
+	targetPath := filepath.Join(filepath.Dir(configFile), filepath.FromSlash(source))
+	if _, err := os.Stat(targetPath); err != nil {
+		return specerrors.NewStructuredErrorf(
+			"file \"%s\" is invalid: required source path \"%s\" does not exist",
+			configFile, source)
+	}
 	return nil
 }
