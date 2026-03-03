@@ -21,7 +21,7 @@ spec:
           example: https://github.com/elastic/integrations/issues/520
       required: [ "reason", "link" ]
     package_requirement:
-      description: A package requirement with an exact version.
+      description: A package requirement with an exact version used during tests.
       type: object
       oneOf:
         - additionalProperties: false

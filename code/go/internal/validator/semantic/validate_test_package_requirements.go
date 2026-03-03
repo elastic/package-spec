@@ -246,10 +246,16 @@ func validateTestRequirementPackageVersion(configPath, testType string, idx int,
 // the spec, but this format checker only works with relative files inside the package. In this case the source package
 // is going to be outside the current package.
 func validateTestRequirementSource(configFile, source string) *specerrors.StructuredError {
+	cleanSource := filepath.Clean(filepath.FromSlash(source))
+	if filepath.IsAbs(cleanSource) {
+		return specerrors.NewStructuredErrorf(
+			"file \"%s\" is invalid: source path to required package \"%s\" must be relative",
+			configFile, source)
+	}
 	targetPath := filepath.Join(filepath.Dir(configFile), filepath.FromSlash(source))
 	if _, err := os.Stat(targetPath); err != nil {
 		return specerrors.NewStructuredErrorf(
-			"file \"%s\" is invalid: required source path \"%s\" does not exist",
+			"file \"%s\" is invalid: source path to required package \"%s\" does not exist",
 			configFile, source)
 	}
 	return nil

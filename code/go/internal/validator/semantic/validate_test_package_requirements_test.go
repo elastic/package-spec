@@ -161,7 +161,7 @@ format_version: 3.6.0`,
     - source: ../nonexistent_package`,
 			testConfigPath: "_dev/test/config.yml",
 			expectError:    true,
-			errorContains:  `source path "../nonexistent_package" does not exist`,
+			errorContains:  `source path to required package "../nonexistent_package" does not exist`,
 		},
 		"valid_datastream_source_path_requirement": {
 			manifest: `name: test
@@ -180,7 +180,7 @@ format_version: 3.6.0`,
   - source: ../nonexistent_package`,
 			testConfigPath: "data_stream/example/_dev/test/system/test-default-config.yml",
 			expectError:    true,
-			errorContains:  `source path "../nonexistent_package" does not exist`,
+			errorContains:  `source path to required package "../nonexistent_package" does not exist`,
 		},
 	}
 
