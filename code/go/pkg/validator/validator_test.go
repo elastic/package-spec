@@ -244,7 +244,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_requires": {
 			"manifest.yml",
 			[]string{
-				`field requires.content.0.name: Does not match pattern '^[a-z0-9_]+$'`,
+				`field requires.content.0.package: Does not match pattern '^[a-z0-9_]+$'`,
 				`field requires.input.0: version is required`,
 				`field requires.input.1.version: version "^1.0.0" for package "filelog_otel" must be a valid semantic version, constraints are not allowed`,
 			},

@@ -51,7 +51,7 @@ func getRequiredPackagesWithConstraints(manifest pkgpath.File) (map[string]strin
 	if err == nil && inputPackages != nil {
 		if pkgArray, ok := inputPackages.([]interface{}); ok {
 			for i := 0; i < len(pkgArray); i++ {
-				name, err := manifest.Values(fmt.Sprintf("$.requires.input[%d].name", i))
+				name, err := manifest.Values(fmt.Sprintf("$.requires.input[%d].package", i))
 				if err != nil || name == nil {
 					continue
 				}
@@ -73,7 +73,7 @@ func getRequiredPackagesWithConstraints(manifest pkgpath.File) (map[string]strin
 	if err == nil && contentPackages != nil {
 		if pkgArray, ok := contentPackages.([]interface{}); ok {
 			for i := 0; i < len(pkgArray); i++ {
-				name, err := manifest.Values(fmt.Sprintf("$.requires.content[%d].name", i))
+				name, err := manifest.Values(fmt.Sprintf("$.requires.content[%d].package", i))
 				if err != nil || name == nil {
 					continue
 				}
@@ -133,31 +133,40 @@ func validateIntegrationTestRequirements(fsys fspath.FS, requiredPackages map[st
 }
 
 func validateDataStreamTestRequirements(fsys fspath.FS, requiredPackages map[string]string) specerrors.ValidationErrors {
-	testConfigs, err := pkgpath.Files(fsys, "data_stream/*/_dev/test/*/config.yml")
-	if err != nil {
-		return nil
+	var errs specerrors.ValidationErrors
+
+	patterns := []string{
+		"data_stream/*/_dev/test/system/test-*-config.yml",
+		"data_stream/*/_dev/test/policy/test-*.yml",
+		"data_stream/*/_dev/test/static/test-*-config.yml",
 	}
 
-	var errs specerrors.ValidationErrors
-	for _, config := range testConfigs {
-		requires, err := config.Values("$.requires")
-		if err != nil || requires == nil {
+	for _, pattern := range patterns {
+		testConfigs, err := pkgpath.Files(fsys, pattern)
+		if err != nil {
 			continue
 		}
 
-		if reqArray, ok := requires.([]interface{}); ok {
-			for idx, req := range reqArray {
-				if reqMap, ok := req.(map[string]interface{}); ok {
-					pkgName, _ := reqMap["package"].(string)
-					version, _ := reqMap["version"].(string)
+		for _, config := range testConfigs {
+			requires, err := config.Values("$.requires")
+			if err != nil || requires == nil {
+				continue
+			}
 
-					if pkgName == "" || version == "" {
-						continue
-					}
+			if reqArray, ok := requires.([]interface{}); ok {
+				for idx, req := range reqArray {
+					if reqMap, ok := req.(map[string]interface{}); ok {
+						pkgName, _ := reqMap["package"].(string)
+						version, _ := reqMap["version"].(string)
 
-					err := validateTestRequirement(fsys.Path(config.Path()), "", idx, pkgName, version, requiredPackages)
-					if err != nil {
-						errs = append(errs, err)
+						if pkgName == "" || version == "" {
+							continue
+						}
+
+						err := validateTestRequirement(fsys.Path(config.Path()), "", idx, pkgName, version, requiredPackages)
+						if err != nil {
+							errs = append(errs, err)
+						}
 					}
 				}
 			}

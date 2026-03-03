@@ -1,0 +1,3 @@
+requires:
+  - package: sql_input
+    version: 1.0.0

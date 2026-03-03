@@ -28,7 +28,7 @@ func TestValidateTestPackageRequirements(t *testing.T) {
 format_version: 3.6.0
 requires:
   input:
-    - name: sql_input
+    - package: sql_input
       version: ^1.2.0`,
 			testConfig: `system:
   requires:
@@ -42,12 +42,12 @@ requires:
 format_version: 3.6.0
 requires:
   content:
-    - name: logs_package
+    - package: logs_package
       version: ~1.0.0`,
 			testConfig: `requires:
   - package: logs_package
     version: 1.0.3`,
-			testConfigPath: "data_stream/example/_dev/test/system/config.yml",
+			testConfigPath: "data_stream/example/_dev/test/system/test-default-config.yml",
 			expectError:    false,
 		},
 		"package_not_in_manifest": {
@@ -55,7 +55,7 @@ requires:
 format_version: 3.6.0
 requires:
   input:
-    - name: sql_input
+    - package: sql_input
       version: ^1.2.0`,
 			testConfig: `policy:
   requires:
@@ -70,7 +70,7 @@ requires:
 format_version: 3.6.0
 requires:
   input:
-    - name: sql_input
+    - package: sql_input
       version: ^2.0.0`,
 			testConfig: `system:
   requires:
@@ -85,7 +85,7 @@ requires:
 format_version: 3.6.0
 requires:
   input:
-    - name: sql_input
+    - package: sql_input
       version: ^1.0.0`,
 			testConfig: `system:
   requires:
@@ -100,10 +100,10 @@ requires:
 format_version: 3.6.0
 requires:
   input:
-    - name: pkg1
+    - package: pkg1
       version: ^1.0.0
   content:
-    - name: pkg2
+    - package: pkg2
       version: ~2.0.0`,
 			testConfig: `system:
   requires:
@@ -121,7 +121,7 @@ policy:
 format_version: 3.6.0
 requires:
   input:
-    - name: sql_input
+    - package: sql_input
       version: ^1.0.0`,
 			testConfig: `system:
   skip:
@@ -140,6 +140,23 @@ format_version: 3.6.0`,
 			testConfigPath: "_dev/test/config.yml",
 			expectError:    true,
 			errorContains:  "sql_input\" which is not listed in manifest requires",
+		},
+		"valid_source_path_requirement": {
+			manifest: `name: test
+format_version: 3.6.0`,
+			testConfig: `system:
+  requires:
+    - source: ../my_input_package`,
+			testConfigPath: "_dev/test/config.yml",
+			expectError:    false,
+		},
+		"valid_datastream_source_path_requirement": {
+			manifest: `name: test
+format_version: 3.6.0`,
+			testConfig: `requires:
+  - source: ../my_content_package`,
+			testConfigPath: "data_stream/example/_dev/test/system/test-default-config.yml",
+			expectError:    false,
 		},
 	}
 

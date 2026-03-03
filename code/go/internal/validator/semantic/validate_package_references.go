@@ -85,7 +85,7 @@ func extractPackageNamesFromRequires(packages interface{}) []requiredPackage {
 			continue
 		}
 
-		name, ok := pkgMap["name"].(string)
+		name, ok := pkgMap["package"].(string)
 		if !ok {
 			continue
 		}

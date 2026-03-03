@@ -4,5 +4,4 @@ system:
       version: 1.0.0
 policy:
   requires:
-    - package: log_input
-      version: 2.0.0
+    - source: ../sql_input
