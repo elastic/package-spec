@@ -294,6 +294,20 @@ func thereIsASecurityAIPrompt(promptID string) error {
 	return nil
 }
 
+func thereIsAnInputTemplateWithOtelPipeline(packageName, packageVersion, pipelineName string) error {
+	kibana, err := NewKibanaClient()
+	if err != nil {
+		return err
+	}
+
+	err = kibana.MustExistInputTemplateWithOtelPipeline(packageName, packageVersion, pipelineName)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
 		skipped := slices.ContainsFunc(sc.Tags, func(elem *messages.PickleTag) bool {
@@ -318,4 +332,5 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^there is a detection rule "([^"]*)"$`, thereIsADetectionRule)
 	ctx.Step(`^prebuilt detection rules are loaded$`, prebuiltDetectionRulesAreLoaded)
 	ctx.Step(`^there is a security AI prompt "([^"]*)"$`, thereIsASecurityAIPrompt)
+	ctx.Step(`^there is an input template for package "([^"]*)" at version "([^"]*)" with otel pipeline "([^"]*)"$`, thereIsAnInputTemplateWithOtelPipeline)
 }
