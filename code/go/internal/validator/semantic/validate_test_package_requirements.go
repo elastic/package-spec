@@ -242,6 +242,9 @@ func validateTestRequirementPackageVersion(configPath, testType string, idx int,
 	return nil
 }
 
+// validateTestRequirementSource checks if the relative path exists. This could be done with "format: relative-path" in
+// the spec, but this format checker only works with relative files inside the package. In this case the source package
+// is going to be outside the current package.
 func validateTestRequirementSource(configFile, source string) *specerrors.StructuredError {
 	targetPath := filepath.Join(filepath.Dir(configFile), filepath.FromSlash(source))
 	if _, err := os.Stat(targetPath); err != nil {
