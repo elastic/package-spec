@@ -167,6 +167,18 @@ spec:
         vars:
           description: Variables used to configure settings defined in the data stream manifest.
           $ref: "./../config.spec.yml#/definitions/vars"
+    policy_api_format:
+      description: |-
+        Tests can create policies using the Fleet APIs with different formats. The "legacy" format requires to
+        send variables with hints about their type, and defaults are not managed automatically.
+        The newer, "simplified" format has better format support for variables and don't allow to include hints,
+        it also uses defaults automatically, and requires explicit enablement or disablement of inputs and streams.
+        In most cases tests should not set this value. The main use case is to set it to "legacy" for cases that
+        cannot be fully supported with the newer "simplified" format.
+      type: string
+      enum:
+        - legacy
+        - simplified
     requires:
       description: Package dependencies required for this test with exact versions.
       type: array
