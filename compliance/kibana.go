@@ -15,14 +15,11 @@ import (
 	"net/url"
 	"os"
 	"strings"
-
-	"gopkg.in/yaml.v3"
 )
 
 const (
 	apiAgentPolicyPath    = "/api/fleet/agent_policies"
 	apiPackagePolicyPath  = "/api/fleet/package_policies"
-	apiInputTemplatesPath = "/api/fleet/epm/templates/%s/%s/inputs"
 
 	apiGetSloPath                     = "/s/%s/api/observability/slos"
 	apiExportSavedObjectPath          = "/api/saved_objects/_export"
@@ -86,12 +83,6 @@ type detectionRuleResponse struct {
 	ID          string `json:"id"`
 	Name        string `json:"name"`
 	Enabled     bool   `json:"enabled"`
-}
-
-type inputTemplatesResponse struct {
-	Service struct {
-		Pipelines map[string]any `yaml:"pipelines"`
-	} `yaml:"service"`
 }
 
 // Kibana is a kibana client.
@@ -521,58 +512,6 @@ func (k *Kibana) MustExistSavedObject(soType, id string) error {
 	}
 
 	return nil
-}
-
-// MustExistInputTemplateWithOtelPipeline checks if an OTel pipeline exists in the input templates for a given package and version.
-func (k *Kibana) MustExistInputTemplateWithOtelPipeline(packageName, packageVersion, pipelineName string) error {
-	inputTemplates, err := k.getInputTemplates(packageName, packageVersion)
-	if err != nil {
-		return err
-	}
-
-	if inputTemplates.Service.Pipelines == nil {
-		return fmt.Errorf("no otel pipelines found in input templates")
-	}
-
-	if _, ok := inputTemplates.Service.Pipelines[pipelineName]; !ok {
-		return fmt.Errorf("otel pipeline %q not found", pipelineName)
-	}
-
-	return nil
-}
-
-func (k *Kibana) getInputTemplates(packageName, packageVersion string) (*inputTemplatesResponse, error) {
-	apiPath := fmt.Sprintf(apiInputTemplatesPath, packageName, packageVersion)
-	req, err := k.newRequest(http.MethodGet, apiPath, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	req = addRequestParams(req, map[string]string{
-		"format": "yaml",
-	})
-
-	resp, err := k.client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		respBody, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
-		}
-		return nil, fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
-	}
-
-	var inputTemplates inputTemplatesResponse
-	err = yaml.NewDecoder(resp.Body).Decode(&inputTemplates)
-	if err != nil {
-		return nil, err
-	}
-
-	return &inputTemplates, nil
 }
 
 func (k *Kibana) newRequest(method string, path string, body io.Reader) (*http.Request, error) {
