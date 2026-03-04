@@ -53,7 +53,7 @@
       link: https://github.com/elastic/package-spec/pull/1099
     - description: Allow to force the format used in the policy API in system tests.
       type: enhancement
-      link: TODO
+      link: https://github.com/elastic/package-spec/pull/1103
 - version: 3.5.7
   changes:
     - description: Allow _dev directory for content-only packages; use _dev/shared for development files (e.g. dashboard YML sources).
