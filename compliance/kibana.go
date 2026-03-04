@@ -18,8 +18,8 @@ import (
 )
 
 const (
-	apiAgentPolicyPath    = "/api/fleet/agent_policies"
-	apiPackagePolicyPath  = "/api/fleet/package_policies"
+	apiAgentPolicyPath   = "/api/fleet/agent_policies"
+	apiPackagePolicyPath = "/api/fleet/package_policies"
 
 	apiGetSloPath                     = "/s/%s/api/observability/slos"
 	apiExportSavedObjectPath          = "/api/saved_objects/_export"
