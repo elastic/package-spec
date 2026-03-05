@@ -11,7 +11,7 @@ conditions:
     version: '^8.0.0'
 requires:
   input:
-    - name: sql_input
+    - package: sql_input
       version: "1.0.0"
 policy_templates:
   - name: example

@@ -21,6 +21,7 @@ const (
 type inputPolicyTemplateWithDynamic struct {
 	Name               string `yaml:"name"`
 	Input              string `yaml:"input"`
+	Type               string `yaml:"type"`
 	DynamicSignalTypes bool   `yaml:"dynamic_signal_types"`
 }
 
@@ -102,6 +103,13 @@ func validateInputPackageDynamicSignalTypes(fsys fspath.FS, data []byte, manifes
 			errs = append(errs, specerrors.NewStructuredErrorf(
 				"file \"%s\" is invalid: policy template \"%s\": dynamic_signal_types is only allowed when input is 'otelcol', got '%s'",
 				fsys.Path(manifestPath), policyTemplate.Name, policyTemplate.Input))
+			continue
+		}
+		// Must not have type field set
+		if policyTemplate.Type != "" {
+			errs = append(errs, specerrors.NewStructuredErrorf(
+				"file \"%s\" is invalid: policy template \"%s\": type field must not be set when dynamic_signal_types is true",
+				fsys.Path(manifestPath), policyTemplate.Name))
 		}
 	}
 

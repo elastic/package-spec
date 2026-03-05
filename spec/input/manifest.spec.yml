@@ -93,27 +93,31 @@ spec:
             $ref: "../integration/manifest.spec.yml#/definitions/dynamic_signal_types"
           deprecated:
             $ref: "../integration/manifest.spec.yml#/definitions/deprecated"
-        oneOf:
-          - required:
-              - name
-              - title
-              - description
-              - type
-              - input
-              - template_path
-            not:
-              required:
-                - template_paths
-          - required:
-              - name
-              - title
-              - description
-              - type
-              - input
-              - template_paths
-            not:
-              required:
-                - template_path
+        allOf:
+          # Either template_path or template_paths must be present (mutually exclusive)
+          - oneOf:
+              - required:
+                  - template_path
+                not:
+                  required:
+                    - template_paths
+              - required:
+                  - template_paths
+                not:
+                  required:
+                    - template_path
+          # Either type is required, or dynamic_signal_types must be true
+          - oneOf:
+              - required:
+                  - type
+              - properties:
+                  dynamic_signal_types:
+                    const: true
+        required:
+          - name
+          - title
+          - description
+          - input
     icons:
       $ref: "../integration/manifest.spec.yml#/definitions/icons"
     screenshots:
@@ -151,7 +155,7 @@ versions:
       - op: remove
         path: "/properties/policy_templates/items/properties/template_paths" # removes template_paths field for policy templates
       - op: remove
-        path: "/properties/policy_templates/items/oneOf" # removes oneOf constraint for template_path/template_paths
+        path: "/properties/policy_templates/items/allOf" # removes allOf constraint for template_path/template_paths and dynamic_signal_types/type
       - op: add
         path: "/properties/policy_templates/items/required"
         value:

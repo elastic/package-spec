@@ -24,7 +24,7 @@ format_version: 3.6.0
 type: integration
 requires:
   input:
-    - name: filelog_otel
+    - package: filelog_otel
       version: "1.0.0"
 policy_templates:
   - name: apache
@@ -47,7 +47,7 @@ format_version: 3.6.0
 type: integration
 requires:
   input:
-    - name: filelog_otel
+    - package: filelog_otel
       version: "1.0.0"
 policy_templates:
   - name: apache
@@ -72,7 +72,7 @@ format_version: 3.6.0
 type: integration
 requires:
   content:
-    - name: apache_otel
+    - package: apache_otel
       version: "^1.0.0"
 policy_templates:
   - name: apache
@@ -97,7 +97,7 @@ format_version: 3.6.0
 type: integration
 requires:
   input:
-    - name: filelog_otel
+    - package: filelog_otel
       version: "1.0.0"
 `), 0o644)
 		require.NoError(t, err)
@@ -127,7 +127,7 @@ format_version: 3.6.0
 type: integration
 requires:
   input:
-    - name: filelog_otel
+    - package: filelog_otel
       version: "1.0.0"
 `), 0o644)
 		require.NoError(t, err)
@@ -159,7 +159,7 @@ format_version: 3.6.0
 type: integration
 requires:
   content:
-    - name: security_rules
+    - package: security_rules
       version: "^1.0.0"
 `), 0o644)
 		require.NoError(t, err)
@@ -212,7 +212,7 @@ format_version: 3.6.0
 type: integration
 requires:
   input:
-    - name: valid_package
+    - package: valid_package
       version: "1.0.0"
 policy_templates:
   - name: apache

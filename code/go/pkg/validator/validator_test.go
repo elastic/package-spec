@@ -244,7 +244,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_requires": {
 			"manifest.yml",
 			[]string{
-				`field requires.content.0.name: Does not match pattern '^[a-z0-9_]+$'`,
+				`field requires.content.0.package: Does not match pattern '^[a-z0-9_]+$'`,
 				`field requires.input.0: version is required`,
 				`field requires.input.1.version: version "^1.0.0" for package "filelog_otel" must be a valid semantic version, constraints are not allowed`,
 			},
@@ -414,6 +414,12 @@ func TestValidateFile(t *testing.T) {
 				"field policy_templates.0: Additional property dynamic_signal_types is not allowed",
 			},
 		},
+		"bad_input_dynamic_signal_type_with_type": {
+			"manifest.yml",
+			[]string{
+				"policy template \"otel_logs\": type field must not be set when dynamic_signal_types is true",
+			},
+		},
 		"bad_input_template_path": {
 			"manifest.yml",
 			[]string{
@@ -490,6 +496,13 @@ func TestValidateFile(t *testing.T) {
 		"bad_deprecated_integration_policy_input": {
 			"manifest.yml",
 			[]string{"all inputs are deprecated but the integration package is not marked as deprecated"},
+		},
+		"good_deployer_system_benchmark": {},
+		"bad_deployer_system_benchmark": {
+			"_dev/benchmark/system/alert-benchmark.yml",
+			[]string{
+				"field deployer: deployer must be one of the following: \"docker\", \"tf\", \"k8s\"",
+			},
 		},
 	}
 
