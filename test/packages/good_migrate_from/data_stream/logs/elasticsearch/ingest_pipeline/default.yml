@@ -1,0 +1,18 @@
+---
+description: Pipeline for processing sample logs
+processors:
+  - set:
+      tag: set_dataset
+      field: data_stream.dataset
+      value: good_migrate_from.logs
+on_failure:
+  - set:
+      field: event.kind
+      value: pipeline_error
+  - set:
+      field: error.message
+      value: >-
+        Processor '{{{ _ingest.on_failure_processor_type }}}'
+        with tag '{{{ _ingest.on_failure_processor_tag }}}'
+        in pipeline '{{{ _ingest.pipeline }}}'
+        failed with message '{{{ _ingest.on_failure_message }}}'

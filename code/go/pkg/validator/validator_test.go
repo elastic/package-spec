@@ -156,6 +156,12 @@ func TestValidateFile(t *testing.T) {
 				"field streams.0.vars.3: Must not be present",
 			},
 		},
+		"bad_policy_api_format": {
+			"data_stream/foo/_dev/test/system/test-default-config.yml",
+			[]string{
+				"field policy_api_format: policy_api_format must be one of the following: \"legacy\", \"simplified\"",
+			},
+		},
 		"bad_skip_ignored_fields": {
 			"data_stream/foo/_dev/test/system/test-default-config.yml",
 			[]string{
@@ -245,7 +251,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_requires": {
 			"manifest.yml",
 			[]string{
-				`field requires.content.0.name: Does not match pattern '^[a-z0-9_]+$'`,
+				`field requires.content.0.package: Does not match pattern '^[a-z0-9_]+$'`,
 				`field requires.input.0: version is required`,
 				`field requires.input.1.version: version "^1.0.0" for package "filelog_otel" must be a valid semantic version, constraints are not allowed`,
 			},
@@ -487,6 +493,11 @@ func TestValidateFile(t *testing.T) {
 		"deprecated_integration_policy_input": {},
 		"deprecated_integration_policy":       {},
 		"deprecated_integration_stream_var":   {},
+		"good_migrate_from":                   {},
+		"bad_migrate_from": {
+			"manifest.yml",
+			[]string{`field policy_templates.0.inputs.0: Additional property migrate_from is not allowed`},
+		},
 		"bad_deprecation_description": {
 			"manifest.yml",
 			[]string{"field deprecated.description: Invalid type. Expected: string, given: null"},

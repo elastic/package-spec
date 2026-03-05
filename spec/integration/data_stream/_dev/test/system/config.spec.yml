@@ -167,6 +167,8 @@ spec:
         vars:
           description: Variables used to configure settings defined in the data stream manifest.
           $ref: "./../config.spec.yml#/definitions/vars"
+    policy_api_format:
+      $ref: "./../config.spec.yml#/definitions/policy_api_format"
     requires:
       description: Package dependencies required for this test with exact versions.
       type: array

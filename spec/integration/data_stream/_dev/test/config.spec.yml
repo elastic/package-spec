@@ -21,21 +21,41 @@ spec:
           example: https://github.com/elastic/integrations/issues/520
       required: [ "reason", "link" ]
     package_requirement:
-      description: A package requirement with an exact version.
+      description: A package requirement with an exact version used during tests.
       type: object
-      additionalProperties: false
-      properties:
-        package:
-          description: Name of the required package.
-          type: string
-          pattern: '^[a-z0-9_]+$'
-        version:
-          description: Exact version of the package required.
-          type: string
-          pattern: '^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$'
-      required:
-        - package
-        - version
+      oneOf:
+        - additionalProperties: false
+          properties:
+            package:
+              description: Name of the required package.
+              type: string
+              pattern: '^[a-z0-9_]+$'
+            version:
+              description: Exact version of the package required.
+              type: string
+              pattern: '^\d+\.\d+\.\d+(-[a-zA-Z0-9.]+)?$'
+          required:
+            - package
+            - version
+        - additionalProperties: false
+          properties:
+            source:
+              description: Relative path to the source of the required package.
+              type: string
+          required:
+            - source
+    policy_api_format:
+      description: |-
+        Tests can create policies using the Fleet APIs with different formats. The "legacy" format requires to
+        send variables with hints about their type, and defaults are not managed automatically.
+        The newer, "simplified" format has better format support for variables and don't allow to include hints,
+        it also uses defaults automatically, and requires explicit enablement or disablement of inputs and streams.
+        In most cases tests should not set this value. The main use case is to set it to "legacy" for cases that
+        cannot be fully supported with the newer "simplified" format.
+      type: string
+      enum:
+        - legacy
+        - simplified
     vars:
       description: Variables defined for the test case.
       type:
