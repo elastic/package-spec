@@ -30,6 +30,32 @@ type dataStreamManifestWithCategories struct {
 	Categories []string `yaml:"categories"`
 }
 
+func readPackageManifestPolicyTemplates(fsys fspath.FS) (string, []policyTemplateWithCategories, error) {
+	manifest, err := readManifest(fsys)
+	if err != nil {
+		return "", nil, err
+	}
+
+	typeVal, err := manifest.Values("$.type")
+	if err != nil {
+		return "", nil, err
+	}
+	pkgType, ok := typeVal.(string)
+	if !ok {
+		return "", nil, nil
+	}
+
+	data, err := manifest.ReadAll()
+	if err != nil {
+		return "", nil, err
+	}
+	var pkg packageManifestWithCategories
+	if err := yaml.Unmarshal(data, &pkg); err != nil {
+		return "", nil, err
+	}
+	return pkgType, pkg.PolicyTemplates, nil
+}
+
 // ValidatePolicyTemplateDatastreamCategories validates that when a policy template
 // entry in the package manifest.yml defines categories, those categories match the
 // categories defined in the manifest.yml of each referenced data stream.
@@ -38,20 +64,14 @@ func ValidatePolicyTemplateDatastreamCategories(fsys fspath.FS) specerrors.Valid
 	var errs specerrors.ValidationErrors
 
 	manifestPath := "manifest.yml"
-	data, err := fs.ReadFile(fsys, manifestPath)
+	pkgType, policyTemplates, err := readPackageManifestPolicyTemplates(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{
-			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), errFailedToReadManifest)}
-	}
-
-	var manifest packageManifestWithCategories
-	if err := yaml.Unmarshal(data, &manifest); err != nil {
-		return specerrors.ValidationErrors{
-			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), errFailedToParseManifest)}
+			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), err)}
 	}
 
 	// only validate integration type packages
-	if manifest.Type != packageTypeIntegration {
+	if pkgType != packageTypeIntegration {
 		return nil
 	}
 
@@ -61,7 +81,7 @@ func ValidatePolicyTemplateDatastreamCategories(fsys fspath.FS) specerrors.Valid
 			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), err)}
 	}
 
-	for _, pt := range manifest.PolicyTemplates {
+	for _, pt := range policyTemplates {
 		// skip policy templates that don't define both categories and data_streams
 		if len(pt.Categories) == 0 || len(pt.DataStreams) == 0 {
 			continue

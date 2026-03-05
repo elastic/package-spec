@@ -7,7 +7,6 @@ package semantic
 import (
 	"fmt"
 	"io"
-	"io/fs"
 	"net/http"
 	"path"
 	"slices"
@@ -56,9 +55,31 @@ func fetchRegistryParentCategories() (map[string]struct{}, error) {
 	return parentCategories, nil
 }
 
-type packageManifestWithPackageCategories struct {
-	Type       string   `yaml:"type"`
-	Categories []string `yaml:"categories"`
+func readPackageManifestTypeAndCategories(fsys fspath.FS) (string, []string, error) {
+	manifest, err := readManifest(fsys)
+	if err != nil {
+		return "", nil, err
+	}
+
+	typeVal, err := manifest.Values("$.type")
+	if err != nil {
+		return "", nil, fmt.Errorf("can't read manifest type: %w", err)
+	}
+	pkgType, ok := typeVal.(string)
+	if !ok {
+		return "", nil, fmt.Errorf("manifest type is not a string")
+	}
+
+	catsVal, err := manifest.Values("$.categories[*]")
+	if err != nil {
+		// categories field may be absent
+		return pkgType, nil, nil
+	}
+	cats, err := toStringSlice(catsVal)
+	if err != nil {
+		return "", nil, fmt.Errorf("can't read manifest categories: %w", err)
+	}
+	return pkgType, cats, nil
 }
 
 // ValidateDatastreamPackageCategories validates that the package manifest
@@ -67,19 +88,13 @@ type packageManifestWithPackageCategories struct {
 // categories.yml. Data stream manifests without a categories field are skipped.
 func ValidateDatastreamPackageCategories(fsys fspath.FS) specerrors.ValidationErrors {
 	manifestPath := "manifest.yml"
-	data, err := fs.ReadFile(fsys, manifestPath)
+	pkgType, pkgCategories, err := readPackageManifestTypeAndCategories(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{
-			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), errFailedToReadManifest)}
+			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), err)}
 	}
 
-	var manifest packageManifestWithPackageCategories
-	if err := yaml.Unmarshal(data, &manifest); err != nil {
-		return specerrors.ValidationErrors{
-			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), errFailedToParseManifest)}
-	}
-
-	if manifest.Type != packageTypeIntegration {
+	if pkgType != packageTypeIntegration {
 		return nil
 	}
 
@@ -103,7 +118,7 @@ func ValidateDatastreamPackageCategories(fsys fspath.FS) specerrors.ValidationEr
 	for dsName, dsCats := range dsCategories {
 		var missingCats []string
 		for _, dsCat := range dsCats {
-			if _, isParent := parentCategories[dsCat]; isParent && !slices.Contains(manifest.Categories, dsCat) {
+			if _, isParent := parentCategories[dsCat]; isParent && !slices.Contains(pkgCategories, dsCat) {
 				missingCats = append(missingCats, dsCat)
 			}
 		}
@@ -114,7 +129,7 @@ func ValidateDatastreamPackageCategories(fsys fspath.FS) specerrors.ValidationEr
 			errs = append(errs, specerrors.NewStructuredErrorf(
 				"file \"%s\" is invalid: package manifest categories %v are missing parent categories %v from data stream \"%s\" (defined in \"%s\")",
 				fsys.Path(manifestPath),
-				manifest.Categories,
+				pkgCategories,
 				missingCats,
 				dsName,
 				fsys.Path(dsManifestPath),

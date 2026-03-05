@@ -4,6 +4,8 @@ title: Bad package with mismatched datastream categories
 description: Policy template categories do not match the data stream manifest categories.
 version: 0.0.1
 type: integration
+categories:
+  - security
 source:
   license: "Apache-2.0"
 conditions:
