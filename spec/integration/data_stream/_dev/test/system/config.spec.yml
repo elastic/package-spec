@@ -6,7 +6,7 @@ spec:
   type: object
   properties:
     deployer:
-      $ref: "./../../../../_dev/benchmark/system.scenario.spec.yml#/definitions/deployer"
+      $ref: "./../config.spec.yml#/definitions/deployer"
     skip:
       $ref: "./../config.spec.yml#/definitions/skip"
     wait_for_data_timeout:

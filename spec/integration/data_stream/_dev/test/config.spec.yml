@@ -6,6 +6,13 @@ spec:
   type: object
   additionalProperties: false
   definitions:
+    deployer:
+      description: Name of the service deployer to setup for this system benchmark.
+      type: string
+      enum:
+        - docker
+        - tf
+        - k8s
     skip:
       description: If this test should be skipped, more information about why it was skipped.
       type: object
