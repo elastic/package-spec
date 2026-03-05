@@ -155,6 +155,12 @@ func TestValidateFile(t *testing.T) {
 				"field streams.0.vars.3: Must not be present",
 			},
 		},
+		"bad_policy_api_format": {
+			"data_stream/foo/_dev/test/system/test-default-config.yml",
+			[]string{
+				"field policy_api_format: policy_api_format must be one of the following: \"legacy\", \"simplified\"",
+			},
+		},
 		"bad_skip_ignored_fields": {
 			"data_stream/foo/_dev/test/system/test-default-config.yml",
 			[]string{

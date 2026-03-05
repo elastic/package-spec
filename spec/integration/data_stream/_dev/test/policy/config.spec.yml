@@ -29,3 +29,5 @@ spec:
       type: array
       items:
         $ref: "./../config.spec.yml#/definitions/package_requirement"
+    policy_api_format:
+      $ref: "./../config.spec.yml#/definitions/policy_api_format"
