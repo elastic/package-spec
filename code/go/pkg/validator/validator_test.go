@@ -46,6 +46,7 @@ func TestValidateFile(t *testing.T) {
 		"good_requires":                          {},
 		"good_package_reference_policy_template": {},
 		"good_datastream_categories_match":       {},
+		"good_datastream_package_categories":     {},
 		"deploy_custom_agent":                    {},
 		"deploy_custom_agent_multi_services":     {},
 		"deploy_docker":                          {},
@@ -146,6 +147,12 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				fmt.Sprintf(`policy template "mytemplate" categories [observability] do not match data stream "mylogs" manifest categories [security] (defined in "%sbad_datastream_categories_mismatch/data_stream/mylogs/manifest.yml")`, osTestBasePath),
+			},
+		},
+		"bad_datastream_package_categories": {
+			"manifest.yml",
+			[]string{
+				fmt.Sprintf(`package manifest categories [observability] are missing parent categories [security] from data stream "mylogs" (defined in "%sbad_datastream_package_categories/data_stream/mylogs/manifest.yml")`, osTestBasePath),
 			},
 		},
 		"bad_custom_ilm_policy": {

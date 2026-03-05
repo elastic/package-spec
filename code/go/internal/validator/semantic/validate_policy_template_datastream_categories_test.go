@@ -30,10 +30,16 @@ func writeDataStreamManifest(t *testing.T, dir, dsName, content string) {
 	require.NoError(t, err)
 }
 
-func TestValidatePolicyTemplateDatastreamCategories_Match(t *testing.T) {
-	d := t.TempDir()
-
-	writeManifest(t, d, `
+func TestValidatePolicyTemplateDatastreamCategories(t *testing.T) {
+	cases := []struct {
+		title        string
+		setup        func(t *testing.T, dir string)
+		expectedErrs []string
+	}{
+		{
+			title: "categories match",
+			setup: func(t *testing.T, dir string) {
+				writeManifest(t, dir, `
 type: integration
 policy_templates:
   - name: mytemplate
@@ -43,21 +49,18 @@ policy_templates:
       - observability
       - network
 `)
-	writeDataStreamManifest(t, d, "mylogs", `
+				writeDataStreamManifest(t, dir, "mylogs", `
 title: My Logs
 categories:
   - network
   - observability
 `)
-
-	errs := ValidatePolicyTemplateDatastreamCategories(fspath.DirFS(d))
-	assert.Empty(t, errs)
-}
-
-func TestValidatePolicyTemplateDatastreamCategories_Mismatch(t *testing.T) {
-	d := t.TempDir()
-
-	writeManifest(t, d, `
+			},
+		},
+		{
+			title: "categories mismatch",
+			setup: func(t *testing.T, dir string) {
+				writeManifest(t, dir, `
 type: integration
 policy_templates:
   - name: mytemplate
@@ -66,24 +69,19 @@ policy_templates:
     categories:
       - observability
 `)
-	writeDataStreamManifest(t, d, "mylogs", `
+				writeDataStreamManifest(t, dir, "mylogs", `
 title: My Logs
 categories:
   - observability
   - security
 `)
-
-	errs := ValidatePolicyTemplateDatastreamCategories(fspath.DirFS(d))
-	assert.Len(t, errs, 1)
-	assert.Contains(t, errs[0].Error(), `policy template "mytemplate"`)
-	assert.Contains(t, errs[0].Error(), `"mylogs"`)
-}
-
-func TestValidatePolicyTemplateDatastreamCategories_NoDataStreamCategories(t *testing.T) {
-	// Data stream manifest without categories field → should pass (nothing to validate)
-	d := t.TempDir()
-
-	writeManifest(t, d, `
+			},
+			expectedErrs: []string{`policy template "mytemplate"`, `"mylogs"`},
+		},
+		{
+			title: "data stream manifest has no categories field",
+			setup: func(t *testing.T, dir string) {
+				writeManifest(t, dir, `
 type: integration
 policy_templates:
   - name: mytemplate
@@ -92,43 +90,35 @@ policy_templates:
     categories:
       - observability
 `)
-	writeDataStreamManifest(t, d, "mylogs", `
+				writeDataStreamManifest(t, dir, "mylogs", `
 title: My Logs
 type: logs
 streams:
   - input: logfile
 `)
-
-	errs := ValidatePolicyTemplateDatastreamCategories(fspath.DirFS(d))
-	assert.Empty(t, errs)
-}
-
-func TestValidatePolicyTemplateDatastreamCategories_NoPolicyTemplateCategories(t *testing.T) {
-	// Policy template without categories field → should pass (nothing to validate)
-	d := t.TempDir()
-
-	writeManifest(t, d, `
+			},
+		},
+		{
+			title: "policy template has no categories field",
+			setup: func(t *testing.T, dir string) {
+				writeManifest(t, dir, `
 type: integration
 policy_templates:
   - name: mytemplate
     data_streams:
       - mylogs
 `)
-	writeDataStreamManifest(t, d, "mylogs", `
+				writeDataStreamManifest(t, dir, "mylogs", `
 title: My Logs
 categories:
   - observability
 `)
-
-	errs := ValidatePolicyTemplateDatastreamCategories(fspath.DirFS(d))
-	assert.Empty(t, errs)
-}
-
-func TestValidatePolicyTemplateDatastreamCategories_MultipleDataStreams(t *testing.T) {
-	// Multiple data streams — one matches, one doesn't
-	d := t.TempDir()
-
-	writeManifest(t, d, `
+			},
+		},
+		{
+			title: "multiple data streams — one matches, one does not",
+			setup: func(t *testing.T, dir string) {
+				writeManifest(t, dir, `
 type: integration
 policy_templates:
   - name: mytemplate
@@ -138,27 +128,23 @@ policy_templates:
     categories:
       - observability
 `)
-	writeDataStreamManifest(t, d, "logs_ok", `
+				writeDataStreamManifest(t, dir, "logs_ok", `
 title: OK Logs
 categories:
   - observability
 `)
-	writeDataStreamManifest(t, d, "logs_bad", `
+				writeDataStreamManifest(t, dir, "logs_bad", `
 title: Bad Logs
 categories:
   - security
 `)
-
-	errs := ValidatePolicyTemplateDatastreamCategories(fspath.DirFS(d))
-	assert.Len(t, errs, 1)
-	assert.Contains(t, errs[0].Error(), `"logs_bad"`)
-}
-
-func TestValidatePolicyTemplateDatastreamCategories_MultiplePolicyTemplates(t *testing.T) {
-	// Two policy templates — each has one mismatch
-	d := t.TempDir()
-
-	writeManifest(t, d, `
+			},
+			expectedErrs: []string{`"logs_bad"`},
+		},
+		{
+			title: "multiple policy templates — one mismatch",
+			setup: func(t *testing.T, dir string) {
+				writeManifest(t, dir, `
 type: integration
 policy_templates:
   - name: template_a
@@ -172,28 +158,23 @@ policy_templates:
     categories:
       - network
 `)
-	writeDataStreamManifest(t, d, "ds_a", `
+				writeDataStreamManifest(t, dir, "ds_a", `
 title: DS A
 categories:
   - security
 `)
-	writeDataStreamManifest(t, d, "ds_b", `
+				writeDataStreamManifest(t, dir, "ds_b", `
 title: DS B
 categories:
   - network
 `)
-
-	errs := ValidatePolicyTemplateDatastreamCategories(fspath.DirFS(d))
-	assert.Len(t, errs, 1)
-	assert.Contains(t, errs[0].Error(), `"template_a"`)
-	assert.Contains(t, errs[0].Error(), `"ds_a"`)
-}
-
-func TestValidatePolicyTemplateDatastreamCategories_NonIntegrationPackage(t *testing.T) {
-	// Non-integration packages are skipped
-	d := t.TempDir()
-
-	writeManifest(t, d, `
+			},
+			expectedErrs: []string{`"template_a"`, `"ds_a"`},
+		},
+		{
+			title: "non-integration packages are skipped",
+			setup: func(t *testing.T, dir string) {
+				writeManifest(t, dir, `
 type: input
 policy_templates:
   - name: mytemplate
@@ -202,12 +183,30 @@ policy_templates:
     categories:
       - observability
 `)
-	writeDataStreamManifest(t, d, "mylogs", `
+				writeDataStreamManifest(t, dir, "mylogs", `
 title: My Logs
 categories:
   - security
 `)
+			},
+		},
+	}
 
-	errs := ValidatePolicyTemplateDatastreamCategories(fspath.DirFS(d))
-	assert.Empty(t, errs)
+	for _, tc := range cases {
+		t.Run(tc.title, func(t *testing.T) {
+			dir := t.TempDir()
+			tc.setup(t, dir)
+
+			errs := ValidatePolicyTemplateDatastreamCategories(fspath.DirFS(dir))
+
+			if len(tc.expectedErrs) == 0 {
+				assert.Empty(t, errs)
+			} else {
+				require.Len(t, errs, 1)
+				for _, expected := range tc.expectedErrs {
+					assert.Contains(t, errs[0].Error(), expected)
+				}
+			}
+		})
+	}
 }
