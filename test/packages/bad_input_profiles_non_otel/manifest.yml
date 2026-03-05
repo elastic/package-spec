@@ -1,0 +1,32 @@
+format_version: 3.6.0
+name: bad_input_profiles_non_otel
+title: "Bad OpenTelemetry Profiling"
+version: 0.0.1
+source:
+  license: "Elastic-2.0"
+description: "Bad OpenTelemetry Profiling"
+type: input
+categories:
+  - custom
+  - observability
+  - opentelemetry
+conditions:
+  kibana:
+    version: "^9.4.0"
+  elastic:
+    subscription: "basic"
+policy_templates:
+  - name: profilingreceiver
+    type: profiles
+    title: OpenTelemetry Profiling receiver
+    description: Collect profiling data
+    input: logs
+    template_path: input.yml.hbs
+    vars:
+      - name: samples_per_second
+        type: integer
+        required: false
+        description: Defines the sampling frequency.
+owner:
+  github: elastic/ingest-otel-data
+  type: elastic
