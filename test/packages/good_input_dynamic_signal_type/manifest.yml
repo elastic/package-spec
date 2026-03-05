@@ -22,7 +22,6 @@ icons:
     type: image/svg+xml
 policy_templates:
   - name: otel_logs
-    type: logs
     title: OTel logs
     description: Collect OTel logs
     input: otelcol

@@ -15,10 +15,6 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
-const (
-	inputPackageType string = "input"
-)
-
 var (
 	errRequiredTemplatePath  = errors.New("template_path is required for input type packages")
 	errFailedToReadManifest  = errors.New("failed to read manifest")
