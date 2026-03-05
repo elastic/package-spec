@@ -51,7 +51,7 @@
     - description: Add deployer option to system benchmark configuration.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1099
-    - description: Allow to force the format used in the policy API in system tests.
+    - description: Allow to force the format used in the policy API in system and policy tests.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1103
 - version: 3.5.7
