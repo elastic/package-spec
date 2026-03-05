@@ -5,13 +5,14 @@
 package semantic
 
 import (
-	"io/fs"
+	"fmt"
 	"path"
 	"sort"
 
 	"gopkg.in/yaml.v3"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -26,9 +27,6 @@ type packageManifestWithCategories struct {
 	PolicyTemplates []policyTemplateWithCategories `yaml:"policy_templates"`
 }
 
-type dataStreamManifestWithCategories struct {
-	Categories []string `yaml:"categories"`
-}
 
 func readPackageManifestPolicyTemplates(fsys fspath.FS) (string, []policyTemplateWithCategories, error) {
 	manifest, err := readManifest(fsys)
@@ -42,7 +40,7 @@ func readPackageManifestPolicyTemplates(fsys fspath.FS) (string, []policyTemplat
 	}
 	pkgType, ok := typeVal.(string)
 	if !ok {
-		return "", nil, nil
+		return "", nil, fmt.Errorf("manifest type is not a string: %v", typeVal)
 	}
 
 	data, err := manifest.ReadAll()
@@ -116,31 +114,27 @@ func ValidatePolicyTemplateDatastreamCategories(fsys fspath.FS) specerrors.Valid
 // data_stream/*/manifest.yml and returns a map of data stream name to its categories.
 // Data streams without a categories field are omitted from the map.
 func readDataStreamManifestCategories(fsys fspath.FS) (map[string][]string, error) {
-	result := make(map[string][]string)
-
-	manifests, err := fs.Glob(fsys, "data_stream/*/manifest.yml")
+	files, err := pkgpath.Files(fsys, "data_stream/*/manifest.yml")
 	if err != nil {
 		return nil, err
 	}
 
-	for _, file := range manifests {
-		data, err := fs.ReadFile(fsys, file)
+	result := make(map[string][]string)
+	for _, f := range files {
+		catsVal, err := f.Values("$.categories[*]")
 		if err != nil {
-			return nil, err
-		}
-
-		var m dataStreamManifestWithCategories
-		if err := yaml.Unmarshal(data, &m); err != nil {
-			return nil, err
-		}
-
-		if len(m.Categories) == 0 {
 			continue
 		}
-
+		cats, err := toStringSlice(catsVal)
+		if err != nil {
+			return nil, fmt.Errorf("can't read categories from %s: %w", f.Path(), err)
+		}
+		if len(cats) == 0 {
+			continue
+		}
 		// path is data_stream/{name}/manifest.yml — extract the name component
-		dsName := path.Base(path.Dir(file))
-		result[dsName] = m.Categories
+		dsName := path.Base(path.Dir(f.Path()))
+		result[dsName] = cats
 	}
 
 	return result, nil
