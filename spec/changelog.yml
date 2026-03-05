@@ -51,6 +51,9 @@
     - description: Add deployer option to system benchmark configuration.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1099
+    - description: Add semantic validator to verify data stream manifest categories match policy template categories.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1095
 - version: 3.5.7
   changes:
     - description: Allow _dev directory for content-only packages; use _dev/shared for development files (e.g. dashboard YML sources).
