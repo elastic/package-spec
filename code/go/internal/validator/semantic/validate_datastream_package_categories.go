@@ -38,14 +38,22 @@ func fetchRegistryParentCategories() (map[string]struct{}, error) {
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected HTTP %d (%s) fetching %s", resp.StatusCode, resp.Status, packageRegistryCategoriesURL)
+	}
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to read categories response: %w", err)
+		return nil, fmt.Errorf("failed to read categories response from %s: %w", packageRegistryCategoriesURL, err)
 	}
 
 	var rc registryCategories
 	if err := yaml.Unmarshal(body, &rc); err != nil {
-		return nil, fmt.Errorf("failed to parse categories YAML: %w", err)
+		return nil, fmt.Errorf("failed to parse categories YAML from %s: %w", packageRegistryCategoriesURL, err)
+	}
+
+	if len(rc.Categories) == 0 {
+		return nil, fmt.Errorf("no categories found in response from %s", packageRegistryCategoriesURL)
 	}
 
 	parentCategories := make(map[string]struct{}, len(rc.Categories))
