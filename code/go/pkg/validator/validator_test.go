@@ -504,6 +504,12 @@ func TestValidateFile(t *testing.T) {
 				"field deployer: deployer must be one of the following: \"docker\", \"tf\", \"k8s\"",
 			},
 		},
+		"bad_deployer_system_test": {
+			"data_stream/foo/_dev/test/system/test-default-config.yml",
+			[]string{
+				"field deployer: deployer must be one of the following: \"docker\", \"tf\", \"k8s\"",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {

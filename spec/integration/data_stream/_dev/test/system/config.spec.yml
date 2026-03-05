@@ -5,6 +5,8 @@ spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
   properties:
+    deployer:
+      $ref: "./../../../../_dev/benchmark/system.scenario.spec.yml#/definitions/deployer"
     skip:
       $ref: "./../config.spec.yml#/definitions/skip"
     wait_for_data_timeout:
