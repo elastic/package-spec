@@ -49,13 +49,6 @@ spec:
       type: string
       default: 10m
       example: 10m
-    deployer:
-      description: Name of the service deployer to setup for this system benchmark.
-      type: string
-      enum:
-        - docker
-        - tf
-        - k8s
     corpora:
       description: Corpora settings.
       type: object
@@ -161,6 +154,6 @@ spec:
     wait_for_data_timeout:
       $ref: "#/definitions/wait_for_data_timeout"
     deployer:
-      $ref: "#/definitions/deployer"
+      $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/deployer"
     corpora:
       $ref: "#/definitions/corpora"
