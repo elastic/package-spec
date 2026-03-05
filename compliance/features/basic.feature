@@ -45,3 +45,4 @@ Feature: Basic package types support
   Scenario: OTel input package with profiles type can be installed
    Given the "good_input_profiles" package is installed
      And a policy is created with "good_input_profiles" package, "0.0.1" version, "profilingreceiver" template, "profilingreceiver" input, "otelcol" input type and dataset "spec.otel_input_test"
+     # We omit assertions here because 'profiles' OTel packages should not produce ES assets which is currently handled by an ES plugin. https://github.com/elastic/package-spec/pull/1092#discussion_r2857893043
