@@ -27,7 +27,6 @@ type packageManifestWithCategories struct {
 	PolicyTemplates []policyTemplateWithCategories `yaml:"policy_templates"`
 }
 
-
 func readPackageManifestPolicyTemplates(fsys fspath.FS) (string, []policyTemplateWithCategories, error) {
 	manifest, err := readManifest(fsys)
 	if err != nil {
