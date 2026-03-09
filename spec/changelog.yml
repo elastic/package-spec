@@ -21,12 +21,9 @@
     - description: Add support for deprecating packages or individual features (policy_templates, inputs, data_streams or variables).
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1053
-    # Pending on https://github.com/elastic/kibana/pull/249449
-    # Pending on https://github.com/elastic/integrations/pull/16985
     - description: Add var_groups schema to support conditional variable groups for Cloud Connector integration.
       type: enhancement
       link: https://github.com/elastic/package-spec/issues/1054
-    # Pending on https://github.com/elastic/kibana/pull/251205
     - description: Allow to set time series index mode in input packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1066
@@ -44,26 +41,28 @@
     - description: Add support for package dependencies in integration packages via requires field with input and content package types.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1071
-    # Pending on https://github.com/elastic/package-spec/issues/1085
+    # Pending on https://github.com/elastic/kibana/issues/252949
     - description: Allow otelcol input type and dynamic_signal_types field in integration packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1091
-    - description: Add deployer option to system benchmark configuration.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/1099
     # Pending on https://github.com/elastic/kibana/pull/242934
     - description: Add support for migrating input types at integrations policy templates and data streams.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1021
-    - description: Allow to force the format used in the policy API in system and policy tests.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/1103
     - description: Add support for auto_expand_replicas, max_result_window, and refresh_interval index settings in data stream templates.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1092
     - description: Add support for `profiles` policy template type in input packages
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1092
+- version: 3.5.8
+  changes:
+    - description: Add deployer option to system benchmark configuration.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1099
+    - description: Allow to force the format used in the policy API in system and policy tests.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1103
     - description: Add deployer option to system test configuration.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1104
