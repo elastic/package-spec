@@ -27,19 +27,3 @@ func IsDefinedWarningsAsErrors() bool {
 	}
 	return warningsAsErrors
 }
-
-// EnableWarningsAsErrors is a function to enable warnings as errors, setting environment variable as true
-func EnableWarningsAsErrors() error {
-	if err := os.Setenv(EnvVarWarningsAsErrors, "true"); err != nil {
-		return err
-	}
-	return nil
-}
-
-// DisableWarningsAsErrors is a function to disable warnings as errors, unsetting environment variable
-func DisableWarningsAsErrors() error {
-	if err := os.Unsetenv(EnvVarWarningsAsErrors); err != nil {
-		return err
-	}
-	return nil
-}

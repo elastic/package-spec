@@ -29,19 +29,15 @@ func TestIsDefinedWarningsAsErrors(t *testing.T) {
 			if err := os.Setenv(EnvVarWarningsAsErrors, test.envVarValue); err != nil {
 				require.NoError(t, err)
 			}
+			t.Cleanup(func() { os.Unsetenv(EnvVarWarningsAsErrors) })
+
 			value := IsDefinedWarningsAsErrors()
 			assert.Equal(t, test.expected, value)
-
-			if err := DisableWarningsAsErrors(); err != nil {
-				require.NoError(t, err)
-			}
 		})
 	}
 
 	t.Run("undefined", func(t *testing.T) {
-		if err := DisableWarningsAsErrors(); err != nil {
-			require.NoError(t, err)
-		}
+		os.Unsetenv(EnvVarWarningsAsErrors)
 		value := IsDefinedWarningsAsErrors()
 		assert.Equal(t, false, value)
 	})
