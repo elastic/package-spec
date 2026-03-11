@@ -18,7 +18,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
-	"github.com/elastic/package-spec/v3/code/go/internal/validator/common"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -881,15 +880,12 @@ func TestValidateWarnings(t *testing.T) {
 		},
 		"good_readme_structure": {},
 	}
-	if err := common.EnableWarningsAsErrors(); err != nil {
-		require.NoError(t, err)
-	}
-	defer common.DisableWarningsAsErrors()
 
 	for pkgName, expectedWarnContains := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
-			errs := ValidateFromPath(pkgRootPath)
+			errs := ValidateFromPath(pkgRootPath, WithWarningsAsErrors())
 			if len(expectedWarnContains) == 0 {
 				require.NoError(t, errs)
 			} else {

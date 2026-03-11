@@ -15,28 +15,29 @@ import (
 
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
 	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
-	"github.com/elastic/package-spec/v3/code/go/internal/validator/common"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 type validator struct {
-	spec       spectypes.ItemSpec
-	pkg        *packages.Package
-	folderPath string
+	spec            spectypes.ItemSpec
+	pkg             *packages.Package
+	folderPath      string
+	warningsAsErrors bool
 
 	totalSize     spectypes.FileSize
 	totalContents int
 }
 
-func newValidator(spec spectypes.ItemSpec, pkg *packages.Package) *validator {
-	return newValidatorForPath(spec, pkg, ".")
+func newValidator(spec spectypes.ItemSpec, pkg *packages.Package, warningsAsErrors bool) *validator {
+	return newValidatorForPath(spec, pkg, ".", warningsAsErrors)
 }
 
-func newValidatorForPath(spec spectypes.ItemSpec, pkg *packages.Package, folderPath string) *validator {
+func newValidatorForPath(spec spectypes.ItemSpec, pkg *packages.Package, folderPath string, warningsAsErrors bool) *validator {
 	return &validator{
-		spec:       spec,
-		pkg:        pkg,
-		folderPath: folderPath,
+		spec:            spec,
+		pkg:             pkg,
+		folderPath:      folderPath,
+		warningsAsErrors: warningsAsErrors,
 	}
 }
 
@@ -69,7 +70,7 @@ func (v *validator) Validate() specerrors.ValidationErrors {
 			)
 		} else {
 			message := fmt.Sprintf("package with non-stable semantic version and active beta features (enabled in [%s]) can't be released as stable version.", v.pkg.Path(v.folderPath))
-			if common.IsDefinedWarningsAsErrors() || v.pkg.SpecVersion.Major() >= 3 {
+			if v.warningsAsErrors || v.pkg.SpecVersion.Major() >= 3 {
 				err = errors.New(message)
 				errs = append(errs, specerrors.NewStructuredError(err, specerrors.CodePrereleaseFeatureOnGAPackage))
 			} else {
@@ -119,7 +120,7 @@ func (v *validator) Validate() specerrors.ValidationErrors {
 			}
 
 			subFolderPath := path.Join(v.folderPath, fileName)
-			itemValidator := newValidatorForPath(itemSpec, v.pkg, subFolderPath)
+			itemValidator := newValidatorForPath(itemSpec, v.pkg, subFolderPath, v.warningsAsErrors)
 			subErrs := itemValidator.Validate()
 			if len(subErrs) > 0 {
 				errs = append(errs, subErrs...)

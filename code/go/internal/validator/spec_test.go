@@ -41,9 +41,9 @@ func TestNewSpec(t *testing.T) {
 func TestNoBetaFeatures_Package_GA(t *testing.T) {
 	// given
 	s := Spec{
-		*semver.MustParse("1.0.0"),
-		*semver.MustParse("1.0.0"),
-		fspath.DirFS("testdata/fakespec"),
+		version:     *semver.MustParse("1.0.0"),
+		specVersion: *semver.MustParse("1.0.0"),
+		fs:          fspath.DirFS("testdata/fakespec"),
 	}
 	pkg, err := packages.NewPackage("testdata/packages/features_ga")
 	require.NoError(t, err)
@@ -55,9 +55,9 @@ func TestNoBetaFeatures_Package_GA(t *testing.T) {
 func TestBetaFeatures_Package_GA(t *testing.T) {
 	// given
 	s := Spec{
-		*semver.MustParse("1.0.0"),
-		*semver.MustParse("1.0.0"),
-		fspath.DirFS("testdata/fakespec"),
+		version:     *semver.MustParse("1.0.0"),
+		specVersion: *semver.MustParse("1.0.0"),
+		fs:          fspath.DirFS("testdata/fakespec"),
 	}
 	pkg, err := packages.NewPackage("testdata/packages/features_beta")
 	require.NoError(t, err)
@@ -131,9 +131,9 @@ func TestFolderSpecInvalid(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
 			s := Spec{
-				c.version,
-				c.version,
-				c.spec,
+				version:     c.version,
+				specVersion: c.version,
+				fs:          c.spec,
 			}
 			pkg, err := packages.NewPackage(c.pkgPath)
 			require.NoError(t, err)
