@@ -19,9 +19,9 @@ import (
 )
 
 type validator struct {
-	spec            spectypes.ItemSpec
-	pkg             *packages.Package
-	folderPath      string
+	spec             spectypes.ItemSpec
+	pkg              *packages.Package
+	folderPath       string
 	warningsAsErrors bool
 
 	totalSize     spectypes.FileSize
@@ -34,9 +34,9 @@ func newValidator(spec spectypes.ItemSpec, pkg *packages.Package, warningsAsErro
 
 func newValidatorForPath(spec spectypes.ItemSpec, pkg *packages.Package, folderPath string, warningsAsErrors bool) *validator {
 	return &validator{
-		spec:            spec,
-		pkg:             pkg,
-		folderPath:      folderPath,
+		spec:             spec,
+		pkg:              pkg,
+		folderPath:       folderPath,
 		warningsAsErrors: warningsAsErrors,
 	}
 }
