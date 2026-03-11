@@ -54,7 +54,7 @@
       link: https://github.com/elastic/package-spec/pull/1092
     - description: Fix template path validator to skip policy template inputs and data stream streams that use package references.
       type: bugfix
-      link: https://github.com/elastic/package-spec/pull/TBD
+      link: https://github.com/elastic/package-spec/pull/1108
 - version: 3.5.8
   changes:
     - description: Add deployer option to system benchmark configuration.
