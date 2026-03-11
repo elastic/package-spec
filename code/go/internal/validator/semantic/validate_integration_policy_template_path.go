@@ -23,6 +23,7 @@ const (
 
 type policyTemplateInput struct {
 	Type         string `yaml:"type"`
+	Package      string `yaml:"package"`       // alternative to type for composable packages
 	TemplatePath string `yaml:"template_path"` // optional for integration packages
 }
 
@@ -38,6 +39,7 @@ type integrationPackageManifest struct { // package manifest
 
 type stream struct {
 	Input        string `yaml:"input"`
+	Package      string `yaml:"package"` // alternative to input for composable packages
 	TemplatePath string `yaml:"template_path"`
 }
 
@@ -90,6 +92,12 @@ func ValidateIntegrationPolicyTemplates(fsys fspath.FS) specerrors.ValidationErr
 // validateIntegrationPackagePolicyTemplate validates the template_path fields at the policy template level for integration type packages
 func validateIntegrationPackagePolicyTemplate(fsys fspath.FS, policyTemplate integrationPolicyTemplate, dsManifestMap map[string]dataStreamManifest) error {
 	for _, input := range policyTemplate.Inputs {
+		// inputs using package references inherit configuration from the input package,
+		// so there is no local agent stream template to validate.
+		if input.Package != "" {
+			continue
+		}
+
 		if input.TemplatePath != "" {
 			// validate the provided template_path file exists
 			err := validateAgentInputTemplatePath(fsys, input.TemplatePath)
@@ -139,6 +147,10 @@ func readDataStreamsManifests(fsys fspath.FS) (map[string]dataStreamManifest, er
 func validateInputWithStreams(fsys fspath.FS, input string, dsMap map[string]dataStreamManifest) error {
 	for dsDir, manifest := range dsMap {
 		for _, stream := range manifest.Streams {
+			// skip streams that use a package reference; they have no local agent stream template
+			if stream.Package != "" {
+				continue
+			}
 			// only consider streams that match the input type of the policy template
 			if stream.Input != input {
 				continue

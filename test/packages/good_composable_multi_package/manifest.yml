@@ -1,0 +1,40 @@
+format_version: 3.6.0
+name: good_composable_multi_package
+title: Composable Package - Multiple Input Packages
+description: Integration using multiple input packages in both policy templates and data streams, with content package dependencies.
+version: 0.0.1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+requires:
+  input:
+    - package: sql_input
+      version: "1.0.0"
+    - package: filelog_otel
+      version: "2.0.0"
+  content:
+    - package: elastic_agent
+      version: "^1.0.0"
+    - package: system
+      version: "~2.0.0"
+policy_templates:
+  - name: database
+    title: Database monitoring
+    description: Collect metrics from databases
+    inputs:
+      - package: sql_input
+        title: Collect database metrics
+        description: Collecting database metrics using the SQL input package
+  - name: webserver
+    title: Web server monitoring
+    description: Collect logs from web servers
+    inputs:
+      - package: filelog_otel
+        title: Collect web server logs
+        description: Collecting web server logs using the filelog OTel input package
+owner:
+  github: elastic/foobar
+  type: community

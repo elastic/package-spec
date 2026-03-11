@@ -1,0 +1,26 @@
+format_version: 3.6.0
+name: good_composable_ds_streams
+title: Composable Package - Data Stream Streams
+description: Integration package with all data stream streams using package references.
+version: 0.0.1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+requires:
+  input:
+    - package: filelog_otel
+      version: "1.0.0"
+policy_templates:
+  - name: webserver
+    title: Web server monitoring
+    description: Collect logs from web servers
+    inputs:
+      - type: logfile
+        title: Collect web server logs
+        description: Collecting web server logs using logfile
+owner:
+  github: elastic/foobar
+  type: community
