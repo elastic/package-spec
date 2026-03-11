@@ -881,11 +881,12 @@ func TestValidateWarnings(t *testing.T) {
 		"good_readme_structure": {},
 	}
 
+	warningsAsErrros := true
 	for pkgName, expectedWarnContains := range tests {
 		t.Run(pkgName, func(t *testing.T) {
 			t.Parallel()
 			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
-			errs := ValidateFromPath(pkgRootPath, WithWarningsAsErrors())
+			errs := validateFromFS(pkgRootPath, linkedfiles.NewFS(pkgRootPath, os.DirFS(pkgRootPath)), warningsAsErrros)
 			if len(expectedWarnContains) == 0 {
 				require.NoError(t, errs)
 			} else {
