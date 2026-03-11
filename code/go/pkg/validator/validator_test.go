@@ -527,6 +527,7 @@ func TestValidateFile(t *testing.T) {
 
 	for pkgName, test := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 			errPrefix := fmt.Sprintf("file \"%s/%s\" is invalid: ", pkgRootPath, test.invalidPkgFilePath)
 
@@ -608,6 +609,7 @@ func TestValidateItemNotAllowed(t *testing.T) {
 
 	for pkgName, invalidItemsPerFolder := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			requireErrorMessage(t, pkgName, invalidItemsPerFolder, "item [%s] is not allowed in folder [%s/%s]")
 		})
 	}
@@ -624,6 +626,7 @@ func TestValidateItemNotExpected(t *testing.T) {
 
 	for pkgName, invalidItemsPerFolder := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			requireErrorMessage(t, pkgName, invalidItemsPerFolder, "item [%s] is not allowed in folder [%s/%s]")
 		})
 	}
@@ -643,6 +646,7 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 
 	for pkgName, invalidItemsPerFolder := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 
 			errs := ValidateFromPath(pkgRootPath)
@@ -683,6 +687,7 @@ func TestValidateBadRuleIDs(t *testing.T) {
 
 	for pkgName, expectedError := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			require.Error(t, errs)
 			vErrs, ok := errs.(specerrors.ValidationErrors)
@@ -716,6 +721,7 @@ func TestValidateMissingRequiredFields(t *testing.T) {
 
 	for pkgName, expectedErrors := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
 			err := ValidateFromPath(pkgRootPath)
 			if len(expectedErrors) == 0 {
@@ -752,6 +758,7 @@ func TestValidateVersionIntegrity(t *testing.T) {
 
 	for pkgName, expectedErrorMessage := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			require.Error(t, errs)
 			vErrs, ok := errs.(specerrors.ValidationErrors)
@@ -782,6 +789,7 @@ func TestValidateDuplicatedFields(t *testing.T) {
 
 	for pkgName, expectedErrorMessages := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			if len(expectedErrorMessages) == 0 {
 				assert.NoError(t, errs)
@@ -830,6 +838,7 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 
 	for pkgName, expectedErrorMessages := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			err := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			if len(expectedErrorMessages) == 0 {
 				assert.NoError(t, err)
@@ -940,6 +949,7 @@ func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.title, func(t *testing.T) {
+			t.Parallel()
 			tempDir := t.TempDir()
 
 			devFolderPath := filepath.Join(tempDir, "_dev")
@@ -1007,6 +1017,7 @@ func TestValidateRoutingRules(t *testing.T) {
 
 	for pkgName, expectedErrorMessages := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			err := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			if len(expectedErrorMessages) == 0 {
 				assert.NoError(t, err)
@@ -1066,6 +1077,7 @@ func TestValidateIngestPipelines(t *testing.T) {
 
 	for pkgName, pipelines := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
 			var allErrorMessages []string
 			for pipeline, expectedErrorMessages := range pipelines {
@@ -1148,6 +1160,7 @@ func TestValidateHandlebarsFiles(t *testing.T) {
 
 	for pkgName, expectedErrorMessage := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			require.Error(t, errs)
 			vErrs, ok := errs.(specerrors.ValidationErrors)

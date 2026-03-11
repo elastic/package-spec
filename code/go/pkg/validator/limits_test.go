@@ -115,6 +115,7 @@ func TestLimitsValidation(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
+			t.Parallel()
 			err := ValidateFromFS("test-package", c.fsys)
 			if c.valid {
 				assert.NoError(t, err)
