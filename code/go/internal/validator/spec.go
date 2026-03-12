@@ -32,6 +32,9 @@ type Spec struct {
 	specVersion semver.Version
 	// fs contains the filesystem of the spec.
 	fs fs.FS
+
+	// WarningsAsErrors causes validation warnings to be reported as errors when true.
+	WarningsAsErrors bool
 }
 
 type validationRule func(pkg fspath.FS) specerrors.ValidationErrors
@@ -56,9 +59,9 @@ func NewSpec(version semver.Version) (*Spec, error) {
 	}
 
 	s := Spec{
-		version,
-		*specVersion,
-		spec.FS(),
+		version:     version,
+		specVersion: *specVersion,
+		fs:          spec.FS(),
 	}
 
 	return &s, nil
@@ -84,7 +87,7 @@ func (s Spec) ValidatePackage(pkg packages.Package) specerrors.ValidationErrors 
 	}
 
 	// Syntactic validations
-	validator := newValidator(rootSpec, &pkg)
+	validator := newValidator(rootSpec, &pkg, s.WarningsAsErrors)
 	errs = append(errs, validator.Validate()...)
 
 	// Semantic validations
@@ -188,6 +191,9 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 }
 
 func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules {
+	warnOn := func(validation func(fsys fspath.FS) specerrors.ValidationErrors) func(fspath.FS) specerrors.ValidationErrors {
+		return semantic.WarnOn(s.WarningsAsErrors, validation)
+	}
 	rulesDef := []struct {
 		fn    validationRule
 		since *semver.Version
@@ -197,7 +203,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateVersionIntegrity},
 		{fn: semantic.ValidateChangelogLinks},
 		{fn: semantic.ValidatePrerelease},
-		{fn: semantic.WarnOn(semantic.ValidateMinimumKibanaVersion), until: semver.MustParse("3.0.0")},
+		{fn: warnOn(semantic.ValidateMinimumKibanaVersion), until: semver.MustParse("3.0.0")},
 		{fn: semantic.ValidateMinimumKibanaVersion, since: semver.MustParse("3.0.0")},
 		{fn: semantic.ValidateFieldGroups},
 		{fn: semantic.ValidateFieldsLimits(rootSpec.MaxFieldsPerDataStream()), types: []string{"integration", "input"}},
@@ -206,7 +212,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateDateFields, types: []string{"integration", "input"}},
 		{fn: semantic.ValidateRequiredFields, types: []string{"integration", "input"}},
 		{fn: semantic.ValidateExternalFieldsWithDevFolder, types: []string{"integration", "input"}},
-		{fn: semantic.WarnOn(semantic.ValidateVisualizationsUsedByValue), types: []string{"integration", "content"}, until: semver.MustParse("3.0.0")},
+		{fn: warnOn(semantic.ValidateVisualizationsUsedByValue), types: []string{"integration", "content"}, until: semver.MustParse("3.0.0")},
 		{fn: semantic.ValidateVisualizationsUsedByValue, types: []string{"integration", "content"}, since: semver.MustParse("3.0.0")},
 		{fn: semantic.ValidateILMPolicyPresent, since: semver.MustParse("2.0.0"), types: []string{"integration"}},
 		{fn: semantic.ValidateProfilingNonGA, types: []string{"integration"}},
