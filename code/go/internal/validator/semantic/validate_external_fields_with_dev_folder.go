@@ -7,17 +7,16 @@ package semantic
 import (
 	"fmt"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateExternalFieldsWithDevFolder verifies there is no field with external key if there is no _dev/build/build.yml definition
-func ValidateExternalFieldsWithDevFolder(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateExternalFieldsWithDevFolder(fsys PackageFS) specerrors.ValidationErrors {
 
 	const buildPath = "_dev/build/build.yml"
 	buildFilePathDefined := true
-	f, err := pkgpath.Files(fsys, buildPath)
+	f, err := fsys.Files(buildPath)
 	if err != nil {
 		return specerrors.ValidationErrors{
 			specerrors.NewStructuredErrorf("not able to read _dev/build/build.yml: %w", err),

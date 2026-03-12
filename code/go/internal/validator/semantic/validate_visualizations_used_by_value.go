@@ -9,8 +9,6 @@ import (
 	"fmt"
 	"path"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -25,11 +23,11 @@ type reference struct {
 // That is, it warns if a Kibana dashbaord file, foo.json,
 // defines some visualization using reference (containing an element of
 // "visualization" type inside references key).
-func ValidateVisualizationsUsedByValue(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateVisualizationsUsedByValue(fsys PackageFS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	filePaths := path.Join("kibana", "dashboard", "*.json")
-	objectFiles, err := pkgpath.Files(fsys, filePaths)
+	objectFiles, err := fsys.Files(filePaths)
 	if err != nil {
 		errs = append(errs, specerrors.NewStructuredErrorf("error finding Kibana Dashboard files: %w", err))
 		return errs

@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestValidatePackageManifestDeprecatedReplacedBy(t *testing.T) {
@@ -29,7 +30,7 @@ deprecated:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := validatePackageManifestDeprecatedReplacedBy(fspath.DirFS(d))
+		errs := validatePackageManifestDeprecatedReplacedBy(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 	})
 
@@ -48,7 +49,7 @@ deprecated:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := validatePackageManifestDeprecatedReplacedBy(fspath.DirFS(d))
+		errs := validatePackageManifestDeprecatedReplacedBy(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.ErrorContains(t, errs, "deprecated.replaced_by.package must be specified when deprecated.replaced_by is used")
@@ -69,7 +70,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := validatePackageManifestDeprecatedReplacedBy(fspath.DirFS(d))
+		errs := validatePackageManifestDeprecatedReplacedBy(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 	})
 
@@ -88,7 +89,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := validatePackageManifestDeprecatedReplacedBy(fspath.DirFS(d))
+		errs := validatePackageManifestDeprecatedReplacedBy(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.ErrorContains(t, errs, "policy_template deprecated.replaced_by.policy_template must be specified when deprecated.replaced_by is used")
@@ -111,7 +112,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := validatePackageManifestDeprecatedReplacedBy(fspath.DirFS(d))
+		errs := validatePackageManifestDeprecatedReplacedBy(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 	})
 
@@ -132,7 +133,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := validatePackageManifestDeprecatedReplacedBy(fspath.DirFS(d))
+		errs := validatePackageManifestDeprecatedReplacedBy(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.ErrorContains(t, errs, "input deprecated.replaced_by.input must be specified when deprecated.replaced_by is used")
@@ -152,7 +153,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := validatePackageManifestDeprecatedReplacedBy(fspath.DirFS(d))
+		errs := validatePackageManifestDeprecatedReplacedBy(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 	})
 
@@ -170,7 +171,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := validatePackageManifestDeprecatedReplacedBy(fspath.DirFS(d))
+		errs := validatePackageManifestDeprecatedReplacedBy(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.ErrorContains(t, errs, "policy_template deprecated.replaced_by.policy_template must be specified when deprecated.replaced_by is used")
@@ -196,7 +197,7 @@ streams:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := validateDataStreamsDeprecatedReplacedBy(fspath.DirFS(d))
+		errs := validateDataStreamsDeprecatedReplacedBy(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 	})
 
@@ -217,7 +218,7 @@ streams:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := validateDataStreamsDeprecatedReplacedBy(fspath.DirFS(d))
+		errs := validateDataStreamsDeprecatedReplacedBy(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.ErrorContains(t, errs, "deprecated.replaced_by.data_stream must be specified when deprecated.replaced_by is used")
@@ -239,7 +240,7 @@ streams:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := validateDataStreamsDeprecatedReplacedBy(fspath.DirFS(d))
+		errs := validateDataStreamsDeprecatedReplacedBy(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 	})
 
@@ -260,7 +261,7 @@ streams:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := validateDataStreamsDeprecatedReplacedBy(fspath.DirFS(d))
+		errs := validateDataStreamsDeprecatedReplacedBy(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.ErrorContains(t, errs, "variable deprecated.replaced_by.variable must be specified when deprecated.replaced_by is used")

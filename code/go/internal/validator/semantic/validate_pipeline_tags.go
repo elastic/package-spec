@@ -6,16 +6,14 @@ package semantic
 
 import (
 	"fmt"
-	"io/fs"
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidatePipelineTags validates ingest pipeline processor tags.
-func ValidatePipelineTags(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidatePipelineTags(fsys PackageFS) specerrors.ValidationErrors {
 	var errors specerrors.ValidationErrors
 	pipelineFiles, err := listPipelineFiles(fsys)
 	if err != nil {
@@ -23,7 +21,14 @@ func ValidatePipelineTags(fsys fspath.FS) specerrors.ValidationErrors {
 	}
 
 	for _, pipelineFile := range pipelineFiles {
-		content, err := fs.ReadFile(fsys, pipelineFile.filePath)
+		files, err := fsys.Files(pipelineFile.filePath)
+		if err != nil {
+			return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
+		}
+		if len(files) == 0 {
+			return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("pipeline file not found: %s", pipelineFile.filePath)}
+		}
+		content, err := files[0].ReadAll()
 		if err != nil {
 			return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 		}

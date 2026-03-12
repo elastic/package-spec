@@ -6,19 +6,16 @@ package semantic
 
 import (
 	"fmt"
-	"io/fs"
 	"path"
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateRoutingRulesAndDataset returns validation errors if there are routing rules defined in any dataStream
 // but that dataStream does not defines "dataset" field.
-func ValidateRoutingRulesAndDataset(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateRoutingRulesAndDataset(fsys PackageFS) specerrors.ValidationErrors {
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
@@ -46,9 +43,16 @@ func ValidateRoutingRulesAndDataset(fsys fspath.FS) specerrors.ValidationErrors 
 	return errs
 }
 
-func validateDatasetInDataStream(fsys fspath.FS, dataStream string) error {
+func validateDatasetInDataStream(fsys PackageFS, dataStream string) error {
 	manifestPath := path.Join("data_stream", dataStream, "manifest.yml")
-	d, err := fs.ReadFile(fsys, manifestPath)
+	files, err := fsys.Files(manifestPath)
+	if err != nil {
+		return fmt.Errorf("failed to read data stream manifest in %q: %w", fsys.Path(manifestPath), err)
+	}
+	if len(files) == 0 {
+		return fmt.Errorf("failed to read data stream manifest in %q: file not found", fsys.Path(manifestPath))
+	}
+	d, err := files[0].ReadAll()
 	if err != nil {
 		return fmt.Errorf("failed to read data stream manifest in %q: %w", fsys.Path(manifestPath), err)
 	}
@@ -67,9 +71,9 @@ func validateDatasetInDataStream(fsys fspath.FS, dataStream string) error {
 	return nil
 }
 
-func anyRoutingRulesInDataStream(fsys fspath.FS, dataStream string) (bool, error) {
+func anyRoutingRulesInDataStream(fsys PackageFS, dataStream string) (bool, error) {
 	routingRulesPath := path.Join("data_stream", dataStream, "routing_rules.yml")
-	f, err := pkgpath.Files(fsys, routingRulesPath)
+	f, err := fsys.Files(routingRulesPath)
 	if err != nil {
 		return false, nil
 	}

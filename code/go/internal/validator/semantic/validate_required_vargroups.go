@@ -5,20 +5,25 @@
 package semantic
 
 import (
-	"io/fs"
 	"path"
 	"slices"
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateRequiredVarGroups validates lists of optional required variables.
-func ValidateRequiredVarGroups(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateRequiredVarGroups(fsys PackageFS) specerrors.ValidationErrors {
 	// Validate main manifest.
-	d, err := fs.ReadFile(fsys, "manifest.yml")
+	files, err := fsys.Files("manifest.yml")
+	if err != nil {
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path("manifest.yml"), err)}
+	}
+	if len(files) == 0 {
+		return nil
+	}
+	d, err := files[0].ReadAll()
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path("manifest.yml"), err)}
 	}
@@ -87,19 +92,26 @@ func validateRequiredVarGroupsManifest(path string, manifest requiredVarsManifes
 	return errs
 }
 
-func validateDataStreamRequiredVarGroups(fsys fspath.FS, path string, pkgManifest requiredVarsManifest) specerrors.ValidationErrors {
-	d, err := fs.ReadFile(fsys, path)
+func validateDataStreamRequiredVarGroups(fsys PackageFS, filePath string, pkgManifest requiredVarsManifest) specerrors.ValidationErrors {
+	files, err := fsys.Files(filePath)
 	if err != nil {
-		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(path), err)}
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(filePath), err)}
+	}
+	if len(files) == 0 {
+		return nil
+	}
+	d, err := files[0].ReadAll()
+	if err != nil {
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(filePath), err)}
 	}
 
 	var manifest requiredVarsDataStreamManifest
 	err = yaml.Unmarshal(d, &manifest)
 	if err != nil {
-		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to parse manifest: %w", fsys.Path(path), err)}
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to parse manifest: %w", fsys.Path(filePath), err)}
 	}
 
-	return validateDataStreamRequiredVarGroupsManifest(fsys.Path(path), manifest, pkgManifest)
+	return validateDataStreamRequiredVarGroupsManifest(fsys.Path(filePath), manifest, pkgManifest)
 }
 
 type requiredVarsDataStreamManifest struct {

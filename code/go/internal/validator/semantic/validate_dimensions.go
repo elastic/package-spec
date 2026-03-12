@@ -7,12 +7,11 @@ package semantic
 import (
 	"strings"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateDimensionFields verifies if dimension fields are of one of the expected types.
-func ValidateDimensionFields(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateDimensionFields(fsys PackageFS) specerrors.ValidationErrors {
 	return validateFields(fsys, validateDimensionField)
 }
 

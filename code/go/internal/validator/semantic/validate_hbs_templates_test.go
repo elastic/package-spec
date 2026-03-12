@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestValidateTemplateDir(t *testing.T) {
@@ -27,7 +28,7 @@ func TestValidateTemplateDir(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := fspath.DirFS(pkgDir)
-		errs := validateTemplateDir(fsys, path.Join("agent", "input"))
+		errs := validateTemplateDir(pkgpath.NewCachedFS(fsys), path.Join("agent", "input"))
 		require.Empty(t, errs)
 
 	})
@@ -46,7 +47,7 @@ func TestValidateTemplateDir(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := fspath.DirFS(pkgDir)
-		errs := validateTemplateDir(fsys, path.Join("agent", "input"))
+		errs := validateTemplateDir(pkgpath.NewCachedFS(fsys), path.Join("agent", "input"))
 		require.Empty(t, errs)
 	})
 
@@ -65,7 +66,7 @@ func TestValidateTemplateDir(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := fspath.DirFS(pkgDir)
-		errs := validateTemplateDir(fsys, path.Join("agent", "input"))
+		errs := validateTemplateDir(pkgpath.NewCachedFS(fsys), path.Join("agent", "input"))
 		require.Empty(t, errs)
 	})
 	t.Run("invalid handlebars file", func(t *testing.T) {
@@ -83,7 +84,7 @@ func TestValidateTemplateDir(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := fspath.DirFS(pkgDir)
-		errs := validateTemplateDir(fsys, path.Join("agent", "input"))
+		errs := validateTemplateDir(pkgpath.NewCachedFS(fsys), path.Join("agent", "input"))
 		require.NotEmpty(t, errs)
 		assert.Len(t, errs, 1)
 	})
@@ -110,7 +111,7 @@ func TestValidateTemplateDir(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := fspath.DirFS(pkgDir)
-		errs := validateTemplateDir(fsys, path.Join("agent", "input"))
+		errs := validateTemplateDir(pkgpath.NewCachedFS(fsys), path.Join("agent", "input"))
 		require.Empty(t, errs)
 
 	})
@@ -137,7 +138,7 @@ func TestValidateTemplateDir(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := fspath.DirFS(pkgDir)
-		errs := validateTemplateDir(fsys, path.Join("agent", "input"))
+		errs := validateTemplateDir(pkgpath.NewCachedFS(fsys), path.Join("agent", "input"))
 		require.NotEmpty(t, errs)
 		assert.Len(t, errs, 1)
 	})

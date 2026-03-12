@@ -6,17 +6,15 @@ package semantic
 
 import (
 	"fmt"
-	"io/fs"
 	"path"
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateDimensionsPresent verifies if dimension fields are of one of the expected types.
-func ValidateDimensionsPresent(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateDimensionsPresent(fsys PackageFS) specerrors.ValidationErrors {
 	dimensionPresent := make(map[string]struct{})
 	errs := validateFields(fsys, func(metadata fieldFileMetadata, f field) specerrors.ValidationErrors {
 		if f.Dimension {
@@ -48,9 +46,16 @@ func ValidateDimensionsPresent(fsys fspath.FS) specerrors.ValidationErrors {
 	return errs
 }
 
-func isTimeSeriesModeEnabled(fsys fspath.FS, dataStream string) (bool, error) {
+func isTimeSeriesModeEnabled(fsys PackageFS, dataStream string) (bool, error) {
 	manifestPath := path.Join("data_stream", dataStream, "manifest.yml")
-	d, err := fs.ReadFile(fsys, manifestPath)
+	files, err := fsys.Files(manifestPath)
+	if err != nil {
+		return false, fmt.Errorf("failed to read data stream manifest in %q: %w", fsys.Path(manifestPath), err)
+	}
+	if len(files) == 0 {
+		return false, fmt.Errorf("failed to read data stream manifest in %q: file not found", fsys.Path(manifestPath))
+	}
+	d, err := files[0].ReadAll()
 	if err != nil {
 		return false, fmt.Errorf("failed to read data stream manifest in %q: %w", fsys.Path(manifestPath), err)
 	}

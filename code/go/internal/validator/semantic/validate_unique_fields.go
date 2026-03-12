@@ -9,7 +9,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -20,7 +19,7 @@ type uniqueField struct {
 }
 
 // ValidateUniqueFields verifies that any field is defined only once on each data stream.
-func ValidateUniqueFields(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateUniqueFields(fsys PackageFS) specerrors.ValidationErrors {
 	// data_stream -> field -> files
 	// if data stream is empty string, it means it is an input package
 	fields := make(map[string]map[uniqueField][]string)

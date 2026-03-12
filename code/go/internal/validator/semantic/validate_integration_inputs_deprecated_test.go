@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestValidateIntegrationInputsDeprecation(t *testing.T) {
@@ -34,7 +35,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateIntegrationInputsDeprecation(fspath.DirFS(d))
+		errs := ValidateIntegrationInputsDeprecation(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 
 	})
@@ -53,7 +54,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateIntegrationInputsDeprecation(fspath.DirFS(d))
+		errs := ValidateIntegrationInputsDeprecation(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 	})
 
@@ -75,7 +76,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateIntegrationInputsDeprecation(fspath.DirFS(d))
+		errs := ValidateIntegrationInputsDeprecation(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 	})
 
@@ -93,7 +94,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateIntegrationInputsDeprecation(fspath.DirFS(d))
+		errs := ValidateIntegrationInputsDeprecation(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		require.Len(t, errs, 1)
 		assert.ErrorContains(t, errs[0], "all inputs are deprecated but the integration package is not marked as deprecated")
@@ -111,7 +112,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateIntegrationInputsDeprecation(fspath.DirFS(d))
+		errs := ValidateIntegrationInputsDeprecation(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 	})
 
@@ -130,7 +131,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateIntegrationInputsDeprecation(fspath.DirFS(d))
+		errs := ValidateIntegrationInputsDeprecation(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 	})
 

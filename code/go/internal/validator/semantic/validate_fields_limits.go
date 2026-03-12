@@ -5,18 +5,17 @@
 package semantic
 
 import (
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateFieldsLimits verifies limits on fields.
-func ValidateFieldsLimits(limit int) func(fspath.FS) specerrors.ValidationErrors {
-	return func(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateFieldsLimits(limit int) func(PackageFS) specerrors.ValidationErrors {
+	return func(fsys PackageFS) specerrors.ValidationErrors {
 		return validateFieldsLimits(fsys, limit)
 	}
 }
 
-func validateFieldsLimits(fsys fspath.FS, limit int) specerrors.ValidationErrors {
+func validateFieldsLimits(fsys PackageFS, limit int) specerrors.ValidationErrors {
 	counts := make(map[string]int)
 	// Created a new map to avoid collisions with data stream names
 	transformCounts := make(map[string]int)

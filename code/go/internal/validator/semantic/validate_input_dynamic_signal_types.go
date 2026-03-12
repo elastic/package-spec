@@ -5,11 +5,8 @@
 package semantic
 
 import (
-	"io/fs"
-
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -47,12 +44,20 @@ type integrationPackageManifestDynamic struct {
 }
 
 // ValidateInputDynamicSignalTypes validates that dynamic_signal_types field is only used with otelcol input type
-func ValidateInputDynamicSignalTypes(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateInputDynamicSignalTypes(fsys PackageFS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	// Validate package manifest
 	manifestPath := "manifest.yml"
-	data, err := fs.ReadFile(fsys, manifestPath)
+	files, err := fsys.Files(manifestPath)
+	if err != nil {
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(manifestPath), err)}
+	}
+	if len(files) == 0 {
+		return nil
+	}
+	data, err := files[0].ReadAll()
 	if err != nil {
 		return specerrors.ValidationErrors{
 			specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(manifestPath), err)}
@@ -83,7 +88,7 @@ func ValidateInputDynamicSignalTypes(fsys fspath.FS) specerrors.ValidationErrors
 	return errs
 }
 
-func validateInputPackageDynamicSignalTypes(fsys fspath.FS, data []byte, manifestPath string) specerrors.ValidationErrors {
+func validateInputPackageDynamicSignalTypes(fsys PackageFS, data []byte, manifestPath string) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	var manifest inputPackageManifestDynamic
@@ -116,7 +121,7 @@ func validateInputPackageDynamicSignalTypes(fsys fspath.FS, data []byte, manifes
 	return errs
 }
 
-func validateIntegrationPackageDynamicSignalTypes(fsys fspath.FS, data []byte, manifestPath string) specerrors.ValidationErrors {
+func validateIntegrationPackageDynamicSignalTypes(fsys PackageFS, data []byte, manifestPath string) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	var manifest integrationPackageManifestDynamic
@@ -154,7 +159,7 @@ type dataStreamManifestDynamic struct {
 	Streams []dataStreamStream `yaml:"streams"`
 }
 
-func validateDataStreamManifests(fsys fspath.FS) specerrors.ValidationErrors {
+func validateDataStreamManifests(fsys PackageFS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	dataStreams, err := listDataStreams(fsys)
@@ -165,7 +170,16 @@ func validateDataStreamManifests(fsys fspath.FS) specerrors.ValidationErrors {
 
 	for _, dataStream := range dataStreams {
 		manifestPath := dataStreamDir + "/" + dataStream + "/manifest.yml"
-		data, err := fs.ReadFile(fsys, manifestPath)
+		files, err := fsys.Files(manifestPath)
+		if err != nil {
+			errs = append(errs, specerrors.NewStructuredErrorf(
+				"file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(manifestPath), err))
+			continue
+		}
+		if len(files) == 0 {
+			continue
+		}
+		data, err := files[0].ReadAll()
 		if err != nil {
 			errs = append(errs, specerrors.NewStructuredErrorf(
 				"file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(manifestPath), err))

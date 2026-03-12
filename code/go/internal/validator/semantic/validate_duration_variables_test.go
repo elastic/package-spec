@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestValidateDurationVar(t *testing.T) {
@@ -303,7 +304,7 @@ streams:
 		filepath.Join("data_stream", "foo", "manifest.yml") + `:8:9 error in variable "dwell_time": min_duration "50ms50ms" greater than default "5ms"`,
 	}
 
-	errs := ValidateDurationVariables(fspath.DirFS(d))
+	errs := ValidateDurationVariables(pkgpath.NewCachedFS(fspath.DirFS(d)))
 	if len(errs) != len(want) {
 		t.Fatalf("Expected %d errors, got %d", len(want), len(errs))
 	}

@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestValidatePackageReferences(t *testing.T) {
@@ -35,7 +36,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidatePackageReferences(fspath.DirFS(d))
+		errs := ValidatePackageReferences(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 	})
 
@@ -58,7 +59,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidatePackageReferences(fspath.DirFS(d))
+		errs := ValidatePackageReferences(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.ErrorContains(t, errs, `policy_templates[0].inputs[0] references package "missing_package" which is not listed in requires section`)
@@ -83,7 +84,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidatePackageReferences(fspath.DirFS(d))
+		errs := ValidatePackageReferences(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.ErrorContains(t, errs, `policy_templates[0].inputs[0] references package "apache_otel" which is a content package, only input packages allowed`)
@@ -115,7 +116,7 @@ streams:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidatePackageReferences(fspath.DirFS(d))
+		errs := ValidatePackageReferences(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 	})
 
@@ -145,7 +146,7 @@ streams:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidatePackageReferences(fspath.DirFS(d))
+		errs := ValidatePackageReferences(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.ErrorContains(t, errs, `streams[0] references package "missing_package" which is not listed in manifest requires section`)
@@ -177,7 +178,7 @@ streams:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidatePackageReferences(fspath.DirFS(d))
+		errs := ValidatePackageReferences(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.ErrorContains(t, errs, `streams[0] references package "security_rules" which is a content package, only input packages allowed`)
@@ -198,7 +199,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidatePackageReferences(fspath.DirFS(d))
+		errs := ValidatePackageReferences(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.ErrorContains(t, errs, `policy_templates[0].inputs[0] references package "some_package" which is not listed in requires section`)
@@ -226,7 +227,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidatePackageReferences(fspath.DirFS(d))
+		errs := ValidatePackageReferences(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 2)
 		assert.ErrorContains(t, errs, `policy_templates[0].inputs[0] references package "missing_package_1"`)

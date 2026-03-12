@@ -11,14 +11,13 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateTestPackageRequirements checks that package requirements in test configurations
 // reference packages listed in the manifest and that versions satisfy constraints.
-func ValidateTestPackageRequirements(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateTestPackageRequirements(fsys PackageFS) specerrors.ValidationErrors {
 	manifest, err := readManifest(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{
@@ -95,8 +94,8 @@ func getRequiredPackagesWithConstraints(manifest pkgpath.File) (map[string]strin
 	return requiredPackages, nil
 }
 
-func validateIntegrationTestRequirements(fsys fspath.FS, requiredPackages map[string]string) specerrors.ValidationErrors {
-	testConfig, err := pkgpath.Files(fsys, "_dev/test/config.yml")
+func validateIntegrationTestRequirements(fsys PackageFS, requiredPackages map[string]string) specerrors.ValidationErrors {
+	testConfig, err := fsys.Files("_dev/test/config.yml")
 	if err != nil || len(testConfig) == 0 {
 		return nil
 	}
@@ -141,7 +140,7 @@ func validateIntegrationTestRequirements(fsys fspath.FS, requiredPackages map[st
 	return errs
 }
 
-func validateDataStreamTestRequirements(fsys fspath.FS, requiredPackages map[string]string) specerrors.ValidationErrors {
+func validateDataStreamTestRequirements(fsys PackageFS, requiredPackages map[string]string) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	patterns := []string{
@@ -151,7 +150,7 @@ func validateDataStreamTestRequirements(fsys fspath.FS, requiredPackages map[str
 	}
 
 	for _, pattern := range patterns {
-		testConfigs, err := pkgpath.Files(fsys, pattern)
+		testConfigs, err := fsys.Files(pattern)
 		if err != nil {
 			continue
 		}

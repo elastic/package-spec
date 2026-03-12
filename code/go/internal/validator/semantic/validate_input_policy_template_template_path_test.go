@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestValidateInputPackagesPolicyTemplates(t *testing.T) {
@@ -32,7 +33,7 @@ policy_templates:
 		err = os.WriteFile(filepath.Join(d, "agent", "input", "udp.yml.hbs"), []byte("# UDP template"), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateInputPackagesPolicyTemplates(fspath.DirFS(d))
+		errs := ValidateInputPackagesPolicyTemplates(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 
 	})
@@ -49,7 +50,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateInputPackagesPolicyTemplates(fspath.DirFS(d))
+		errs := ValidateInputPackagesPolicyTemplates(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected no validation errors")
 
 		assert.Len(t, errs, 1)
@@ -69,7 +70,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateInputPackagesPolicyTemplates(fspath.DirFS(d))
+		errs := ValidateInputPackagesPolicyTemplates(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.ErrorIs(t, errs[0], errTemplateNotFound)
@@ -88,7 +89,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateInputPackagesPolicyTemplates(fspath.DirFS(d))
+		errs := ValidateInputPackagesPolicyTemplates(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.ErrorIs(t, errs[0], errInvalidPackageType)

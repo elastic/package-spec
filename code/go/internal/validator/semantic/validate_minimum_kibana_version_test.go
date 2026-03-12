@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestValidateKibanaVersionGreaterThan(t *testing.T) {
@@ -161,7 +162,7 @@ func TestValidateMinimumKibanaVersionRuntimeFields(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(filepath.Base(test.pkgRoot)+"--"+test.packageVersion.String()+"--"+test.kibanaVersionCondition, func(t *testing.T) {
-			res := validateMinimumKibanaVersionRuntimeFields(fspath.DirFS(test.pkgRoot), test.packageVersion, test.kibanaVersionCondition)
+			res := validateMinimumKibanaVersionRuntimeFields(pkgpath.NewCachedFS(fspath.DirFS(test.pkgRoot)), test.packageVersion, test.kibanaVersionCondition)
 
 			if test.expectedErr == nil {
 				assert.Nil(t, res)
@@ -214,7 +215,7 @@ func TestValidateMinimumKibanaVersionSavedObjectsTags(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(filepath.Base(test.pkgRoot)+"--"+test.packageVersion.String()+"--"+test.kibanaVersionCondition, func(t *testing.T) {
-			res := validateMinimumKibanaVersionSavedObjectTags(fspath.DirFS(test.pkgRoot), test.pkgType, test.packageVersion, test.kibanaVersionCondition)
+			res := validateMinimumKibanaVersionSavedObjectTags(pkgpath.NewCachedFS(fspath.DirFS(test.pkgRoot)), test.pkgType, test.packageVersion, test.kibanaVersionCondition)
 
 			if test.expectedErr == nil {
 				assert.Nil(t, res)

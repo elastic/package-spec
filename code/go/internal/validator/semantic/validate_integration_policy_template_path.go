@@ -6,13 +6,11 @@ package semantic
 
 import (
 	"fmt"
-	"io/fs"
 	"path"
 	"strings"
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -46,11 +44,19 @@ type dataStreamManifest struct {
 }
 
 // ValidateIntegrationPolicyTemplates validates the template_path fields at the policy template level for integration type packages
-func ValidateIntegrationPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateIntegrationPolicyTemplates(fsys PackageFS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	manifestPath := "manifest.yml"
-	data, err := fs.ReadFile(fsys, manifestPath)
+	files, err := fsys.Files(manifestPath)
+	if err != nil {
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %ww", fsys.Path(manifestPath), errFailedToReadManifest)}
+	}
+	if len(files) == 0 {
+		return nil
+	}
+	data, err := files[0].ReadAll()
 	if err != nil {
 		return specerrors.ValidationErrors{
 			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %ww", fsys.Path(manifestPath), errFailedToReadManifest)}
@@ -88,7 +94,7 @@ func ValidateIntegrationPolicyTemplates(fsys fspath.FS) specerrors.ValidationErr
 }
 
 // validateIntegrationPackagePolicyTemplate validates the template_path fields at the policy template level for integration type packages
-func validateIntegrationPackagePolicyTemplate(fsys fspath.FS, policyTemplate integrationPolicyTemplate, dsManifestMap map[string]dataStreamManifest) error {
+func validateIntegrationPackagePolicyTemplate(fsys PackageFS, policyTemplate integrationPolicyTemplate, dsManifestMap map[string]dataStreamManifest) error {
 	for _, input := range policyTemplate.Inputs {
 		if input.TemplatePath != "" {
 			// validate the provided template_path file exists
@@ -108,16 +114,16 @@ func validateIntegrationPackagePolicyTemplate(fsys fspath.FS, policyTemplate int
 }
 
 // readDataStreamsManifests reads all data stream manifests and returns a map of data stream directory to its manifest relevant content
-func readDataStreamsManifests(fsys fspath.FS) (map[string]dataStreamManifest, error) {
+func readDataStreamsManifests(fsys PackageFS) (map[string]dataStreamManifest, error) {
 	// map of data stream directory to its manifest
 	dsManifestMap := make(map[string]dataStreamManifest, 0)
 
-	dsManifests, err := fs.Glob(fsys, "data_stream/*/manifest.yml")
+	dsManifests, err := fsys.Files("data_stream/*/manifest.yml")
 	if err != nil {
 		return nil, err
 	}
 	for _, file := range dsManifests {
-		data, err := fs.ReadFile(fsys, file)
+		data, err := file.ReadAll()
 		if err != nil {
 			return nil, err
 		}
@@ -127,7 +133,7 @@ func readDataStreamsManifests(fsys fspath.FS) (map[string]dataStreamManifest, er
 			return nil, err
 		}
 
-		dsDir := path.Dir(file)
+		dsDir := path.Dir(file.Path())
 		dsManifestMap[dsDir] = m
 	}
 
@@ -136,7 +142,7 @@ func readDataStreamsManifests(fsys fspath.FS) (map[string]dataStreamManifest, er
 
 // validateInputWithStreams validates that for the given input type, the streams of each dataset related to it have valid template_path files
 // an input is related to a data_stream if any of its streams has the same input type as input
-func validateInputWithStreams(fsys fspath.FS, input string, dsMap map[string]dataStreamManifest) error {
+func validateInputWithStreams(fsys PackageFS, input string, dsMap map[string]dataStreamManifest) error {
 	for dsDir, manifest := range dsMap {
 		for _, stream := range manifest.Streams {
 			// only consider streams that match the input type of the policy template
@@ -166,9 +172,9 @@ func validateInputWithStreams(fsys fspath.FS, input string, dsMap map[string]dat
 
 // findPathAtDirectory looks for a file matching the templatePath in the given directory (dir)
 // It checks for exact matches, files ending with the templatePath, or templatePath + ".link"
-func findPathAtDirectory(fsys fspath.FS, dir, templatePath string) (string, error) {
+func findPathAtDirectory(fsys PackageFS, dir, templatePath string) (string, error) {
 	// Check for exact match, files ending with stream.TemplatePath, or stream.TemplatePath + ".link"
-	entries, err := fs.ReadDir(fsys, dir)
+	entries, err := fsys.Files(dir + "/*")
 	if err != nil {
 		return "", err
 	}

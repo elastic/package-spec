@@ -11,7 +11,6 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -32,7 +31,7 @@ var (
 )
 
 // ValidatePrerelease validates additional restrictions on the prerelease tags.
-func ValidatePrerelease(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidatePrerelease(fsys PackageFS) specerrors.ValidationErrors {
 	manifestVersion, err := readManifestVersion(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}

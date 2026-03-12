@@ -11,14 +11,12 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateVersionIntegrity returns validation errors if the version defined in manifest isn't referenced in the latest
 // entry of the changelog file.
-func ValidateVersionIntegrity(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateVersionIntegrity(fsys PackageFS) specerrors.ValidationErrors {
 	manifestVersion, err := readManifestVersion(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
@@ -46,7 +44,7 @@ func ValidateVersionIntegrity(fsys fspath.FS) specerrors.ValidationErrors {
 	return nil
 }
 
-func readManifestVersion(fsys fspath.FS) (string, error) {
+func readManifestVersion(fsys PackageFS) (string, error) {
 	manifest, err := readManifest(fsys)
 	if err != nil {
 		return "", err
@@ -64,13 +62,13 @@ func readManifestVersion(fsys fspath.FS) (string, error) {
 	return sVal, nil
 }
 
-func readChangelogVersions(fsys fspath.FS) ([]string, error) {
+func readChangelogVersions(fsys PackageFS) ([]string, error) {
 	return readChangelog(fsys, "$[*].version")
 }
 
-func readChangelog(fsys fspath.FS, jsonpath string) ([]string, error) {
+func readChangelog(fsys PackageFS, jsonpath string) ([]string, error) {
 	changelogPath := "changelog.yml"
-	f, err := pkgpath.Files(fsys, changelogPath)
+	f, err := fsys.Files(changelogPath)
 	if err != nil {
 		return nil, fmt.Errorf("can't locate changelog file: %w", err)
 	}

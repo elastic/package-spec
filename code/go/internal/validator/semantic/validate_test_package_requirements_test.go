@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestValidateTestPackageRequirements(t *testing.T) {
@@ -206,7 +207,7 @@ format_version: 3.6.0`,
 			require.NoError(t, err)
 
 			fsys := fspath.DirFS(pkgRoot)
-			errs := ValidateTestPackageRequirements(fsys)
+			errs := ValidateTestPackageRequirements(pkgpath.NewCachedFS(fsys))
 
 			if tc.expectError {
 				require.NotEmpty(t, errs, "expected validation errors but got none")

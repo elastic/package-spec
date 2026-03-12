@@ -13,12 +13,13 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestValidateFieldGroups_Good(t *testing.T) {
 	pkgRoot := filepath.Join("..", "..", "..", "..", "..", "test", "packages", "good")
 
-	errs := ValidateFieldGroups(fspath.DirFS(pkgRoot))
+	errs := ValidateFieldGroups(pkgpath.NewCachedFS(fspath.DirFS(pkgRoot)))
 	require.Empty(t, errs)
 }
 
@@ -31,7 +32,7 @@ func TestValidateFieldGroups_Bad(t *testing.T) {
 			expected)
 	}
 
-	errs := ValidateFieldGroups(fspath.DirFS(pkgRoot))
+	errs := ValidateFieldGroups(pkgpath.NewCachedFS(fspath.DirFS(pkgRoot)))
 	if assert.Len(t, errs, 3) {
 		assert.Equal(t, fileError(filepath.Join("data_stream", "bar", "fields", "hello-world.yml"), `field "aaa.bbb" can't have unit property'`), errs[0].Error())
 		assert.Equal(t, fileError(filepath.Join("data_stream", "bar", "fields", "hello-world.yml"), `field "ddd.eee" can't have unit property'`), errs[1].Error())

@@ -9,13 +9,11 @@ import (
 	"path"
 	"slices"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateCapabilitiesRequired verifies that the required capabilities are added in package manifest
-func ValidateCapabilitiesRequired(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateCapabilitiesRequired(fsys PackageFS) specerrors.ValidationErrors {
 	err := ensureSecurityRulesHasSecurityCapability(fsys)
 	if err != nil {
 		return err
@@ -23,9 +21,9 @@ func ValidateCapabilitiesRequired(fsys fspath.FS) specerrors.ValidationErrors {
 	return nil
 }
 
-func ensureSecurityRulesHasSecurityCapability(fsys fspath.FS) specerrors.ValidationErrors {
+func ensureSecurityRulesHasSecurityCapability(fsys PackageFS) specerrors.ValidationErrors {
 	securityRuleFilePaths := path.Join("kibana", "security_rule", "*.json")
-	files, err := pkgpath.Files(fsys, securityRuleFilePaths)
+	files, err := fsys.Files(securityRuleFilePaths)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("error finding Kibana security_rule folder: %w", err)}
 	}
@@ -47,7 +45,7 @@ func ensureSecurityRulesHasSecurityCapability(fsys fspath.FS) specerrors.Validat
 	return nil
 }
 
-func readCapabilities(fsys fspath.FS) ([]string, error) {
+func readCapabilities(fsys PackageFS) ([]string, error) {
 	manifest, err := readManifest(fsys)
 	if err != nil {
 		return nil, err

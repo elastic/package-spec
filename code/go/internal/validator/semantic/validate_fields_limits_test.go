@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestValidateFieldsLimits(t *testing.T) {
@@ -43,7 +44,7 @@ func TestValidateFieldsLimits(t *testing.T) {
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := validateFieldsLimits(fspath.DirFS(d), 1)
+		errs := validateFieldsLimits(pkgpath.NewCachedFS(fspath.DirFS(d)), 1)
 		require.Len(t, errs, 1)
 		assert.EqualError(t, errs[0], "data stream foo has more than 1 fields (4)")
 	})
@@ -74,7 +75,7 @@ func TestValidateFieldsLimits(t *testing.T) {
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := validateFieldsLimits(fspath.DirFS(d), 1)
+		errs := validateFieldsLimits(pkgpath.NewCachedFS(fspath.DirFS(d)), 1)
 		require.Len(t, errs, 1)
 		assert.EqualError(t, errs[0], "transform foo has more than 1 fields (4)")
 	})
@@ -98,7 +99,7 @@ func TestValidateFieldsLimits(t *testing.T) {
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := validateFieldsLimits(fspath.DirFS(d), 1)
+		errs := validateFieldsLimits(pkgpath.NewCachedFS(fspath.DirFS(d)), 1)
 		require.Len(t, errs, 1)
 		assert.EqualError(t, errs[0], "input package has more than 1 fields (4)")
 	})

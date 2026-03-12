@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -98,6 +99,11 @@ func (f File) Values(path string) (interface{}, error) {
 // Path returns the complete path to the file.
 func (f File) Path() string {
 	return f.path
+}
+
+// Name returns the base name of the file from its path in the filesystem.
+func (f File) Name() string {
+	return path.Base(f.path)
 }
 
 // ReadAll reads and returns the entire contents of the file.

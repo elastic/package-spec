@@ -6,19 +6,17 @@ package semantic
 
 import (
 	"fmt"
-	"io/fs"
 	"path"
 	"strings"
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateILMPolicyPresent produces an error if the indicated ILM policy
 // is not defined in the data stream.
-func ValidateILMPolicyPresent(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateILMPolicyPresent(fsys PackageFS) specerrors.ValidationErrors {
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
@@ -34,7 +32,7 @@ func ValidateILMPolicyPresent(fsys fspath.FS) specerrors.ValidationErrors {
 	return errs
 }
 
-func validateILMPolicyInDataStream(fsys fspath.FS, dataStream string) error {
+func validateILMPolicyInDataStream(fsys PackageFS, dataStream string) error {
 	dsType, ilmPolicy, err := readILMPolicyInfoInDataStream(fsys, dataStream)
 	if err != nil {
 		return err
@@ -57,18 +55,25 @@ func validateILMPolicyInDataStream(fsys fspath.FS, dataStream string) error {
 
 	ilmFileName := ilmPolicy[len(policyPrefix):] + ".json"
 	ilmFilePath := path.Join("data_stream", dataStream, "elasticsearch", "ilm", ilmFileName)
-	_, err = fs.Stat(fsys, ilmFilePath)
-	if err != nil {
+	ilmFiles, err := fsys.Files(ilmFilePath)
+	if err != nil || len(ilmFiles) == 0 {
 		return fmt.Errorf("file \"%s\" is invalid: field ilm_policy: ILM policy %q not found in package, expected definition in \"%s\"", fsys.Path(manifestPath), ilmPolicy, fsys.Path(ilmFilePath))
 	}
 
 	return nil
 }
 
-func readILMPolicyInfoInDataStream(fsys fspath.FS, dataStream string) (dsType string, ilmPolicy string, err error) {
+func readILMPolicyInfoInDataStream(fsys PackageFS, dataStream string) (dsType string, ilmPolicy string, err error) {
 	manifestPath := path.Join("data_stream", dataStream, "manifest.yml")
 
-	d, err := fs.ReadFile(fsys, manifestPath)
+	files, err := fsys.Files(manifestPath)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to read data stream manifest in %q: %w", fsys.Path(manifestPath), err)
+	}
+	if len(files) == 0 {
+		return "", "", fmt.Errorf("failed to read data stream manifest in %q: file not found", fsys.Path(manifestPath))
+	}
+	d, err := files[0].ReadAll()
 	if err != nil {
 		return "", "", fmt.Errorf("failed to read data stream manifest in %q: %w", fsys.Path(manifestPath), err)
 	}
@@ -85,10 +90,17 @@ func readILMPolicyInfoInDataStream(fsys fspath.FS, dataStream string) (dsType st
 	return manifest.Type, manifest.ILMPolicy, nil
 }
 
-func readPackageName(fsys fspath.FS) (string, error) {
+func readPackageName(fsys PackageFS) (string, error) {
 	manifestPath := "manifest.yml"
 
-	d, err := fs.ReadFile(fsys, manifestPath)
+	files, err := fsys.Files(manifestPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to manifest in %q: %w", fsys.Path(manifestPath), err)
+	}
+	if len(files) == 0 {
+		return "", fmt.Errorf("failed to manifest in %q: file not found", fsys.Path(manifestPath))
+	}
+	d, err := files[0].ReadAll()
 	if err != nil {
 		return "", fmt.Errorf("failed to manifest in %q: %w", fsys.Path(manifestPath), err)
 	}

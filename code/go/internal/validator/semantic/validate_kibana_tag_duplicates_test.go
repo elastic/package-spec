@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestGetValidatedSharedKibanaTags(t *testing.T) {
@@ -20,7 +21,7 @@ func TestGetValidatedSharedKibanaTags(t *testing.T) {
 		tmpDir := t.TempDir()
 		fsys := fspath.DirFS(tmpDir)
 
-		tags, errs := getValidatedSharedKibanaTags(fsys)
+		tags, errs := getValidatedSharedKibanaTags(pkgpath.NewCachedFS(fsys))
 		require.Empty(t, errs)
 		assert.Empty(t, tags)
 	})
@@ -40,7 +41,7 @@ func TestGetValidatedSharedKibanaTags(t *testing.T) {
 		require.NoError(t, err)
 
 		fsys := fspath.DirFS(tmpDir)
-		tags, errs := getValidatedSharedKibanaTags(fsys)
+		tags, errs := getValidatedSharedKibanaTags(pkgpath.NewCachedFS(fsys))
 		require.Len(t, errs, 1)
 		assert.Contains(t, errs[0].Error(), "duplicate tag name 'tag1' found (SVR00007)")
 		require.Len(t, tags, 2)
@@ -78,7 +79,7 @@ func TestValidateKibanaPackageTagsDuplicates(t *testing.T) {
 
 		fsys := fspath.DirFS(tmpDir)
 		tags := []string{"tagB"}
-		errs := validateKibanaPackageTagsDuplicates(fsys, tags)
+		errs := validateKibanaPackageTagsDuplicates(pkgpath.NewCachedFS(fsys), tags)
 		require.Len(t, errs, 1)
 		assert.Contains(t, errs[0].Error(), "duplicate package tag name 'tagA'")
 	})
@@ -101,7 +102,7 @@ func TestValidateKibanaPackageTagsDuplicates(t *testing.T) {
 
 		fsys := fspath.DirFS(tmpDir)
 		tags := []string{"tagB"}
-		errs := validateKibanaPackageTagsDuplicates(fsys, tags)
+		errs := validateKibanaPackageTagsDuplicates(pkgpath.NewCachedFS(fsys), tags)
 		require.Len(t, errs, 1)
 		assert.Contains(t, errs[0].Error(), "tag name 'tagB' is already defined in tags.yml (SVR00007)")
 	})
@@ -134,7 +135,7 @@ func TestValidateKibanaPackageTagsDuplicates(t *testing.T) {
 
 		fsys := fspath.DirFS(tmpDir)
 		tags := []string{"tagC"}
-		errs := validateKibanaPackageTagsDuplicates(fsys, tags)
+		errs := validateKibanaPackageTagsDuplicates(pkgpath.NewCachedFS(fsys), tags)
 		require.Empty(t, errs)
 	})
 }

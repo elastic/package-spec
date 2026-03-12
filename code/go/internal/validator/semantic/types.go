@@ -6,18 +6,30 @@ package semantic
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"io/fs"
-	"os"
 	"path"
 	"strconv"
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
+
+// PackageFS is the filesystem interface that validators use to access package
+// files. It is satisfied by *pkgpath.CachedFS, which caches file access.
+type PackageFS interface {
+	// Files finds files matching the glob pattern.
+	Files(glob string) ([]pkgpath.File, error)
+
+	// Path returns a path for the given names, based on the location of
+	// the underlying filesystem. Used for error messages.
+	Path(names ...string) string
+
+	// LoadOrStore returns the cached value for key, or calls compute,
+	// stores and returns the result. Useful for caching derived data.
+	LoadOrStore(key string, compute func() (any, error)) (any, error)
+}
 
 const (
 	dataStreamDir = "data_stream"
@@ -179,7 +191,7 @@ type pipelineFileMetadata struct {
 
 type validateFunc func(fileMetadata fieldFileMetadata, f field) specerrors.ValidationErrors
 
-func validateFields(fsys fspath.FS, validate validateFunc) specerrors.ValidationErrors {
+func validateFields(fsys PackageFS, validate validateFunc) specerrors.ValidationErrors {
 	fieldsFilesMetadata, err := listFieldsFiles(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{
@@ -223,7 +235,7 @@ func validateNestedFields(parent string, metadata fieldFileMetadata, fields fiel
 	return result
 }
 
-func listFieldsFiles(fsys fspath.FS) ([]fieldFileMetadata, error) {
+func listFieldsFiles(fsys PackageFS) ([]fieldFileMetadata, error) {
 	var fieldsFilesMetadata []fieldFileMetadata
 
 	// integration packages
@@ -296,88 +308,92 @@ func listFieldsFiles(fsys fspath.FS) ([]fieldFileMetadata, error) {
 	return fieldsFilesMetadata, nil
 }
 
-func readFieldsFolder(fsys fspath.FS, fieldsDir string) ([]string, error) {
-	var fieldsFiles []string
-	fs, err := fs.ReadDir(fsys, fieldsDir)
-	if errors.Is(err, os.ErrNotExist) {
-		return []string{}, nil
-	}
+func readFieldsFolder(fsys PackageFS, fieldsDir string) ([]string, error) {
+	entries, err := fsys.Files(fieldsDir + "/*")
 	if err != nil {
 		return nil, fmt.Errorf("can't list fields directory (path: %s): %w", fsys.Path(fieldsDir), err)
 	}
 
-	for _, f := range fs {
-		fieldsFiles = append(fieldsFiles, path.Join(fieldsDir, f.Name()))
+	var fieldsFiles []string
+	for _, f := range entries {
+		fieldsFiles = append(fieldsFiles, f.Path())
 	}
 	return fieldsFiles, nil
 }
 
-func readPipelinesFolder(fsys fspath.FS, pipelinesDir string) ([]string, error) {
-	var pipelineFiles []string
-	entries, err := fs.ReadDir(fsys, pipelinesDir)
-	if errors.Is(err, os.ErrNotExist) {
-		return nil, nil
-	}
+func readPipelinesFolder(fsys PackageFS, pipelinesDir string) ([]string, error) {
+	entries, err := fsys.Files(pipelinesDir + "/*")
 	if err != nil {
 		return nil, fmt.Errorf("can't list pipelines directory (path: %s): %w", fsys.Path(pipelinesDir), err)
 	}
 
+	var pipelineFiles []string
 	for _, v := range entries {
-		pipelineFiles = append(pipelineFiles, path.Join(pipelinesDir, v.Name()))
+		pipelineFiles = append(pipelineFiles, v.Path())
 	}
-
 	return pipelineFiles, nil
 }
 
-func unmarshalFields(fsys fspath.FS, fieldsPath string) (fields, error) {
-	content, err := fs.ReadFile(fsys, fieldsPath)
-	if err != nil {
-		return nil, fmt.Errorf("can't read file (path: %s): %w", fieldsPath, err)
-	}
+func unmarshalFields(fsys PackageFS, fieldsPath string) (fields, error) {
+	key := "unmarshalFields:" + fieldsPath
+	result, err := fsys.LoadOrStore(key, func() (any, error) {
+		files, err := fsys.Files(fieldsPath)
+		if err != nil {
+			return nil, fmt.Errorf("can't read file (path: %s): %w", fieldsPath, err)
+		}
+		if len(files) == 0 {
+			return nil, fmt.Errorf("can't read file (path: %s): file not found", fieldsPath)
+		}
 
-	var f fields
-	err = yaml.Unmarshal(content, &f)
+		content, err := files[0].ReadAll()
+		if err != nil {
+			return nil, fmt.Errorf("can't read file (path: %s): %w", fieldsPath, err)
+		}
+
+		var f fields
+		if err := yaml.Unmarshal(content, &f); err != nil {
+			return nil, fmt.Errorf("yaml.Unmarshal failed (path: %s): %w", fieldsPath, err)
+		}
+		return f, nil
+	})
 	if err != nil {
-		return nil, fmt.Errorf("yaml.Unmarshal failed (path: %s): %w", fieldsPath, err)
+		return nil, err
 	}
-	return f, nil
+	return result.(fields), nil
 }
 
-func listDataStreams(fsys fspath.FS) ([]string, error) {
-	dataStreams, err := fs.ReadDir(fsys, dataStreamDir)
-	if errors.Is(err, os.ErrNotExist) {
-		return nil, nil
-	}
+func listDataStreams(fsys PackageFS) ([]string, error) {
+	entries, err := fsys.Files(dataStreamDir + "/*")
 	if err != nil {
 		return nil, fmt.Errorf("can't list data streams directory: %w", err)
 	}
 
-	list := make([]string, len(dataStreams))
-	for i, dataStream := range dataStreams {
-		list[i] = dataStream.Name()
+	var list []string
+	for _, entry := range entries {
+		if entry.IsDir() {
+			list = append(list, entry.Name())
+		}
 	}
 	return list, nil
 }
 
-func listTransforms(fsys fspath.FS) ([]string, error) {
+func listTransforms(fsys PackageFS) ([]string, error) {
 	transformDirectory := path.Join("elasticsearch", "transform")
-	transforms, err := fs.ReadDir(fsys, transformDirectory)
-	if errors.Is(err, os.ErrNotExist) {
-		return nil, nil
-	}
+	entries, err := fsys.Files(transformDirectory + "/*")
 	if err != nil {
 		return nil, fmt.Errorf("can't list transforms directory: %w", err)
 	}
 
-	list := make([]string, len(transforms))
-	for i, transform := range transforms {
-		list[i] = transform.Name()
+	var list []string
+	for _, entry := range entries {
+		if entry.IsDir() {
+			list = append(list, entry.Name())
+		}
 	}
 	return list, nil
-
 }
 
-func listPipelineFiles(fsys fspath.FS) ([]pipelineFileMetadata, error) {
+func listPipelineFiles(fsys PackageFS) ([]pipelineFileMetadata, error) {
 	var pipelineFileMetadatas []pipelineFileMetadata
 
 	type pipelineDirMetadata struct {

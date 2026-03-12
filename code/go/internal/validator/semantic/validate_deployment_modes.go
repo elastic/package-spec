@@ -6,19 +6,24 @@ package semantic
 
 import (
 	"fmt"
-	"io/fs"
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateDeploymentModes ensures that for each deployment mode enabled in a policy template,
 // there is at least one input that supports that deployment mode.
-func ValidateDeploymentModes(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateDeploymentModes(fsys PackageFS) specerrors.ValidationErrors {
 	manifestPath := "manifest.yml"
-	d, err := fs.ReadFile(fsys, manifestPath)
+	files, err := fsys.Files(manifestPath)
+	if err != nil {
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(manifestPath), err)}
+	}
+	if len(files) == 0 {
+		return nil
+	}
+	d, err := files[0].ReadAll()
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(manifestPath), err)}
 	}

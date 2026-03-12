@@ -16,9 +16,9 @@ import (
 	"github.com/Masterminds/semver/v3"
 
 	spec "github.com/elastic/package-spec/v3"
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/loader"
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/v3/code/go/internal/validator/semantic"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
@@ -34,7 +34,7 @@ type Spec struct {
 	fs fs.FS
 }
 
-type validationRule func(pkg fspath.FS) specerrors.ValidationErrors
+type validationRule func(pkg semantic.PackageFS) specerrors.ValidationErrors
 
 type validationRules []validationRule
 
@@ -88,7 +88,7 @@ func (s Spec) ValidatePackage(pkg packages.Package) specerrors.ValidationErrors 
 	errs = append(errs, validator.Validate()...)
 
 	// Semantic validations
-	errs = append(errs, s.rules(pkg.Type, rootSpec).validate(&pkg)...)
+	errs = append(errs, s.rules(pkg.Type, rootSpec).validate(pkgpath.NewCachedFS(&pkg))...)
 
 	return processErrors(errs)
 }
@@ -255,7 +255,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 	return validationRules
 }
 
-func (vr validationRules) validate(fsys fspath.FS) specerrors.ValidationErrors {
+func (vr validationRules) validate(fsys semantic.PackageFS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 	for _, validationRule := range vr {
 		err := validationRule(fsys)

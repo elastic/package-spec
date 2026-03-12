@@ -10,15 +10,18 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
 	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateMinimumKibanaVersion ensures the minimum kibana version for a given package is the expected one
-func ValidateMinimumKibanaVersion(fsys fspath.FS) specerrors.ValidationErrors {
-	pkg, err := packages.NewPackageFromFS(fsys.Path(), fsys)
+func ValidateMinimumKibanaVersion(fsys PackageFS) specerrors.ValidationErrors {
+	cached, ok := fsys.(*pkgpath.CachedFS)
+	if !ok {
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("unexpected filesystem type for minimum kibana version validation")}
+	}
+	pkg, err := packages.NewPackageFromFS(fsys.Path(), cached.RawFS())
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
@@ -77,7 +80,7 @@ func validateMinimumKibanaVersionInputPackages(packageType string, packageVersio
 
 // validateMinimumKibanaVersionRuntimeFields ensures the minimum kibana version if the package defines any runtime field,
 // then the kibana version condition for the package must be >= 8.10.0
-func validateMinimumKibanaVersionRuntimeFields(fsys fspath.FS, packageVersion semver.Version, kibanaVersionCondition string) error {
+func validateMinimumKibanaVersionRuntimeFields(fsys PackageFS, packageVersion semver.Version, kibanaVersionCondition string) error {
 	const minimumKibanaVersion = "8.10.0"
 	errs := validateFields(fsys, validateNoRuntimeFields)
 	if len(errs) == 0 {
@@ -93,14 +96,14 @@ func validateMinimumKibanaVersionRuntimeFields(fsys fspath.FS, packageVersion se
 
 // validateMinimumKibanaVersionSavedObjectTags ensures the minimum kibana version if the package defines saved object tags file,
 // then the kibana version condition for the package must be >= 8.10.0
-func validateMinimumKibanaVersionSavedObjectTags(fsys fspath.FS, packageType string, packageVersion semver.Version, kibanaVersionCondition string) error {
+func validateMinimumKibanaVersionSavedObjectTags(fsys PackageFS, packageType string, packageVersion semver.Version, kibanaVersionCondition string) error {
 	const minimumKibanaVersion = "8.10.0"
 	if packageType == "input" {
 		return nil
 	}
 
 	manifestPath := "kibana/tags.yml"
-	f, err := pkgpath.Files(fsys, manifestPath)
+	f, err := fsys.Files(manifestPath)
 	if err != nil {
 		return fmt.Errorf("can't locate files with %v: %w", manifestPath, err)
 	}
@@ -116,9 +119,9 @@ func validateMinimumKibanaVersionSavedObjectTags(fsys fspath.FS, packageType str
 	return fmt.Errorf("conditions.kibana.version must be ^%s or greater to include saved object tags file: %s", minimumKibanaVersion, manifestPath)
 }
 
-func readManifest(fsys fspath.FS) (*pkgpath.File, error) {
+func readManifest(fsys PackageFS) (*pkgpath.File, error) {
 	manifestPath := "manifest.yml"
-	f, err := pkgpath.Files(fsys, manifestPath)
+	f, err := fsys.Files(manifestPath)
 	if err != nil {
 		return nil, fmt.Errorf("can't locate manifest file: %w", err)
 	}
