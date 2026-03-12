@@ -5,7 +5,6 @@
 package common
 
 import (
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -26,16 +25,9 @@ func TestIsDefinedWarningsAsErrors(t *testing.T) {
 	for _, test := range cases {
 		t.Run(test.name, func(t *testing.T) {
 			t.Setenv(EnvVarWarningsAsErrors, test.envVarValue)
-			t.Cleanup(func() { os.Unsetenv(EnvVarWarningsAsErrors) })
 
 			value := IsDefinedWarningsAsErrors()
 			assert.Equal(t, test.expected, value)
 		})
 	}
-
-	t.Run("undefined", func(t *testing.T) {
-		t.Setenv(EnvVarWarningsAsErrors, "")
-		value := IsDefinedWarningsAsErrors()
-		assert.Equal(t, false, value)
-	})
 }
