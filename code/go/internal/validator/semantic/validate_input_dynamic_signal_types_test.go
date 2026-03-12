@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestValidateInputDynamicSignalTypes(t *testing.T) {
@@ -30,7 +31,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		errs := ValidateInputDynamicSignalTypes(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 	})
 
@@ -48,7 +49,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		errs := ValidateInputDynamicSignalTypes(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 	})
 
@@ -65,7 +66,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		errs := ValidateInputDynamicSignalTypes(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 	})
 
@@ -83,7 +84,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		errs := ValidateInputDynamicSignalTypes(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.Contains(t, errs[0].Error(), "dynamic_signal_types is only allowed when input is 'otelcol'")
@@ -100,7 +101,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		errs := ValidateInputDynamicSignalTypes(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors for non-input packages without field")
 	})
 
@@ -123,7 +124,7 @@ policy_templates:
 		err = os.Mkdir(d+"/data_stream", 0o755)
 		require.NoError(t, err)
 
-		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		errs := ValidateInputDynamicSignalTypes(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors for non-otelcol with dynamic_signal_types")
 		assert.Len(t, errs, 1)
 		assert.Contains(t, errs[0].Error(), "dynamic_signal_types is only allowed when input is 'otelcol'")
@@ -141,7 +142,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		errs := ValidateInputDynamicSignalTypes(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors")
 	})
 
@@ -163,7 +164,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		errs := ValidateInputDynamicSignalTypes(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.Contains(t, errs[0].Error(), "dynamic_signal_types is only allowed when input is 'otelcol'")
@@ -186,7 +187,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		errs := ValidateInputDynamicSignalTypes(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors")
 		assert.Len(t, errs, 1)
 		assert.Contains(t, errs[0].Error(), "type field must not be set when dynamic_signal_types is true")
@@ -206,7 +207,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		errs := ValidateInputDynamicSignalTypes(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors when type is present without dynamic_signal_types")
 	})
 
@@ -224,7 +225,7 @@ policy_templates:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		errs := ValidateInputDynamicSignalTypes(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors when type is present with dynamic_signal_types: false")
 	})
 
@@ -251,7 +252,7 @@ streams:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		errs := ValidateInputDynamicSignalTypes(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Empty(t, errs, "expected no validation errors for data stream with otelcol")
 	})
 
@@ -278,7 +279,7 @@ streams:
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateInputDynamicSignalTypes(fspath.DirFS(d))
+		errs := ValidateInputDynamicSignalTypes(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.NotEmpty(t, errs, "expected validation errors for data stream with non-otelcol")
 		assert.Len(t, errs, 1)
 		assert.Contains(t, errs[0].Error(), "dynamic_signal_types is only allowed when input is 'otelcol'")

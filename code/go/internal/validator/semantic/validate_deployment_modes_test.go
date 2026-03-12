@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestValidateDeploymentModes(t *testing.T) {
@@ -201,7 +202,7 @@ policy_templates:
 			require.NoError(t, err)
 
 			fsys := fspath.DirFS(tempDir)
-			errs := ValidateDeploymentModes(fsys)
+			errs := ValidateDeploymentModes(pkgpath.NewCachedFS(fsys))
 
 			if len(c.expectedErrs) == 0 {
 				assert.Empty(t, errs)

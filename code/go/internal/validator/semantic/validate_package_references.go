@@ -9,14 +9,13 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidatePackageReferences checks that package references in policy templates and data streams
 // are listed in the manifest's requires section and are of the correct type (input packages only).
-func ValidatePackageReferences(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidatePackageReferences(fsys PackageFS) specerrors.ValidationErrors {
 	manifest, err := readManifest(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{
@@ -97,7 +96,7 @@ func extractPackageNamesFromRequires(packages interface{}) []requiredPackage {
 	return result
 }
 
-func validatePolicyTemplatePackageReferences(fsys fspath.FS, manifest pkgpath.File, requiredPackages requiredPackages) specerrors.ValidationErrors {
+func validatePolicyTemplatePackageReferences(fsys PackageFS, manifest pkgpath.File, requiredPackages requiredPackages) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	policyTemplates, err := manifest.Values("$.policy_templates")
@@ -156,8 +155,8 @@ func validatePolicyTemplatePackageReferences(fsys fspath.FS, manifest pkgpath.Fi
 	return errs
 }
 
-func validateDataStreamPackageReferences(fsys fspath.FS, requiredPackages requiredPackages) specerrors.ValidationErrors {
-	dataStreamManifests, err := pkgpath.Files(fsys, "data_stream/*/manifest.yml")
+func validateDataStreamPackageReferences(fsys PackageFS, requiredPackages requiredPackages) specerrors.ValidationErrors {
+	dataStreamManifests, err := fsys.Files("data_stream/*/manifest.yml")
 	if err != nil {
 		return specerrors.ValidationErrors{
 			specerrors.NewStructuredErrorf("error while searching for data stream manifests: %w", err)}
@@ -210,7 +209,7 @@ func validateDataStreamPackageReferences(fsys fspath.FS, requiredPackages requir
 	return errs
 }
 
-func validateFixedVersions(fsys fspath.FS, requiredPackages requiredPackages) specerrors.ValidationErrors {
+func validateFixedVersions(fsys PackageFS, requiredPackages requiredPackages) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	// Validate that input packages have fixed versions, and no constraints.

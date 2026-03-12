@@ -6,12 +6,10 @@ package semantic
 
 import (
 	"fmt"
-	"io/fs"
 	"strings"
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -23,7 +21,7 @@ var requiredMessageValues = []string{
 }
 
 // ValidatePipelineOnFailure validates ingest pipeline global on_failure handlers.
-func ValidatePipelineOnFailure(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidatePipelineOnFailure(fsys PackageFS) specerrors.ValidationErrors {
 
 	var errs specerrors.ValidationErrors
 	pipelineFiles, err := listPipelineFiles(fsys)
@@ -32,7 +30,14 @@ func ValidatePipelineOnFailure(fsys fspath.FS) specerrors.ValidationErrors {
 	}
 
 	for _, pipelineFile := range pipelineFiles {
-		content, err := fs.ReadFile(fsys, pipelineFile.filePath)
+		files, err := fsys.Files(pipelineFile.filePath)
+		if err != nil {
+			return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
+		}
+		if len(files) == 0 {
+			return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("pipeline file not found: %s", pipelineFile.filePath)}
+		}
+		content, err := files[0].ReadAll()
 		if err != nil {
 			return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 		}

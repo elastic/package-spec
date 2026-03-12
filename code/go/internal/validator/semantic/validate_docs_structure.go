@@ -18,8 +18,6 @@ import (
 	"gopkg.in/yaml.v3"
 
 	spec "github.com/elastic/package-spec/v3"
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -35,7 +33,7 @@ type Section struct {
 }
 
 // ValidateDocsStructure validates the structure of documentation files against enforced sections.
-func ValidateDocsStructure(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateDocsStructure(fsys PackageFS) specerrors.ValidationErrors {
 	config, err := shouldValidateDocsStructure(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{
@@ -72,9 +70,9 @@ func ValidateDocsStructure(fsys fspath.FS) specerrors.ValidationErrors {
 	return nil
 }
 
-func shouldValidateDocsStructure(fsys fspath.FS) (*specerrors.DocsStructureEnforced, error) {
+func shouldValidateDocsStructure(fsys PackageFS) (*specerrors.DocsStructureEnforced, error) {
 	validationPath := "validation.yml"
-	files, err := pkgpath.Files(fsys, validationPath)
+	files, err := fsys.Files(validationPath)
 	if err != nil || len(files) == 0 {
 		return nil, nil
 	}
@@ -97,7 +95,7 @@ func shouldValidateDocsStructure(fsys fspath.FS) (*specerrors.DocsStructureEnfor
 	return nil, nil
 }
 
-func readDocsStructureEnforcedConfig(fsys fspath.FS, config *specerrors.DocsStructureEnforced) ([]string, error) {
+func readDocsStructureEnforcedConfig(fsys PackageFS, config *specerrors.DocsStructureEnforced) ([]string, error) {
 	defaultSections, err := loadSectionsFromConfig(fmt.Sprintf("%d", config.Version))
 	if err != nil {
 		return nil, fmt.Errorf("failed to load enforced sections from config: %w", err)
@@ -139,9 +137,9 @@ func loadSectionsFromConfig(version string) ([]string, error) {
 	return sections, nil
 }
 
-func validateReadmeStructure(fsys fspath.FS, enforcedSections []string) error {
+func validateReadmeStructure(fsys PackageFS, enforcedSections []string) error {
 	var errs []error
-	files, err := pkgpath.Files(fsys, "docs/*.md")
+	files, err := fsys.Files("docs/*.md")
 	if err != nil {
 		return fmt.Errorf("docs folder %s not found: %w", "docs/*.md", err)
 	}

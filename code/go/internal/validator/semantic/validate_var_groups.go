@@ -6,12 +6,10 @@ package semantic
 
 import (
 	"fmt"
-	"io/fs"
 	"path"
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -21,9 +19,16 @@ import (
 // - var_group names are unique
 // - option names within each var_group are unique
 // - vars in a var_group must not have required: true (requirement is controlled by var_group)
-func ValidateVarGroups(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateVarGroups(fsys PackageFS) specerrors.ValidationErrors {
 	// Validate main manifest.
-	d, err := fs.ReadFile(fsys, "manifest.yml")
+	files, err := fsys.Files("manifest.yml")
+	if err != nil {
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("failed to read file \"%s\": %w", fsys.Path("manifest.yml"), err)}
+	}
+	if len(files) == 0 {
+		return nil
+	}
+	d, err := files[0].ReadAll()
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("failed to read file \"%s\": %w", fsys.Path("manifest.yml"), err)}
 	}
@@ -103,11 +108,18 @@ func validateVarGroupsManifest(filePath string, manifest varGroupsManifest) spec
 	return errs
 }
 
-func validateDataStreamVarGroups(fsys fspath.FS, filePath string, pkgManifest varGroupsManifest) specerrors.ValidationErrors {
-	d, err := fs.ReadFile(fsys, filePath)
+func validateDataStreamVarGroups(fsys PackageFS, filePath string, pkgManifest varGroupsManifest) specerrors.ValidationErrors {
+	files, err := fsys.Files(filePath)
 	if err != nil {
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("failed to read file \"%s\": %w", fsys.Path(filePath), err)}
+	}
+	if len(files) == 0 {
 		// File might not exist, which is fine
 		return nil
+	}
+	d, err := files[0].ReadAll()
+	if err != nil {
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("failed to read file \"%s\": %w", fsys.Path(filePath), err)}
 	}
 
 	var manifest varGroupsDataStreamManifest

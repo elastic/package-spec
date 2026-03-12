@@ -9,8 +9,10 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/PaesslerAG/jsonpath"
 	"github.com/joeshaw/multierror"
@@ -20,10 +22,19 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 )
 
+// parsedFileContent is a lazily-initialized cache of a file's parsed content.
+// Using a pointer in File allows the cache to be shared across value copies of File.
+type parsedFileContent struct {
+	once sync.Once
+	v    interface{}
+	err  error
+}
+
 // File represents a file in the package.
 type File struct {
-	fsys fspath.FS
-	path string
+	fsys   fspath.FS
+	path   string
+	parsed *parsedFileContent
 	os.FileInfo
 }
 
@@ -43,7 +54,7 @@ func Files(fsys fspath.FS, glob string) ([]File, error) {
 			continue
 		}
 
-		file := File{fsys, path, info}
+		file := File{fsys, path, &parsedFileContent{}, info}
 		files = append(files, file)
 	}
 
@@ -61,28 +72,38 @@ func (f File) Values(path string) (interface{}, error) {
 		return nil, fmt.Errorf("cannot extract values from file type = %s", fileExt)
 	}
 
-	contents, err := fs.ReadFile(f.fsys, f.path)
-	if err != nil {
-		return nil, fmt.Errorf("reading file content failed: %w", err)
+	f.parsed.once.Do(func() {
+		contents, err := fs.ReadFile(f.fsys, f.path)
+		if err != nil {
+			f.parsed.err = fmt.Errorf("reading file content failed: %w", err)
+			return
+		}
+
+		if fileExt == "yaml" || fileExt == "yml" {
+			if err := yaml.Unmarshal(contents, &f.parsed.v); err != nil {
+				f.parsed.err = fmt.Errorf("unmarshalling YAML file failed (path: %s): %w", f.fsys.Path(fileName), err)
+			}
+		} else if fileExt == "json" {
+			if err := json.Unmarshal(contents, &f.parsed.v); err != nil {
+				f.parsed.err = fmt.Errorf("unmarshalling JSON file failed (path: %s): %w", f.fsys.Path(fileName), err)
+			}
+		}
+	})
+	if f.parsed.err != nil {
+		return nil, f.parsed.err
 	}
 
-	var v interface{}
-	if fileExt == "yaml" || fileExt == "yml" {
-		if err := yaml.Unmarshal(contents, &v); err != nil {
-			return nil, fmt.Errorf("unmarshalling YAML file failed (path: %s): %w", f.fsys.Path(fileName), err)
-		}
-	} else if fileExt == "json" {
-		if err := json.Unmarshal(contents, &v); err != nil {
-			return nil, fmt.Errorf("unmarshalling JSON file failed (path: %s): %w", f.fsys.Path(fileName), err)
-		}
-	}
-
-	return jsonpath.Get(path, v)
+	return jsonpath.Get(path, f.parsed.v)
 }
 
 // Path returns the complete path to the file.
 func (f File) Path() string {
 	return f.path
+}
+
+// Name returns the base name of the file from its path in the filesystem.
+func (f File) Name() string {
+	return path.Base(f.path)
 }
 
 // ReadAll reads and returns the entire contents of the file.

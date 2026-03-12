@@ -12,7 +12,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -36,7 +35,7 @@ func (e ChangelogLinkError) Error() string {
 
 // ValidateChangelogLinks returns validation errors if the link(s) do not have a valid PR github.com link.
 // If the link is not a github.com link this validation is skipped and does not return an error.
-func ValidateChangelogLinks(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateChangelogLinks(fsys PackageFS) specerrors.ValidationErrors {
 	changelogLinks, err := readChangelogLinks(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
@@ -44,7 +43,7 @@ func ValidateChangelogLinks(fsys fspath.FS) specerrors.ValidationErrors {
 	return ensureLinksAreValid(changelogLinks)
 }
 
-func readChangelogLinks(fsys fspath.FS) ([]string, error) {
+func readChangelogLinks(fsys PackageFS) ([]string, error) {
 	return readChangelog(fsys, `$[*].changes[*].link`)
 }
 

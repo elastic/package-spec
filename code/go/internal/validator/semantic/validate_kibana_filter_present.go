@@ -13,7 +13,6 @@ import (
 	"github.com/elastic/kbncontent"
 	"github.com/go-viper/mapstructure/v2"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
@@ -26,11 +25,11 @@ var (
 
 // ValidateKibanaFilterPresent checks that all the dashboards included in a package
 // contain a filter, so only data related to its datasets is queried.
-func ValidateKibanaFilterPresent(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateKibanaFilterPresent(fsys PackageFS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	filePaths := path.Join("kibana", "dashboard", "*.json")
-	dashboardFiles, err := pkgpath.Files(fsys, filePaths)
+	dashboardFiles, err := fsys.Files(filePaths)
 	if err != nil {
 		errs = append(errs, specerrors.NewStructuredErrorf("error finding Kibana dashboard files: %w", err))
 		return errs

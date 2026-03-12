@@ -7,13 +7,11 @@ package semantic
 import (
 	"errors"
 	"fmt"
-	"io/fs"
 	"reflect"
 	"time"
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -23,9 +21,16 @@ import (
 //
 // It examines both the root manifest.yml file and all data stream manifests
 // to find and validate duration variables.
-func ValidateDurationVariables(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateDurationVariables(fsys PackageFS) specerrors.ValidationErrors {
 	// Load main manifest vars.
-	data, err := fs.ReadFile(fsys, "manifest.yml")
+	manifestFiles, err := fsys.Files("manifest.yml")
+	if err != nil {
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("%s failed to read manifest: %w", fsys.Path("manifest.yml"), err)}
+	}
+	if len(manifestFiles) == 0 {
+		return nil
+	}
+	data, err := manifestFiles[0].ReadAll()
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("%s failed to read manifest: %w", fsys.Path("manifest.yml"), err)}
 	}
@@ -38,25 +43,25 @@ func ValidateDurationVariables(fsys fspath.FS) specerrors.ValidationErrors {
 	annotateFileMetadata(fsys.Path("manifest.yml"), manifest)
 	vars := manifest.allVars()
 
-	dsManifests, err := fs.Glob(fsys, "data_stream/*/manifest.yml")
+	dsManifestFiles, err := fsys.Files("data_stream/*/manifest.yml")
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("failed to list data streams: %w", err)}
 	}
 
 	// Load data stream manifest vars.
-	for _, path := range dsManifests {
-		data, err := fs.ReadFile(fsys, path)
+	for _, dsFile := range dsManifestFiles {
+		data, err := dsFile.ReadAll()
 		if err != nil {
-			return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("%s failed to read data stream manifest: %w", fsys.Path(path), err)}
+			return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("%s failed to read data stream manifest: %w", fsys.Path(dsFile.Path()), err)}
 		}
 
-		var manifest durationDataStreamManifest
-		err = yaml.Unmarshal(data, &manifest)
+		var dsManifest durationDataStreamManifest
+		err = yaml.Unmarshal(data, &dsManifest)
 		if err != nil {
-			return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("%s is invalid: failed to parse data stream manifest: %w", fsys.Path(path), err)}
+			return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("%s is invalid: failed to parse data stream manifest: %w", fsys.Path(dsFile.Path()), err)}
 		}
-		annotateFileMetadata(fsys.Path(path), manifest)
-		vars = append(vars, manifest.allVars()...)
+		annotateFileMetadata(fsys.Path(dsFile.Path()), dsManifest)
+		vars = append(vars, dsManifest.allVars()...)
 	}
 
 	// Validate duration vars.

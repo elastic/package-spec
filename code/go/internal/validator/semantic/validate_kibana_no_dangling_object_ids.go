@@ -9,7 +9,6 @@ import (
 	"path"
 	"slices"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
@@ -29,14 +28,14 @@ var exceptionAssets = []string{
 // returns validation errors if a Kibana object file in the package references another
 // Kibana object with ID i, but no Kibana object file for object ID i is found in the
 // package.
-func ValidateKibanaNoDanglingObjectIDs(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateKibanaNoDanglingObjectIDs(fsys PackageFS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	installedIDs := []objectReference{}
 	referencedIDs := []objectReference{}
 
 	filePaths := path.Join("kibana", "*", "*.json")
-	objectFiles, err := pkgpath.Files(fsys, filePaths)
+	objectFiles, err := fsys.Files(filePaths)
 	if err != nil {
 		errs = append(errs, specerrors.NewStructuredErrorf("error finding Kibana object files: %w", err))
 		return errs

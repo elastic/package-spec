@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestReadDataStreamsManifests(t *testing.T) {
@@ -41,7 +42,7 @@ streams:
 `), 0o644)
 	require.NoError(t, err)
 
-	dataStreamsManifestMap, err := readDataStreamsManifests(fspath.DirFS(d))
+	dataStreamsManifestMap, err := readDataStreamsManifests(pkgpath.NewCachedFS(fspath.DirFS(d)))
 	require.NoError(t, err)
 	// only the top-level manifest.yml should be read
 	require.Len(t, dataStreamsManifestMap, 1)
@@ -83,12 +84,12 @@ func TestValidateInputWithStreams(t *testing.T) {
 		},
 	}
 	t.Run("valid input with existing template_path", func(t *testing.T) {
-		err = validateInputWithStreams(fspath.DirFS(d), "nginx/access", dsMap)
+		err = validateInputWithStreams(pkgpath.NewCachedFS(fspath.DirFS(d)), "nginx/access", dsMap)
 		require.NoError(t, err)
 	})
 
 	t.Run("input with non-existing template_path", func(t *testing.T) {
-		err = validateInputWithStreams(fspath.DirFS(d), "nginx/error", dsMap)
+		err = validateInputWithStreams(pkgpath.NewCachedFS(fspath.DirFS(d)), "nginx/error", dsMap)
 		require.ErrorIs(t, errTemplateNotFound, err)
 	})
 
@@ -97,7 +98,7 @@ func TestValidateInputWithStreams(t *testing.T) {
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", "stream.yml.hbs"))
 
-		err = validateInputWithStreams(fspath.DirFS(d), "nginx/other", dsMap)
+		err = validateInputWithStreams(pkgpath.NewCachedFS(fspath.DirFS(d)), "nginx/other", dsMap)
 		require.NoError(t, err)
 	})
 
@@ -106,7 +107,7 @@ func TestValidateInputWithStreams(t *testing.T) {
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", "prefixstream.yml.hbs"))
 
-		err = validateInputWithStreams(fspath.DirFS(d), "prefix/stream", dsMap)
+		err = validateInputWithStreams(pkgpath.NewCachedFS(fspath.DirFS(d)), "prefix/stream", dsMap)
 		require.NoError(t, err)
 	})
 
@@ -117,7 +118,7 @@ func TestValidateIntegrationPolicyTemplates_NonIntegrationType(t *testing.T) {
 	err := os.WriteFile(filepath.Join(d, "manifest.yml"), []byte(`type: input`), 0o644)
 	require.NoError(t, err)
 
-	errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
+	errs := ValidateIntegrationPolicyTemplates(pkgpath.NewCachedFS(fspath.DirFS(d)))
 	require.Nil(t, errs)
 }
 
@@ -147,7 +148,7 @@ streams:
 	err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "access.yml.hbs"), []byte("template"), 0o644)
 	require.NoError(t, err)
 
-	errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
+	errs := ValidateIntegrationPolicyTemplates(pkgpath.NewCachedFS(fspath.DirFS(d)))
 	require.Empty(t, errs)
 }
 
@@ -176,7 +177,7 @@ streams:
 	err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "stream.yml.hbs"), []byte("template"), 0o644)
 	require.NoError(t, err)
 
-	errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
+	errs := ValidateIntegrationPolicyTemplates(pkgpath.NewCachedFS(fspath.DirFS(d)))
 	require.Empty(t, errs)
 }
 func TestFindPathAtDirectory(t *testing.T) {
@@ -192,7 +193,7 @@ func TestFindPathAtDirectory(t *testing.T) {
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", templatePath))
 
-		foundFile, err := findPathAtDirectory(fspath.DirFS(d), dsDir, templatePath)
+		foundFile, err := findPathAtDirectory(pkgpath.NewCachedFS(fspath.DirFS(d)), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
 		require.Equal(t, filepath.ToSlash(path.Join(dsDir, templatePath)), foundFile)
@@ -204,7 +205,7 @@ func TestFindPathAtDirectory(t *testing.T) {
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", templatePath+".link"))
 
-		foundFile, err := findPathAtDirectory(fspath.DirFS(d), dsDir, templatePath)
+		foundFile, err := findPathAtDirectory(pkgpath.NewCachedFS(fspath.DirFS(d)), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
 		require.Equal(t, filepath.ToSlash(path.Join(dsDir, templatePath+".link")), foundFile)
@@ -217,7 +218,7 @@ func TestFindPathAtDirectory(t *testing.T) {
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", prefixedFile))
 
-		foundFile, err := findPathAtDirectory(fspath.DirFS(d), dsDir, templatePath)
+		foundFile, err := findPathAtDirectory(pkgpath.NewCachedFS(fspath.DirFS(d)), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
 		require.Equal(t, filepath.ToSlash(path.Join(dsDir, prefixedFile)), foundFile)
@@ -230,7 +231,7 @@ func TestFindPathAtDirectory(t *testing.T) {
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", prefixedFile))
 
-		foundFile, err := findPathAtDirectory(fspath.DirFS(d), dsDir, templatePath)
+		foundFile, err := findPathAtDirectory(pkgpath.NewCachedFS(fspath.DirFS(d)), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
 		require.Equal(t, filepath.ToSlash(path.Join(dsDir, prefixedFile)), foundFile)
@@ -239,7 +240,7 @@ func TestFindPathAtDirectory(t *testing.T) {
 	t.Run("no match found", func(t *testing.T) {
 		templatePath := "nonexistent.yml.hbs"
 
-		foundFile, err := findPathAtDirectory(fspath.DirFS(d), dsDir, templatePath)
+		foundFile, err := findPathAtDirectory(pkgpath.NewCachedFS(fspath.DirFS(d)), dsDir, templatePath)
 		require.NoError(t, err)
 		require.Empty(t, foundFile)
 	})
@@ -257,7 +258,7 @@ func TestFindPathAtDirectory(t *testing.T) {
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", prefixedFile))
 
-		foundFile, err := findPathAtDirectory(fspath.DirFS(d), dsDir, templatePath)
+		foundFile, err := findPathAtDirectory(pkgpath.NewCachedFS(fspath.DirFS(d)), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
 		require.Equal(t, filepath.ToSlash(path.Join(dsDir, exactFile)), foundFile)
@@ -276,7 +277,7 @@ func TestFindPathAtDirectory(t *testing.T) {
 		require.NoError(t, err)
 		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", suffixFile))
 
-		foundFile, err := findPathAtDirectory(fspath.DirFS(d), dsDir, templatePath)
+		foundFile, err := findPathAtDirectory(pkgpath.NewCachedFS(fspath.DirFS(d)), dsDir, templatePath)
 		require.NoError(t, err)
 		require.NotEmpty(t, foundFile)
 		require.Equal(t, filepath.ToSlash(path.Join(dsDir, linkFile)), foundFile)

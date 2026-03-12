@@ -7,13 +7,12 @@ package semantic
 import (
 	"fmt"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateRequiredFields validates that required fields are present and have the expected
 // types except for fields defined in transforms.
-func ValidateRequiredFields(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateRequiredFields(fsys PackageFS) specerrors.ValidationErrors {
 	requiredFields := map[string]string{
 		"data_stream.type":      "constant_keyword",
 		"data_stream.dataset":   "constant_keyword",
@@ -53,7 +52,7 @@ func (e notFoundRequiredField) Error() string {
 	return message
 }
 
-func validateRequiredFields(fsys fspath.FS, requiredFields map[string]string) specerrors.ValidationErrors {
+func validateRequiredFields(fsys PackageFS, requiredFields map[string]string) specerrors.ValidationErrors {
 	// map datastream/input package -> field name -> found
 	// if data stream is an empty string, it means it is an input package
 	foundFields := make(map[string]map[string]struct{})

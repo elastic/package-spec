@@ -9,19 +9,17 @@ import (
 
 	"github.com/elastic/kbncontent"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateKibanaNoLegacyVisualizations reports legacy Kibana visualizations in a package.
-func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateKibanaNoLegacyVisualizations(fsys PackageFS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	// Collect by-reference visualizations for reference later.
 	// Note: this does not include Lens, Maps, or Discover. That's okay for this rule because none of those are legacy
 	visFilePaths := path.Join("kibana", "visualization", "*.json")
-	visFiles, _ := pkgpath.Files(fsys, visFilePaths)
+	visFiles, _ := fsys.Files(visFilePaths)
 
 	for _, file := range visFiles {
 		filePath := fsys.Path(file.Path())
@@ -54,7 +52,7 @@ func ValidateKibanaNoLegacyVisualizations(fsys fspath.FS) specerrors.ValidationE
 	}
 
 	dashboardFilePaths := path.Join("kibana", "dashboard", "*.json")
-	dashboardFiles, err := pkgpath.Files(fsys, dashboardFilePaths)
+	dashboardFiles, err := fsys.Files(dashboardFilePaths)
 	if err != nil {
 		errs = append(errs, specerrors.NewStructuredErrorf("error finding Kibana dashboard files: %w", err))
 		return errs

@@ -5,12 +5,11 @@
 package semantic
 
 import (
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateDateFields verifies if date fields are of one of the expected types.
-func ValidateDateFields(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateDateFields(fsys PackageFS) specerrors.ValidationErrors {
 	return validateFields(fsys, validateDateField)
 }
 

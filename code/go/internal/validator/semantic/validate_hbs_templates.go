@@ -6,13 +6,11 @@ package semantic
 
 import (
 	"errors"
-	"io/fs"
 	"os"
 	"path"
 
 	"github.com/aymerick/raymond"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
@@ -24,7 +22,7 @@ var (
 // ValidateStaticHandlebarsFiles validates all Handlebars (.hbs) files in the package filesystem.
 // It returns a list of validation errors if any Handlebars files are invalid.
 // hbs are located in both the package root and data stream directories under the agent folder.
-func ValidateStaticHandlebarsFiles(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateStaticHandlebarsFiles(fsys PackageFS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	// template files are placed at /agent/input directory or
@@ -34,8 +32,8 @@ func ValidateStaticHandlebarsFiles(fsys fspath.FS) specerrors.ValidationErrors {
 		errs = append(errs, inputErrs...)
 	}
 
-	datastreamEntries, err := fs.ReadDir(fsys, "data_stream")
-	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+	datastreamEntries, err := fsys.Files("data_stream/*")
+	if err != nil {
 		return specerrors.ValidationErrors{
 			specerrors.NewStructuredErrorf("error reading data_stream directory: %w", err),
 		}
@@ -55,9 +53,9 @@ func ValidateStaticHandlebarsFiles(fsys fspath.FS) specerrors.ValidationErrors {
 }
 
 // validateTemplateDir validates all Handlebars files in the given directory.
-func validateTemplateDir(fsys fspath.FS, dir string) specerrors.ValidationErrors {
-	entries, err := fs.ReadDir(fsys, dir)
-	if err != nil && !errors.Is(err, fs.ErrNotExist) {
+func validateTemplateDir(fsys PackageFS, dir string) specerrors.ValidationErrors {
+	entries, err := fsys.Files(path.Join(dir, "*"))
+	if err != nil {
 		return specerrors.ValidationErrors{
 			specerrors.NewStructuredErrorf("error trying to read :%s", dir),
 		}
@@ -89,7 +87,7 @@ func validateTemplateDir(fsys fspath.FS, dir string) specerrors.ValidationErrors
 
 // validateStaticHandlebarsEntry validates a single Handlebars file located at filePath.
 // it parses the file using the raymond library to check for syntax errors.
-func validateStaticHandlebarsEntry(fsys fspath.FS, dir, entryName string) error {
+func validateStaticHandlebarsEntry(fsys PackageFS, dir, entryName string) error {
 	if entryName == "" {
 		return nil
 	}
@@ -97,14 +95,19 @@ func validateStaticHandlebarsEntry(fsys fspath.FS, dir, entryName string) error 
 	var content []byte
 	var err error
 
-	// First try to read from filesystem (works for regular files and files within zip)
 	filePath := path.Join(dir, entryName)
-	if content, err = fs.ReadFile(fsys, filePath); err != nil {
-		if !errors.Is(err, fs.ErrInvalid) {
+	files, err := fsys.Files(filePath)
+	if err != nil {
+		return err
+	}
+	if len(files) > 0 {
+		content, err = files[0].ReadAll()
+		if err != nil {
 			return err
 		}
-		// If fs.ReadFile fails (likely due to linked file path outside filesystem boundary),
-		// fall back to absolute path approach like linkedfiles.FS does
+	} else {
+		// File not found in virtual filesystem, fall back to absolute path
+		// for linked files pointing outside the filesystem boundary.
 		absolutePath := fsys.Path(filePath)
 		if content, err = os.ReadFile(absolutePath); err != nil {
 			return err

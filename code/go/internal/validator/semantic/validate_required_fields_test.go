@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestValidateRequiredFields(t *testing.T) {
@@ -32,7 +33,7 @@ func TestValidateRequiredFields(t *testing.T) {
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateRequiredFields(fspath.DirFS(d))
+		errs := ValidateRequiredFields(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Len(t, errs, 0)
 	})
 	t.Run("missing required fields", func(t *testing.T) {
@@ -46,7 +47,7 @@ func TestValidateRequiredFields(t *testing.T) {
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateRequiredFields(fspath.DirFS(d))
+		errs := ValidateRequiredFields(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Len(t, errs, 3)
 	})
 	t.Run("required fields with incorrect types", func(t *testing.T) {
@@ -66,7 +67,7 @@ func TestValidateRequiredFields(t *testing.T) {
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateRequiredFields(fspath.DirFS(d))
+		errs := ValidateRequiredFields(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Len(t, errs, 4)
 	})
 
@@ -87,7 +88,7 @@ func TestValidateRequiredFields(t *testing.T) {
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateRequiredFields(fspath.DirFS(d))
+		errs := ValidateRequiredFields(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Len(t, errs, 0)
 	})
 	t.Run("missing required fields in transform", func(t *testing.T) {
@@ -101,7 +102,7 @@ func TestValidateRequiredFields(t *testing.T) {
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateRequiredFields(fspath.DirFS(d))
+		errs := ValidateRequiredFields(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		// Ignored missing required fields in transform
 		require.Len(t, errs, 0)
 	})
@@ -122,7 +123,7 @@ func TestValidateRequiredFields(t *testing.T) {
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateRequiredFields(fspath.DirFS(d))
+		errs := ValidateRequiredFields(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		// should data_stream.type, data_stream.dataset, data_stream.namespace fields be enforced as constant_keyword too?
 		// should @timestamp be enforced as date too?
 		// Ignored incorrect types for required fields in transform
@@ -140,7 +141,7 @@ func TestValidateRequiredFields(t *testing.T) {
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateRequiredFields(fspath.DirFS(d))
+		errs := ValidateRequiredFields(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Len(t, errs, 3)
 	})
 }

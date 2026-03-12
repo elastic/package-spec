@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestValidateUniqueFields(t *testing.T) {
@@ -43,7 +44,7 @@ func TestValidateUniqueFields(t *testing.T) {
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateUniqueFields(fspath.DirFS(d))
+		errs := ValidateUniqueFields(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Len(t, errs, 0)
 	})
 	t.Run("non-unique fields across data streams", func(t *testing.T) {
@@ -78,7 +79,7 @@ func TestValidateUniqueFields(t *testing.T) {
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateUniqueFields(fspath.DirFS(d))
+		errs := ValidateUniqueFields(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Len(t, errs, 1)
 		assert.ErrorContains(t, errs[0], "field \"field2\" is defined multiple times for data stream \"foo\", found in:")
 	})
@@ -111,7 +112,7 @@ func TestValidateUniqueFields(t *testing.T) {
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateUniqueFields(fspath.DirFS(d))
+		errs := ValidateUniqueFields(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Len(t, errs, 1)
 		assert.ErrorContains(t, errs[0], "field \"field2\" is defined multiple times for transform \"foo\", found in:")
 	})
@@ -136,7 +137,7 @@ func TestValidateUniqueFields(t *testing.T) {
 `), 0o644)
 		require.NoError(t, err)
 
-		errs := ValidateUniqueFields(fspath.DirFS(d))
+		errs := ValidateUniqueFields(pkgpath.NewCachedFS(fspath.DirFS(d)))
 		require.Len(t, errs, 1)
 		assert.ErrorContains(t, errs[0], "field \"field2\" is defined multiple times, found in:")
 	})

@@ -11,7 +11,6 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -35,11 +34,19 @@ type inputPackageManifest struct { // package manifest
 }
 
 // ValidateInputPackagesPolicyTemplates validates the policy template entries of an input package
-func ValidateInputPackagesPolicyTemplates(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateInputPackagesPolicyTemplates(fsys PackageFS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	manifestPath := "manifest.yml"
-	data, err := fs.ReadFile(fsys, manifestPath)
+	files, err := fsys.Files(manifestPath)
+	if err != nil {
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %ww", fsys.Path(manifestPath), errFailedToReadManifest)}
+	}
+	if len(files) == 0 {
+		return nil
+	}
+	data, err := files[0].ReadAll()
 	if err != nil {
 		return specerrors.ValidationErrors{
 			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %ww", fsys.Path(manifestPath), errFailedToReadManifest)}
@@ -72,7 +79,7 @@ func ValidateInputPackagesPolicyTemplates(fsys fspath.FS) specerrors.ValidationE
 
 // validateInputPackagePolicyTemplate validates the template_path or template_paths at the policy template level for input type packages
 // if both template_path and template_paths are empty, it returns an error as at least one is required for input type packages
-func validateInputPackagePolicyTemplate(fsys fspath.FS, policyTemplate inputPolicyTemplate) error {
+func validateInputPackagePolicyTemplate(fsys PackageFS, policyTemplate inputPolicyTemplate) error {
 	if policyTemplate.TemplatePath == "" && len(policyTemplate.TemplatePaths) == 0 {
 		return errRequiredTemplatePath
 	}
@@ -94,7 +101,7 @@ func validateInputPackagePolicyTemplate(fsys fspath.FS, policyTemplate inputPoli
 	return nil
 }
 
-func validateAgentInputTemplatePath(fsys fspath.FS, tmplPath string) error {
+func validateAgentInputTemplatePath(fsys PackageFS, tmplPath string) error {
 	dir := path.Join("agent", "input")
 	foundFile, err := findPathAtDirectory(fsys, dir, tmplPath)
 	if err != nil {

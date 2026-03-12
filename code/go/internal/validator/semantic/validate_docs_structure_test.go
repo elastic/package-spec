@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -75,7 +76,7 @@ func TestReadValidateDocsStructureConfig(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			actualResult, err := readDocsStructureEnforcedConfig(fspath.DirFS(tt.pkgRoot), tt.config)
+			actualResult, err := readDocsStructureEnforcedConfig(pkgpath.NewCachedFS(fspath.DirFS(tt.pkgRoot)), tt.config)
 			assert.Equal(t, tt.expectedResult, actualResult, "Result does not match expected")
 			assert.Equal(t, tt.expectedError, err, "Error does not match expected")
 		})
@@ -113,7 +114,7 @@ func TestValidateDocsStructure(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := ValidateDocsStructure(fspath.DirFS(tt.pkgRoot))
+			err := ValidateDocsStructure(pkgpath.NewCachedFS(fspath.DirFS(tt.pkgRoot)))
 			assert.True(t, compareErrors(tt.expectError, tt.expectedError, err), "Error does not match expected")
 		})
 	}

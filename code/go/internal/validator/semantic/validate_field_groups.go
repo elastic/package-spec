@@ -5,12 +5,11 @@
 package semantic
 
 import (
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateFieldGroups verifies if field groups don't have units and metric types defined.
-func ValidateFieldGroups(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateFieldGroups(fsys PackageFS) specerrors.ValidationErrors {
 	return validateFields(fsys, validateFieldUnit)
 }
 

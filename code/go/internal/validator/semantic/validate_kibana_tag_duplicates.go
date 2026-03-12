@@ -6,15 +6,12 @@ package semantic
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
-	"io/fs"
 	"path"
 	"slices"
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -36,7 +33,7 @@ type sharedTagYML struct {
 // ValidateKibanaTagDuplicates checks for duplicate Kibana tag names
 // between the kibana/tags.yml file and the tags defined in the package's kibana/tag/*.json files.
 // It returns a list of validation errors if any duplicates are found.
-func ValidateKibanaTagDuplicates(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateKibanaTagDuplicates(fsys PackageFS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 	sharedTagNames, verr := getValidatedSharedKibanaTags(fsys)
 	if len(verr) > 0 {
@@ -52,15 +49,18 @@ func ValidateKibanaTagDuplicates(fsys fspath.FS) specerrors.ValidationErrors {
 
 // getValidatedSharedKibanaTags reads the kibana/tags.yml file and returns a slice of tag names defined in it.
 // It also returns any validation errors encountered during the process if tags are duplicated within the file.
-func getValidatedSharedKibanaTags(fsys fspath.FS) ([]string, specerrors.ValidationErrors) {
+func getValidatedSharedKibanaTags(fsys PackageFS) ([]string, specerrors.ValidationErrors) {
 	tagsPath := path.Join("kibana", "tags.yml")
 	// Collect all tags defined in the kibana/tags.yml file.
-	b, err := fs.ReadFile(fsys, tagsPath)
+	files, err := fsys.Files(tagsPath)
 	if err != nil {
-		// if the file does not exist, return an empty slice without error
-		if errors.Is(err, fs.ErrNotExist) {
-			return nil, nil
-		}
+		return nil, specerrors.ValidationErrors{specerrors.NewStructuredErrorf("error reading file %s: %v", tagsPath, err)}
+	}
+	if len(files) == 0 {
+		return nil, nil
+	}
+	b, err := files[0].ReadAll()
+	if err != nil {
 		return nil, specerrors.ValidationErrors{specerrors.NewStructuredErrorf("error reading file %s: %v", tagsPath, err)}
 	}
 	var sharedKibanaTags []sharedTagYML
@@ -83,13 +83,13 @@ func getValidatedSharedKibanaTags(fsys fspath.FS) ([]string, specerrors.Validati
 	return tags, errs
 }
 
-func validateKibanaPackageTagsDuplicates(fsys fspath.FS, sharedTagNames []string) specerrors.ValidationErrors {
-	entries, err := fs.ReadDir(fsys, path.Join("kibana", "tag"))
+func validateKibanaPackageTagsDuplicates(fsys PackageFS, sharedTagNames []string) specerrors.ValidationErrors {
+	entries, err := fsys.Files(path.Join("kibana", "tag", "*"))
 	if err != nil {
-		if errors.Is(err, fs.ErrNotExist) {
-			return nil
-		}
 		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("error reading kibana/tag directory: %v", err)}
+	}
+	if len(entries) == 0 {
+		return nil
 	}
 
 	tags := make([]string, 0)
@@ -99,16 +99,15 @@ func validateKibanaPackageTagsDuplicates(fsys fspath.FS, sharedTagNames []string
 			// skip non-json files and directories
 			continue
 		}
-		filePath := path.Join("kibana", "tag", entry.Name())
-		b, err := fs.ReadFile(fsys, filePath)
+		b, err := entry.ReadAll()
 		if err != nil {
-			errs = append(errs, specerrors.NewStructuredErrorf("error reading file %s: %v", fsys.Path(filePath), err))
+			errs = append(errs, specerrors.NewStructuredErrorf("error reading file %s: %v", fsys.Path(entry.Path()), err))
 			continue
 		}
 		var pkgTag packageSpecTag
 		err = json.Unmarshal(b, &pkgTag)
 		if err != nil {
-			errs = append(errs, specerrors.NewStructuredErrorf("error unmarshaling file %s: %v", fsys.Path(filePath), err))
+			errs = append(errs, specerrors.NewStructuredErrorf("error unmarshaling file %s: %v", fsys.Path(entry.Path()), err))
 			continue
 		}
 		// skip non-tag types
@@ -119,12 +118,12 @@ func validateKibanaPackageTagsDuplicates(fsys fspath.FS, sharedTagNames []string
 		// validate if the tag is already defined in other json file
 		if slices.Contains(tags, pkgTag.Attributes.Name) {
 			errs = append(errs, specerrors.NewStructuredError(
-				fmt.Errorf("file \"%s\" is invalid: duplicate package tag name '%s' found", fsys.Path(filePath), pkgTag.Attributes.Name), specerrors.CodeKibanaTagDuplicates))
+				fmt.Errorf("file \"%s\" is invalid: duplicate package tag name '%s' found", fsys.Path(entry.Path()), pkgTag.Attributes.Name), specerrors.CodeKibanaTagDuplicates))
 			continue
 		}
 		if slices.Contains(sharedTagNames, pkgTag.Attributes.Name) {
 			errs = append(errs, specerrors.NewStructuredError(
-				fmt.Errorf("file \"%s\" is invalid: tag name '%s' is already defined in tags.yml", fsys.Path(filePath), pkgTag.Attributes.Name), specerrors.CodeKibanaTagDuplicates))
+				fmt.Errorf("file \"%s\" is invalid: tag name '%s' is already defined in tags.yml", fsys.Path(entry.Path()), pkgTag.Attributes.Name), specerrors.CodeKibanaTagDuplicates))
 			continue
 		}
 		tags = append(tags, pkgTag.Attributes.Name)

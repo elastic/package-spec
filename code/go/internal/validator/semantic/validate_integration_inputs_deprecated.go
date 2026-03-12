@@ -5,17 +5,14 @@
 package semantic
 
 import (
-	"io/fs"
-
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateIntegrationInputsDeprecation checks that if all inputs in an integration package are deprecated,
 // then the integration package itself must be marked as deprecated.
-func ValidateIntegrationInputsDeprecation(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateIntegrationInputsDeprecation(fsys PackageFS) specerrors.ValidationErrors {
 
 	type manifest struct {
 		Type       string `yaml:"type,omitempty"`
@@ -34,7 +31,15 @@ func ValidateIntegrationInputsDeprecation(fsys fspath.FS) specerrors.ValidationE
 	}
 
 	manifestPath := "manifest.yml"
-	data, err := fs.ReadFile(fsys, manifestPath)
+	files, err := fsys.Files(manifestPath)
+	if err != nil {
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), err)}
+	}
+	if len(files) == 0 {
+		return nil
+	}
+	data, err := files[0].ReadAll()
 	if err != nil {
 		return specerrors.ValidationErrors{
 			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), err)}

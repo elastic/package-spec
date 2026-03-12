@@ -9,7 +9,6 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
@@ -20,7 +19,7 @@ var (
 )
 
 // ValidateMinimumAgentVersion checks that the package manifest includes the agent.version condition.
-func ValidateMinimumAgentVersion(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateMinimumAgentVersion(fsys PackageFS) specerrors.ValidationErrors {
 	manifest, err := readManifest(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}

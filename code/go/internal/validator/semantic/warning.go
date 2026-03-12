@@ -7,7 +7,6 @@ package semantic
 import (
 	"log"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/validator/common"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
@@ -15,8 +14,8 @@ import (
 // WarnOn returns a validation function that wraps another one. Errors returned by the
 // wrapped validation that have a filtering code are printed as warnings. Other errors
 // are directly returned.
-func WarnOn(validation func(fsys fspath.FS) specerrors.ValidationErrors) func(fspath.FS) specerrors.ValidationErrors {
-	return func(fsys fspath.FS) specerrors.ValidationErrors {
+func WarnOn(validation func(fsys PackageFS) specerrors.ValidationErrors) func(PackageFS) specerrors.ValidationErrors {
+	return func(fsys PackageFS) specerrors.ValidationErrors {
 		errs := validation(fsys)
 		if common.IsDefinedWarningsAsErrors() {
 			return errs

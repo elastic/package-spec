@@ -6,19 +6,17 @@ package semantic
 
 import (
 	"fmt"
-	"io/fs"
 	"path"
 
 	"github.com/Masterminds/semver/v3"
 	"gopkg.in/yaml.v3"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateProfilingNonGA validates that the profiling data type is not used in GA packages,
 // as this data type is in technical preview and can be eventually removed.
-func ValidateProfilingNonGA(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateProfilingNonGA(fsys PackageFS) specerrors.ValidationErrors {
 	manifestVersion, err := readManifestVersion(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
@@ -48,9 +46,16 @@ func ValidateProfilingNonGA(fsys fspath.FS) specerrors.ValidationErrors {
 	return errs
 }
 
-func validateProfilingTypeNotUsed(fsys fspath.FS, dataStream string) error {
+func validateProfilingTypeNotUsed(fsys PackageFS, dataStream string) error {
 	manifestPath := path.Join("data_stream", dataStream, "manifest.yml")
-	d, err := fs.ReadFile(fsys, manifestPath)
+	files, err := fsys.Files(manifestPath)
+	if err != nil {
+		return fmt.Errorf("failed to read data stream manifest in \"%s\": %w", fsys.Path(manifestPath), err)
+	}
+	if len(files) == 0 {
+		return fmt.Errorf("failed to read data stream manifest in \"%s\": file not found", fsys.Path(manifestPath))
+	}
+	d, err := files[0].ReadAll()
 	if err != nil {
 		return fmt.Errorf("failed to read data stream manifest in \"%s\": %w", fsys.Path(manifestPath), err)
 	}

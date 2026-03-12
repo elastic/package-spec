@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestValidateMinimumAgentVersion(t *testing.T) {
@@ -73,7 +74,7 @@ conditions:
 			require.NoError(t, err)
 
 			fsys := fspath.DirFS(tempDir)
-			errs := ValidateMinimumAgentVersion(fsys)
+			errs := ValidateMinimumAgentVersion(pkgpath.NewCachedFS(fsys))
 
 			if c.expectedErr != nil {
 				require.Len(t, errs, 1)

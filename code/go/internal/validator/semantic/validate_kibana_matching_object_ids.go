@@ -8,8 +8,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -17,11 +15,11 @@ import (
 // object files that define IDs not matching the file's name. That is, it returns
 // validation errors if a Kibana object file, foo.json, in the package defines
 // an object ID other than foo inside it.
-func ValidateKibanaObjectIDs(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateKibanaObjectIDs(fsys PackageFS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	filePaths := path.Join("kibana", "*", "*.json")
-	objectFiles, err := pkgpath.Files(fsys, filePaths)
+	objectFiles, err := fsys.Files(filePaths)
 	if err != nil {
 		errs = append(errs, specerrors.NewStructuredErrorf("error finding Kibana object files: %w", err))
 		return errs

@@ -15,6 +15,7 @@ import (
 	"gopkg.in/yaml.v3"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
 )
 
 func TestListFieldsFiles(t *testing.T) {
@@ -135,7 +136,7 @@ func TestListFieldsFiles(t *testing.T) {
 			pkgRootPath := path.Join("..", "..", "..", "..", "..", "test", "packages", c.pkgName)
 
 			fsys := fspath.DirFS(pkgRootPath)
-			fieldFilesMetadata, err := listFieldsFiles(fsys)
+			fieldFilesMetadata, err := listFieldsFiles(pkgpath.NewCachedFS(fsys))
 			require.NoError(t, err)
 
 			require.Len(t, fieldFilesMetadata, len(c.expected))
