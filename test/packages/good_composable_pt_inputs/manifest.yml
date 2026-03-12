@@ -1,0 +1,26 @@
+format_version: 3.6.0
+name: good_composable_pt_inputs
+title: Composable Package - Policy Template Inputs
+description: Integration package with all policy template inputs using package references.
+version: 0.0.1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+requires:
+  input:
+    - package: sql_input
+      version: "1.0.0"
+policy_templates:
+  - name: database
+    title: Database monitoring
+    description: Collect metrics and logs from databases
+    inputs:
+      - package: sql_input
+        title: Collect database metrics
+        description: Collecting database metrics using the SQL input package
+owner:
+  github: elastic/foobar
+  type: community

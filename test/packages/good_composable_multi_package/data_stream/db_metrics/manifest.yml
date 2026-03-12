@@ -1,0 +1,6 @@
+title: Database metrics
+type: metrics
+streams:
+  - package: sql_input
+    title: Database Metrics
+    description: Collect database metrics using the SQL input package

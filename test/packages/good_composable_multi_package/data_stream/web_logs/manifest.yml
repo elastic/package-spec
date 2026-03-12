@@ -1,0 +1,6 @@
+title: Web server logs
+type: logs
+streams:
+  - package: filelog_otel
+    title: Web Server Logs
+    description: Collect web server logs using the filelog OTel input package

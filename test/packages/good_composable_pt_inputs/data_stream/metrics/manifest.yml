@@ -1,0 +1,6 @@
+title: Database metrics
+type: metrics
+streams:
+  - input: logfile
+    title: Database Metrics
+    description: Collect database metrics using logfile input
