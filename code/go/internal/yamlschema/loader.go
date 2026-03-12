@@ -5,21 +5,27 @@
 package yamlschema
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/fs"
 	"path"
+	"strings"
 	"sync"
 
 	"github.com/Masterminds/semver/v3"
-
-	"github.com/elastic/gojsonschema"
+	jsonschema "github.com/santhosh-tekuri/jsonschema/v6"
+	"github.com/santhosh-tekuri/jsonschema/v6/kind"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 
 	"gopkg.in/yaml.v3"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
+
+var defaultPrinter = message.NewPrinter(language.English)
 
 var semver3_0_0 = semver.MustParse("3.0.0")
 
@@ -29,21 +35,31 @@ func NewFileSchemaLoader() *FileSchemaLoader {
 	return &FileSchemaLoader{}
 }
 
-func (*FileSchemaLoader) Load(fs fs.FS, schemaPath string, options spectypes.FileSchemaLoadOptions) (spectypes.FileSchema, error) {
-	schemaLoader := NewReferenceLoaderFileSystem("file:///"+schemaPath, fs, options.SpecVersion)
-	schema, err := gojsonschema.NewSchema(schemaLoader)
+func (*FileSchemaLoader) Load(fsys fs.FS, schemaPath string, options spectypes.FileSchemaLoadOptions) (spectypes.FileSchema, error) {
+	var state validationState
+	formats := newFormatCheckers(&state)
+
+	c := jsonschema.NewCompiler()
+	c.DefaultDraft(jsonschema.Draft7)
+	c.AssertFormat()
+	c.UseLoader(&fsysLoader{fsys: fsys, version: options.SpecVersion})
+	for _, f := range formats {
+		c.RegisterFormat(f)
+	}
+
+	schema, err := c.Compile("file:///" + schemaPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load schema for %q: %v", schemaPath, err)
 	}
-	return &FileSchema{schema, options}, nil
+	return &FileSchema{schema: schema, state: &state, options: options}, nil
 }
 
 type FileSchema struct {
-	schema  *gojsonschema.Schema
+	schema  *jsonschema.Schema
+	state   *validationState
+	mu      sync.Mutex // serializes access to state during concurrent Validate calls
 	options spectypes.FileSchemaLoadOptions
 }
-
-var formatCheckersMutex sync.Mutex
 
 func (s *FileSchema) Validate(fsys fs.FS, filePath string) specerrors.ValidationErrors {
 	data, err := loadItemSchema(fsys, filePath, s.options.ContentType, s.options.SpecVersion)
@@ -51,35 +67,131 @@ func (s *FileSchema) Validate(fsys fs.FS, filePath string) specerrors.Validation
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
-	formatCheckersMutex.Lock()
+	instance, err := decodeJSON(data)
+	if err != nil {
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(
+			fmt.Errorf("decoding item file failed: %w", err), specerrors.UnassignedCode)}
+	}
+
+	s.mu.Lock()
+	s.state.fsys = fsys
+	s.state.currentPath = path.Dir(filePath)
+	s.state.sizeLimit = s.options.Limits.MaxRelativePathSize()
 	defer func() {
-		unloadRelativePathFormatChecker()
-		unloadDataStreamNameFormatChecker()
-		formatCheckersMutex.Unlock()
+		s.state.fsys = nil
+		s.mu.Unlock()
 	}()
 
-	loadRelativePathFormatChecker(fsys, path.Dir(filePath), s.options.Limits.MaxRelativePathSize())
-	loadDataStreamNameFormatChecker(fsys, path.Dir(filePath))
-	result, err := s.schema.Validate(gojsonschema.NewBytesLoader(data))
-	if err != nil {
-		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
+	verr := s.schema.Validate(instance)
+	if verr == nil {
+		return nil
 	}
 
-	if !result.Valid() {
-		var errs specerrors.ValidationErrors
-		for _, re := range result.Errors() {
-			errs = append(errs,
-				specerrors.NewStructuredErrorf("field %s: %s", re.Field(), adjustErrorDescription(re.Description())),
-			)
-		}
-		return errs
+	ve, ok := verr.(*jsonschema.ValidationError)
+	if !ok {
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(verr, specerrors.UnassignedCode)}
 	}
 
-	return nil // item content is valid according to the loaded schema
+	var errs specerrors.ValidationErrors
+	collectLeafErrors(ve, &errs)
+	if len(errs) == 0 {
+		// Fallback for top-level validation failures with no sub-errors.
+		errs = append(errs, specerrors.NewStructuredError(verr, specerrors.UnassignedCode))
+	}
+	return errs
 }
 
-func loadItemSchema(fsys fs.FS, path string, contentType *spectypes.ContentType, specVersion semver.Version) ([]byte, error) {
-	data, err := fs.ReadFile(fsys, path)
+// collectLeafErrors traverses the ValidationError tree and appends only leaf
+// errors (those with no causes) to errs, skipping transparent Reference
+// wrappers. For Contains failures it picks only the most-relevant element
+// error (the one with the deepest instance-location path) to avoid reporting
+// every non-matching array element.
+func collectLeafErrors(ve *jsonschema.ValidationError, errs *specerrors.ValidationErrors) {
+	if len(ve.Causes) == 0 {
+		// Skip oneOf "too many matched" errors — semantic validators handle those.
+		if k, ok := ve.ErrorKind.(*kind.OneOf); ok && len(k.Subschemas) > 0 {
+			return
+		}
+
+		loc := strings.Join(ve.InstanceLocation, ".")
+		if loc == "" {
+			loc = "(root)"
+		}
+
+		// Split multi-value Required errors into individual per-property errors.
+		if k, ok := ve.ErrorKind.(*kind.Required); ok && len(k.Missing) > 1 {
+			for _, m := range k.Missing {
+				*errs = append(*errs, specerrors.NewStructuredErrorf("field %s: missing property '%s'", loc, m))
+			}
+			return
+		}
+
+		// Split multi-value AdditionalProperties errors into individual per-property errors.
+		if k, ok := ve.ErrorKind.(*kind.AdditionalProperties); ok && len(k.Properties) > 1 {
+			for _, p := range k.Properties {
+				*errs = append(*errs, specerrors.NewStructuredErrorf("field %s: additional properties '%s' not allowed", loc, p))
+			}
+			return
+		}
+
+		msg := ve.ErrorKind.LocalizedString(defaultPrinter)
+		*errs = append(*errs, specerrors.NewStructuredErrorf("field %s: %s", loc, msg))
+		return
+	}
+
+	switch ve.ErrorKind.(type) {
+	case *kind.Reference:
+		// Transparent $ref wrapper — skip directly to its single cause.
+		for _, c := range ve.Causes {
+			collectLeafErrors(c, errs)
+		}
+	case *kind.Contains, *kind.OneOf, *kind.AnyOf:
+		// For contains/oneOf/anyOf failures each cause is one branch that did
+		// not satisfy the sub-schema. Report only the branch closest to
+		// matching (deepest instance location = fewest missing fields).
+		best := deepestLeaf(ve.Causes)
+		if best != nil {
+			collectLeafErrors(best, errs)
+		}
+	default:
+		for _, c := range ve.Causes {
+			collectLeafErrors(c, errs)
+		}
+	}
+}
+
+// deepestLeaf returns the cause whose deepest leaf instance-location is the
+// longest. On a tie the first candidate (lowest array index) wins.
+func deepestLeaf(causes []*jsonschema.ValidationError) *jsonschema.ValidationError {
+	var best *jsonschema.ValidationError
+	bestDepth := -1
+	for _, c := range causes {
+		d := maxLeafDepth(c)
+		if d > bestDepth {
+			bestDepth = d
+			best = c
+		}
+	}
+	return best
+}
+
+// maxLeafDepth returns the length of the longest instance-location found in
+// any leaf of the subtree rooted at ve.
+func maxLeafDepth(ve *jsonschema.ValidationError) int {
+	if len(ve.Causes) == 0 {
+		return len(ve.InstanceLocation)
+	}
+	max := len(ve.InstanceLocation)
+	for _, c := range ve.Causes {
+		if d := maxLeafDepth(c); d > max {
+			max = d
+		}
+	}
+	return max
+}
+
+func loadItemSchema(fsys fs.FS, filePath string, contentType *spectypes.ContentType, specVersion semver.Version) ([]byte, error) {
+	data, err := fs.ReadFile(fsys, filePath)
 	if err != nil {
 		return nil, specerrors.ValidationErrors{specerrors.NewStructuredErrorf("reading item file failed: %w", err)}
 	}
@@ -135,11 +247,12 @@ func expandItemKey(c interface{}) interface{} {
 	return c // c is something else, e.g. string, int, etc.
 }
 
-func adjustErrorDescription(description string) string {
-	if description == "Does not match format '"+relativePathFormat+"'" {
-		return "relative path is invalid, target doesn't exist or it exceeds the file size limit"
-	} else if description == "Does not match format '"+dataStreamNameFormat+"'" {
-		return "data stream doesn't exist"
+func decodeJSON(data []byte) (any, error) {
+	dec := json.NewDecoder(bytes.NewReader(data))
+	dec.UseNumber()
+	var v any
+	if err := dec.Decode(&v); err != nil {
+		return nil, err
 	}
-	return description
+	return v, nil
 }

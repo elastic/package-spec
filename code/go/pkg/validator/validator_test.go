@@ -74,8 +74,8 @@ func TestValidateFile(t *testing.T) {
 		"bad_deploy_variants": {
 			"_dev/deploy/variants.yml",
 			[]string{
-				"field (root): default is required",
-				"field variants: Invalid type. Expected: object, given: array",
+				"field (root): missing property 'default'",
+				"field variants: got array, want object",
 			},
 		},
 		"missing_pipeline_dashes": {
@@ -87,8 +87,8 @@ func TestValidateFile(t *testing.T) {
 		"missing_image_files": {
 			"manifest.yml",
 			[]string{
-				"field screenshots.0.src: relative path is invalid, target doesn't exist or it exceeds the file size limit",
-				"field icons.0.src: relative path is invalid, target doesn't exist or it exceeds the file size limit",
+				"field screenshots.0.src: '/img/kibana-system-wrong.png' is not valid relative-path: relative path is invalid, target doesn't exist or it exceeds the file size limit",
+				"field icons.0.src: '/img/system-wrong.svg' is not valid relative-path: relative path is invalid, target doesn't exist or it exceeds the file size limit",
 			},
 		},
 		"integration_benchmarks": {},
@@ -97,25 +97,25 @@ func TestValidateFile(t *testing.T) {
 		"input_groups_bad_data_stream": {
 			"manifest.yml",
 			[]string{
-				"field policy_templates.2.data_streams.1: data stream doesn't exist",
+				"field policy_templates.2.data_streams.1: 'spamfirewall' is not valid data-stream-name: data stream doesn't exist",
 			},
 		},
 		"bad_github_owner": {
 			"manifest.yml",
 			[]string{
-				"field owner.github: Does not match pattern '^(([a-zA-Z0-9-_]+)|([a-zA-Z0-9-_]+\\/[a-zA-Z0-9-_]+))$'",
+				`field owner.github: 'company/invalid/123' does not match pattern '^(([a-zA-Z0-9-_]+)|([a-zA-Z0-9-_]+\\/[a-zA-Z0-9-_]+))$'`,
 			},
 		},
 		"bad_owner_type": {
 			"manifest.yml",
 			[]string{
-				`field owner.type: owner.type must be one of the following: "elastic", "partner", "community"`,
+				`field owner.type: value must be one of 'elastic', 'partner', 'community'`,
 			},
 		},
 		"bad_owner_type_missing": {
 			"manifest.yml",
 			[]string{
-				`field owner: type is required`,
+				`field owner: missing property 'type'`,
 			},
 		},
 		"missing_version": {
@@ -133,13 +133,13 @@ func TestValidateFile(t *testing.T) {
 		"invalid_field_for_version": {
 			"manifest.yml",
 			[]string{
-				"field (root): Additional property license is not allowed",
+				"field (root): additional properties 'license' not allowed",
 			},
 		},
 		"bad_release_tag": {
 			"manifest.yml",
 			[]string{
-				"field (root): Additional property release is not allowed",
+				"field (root): additional properties 'release' not allowed",
 			},
 		},
 		"bad_custom_ilm_policy": {
@@ -151,20 +151,20 @@ func TestValidateFile(t *testing.T) {
 		"bad_select": {
 			"data_stream/foo_stream/manifest.yml",
 			[]string{
-				"field streams.0.vars.1: options is required",
+				"field streams.0.vars.1: missing property 'options'",
 				"field streams.0.vars.3: Must not be present",
 			},
 		},
 		"bad_policy_api_format": {
 			"data_stream/foo/_dev/test/system/test-default-config.yml",
 			[]string{
-				"field policy_api_format: policy_api_format must be one of the following: \"legacy\", \"simplified\"",
+				"field policy_api_format: value must be one of 'legacy', 'simplified'",
 			},
 		},
 		"bad_skip_ignored_fields": {
 			"data_stream/foo/_dev/test/system/test-default-config.yml",
 			[]string{
-				"field skip_ignored_fields: Invalid type. Expected: array, given: boolean",
+				"field skip_ignored_fields: got boolean, want array",
 			},
 		},
 		"bad_profiling_symbolizer": {
@@ -176,7 +176,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_secret_vars": {
 			"manifest.yml",
 			[]string{
-				"field vars.0: Additional property secret is not allowed",
+				"field vars.0: additional properties 'secret' not allowed",
 			},
 		},
 		"bad_secret_vars_v3": {
@@ -189,24 +189,25 @@ func TestValidateFile(t *testing.T) {
 		"bad_lifecycle": {
 			"data_stream/test/lifecycle.yml",
 			[]string{
-				"field (root): Additional property max_age is not allowed",
+				"field (root): additional properties 'max_age' not allowed",
 			},
 		},
 		"bad_saved_object_tags": {
 			"kibana/tags.yml",
 			[]string{
-				`field 0.asset_types.11: 0.asset_types.11 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "alerting_rule_template", "slo_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
-				`field 0.asset_types.12: 0.asset_types.12 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "alerting_rule_template", "slo_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
-				`field 1.asset_ids.1: Invalid type. Expected: string, given: integer`,
-				`field 2: text is required`,
-				`field 3: asset_types is required`,
+				`field 0.asset_types.11: value must be one of 'dashboard', 'visualization', 'search', 'map', 'lens', 'index_pattern', 'security_rule', 'csp_rule_template', 'alerting_rule_template', 'slo_template', 'ml_module', 'osquery_pack_asset', 'osquery_saved_query'`,
+				`field 0.asset_types.12: value must be one of 'dashboard', 'visualization', 'search', 'map', 'lens', 'index_pattern', 'security_rule', 'csp_rule_template', 'alerting_rule_template', 'slo_template', 'ml_module', 'osquery_pack_asset', 'osquery_saved_query'`,
+				`field 1.asset_ids.1: got number, want string`,
+				`field 2: missing property 'text'`,
+				`field 2: missing property 'asset_types'`,
+				`field 3: missing property 'asset_types'`,
 			},
 		},
 		"bad_dotted_fields": {
 			"manifest.yml",
 			[]string{
-				"field conditions: Additional property elastic.subscription is not allowed",
-				"field conditions: Additional property kibana.version is not allowed",
+				"field conditions: additional properties 'elastic.subscription' not allowed",
+				"field conditions: additional properties 'kibana.version' not allowed",
 			},
 		},
 		"bad_dangling_object_ids": {
@@ -229,50 +230,50 @@ func TestValidateFile(t *testing.T) {
 		"bad_deployment_mode": {
 			"manifest.yml",
 			[]string{
-				`field policy_templates.0.deployment_modes: Additional property default is not allowed`,
-				`field policy_templates.0.inputs.0.vars.0.hide_in_deployment_modes.0: policy_templates.0.inputs.0.vars.0.hide_in_deployment_modes.0 must be one of the following: "agentless"`,
+				`field policy_templates.0.deployment_modes: additional properties 'default' not allowed`,
+				`field policy_templates.0.inputs.0.vars.0.hide_in_deployment_modes.0: value must be 'agentless'`,
 			},
 		},
 		"bad_deployment_mode_without_identities": {
 			"manifest.yml",
 			[]string{
-				`field policy_templates.0.deployment_modes.agentless: organization is required`,
-				`field policy_templates.0.deployment_modes.agentless: division is required`,
-				`field policy_templates.0.deployment_modes.agentless: team is required`,
+				`field policy_templates.0.deployment_modes.agentless: missing property 'organization'`,
+				`field policy_templates.0.deployment_modes.agentless: missing property 'division'`,
+				`field policy_templates.0.deployment_modes.agentless: missing property 'team'`,
 			},
 		},
 		"bad_deployment_mode_resources": {
 			"manifest.yml",
 			[]string{
-				`field policy_templates.0.deployment_modes.agentless.resources.requests: Additional property disk is not allowed`,
+				`field policy_templates.0.deployment_modes.agentless.resources.requests: additional properties 'disk' not allowed`,
 			},
 		},
 		"bad_requires": {
 			"manifest.yml",
 			[]string{
-				`field requires.content.0.package: Does not match pattern '^[a-z0-9_]+$'`,
-				`field requires.input.0: version is required`,
+				`field requires.content.0.package: 'elastic-agent-invalid' does not match pattern '^[a-z0-9_]+$'`,
+				`field requires.input.0: missing property 'version'`,
 				`field requires.input.1.version: version "^1.0.0" for package "filelog_otel" must be a valid semantic version, constraints are not allowed`,
 			},
 		},
 		"bad_requires_old_version": {
 			"manifest.yml",
 			[]string{
-				`field (root): Additional property requires is not allowed`,
+				`field (root): additional properties 'requires' not allowed`,
 			},
 		},
 		"bad_package_field_old_version": {
 			"manifest.yml",
 			[]string{
-				`field policy_templates.0.inputs.0: type is required`,
-				`field policy_templates.0.inputs.0: Additional property package is not allowed`,
+				`field policy_templates.0.inputs.0: missing property 'type'`,
+				`field policy_templates.0.inputs.0: additional properties 'package' not allowed`,
 			},
 		},
 		"bad_datastream_package_old_version": {
 			"data_stream/logs/manifest.yml",
 			[]string{
-				`field streams.0: input is required`,
-				`field streams.0: Additional property package is not allowed`,
+				`field streams.0: missing property 'input'`,
+				`field streams.0: additional properties 'package' not allowed`,
 			},
 		},
 		"bad_package_not_in_requires": {
@@ -291,14 +292,14 @@ func TestValidateFile(t *testing.T) {
 		"bad_input_dataset_vars": {
 			"_dev/test/policy/test-vars.yml",
 			[]string{
-				`field vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
+				`field vars.data_stream.dataset: 'hyphen-not-allowed' does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\\._]*$'`,
 			},
 		},
 		"bad_integration_dataset_vars": {
 			"data_stream/datasets/_dev/test/system/test-vars-config.yml",
 			[]string{
-				`field vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
-				`field data_stream.vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
+				`field vars.data_stream.dataset: '-this.is-wrong' does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\\._]*$'`,
+				`field data_stream.vars.data_stream.dataset: '_wrong-dataset' does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\\._]*$'`,
 			},
 		},
 		"bad_missing_capability_security_rules": {
@@ -310,22 +311,22 @@ func TestValidateFile(t *testing.T) {
 		"bad_policy_template_behavior": {
 			"manifest.yml",
 			[]string{
-				"field policy_templates_behavior: policy_templates_behavior must be one of the following: \"all\"",
+				"field policy_templates_behavior: value must be 'all'",
 			},
 		},
 		"bad_configuration_links": {
 			"manifest.yml",
 			[]string{
-				"field policy_templates.0.configuration_links: Array must have at least 1 items",
-				"field policy_templates.1.configuration_links.0: url is required",
-				"field policy_templates.1.configuration_links.1.url: Does not match pattern '^(http(s)?://|kbn:/)'",
-				"field policy_templates.1.configuration_links.2.url: Does not match pattern '^(http(s)?://|kbn:/)'",
+				"field policy_templates.0.configuration_links: minItems: got 0, want 1",
+				"field policy_templates.1.configuration_links.0: missing property 'url'",
+				`field policy_templates.1.configuration_links.1.url: 'app/fleet/agents' does not match pattern '^(http(s)?://|kbn:/)'`,
+				`field policy_templates.1.configuration_links.2.url: 'elastic.co' does not match pattern '^(http(s)?://|kbn:/)'`,
 			},
 		},
 		"bad_required_vars": {
 			"manifest.yml",
 			[]string{
-				`field policy_templates.0.inputs.0.required_vars.password.1: name is required`,
+				`field policy_templates.0.inputs.0.required_vars.password.1: missing property 'name'`,
 				`required var "api_key" in optional group is defined as always required`,
 				`required var "password" in optional group is not defined`,
 			},
@@ -333,7 +334,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_required_vars_data_streams": {
 			"data_stream/test/manifest.yml",
 			[]string{
-				`field streams.0.required_vars.empty_name.0: name is required`,
+				`field streams.0.required_vars.empty_name.0: missing property 'name'`,
 				`required var "api_key" in optional group is defined as always required`,
 				`required var "password" in optional group is not defined`,
 			},
@@ -365,9 +366,9 @@ func TestValidateFile(t *testing.T) {
 		"bad_input_deployment_modes": {
 			"manifest.yml",
 			[]string{
-				`field policy_templates.0.inputs.0.deployment_modes.0: policy_templates.0.inputs.0.deployment_modes.0 must be one of the following: "default", "agentless"`,
-				`field policy_templates.0.inputs.1.deployment_modes: Array must have at least 1 items`,
-				`field policy_templates.0.inputs.2.deployment_modes: array items[0,1] must be unique`,
+				`field policy_templates.0.inputs.0.deployment_modes.0: value must be one of 'default', 'agentless'`,
+				`field policy_templates.0.inputs.1.deployment_modes: minItems: got 0, want 1`,
+				`field policy_templates.0.inputs.2.deployment_modes: items at 0 and 1 are equal`,
 				`input "test/metrics" in policy template "test" specifies unsupported deployment mode "invalid_mode"`,
 				`input "test/system" in policy template "test" specifies unsupported deployment mode "agentless"`,
 				`policy template "unsupported_modes" enables deployment mode "default" but no input supports this mode`,
@@ -376,12 +377,12 @@ func TestValidateFile(t *testing.T) {
 		"bad_discovery_fields": {
 			"manifest.yml",
 			[]string{
-				"field discovery.fields.0.name: Invalid type. Expected: string, given: integer",
-				"field discovery.fields.1: name is required",
-				"field discovery.fields.2: name is required",
-				"field discovery.fields.2: Additional property value is not allowed",
-				"field discovery.datasets.0.name: Invalid type. Expected: string, given: integer",
-				"field discovery.datasets.1: Additional property foo is not allowed",
+				"field discovery.fields.0.name: got number, want string",
+				"field discovery.fields.1: missing property 'name'",
+				"field discovery.fields.2: missing property 'name'",
+				"field discovery.fields.2: additional properties 'value' not allowed",
+				"field discovery.datasets.0.name: got number, want string",
+				"field discovery.datasets.1: additional properties 'foo' not allowed",
 			},
 		},
 		"bad_input_otel_old_version": {
@@ -393,7 +394,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_input_profiles_non_otel": {
 			"manifest.yml",
 			[]string{
-				"field policy_templates.0.input: policy_templates.0.input must be one of the following: \"otelcol\"",
+				"field policy_templates.0.input: value must be 'otelcol'",
 			},
 		},
 		"bad_input_dynamic_signal_types_non_otel": {
@@ -405,7 +406,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_integration_dynamic_signal_types": {
 			"manifest.yml",
 			[]string{
-				"field policy_templates.0: Additional property dynamic_signal_types is not allowed",
+				"field policy_templates.0: additional properties 'dynamic_signal_types' not allowed",
 			},
 		},
 		"bad_integration_dynamic_signal_types_non_otel": {
@@ -423,7 +424,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_input_dynamic_signal_types_old_version": {
 			"manifest.yml",
 			[]string{
-				"field policy_templates.0: Additional property dynamic_signal_types is not allowed",
+				"field policy_templates.0: additional properties 'dynamic_signal_types' not allowed",
 			},
 		},
 		"bad_input_dynamic_signal_type_with_type": {
@@ -435,7 +436,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_input_template_path": {
 			"manifest.yml",
 			[]string{
-				"field policy_templates.0: template_path is required",
+				"field policy_templates.0: missing property 'template_path'",
 				"policy template \"sql_query\" references template_path \"\": template_path is required for input type packages",
 			},
 		},
@@ -472,11 +473,11 @@ func TestValidateFile(t *testing.T) {
 		},
 		"bad_esql_view_content": {
 			"elasticsearch/esql_view/view.yml",
-			[]string{"field query: Invalid type. Expected: string, given: null"},
+			[]string{"field query: got null, want string"},
 		},
 		"bad_esql_view_integration": {
 			"elasticsearch/esql_view/view.yml",
-			[]string{"field query: Invalid type. Expected: string, given: null"},
+			[]string{"field query: got null, want string"},
 		},
 		"bad_content_duplicate_tags": {
 			"kibana/tags.yml",
@@ -495,15 +496,15 @@ func TestValidateFile(t *testing.T) {
 		"good_migrate_from":                   {},
 		"bad_migrate_from": {
 			"manifest.yml",
-			[]string{`field policy_templates.0.inputs.0: Additional property migrate_from is not allowed`},
+			[]string{`field policy_templates.0.inputs.0: additional properties 'migrate_from' not allowed`},
 		},
 		"bad_deprecation_description": {
 			"manifest.yml",
-			[]string{"field deprecated.description: Invalid type. Expected: string, given: null"},
+			[]string{"field deprecated.description: got null, want string"},
 		},
 		"bad_deprecation_since": {
 			"manifest.yml",
-			[]string{"field deprecated: since is required"},
+			[]string{"field deprecated: missing property 'since'"},
 		},
 		"bad_deprecated_integration_policy_input": {
 			"manifest.yml",
@@ -513,13 +514,13 @@ func TestValidateFile(t *testing.T) {
 		"bad_deployer_system_benchmark": {
 			"_dev/benchmark/system/alert-benchmark.yml",
 			[]string{
-				"field deployer: deployer must be one of the following: \"docker\", \"tf\", \"k8s\"",
+				"field deployer: value must be one of 'docker', 'tf', 'k8s'",
 			},
 		},
 		"bad_deployer_system_test": {
 			"data_stream/foo/_dev/test/system/test-default-config.yml",
 			[]string{
-				"field deployer: deployer must be one of the following: \"docker\", \"tf\", \"k8s\"",
+				"field deployer: value must be one of 'docker', 'tf', 'k8s'",
 			},
 		},
 	}
@@ -1005,10 +1006,10 @@ func TestValidateRoutingRules(t *testing.T) {
 			`item [routing_rules.yml] is not allowed in folder [../../../../test/packages/bad_routing_rules_wrong_spec/data_stream/rules]`,
 		},
 		"bad_routing_rules_missing_if": {
-			`file "../../../../test/packages/bad_routing_rules_missing_if/data_stream/rules/routing_rules.yml" is invalid: field 0.rules.0: if is required`,
+			`file "../../../../test/packages/bad_routing_rules_missing_if/data_stream/rules/routing_rules.yml" is invalid: field 0.rules.0: missing property 'if'`,
 		},
 		"bad_routing_rules_missing_target_dataset": {
-			`file "../../../../test/packages/bad_routing_rules_missing_target_dataset/data_stream/rules/routing_rules.yml" is invalid: field 0.rules.0: target_dataset is required`,
+			`file "../../../../test/packages/bad_routing_rules_missing_target_dataset/data_stream/rules/routing_rules.yml" is invalid: field 0.rules.0: missing property 'target_dataset'`,
 		},
 	}
 
@@ -1039,8 +1040,8 @@ func TestValidateIngestPipelines(t *testing.T) {
 		"skip_pipeline_rename_validation": {},
 		"bad_ingest_pipeline": {
 			"test": []string{
-				"field processors.1: Additional property reroute is not allowed",
-				"field processors.2.foreach.processor: Additional property paint is not allowed",
+				"field processors.1: additional properties 'reroute' not allowed",
+				"field processors.2.foreach.processor: additional properties 'paint' not allowed",
 			},
 			"bad_rename_message": []string{
 				"field processors.1.rename: rename \"message\" to \"event.original\" processor requires if: 'ctx.event?.original == null' (JSE00001)",
