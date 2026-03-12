@@ -29,6 +29,17 @@ var defaultPrinter = message.NewPrinter(language.English)
 
 var semver3_0_0 = semver.MustParse("3.0.0")
 
+// fileSchemaCache caches compiled FileSchema instances by (schemaPath, specVersion).
+// Re-compiling schemas is expensive because santhosh-tekuri re-parses every
+// $ref'd YAML file from scratch. The compiled result is identical for the same
+// path and version, so caching across package validations is safe.
+var fileSchemaCache sync.Map
+
+type fileSchemaKey struct {
+	schemaPath  string
+	specVersion string
+}
+
 type FileSchemaLoader struct{}
 
 func NewFileSchemaLoader() *FileSchemaLoader {
@@ -36,6 +47,11 @@ func NewFileSchemaLoader() *FileSchemaLoader {
 }
 
 func (*FileSchemaLoader) Load(fsys fs.FS, schemaPath string, options spectypes.FileSchemaLoadOptions) (spectypes.FileSchema, error) {
+	key := fileSchemaKey{schemaPath, options.SpecVersion.Original()}
+	if cached, ok := fileSchemaCache.Load(key); ok {
+		return cached.(*FileSchema), nil
+	}
+
 	var state validationState
 	formats := newFormatCheckers(&state)
 
@@ -51,7 +67,9 @@ func (*FileSchemaLoader) Load(fsys fs.FS, schemaPath string, options spectypes.F
 	if err != nil {
 		return nil, fmt.Errorf("failed to load schema for %q: %v", schemaPath, err)
 	}
-	return &FileSchema{schema: schema, state: &state, options: options}, nil
+	result := &FileSchema{schema: schema, state: &state, options: options}
+	fileSchemaCache.Store(key, result)
+	return result, nil
 }
 
 type FileSchema struct {
