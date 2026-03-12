@@ -9,7 +9,7 @@ require (
 	github.com/boumenot/gocover-cobertura v1.4.0
 	github.com/creasty/defaults v1.8.0
 	github.com/elastic/go-licenser v0.4.2
-	github.com/elastic/gojsonschema v1.2.1
+	github.com/elastic/gojsonschema v1.2.2
 	github.com/elastic/kbncontent v0.1.4
 	github.com/evanphx/json-patch/v5 v5.9.11
 	github.com/go-viper/mapstructure/v2 v2.5.0
@@ -41,7 +41,7 @@ require (
 	github.com/otiai10/mint v1.6.3 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/stretchr/objx v0.5.2 // indirect
-	github.com/xeipuuv/gojsonpointer v0.0.0-20180127040702-4e3ac2762d5f // indirect
+	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	golang.org/x/exp/typeparams v0.0.0-20231108232855-2478ac86f678 // indirect
 	golang.org/x/mod v0.34.0 // indirect
 	golang.org/x/sync v0.20.0 // indirect
