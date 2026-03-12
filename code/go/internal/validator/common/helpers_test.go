@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestIsDefinedWarningsAsErrors(t *testing.T) {
@@ -26,9 +25,7 @@ func TestIsDefinedWarningsAsErrors(t *testing.T) {
 
 	for _, test := range cases {
 		t.Run(test.name, func(t *testing.T) {
-			if err := os.Setenv(EnvVarWarningsAsErrors, test.envVarValue); err != nil {
-				require.NoError(t, err)
-			}
+			t.Setenv(EnvVarWarningsAsErrors, test.envVarValue)
 			t.Cleanup(func() { os.Unsetenv(EnvVarWarningsAsErrors) })
 
 			value := IsDefinedWarningsAsErrors()
@@ -37,7 +34,7 @@ func TestIsDefinedWarningsAsErrors(t *testing.T) {
 	}
 
 	t.Run("undefined", func(t *testing.T) {
-		os.Unsetenv(EnvVarWarningsAsErrors)
+		t.Setenv(EnvVarWarningsAsErrors, "")
 		value := IsDefinedWarningsAsErrors()
 		assert.Equal(t, false, value)
 	})
