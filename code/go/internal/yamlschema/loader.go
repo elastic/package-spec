@@ -44,7 +44,8 @@ func NewFileSchemaLoader(fsys fs.FS, specVersion semver.Version) *FileSchemaLoad
 	l := &FileSchemaLoader{specVersion: specVersion, fsys: fsys}
 	l.vocabulary = newElasticVocabulary()
 	c := jsonschema.NewCompiler()
-	c.DefaultDraft(jsonschema.Draft7)
+	c.DefaultDraft(jsonschema.Draft2020)
+	c.AssertVocabs()
 	c.UseLoader(&fsysLoader{fsys: fsys, version: specVersion})
 	c.RegisterVocabulary(l.vocabulary.vocab)
 	l.compiler = c
