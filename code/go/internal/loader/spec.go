@@ -20,7 +20,7 @@ import (
 // LoadSpec loads a package specification for the given version and type.
 func LoadSpec(fsys fs.FS, version semver.Version, pkgType string) (spectypes.ItemSpec, error) {
 	fileSpecLoader := yamlschema.NewFileSchemaLoader(fsys, version)
-	loader := specschema.NewFolderSpecLoader(fileSpecLoader, version)
+	loader := specschema.NewFolderSpecLoader(fileSpecLoader)
 	spec, err := loader.Load(pkgType)
 	if errors.Is(err, os.ErrNotExist) {
 		return nil, fmt.Errorf("package type %q not supported (%w)", pkgType, err)

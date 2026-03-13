@@ -87,8 +87,8 @@ func TestValidateFile(t *testing.T) {
 		"missing_image_files": {
 			"manifest.yml",
 			[]string{
-				"field screenshots.0.src: '/img/kibana-system-wrong.png' is not valid relative-path: relative path is invalid, target doesn't exist or it exceeds the file size limit",
-				"field icons.0.src: '/img/system-wrong.svg' is not valid relative-path: relative path is invalid, target doesn't exist or it exceeds the file size limit",
+				"field screenshots.0.src: \"/img/kibana-system-wrong.png\" is not a valid relative path: relative path is invalid, target doesn't exist or it exceeds the file size limit",
+				"field icons.0.src: \"/img/system-wrong.svg\" is not a valid relative path: relative path is invalid, target doesn't exist or it exceeds the file size limit",
 			},
 		},
 		"integration_benchmarks": {},
@@ -97,7 +97,7 @@ func TestValidateFile(t *testing.T) {
 		"input_groups_bad_data_stream": {
 			"manifest.yml",
 			[]string{
-				"field policy_templates.2.data_streams.1: 'spamfirewall' is not valid data-stream-name: data stream doesn't exist",
+				"field policy_templates.2.data_streams.1: \"spamfirewall\" is not a valid data stream name: data stream doesn't exist",
 			},
 		},
 		"bad_github_owner": {

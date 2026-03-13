@@ -18,7 +18,7 @@ import (
 
 func TestLoadFolderSpec(t *testing.T) {
 	fileSpecLoader := yamlschema.NewFileSchemaLoader(os.DirFS("./testdata"), semver.Version{})
-	loader := NewFolderSpecLoader(fileSpecLoader, semver.Version{})
+	loader := NewFolderSpecLoader(fileSpecLoader)
 	spec, err := loader.Load("simple-spec")
 	require.NoError(t, err)
 
@@ -89,7 +89,7 @@ func TestPatchedSpec(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
 			fileSpecLoader := yamlschema.NewFileSchemaLoader(os.DirFS("./testdata"), *c.version)
-			loader := NewFolderSpecLoader(fileSpecLoader, *c.version)
+			loader := NewFolderSpecLoader(fileSpecLoader)
 			_, err := loader.Load(c.path)
 			if !c.valid {
 				require.Error(t, err)
@@ -142,7 +142,7 @@ func TestPatchedFolderSpec(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
 			fileSpecLoader := yamlschema.NewFileSchemaLoader(os.DirFS("./testdata"), *c.version)
-			loader := NewFolderSpecLoader(fileSpecLoader, *c.version)
+			loader := NewFolderSpecLoader(fileSpecLoader)
 			_, err := loader.Load(c.path)
 			if !c.valid {
 				require.Error(t, err)

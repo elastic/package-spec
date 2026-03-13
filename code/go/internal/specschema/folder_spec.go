@@ -25,11 +25,11 @@ type FolderSpecLoader struct {
 
 // NewFolderSpecLoader creates a new `FolderSpecLoader` that loads schemas from the given directories.
 // File schemas referenced with `$ref` are loaded using the given `FileSchemaLoader`.
-func NewFolderSpecLoader(fileLoader spectypes.FileSchemaLoader, version semver.Version) *FolderSpecLoader {
+func NewFolderSpecLoader(fileLoader spectypes.FileSchemaLoader) *FolderSpecLoader {
 	return &FolderSpecLoader{
 		fs:             fileLoader.FS(),
 		fileSpecLoader: fileLoader,
-		specVersion:    version,
+		specVersion:    fileLoader.Version(),
 	}
 }
 

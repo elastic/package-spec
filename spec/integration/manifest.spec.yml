@@ -374,7 +374,7 @@ spec:
           src:
             description: Relative path to the icon's image file.
             type: string
-            format: relative-path
+            x-elastic-relative-path: true
             examples:
               - "/img/logo_apache.svg"
           title:
@@ -408,7 +408,7 @@ spec:
           src:
             description: Relative path to the screenshot's image file.
             type: string
-            format: relative-path
+            x-elastic-relative-path: true
             examples:
               - "/img/apache_httpd_server_status.png"
           title:
@@ -761,7 +761,7 @@ spec:
             items:
               type: string
               description: Data stream name
-              format: data-stream-name
+              x-elastic-data-stream-name: true
               examples:
                 - ec2_logs
                 - spamfirewall

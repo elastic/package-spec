@@ -7,6 +7,8 @@ package spectypes
 import (
 	"io/fs"
 
+	"github.com/Masterminds/semver/v3"
+
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -22,6 +24,8 @@ type FileSchemaLoader interface {
 	Load(specPath string, opts FileSchemaLoadOptions) (FileSchema, error)
 	// FS returns the spec filesystem this loader uses.
 	FS() fs.FS
+	// Version returns the spec version this loader was initialised with.
+	Version() semver.Version
 }
 
 // FileSchemaLoadOptions provides additional information for package loading.

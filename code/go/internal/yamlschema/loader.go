@@ -35,35 +35,38 @@ var semver3_0_0 = semver.MustParse("3.0.0")
 // within a single validation are always sequential, so no locking is needed.
 type FileSchemaLoader struct {
 	compiler    *jsonschema.Compiler
-	state       validationState
 	specVersion semver.Version
 	fsys        fs.FS
+	vocabulary  *elasticVocabulary
 }
 
 func NewFileSchemaLoader(fsys fs.FS, specVersion semver.Version) *FileSchemaLoader {
 	l := &FileSchemaLoader{specVersion: specVersion, fsys: fsys}
-	formats := newFormatCheckers(&l.state)
+	l.vocabulary = newElasticVocabulary()
 	c := jsonschema.NewCompiler()
 	c.DefaultDraft(jsonschema.Draft7)
-	c.AssertFormat()
 	c.UseLoader(&fsysLoader{fsys: fsys, version: specVersion})
-	for _, f := range formats {
-		c.RegisterFormat(f)
-	}
+	c.RegisterVocabulary(l.vocabulary.vocab)
 	l.compiler = c
 	return l
 }
 
 func (l *FileSchemaLoader) Load(schemaPath string, options spectypes.FileSchemaLoadOptions) (spectypes.FileSchema, error) {
+	fs := &FileSchema{loader: l, options: options}
+
 	schema, err := l.compiler.Compile("file:///" + schemaPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load schema for %q: %v", schemaPath, err)
 	}
-	return &FileSchema{schema: schema, loader: l, options: options}, nil
+	fs.schema = schema
+	return fs, nil
 }
 
 // FS returns the spec filesystem this loader was initialized with.
 func (l *FileSchemaLoader) FS() fs.FS { return l.fsys }
+
+// Version returns the spec version this loader was initialized with.
+func (l *FileSchemaLoader) Version() semver.Version { return l.specVersion }
 
 type FileSchema struct {
 	schema  *jsonschema.Schema
@@ -83,12 +86,8 @@ func (s *FileSchema) Validate(fsys fs.FS, filePath string) specerrors.Validation
 			fmt.Errorf("decoding item file failed: %w", err), specerrors.UnassignedCode)}
 	}
 
-	s.loader.state.fsys = fsys
-	s.loader.state.currentPath = path.Dir(filePath)
-	s.loader.state.sizeLimit = s.options.Limits.MaxRelativePathSize()
-	defer func() {
-		s.loader.state.fsys = nil
-	}()
+	s.loader.vocabulary.setContext(fsys, path.Dir(filePath), s.options.Limits.MaxRelativePathSize())
+	defer s.loader.vocabulary.clearContext()
 
 	verr := s.schema.Validate(instance)
 	if verr != nil {
