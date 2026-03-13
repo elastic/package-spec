@@ -21,6 +21,7 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
 	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/v3/code/go/internal/validator/semantic"
+	"github.com/elastic/package-spec/v3/code/go/internal/yamlschema"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -32,6 +33,8 @@ type Spec struct {
 	specVersion semver.Version
 	// fs contains the filesystem of the spec.
 	fs fs.FS
+	// fileSchemaLoader loads and caches compiled JSON schemas across package validations.
+	fileSchemaLoader spectypes.FileSchemaLoader
 
 	// WarningsAsErrors causes validation warnings to be reported as errors when true.
 	WarningsAsErrors bool
@@ -59,9 +62,10 @@ func NewSpec(version semver.Version) (*Spec, error) {
 	}
 
 	s := Spec{
-		version:     version,
-		specVersion: *specVersion,
-		fs:          spec.FS(),
+		version:          version,
+		specVersion:      *specVersion,
+		fs:               spec.FS(),
+		fileSchemaLoader: yamlschema.NewFileSchemaLoader(),
 	}
 
 	return &s, nil
@@ -71,7 +75,7 @@ func NewSpec(version semver.Version) (*Spec, error) {
 func (s Spec) ValidatePackage(pkg packages.Package) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
-	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkg.Type)
+	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkg.Type, s.fileSchemaLoader)
 	if err != nil {
 		errs = append(errs, specerrors.NewStructuredErrorf("could not read root folder spec file: %w", err))
 		return errs

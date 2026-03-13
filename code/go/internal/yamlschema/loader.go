@@ -29,26 +29,27 @@ var defaultPrinter = message.NewPrinter(language.English)
 
 var semver3_0_0 = semver.MustParse("3.0.0")
 
-// fileSchemaCache caches compiled FileSchema instances by (schemaPath, specVersion).
-// Re-compiling schemas is expensive because santhosh-tekuri re-parses every
-// $ref'd YAML file from scratch. The compiled result is identical for the same
-// path and version, so caching across package validations is safe.
-var fileSchemaCache sync.Map
-
 type fileSchemaKey struct {
 	schemaPath  string
 	specVersion string
 }
 
-type FileSchemaLoader struct{}
+// FileSchemaLoader loads and caches compiled JSON schemas. The cache avoids
+// re-compiling schemas across multiple package validations: santhosh-tekuri
+// re-parses every $ref'd YAML file from scratch on each compilation, which is
+// expensive. The same (schemaPath, specVersion) pair always produces the same
+// compiled schema, so caching is safe.
+type FileSchemaLoader struct {
+	cache sync.Map
+}
 
 func NewFileSchemaLoader() *FileSchemaLoader {
 	return &FileSchemaLoader{}
 }
 
-func (*FileSchemaLoader) Load(fsys fs.FS, schemaPath string, options spectypes.FileSchemaLoadOptions) (spectypes.FileSchema, error) {
+func (l *FileSchemaLoader) Load(fsys fs.FS, schemaPath string, options spectypes.FileSchemaLoadOptions) (spectypes.FileSchema, error) {
 	key := fileSchemaKey{schemaPath, options.SpecVersion.Original()}
-	if cached, ok := fileSchemaCache.Load(key); ok {
+	if cached, ok := l.cache.Load(key); ok {
 		return cached.(*FileSchema), nil
 	}
 
@@ -68,7 +69,7 @@ func (*FileSchemaLoader) Load(fsys fs.FS, schemaPath string, options spectypes.F
 		return nil, fmt.Errorf("failed to load schema for %q: %v", schemaPath, err)
 	}
 	result := &FileSchema{schema: schema, state: &state, options: options}
-	fileSchemaCache.Store(key, result)
+	l.cache.Store(key, result)
 	return result, nil
 }
 

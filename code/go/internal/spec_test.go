@@ -29,7 +29,7 @@ func testForVersionType(t *testing.T, version semver.Version, pkgType string) {
 	t.Run(version.String(), func(t *testing.T) {
 		t.Run(pkgType, func(t *testing.T) {
 			fs := spec.FS()
-			_, err := loader.LoadSpec(fs, version, pkgType)
+			_, err := loader.LoadSpec(fs, version, pkgType, nil)
 			require.NoError(t, err)
 		})
 	})
