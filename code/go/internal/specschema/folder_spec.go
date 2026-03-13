@@ -25,9 +25,9 @@ type FolderSpecLoader struct {
 
 // NewFolderSpecLoader creates a new `FolderSpecLoader` that loads schemas from the given directories.
 // File schemas referenced with `$ref` are loaded using the given `FileSchemaLoader`.
-func NewFolderSpecLoader(fs fs.FS, fileLoader spectypes.FileSchemaLoader, version semver.Version) *FolderSpecLoader {
+func NewFolderSpecLoader(fileLoader spectypes.FileSchemaLoader, version semver.Version) *FolderSpecLoader {
 	return &FolderSpecLoader{
-		fs:             fs,
+		fs:             fileLoader.FS(),
 		fileSpecLoader: fileLoader,
 		specVersion:    version,
 	}
@@ -111,11 +111,10 @@ func (l *FolderSpecLoader) loadContents(s *folderItemSpec, fs fs.FS, specPath st
 				}
 				specPath := path.Join(path.Dir(specPath), content.Ref)
 				options := spectypes.FileSchemaLoadOptions{
-					SpecVersion: l.specVersion,
 					Limits:      &ItemSpec{content},
 					ContentType: content.ContentMediaType,
 				}
-				schema, err := l.fileSpecLoader.Load(fs, specPath, options)
+				schema, err := l.fileSpecLoader.Load(specPath, options)
 				if err != nil {
 					return fmt.Errorf("could not load schema for %q: %w", path.Dir(specPath), err)
 				}

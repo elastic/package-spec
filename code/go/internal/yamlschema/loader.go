@@ -11,7 +11,6 @@ import (
 	"io/fs"
 	"path"
 	"strings"
-	"sync"
 
 	"github.com/Masterminds/semver/v3"
 	jsonschema "github.com/santhosh-tekuri/jsonschema/v6"
@@ -29,40 +28,51 @@ var defaultPrinter = message.NewPrinter(language.English)
 
 var semver3_0_0 = semver.MustParse("3.0.0")
 
-type FileSchemaLoader struct{}
-
-func NewFileSchemaLoader() *FileSchemaLoader {
-	return &FileSchemaLoader{}
+// FileSchemaLoader creates a single shared jsonschema.Compiler for the given
+// spec FS and version. The compiler caches parsed schema content internally,
+// so all Load calls within the same loader avoid re-parsing $ref'd files.
+// A new FileSchemaLoader is created per LoadSpec call, and Validate calls
+// within a single validation are always sequential, so no locking is needed.
+type FileSchemaLoader struct {
+	compiler    *jsonschema.Compiler
+	state       validationState
+	specVersion semver.Version
+	fsys        fs.FS
 }
 
-func (*FileSchemaLoader) Load(fsys fs.FS, schemaPath string, options spectypes.FileSchemaLoadOptions) (spectypes.FileSchema, error) {
-	var state validationState
-	formats := newFormatCheckers(&state)
-
+func NewFileSchemaLoader(fsys fs.FS, specVersion semver.Version) *FileSchemaLoader {
+	l := &FileSchemaLoader{specVersion: specVersion, fsys: fsys}
+	formats := newFormatCheckers(&l.state)
 	c := jsonschema.NewCompiler()
 	c.DefaultDraft(jsonschema.Draft7)
 	c.AssertFormat()
-	c.UseLoader(&fsysLoader{fsys: fsys, version: options.SpecVersion})
+	c.UseLoader(&fsysLoader{fsys: fsys, version: specVersion})
 	for _, f := range formats {
 		c.RegisterFormat(f)
 	}
+	l.compiler = c
+	return l
+}
 
-	schema, err := c.Compile("file:///" + schemaPath)
+func (l *FileSchemaLoader) Load(schemaPath string, options spectypes.FileSchemaLoadOptions) (spectypes.FileSchema, error) {
+	schema, err := l.compiler.Compile("file:///" + schemaPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load schema for %q: %v", schemaPath, err)
 	}
-	return &FileSchema{schema: schema, state: &state, options: options}, nil
+	return &FileSchema{schema: schema, loader: l, options: options}, nil
 }
+
+// FS returns the spec filesystem this loader was initialized with.
+func (l *FileSchemaLoader) FS() fs.FS { return l.fsys }
 
 type FileSchema struct {
 	schema  *jsonschema.Schema
-	state   *validationState
-	mu      sync.Mutex // serializes access to state during concurrent Validate calls
+	loader  *FileSchemaLoader
 	options spectypes.FileSchemaLoadOptions
 }
 
 func (s *FileSchema) Validate(fsys fs.FS, filePath string) specerrors.ValidationErrors {
-	data, err := loadItemSchema(fsys, filePath, s.options.ContentType, s.options.SpecVersion)
+	data, err := loadItemSchema(fsys, filePath, s.options.ContentType, s.loader.specVersion)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
@@ -73,32 +83,30 @@ func (s *FileSchema) Validate(fsys fs.FS, filePath string) specerrors.Validation
 			fmt.Errorf("decoding item file failed: %w", err), specerrors.UnassignedCode)}
 	}
 
-	s.mu.Lock()
-	s.state.fsys = fsys
-	s.state.currentPath = path.Dir(filePath)
-	s.state.sizeLimit = s.options.Limits.MaxRelativePathSize()
+	s.loader.state.fsys = fsys
+	s.loader.state.currentPath = path.Dir(filePath)
+	s.loader.state.sizeLimit = s.options.Limits.MaxRelativePathSize()
 	defer func() {
-		s.state.fsys = nil
-		s.mu.Unlock()
+		s.loader.state.fsys = nil
 	}()
 
 	verr := s.schema.Validate(instance)
-	if verr == nil {
-		return nil
+	if verr != nil {
+		ve, ok := verr.(*jsonschema.ValidationError)
+		if !ok {
+			return specerrors.ValidationErrors{specerrors.NewStructuredError(verr, specerrors.UnassignedCode)}
+		}
+
+		var errs specerrors.ValidationErrors
+		collectLeafErrors(ve, &errs)
+		if len(errs) == 0 {
+			// Fallback for top-level validation failures with no sub-errors.
+			errs = append(errs, specerrors.NewStructuredError(verr, specerrors.UnassignedCode))
+		}
+		return errs
 	}
 
-	ve, ok := verr.(*jsonschema.ValidationError)
-	if !ok {
-		return specerrors.ValidationErrors{specerrors.NewStructuredError(verr, specerrors.UnassignedCode)}
-	}
-
-	var errs specerrors.ValidationErrors
-	collectLeafErrors(ve, &errs)
-	if len(errs) == 0 {
-		// Fallback for top-level validation failures with no sub-errors.
-		errs = append(errs, specerrors.NewStructuredError(verr, specerrors.UnassignedCode))
-	}
-	return errs
+	return nil
 }
 
 // collectLeafErrors traverses the ValidationError tree and appends only leaf

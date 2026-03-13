@@ -17,8 +17,8 @@ import (
 )
 
 func TestLoadFolderSpec(t *testing.T) {
-	fileSpecLoader := yamlschema.NewFileSchemaLoader()
-	loader := NewFolderSpecLoader(os.DirFS("./testdata"), fileSpecLoader, semver.Version{})
+	fileSpecLoader := yamlschema.NewFileSchemaLoader(os.DirFS("./testdata"), semver.Version{})
+	loader := NewFolderSpecLoader(fileSpecLoader, semver.Version{})
 	spec, err := loader.Load("simple-spec")
 	require.NoError(t, err)
 
@@ -86,10 +86,10 @@ func TestPatchedSpec(t *testing.T) {
 		},
 	}
 
-	fileSpecLoader := yamlschema.NewFileSchemaLoader()
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
-			loader := NewFolderSpecLoader(os.DirFS("./testdata"), fileSpecLoader, *c.version)
+			fileSpecLoader := yamlschema.NewFileSchemaLoader(os.DirFS("./testdata"), *c.version)
+			loader := NewFolderSpecLoader(fileSpecLoader, *c.version)
 			_, err := loader.Load(c.path)
 			if !c.valid {
 				require.Error(t, err)
@@ -139,10 +139,10 @@ func TestPatchedFolderSpec(t *testing.T) {
 		},
 	}
 
-	fileSpecLoader := yamlschema.NewFileSchemaLoader()
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
-			loader := NewFolderSpecLoader(os.DirFS("./testdata"), fileSpecLoader, *c.version)
+			fileSpecLoader := yamlschema.NewFileSchemaLoader(os.DirFS("./testdata"), *c.version)
+			loader := NewFolderSpecLoader(fileSpecLoader, *c.version)
 			_, err := loader.Load(c.path)
 			if !c.valid {
 				require.Error(t, err)
