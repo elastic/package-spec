@@ -34,8 +34,8 @@ func (i *itemSchemaSpec) resolve(target semver.Version) (map[string]interface{},
 		return nil, fmt.Errorf("failed to apply patch: %w", err)
 	}
 
-	// Doesn't seem to be needed to use a decoder with UseNumber here, but it doesn't do
-	// any harm, and gojsonschema expects the use of `json.Number`.
+	// Using UseNumber here ensures numbers are decoded as json.Number for accurate
+	// integer vs. float validation.
 	dec := json.NewDecoder(bytes.NewReader(spec))
 	dec.UseNumber()
 

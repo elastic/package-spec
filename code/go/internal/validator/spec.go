@@ -114,43 +114,40 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 		new     string
 	}{
 		{
-			matcher: regexp.MustCompile(`Must not validate the schema \(not\)`),
+			matcher: regexp.MustCompile(`'not' failed`),
 			new:     "Must not be present",
 		},
 		{
-			matcher: regexp.MustCompile("secret is required"),
+			matcher: regexp.MustCompile("missing property 'secret'"),
 			new:     "variable identified as possible secret, secret parameter required to be set to true or false",
 		},
 		{
-			matcher: regexp.MustCompile(`(field processors.[0-9]+.rename): if is required`),
+			matcher: regexp.MustCompile(`(field processors\.[0-9]+\.rename): missing property 'if'`),
 			new:     "%s: rename \"message\" to \"event.original\" processor requires if: 'ctx.event?.original == null'",
 		},
 		{
-			matcher: regexp.MustCompile(`(field processors.[0-9]+): remove is required`),
+			matcher: regexp.MustCompile(`(field processors\.[0-9]+): missing property 'remove'`),
 			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
 		},
 		{
-			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.field(.[0-9]+)?): processors.[0-9]+.remove.field(.[0-9]+)? does not match: "message"`),
+			matcher: regexp.MustCompile(`(field processors\.[0-9]+\.remove\.field(?:\.[0-9]+)?): value must be 'message'`),
 			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
 		},
 		{
-			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.if): processors.[0-9]+.remove.if does not match: "ctx\.event\?\.original != null"`),
+			matcher: regexp.MustCompile(`(field processors\.[0-9]+\.remove\.if): value must be 'ctx\.event\?\.original != null'`),
 			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null'",
 		},
 		{
-			matcher: regexp.MustCompile(`(field processors.[0-9]+.remove): (ignore_missing|if) is required`),
+			matcher: regexp.MustCompile(`(field processors\.[0-9]+\.remove): missing propert(?:y|ies) '(?:ignore_missing|if)'`),
 			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null'",
 		},
 	}
 
-	// Filter out redundant errors
+	// Filter out redundant intermediate errors that are superseded by leaf errors.
 	redundant := []string{
-		"Must validate \"then\" as \"if\" was valid",
-		"Must validate \"else\" as \"if\" was not valid",
-		"Must validate all the schemas (allOf)",
-		"Must validate at least one schema (anyOf)",
-		"Must validate one and only one schema (oneOf)",
-		"At least one of the items must match",
+		"'allOf' failed",
+		"'anyOf' failed",
+		"'oneOf' failed, none matched",
 	}
 
 	// Add error code to specific errors

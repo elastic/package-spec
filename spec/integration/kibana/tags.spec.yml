@@ -42,7 +42,7 @@ spec:
          type: array
          items:
            type: string
-     oneOf:
+     anyOf:
        - required:
           - text
           - asset_types

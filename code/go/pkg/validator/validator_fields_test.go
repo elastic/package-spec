@@ -95,7 +95,7 @@ func TestValidateFields(t *testing.T) {
 				},
 			},
 			expectedErrors: []string{
-				`field 0.type: 0.type must be one of the following: "aggregate_metric_double", "alias", "histogram", "constant_keyword", "text", "match_only_text", "keyword", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "date", "date_nanos", "boolean", "binary", "integer_range", "float_range", "long_range", "double_range", "date_range", "ip_range", "group", "geo_point", "object", "ip", "nested", "flattened", "wildcard", "version", "unsigned_long"`,
+				`field 0.type: value must be one of 'aggregate_metric_double', 'alias', 'histogram', 'constant_keyword', 'text', 'match_only_text', 'keyword', 'long', 'integer', 'short', 'byte', 'double', 'float', 'half_float', 'scaled_float', 'date', 'date_nanos', 'boolean', 'binary', 'integer_range', 'float_range', 'long_range', 'double_range', 'date_range', 'ip_range', 'group', 'geo_point', 'object', 'ip', 'nested', 'flattened', 'wildcard', 'version', 'unsigned_long'`,
 			},
 		},
 		{
@@ -108,7 +108,7 @@ func TestValidateFields(t *testing.T) {
 				},
 			},
 			expectedErrors: []string{
-				`field 0.type: 0.type must be one of the following: "aggregate_metric_double", "alias", "histogram", "constant_keyword", "text", "match_only_text", "keyword", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "date", "date_nanos", "boolean", "binary", "integer_range", "float_range", "long_range", "double_range", "date_range", "ip_range", "group", "geo_point", "object", "ip", "nested", "flattened", "wildcard", "version", "unsigned_long"`,
+				`field 0.type: value must be one of 'aggregate_metric_double', 'alias', 'histogram', 'constant_keyword', 'text', 'match_only_text', 'keyword', 'long', 'integer', 'short', 'byte', 'double', 'float', 'half_float', 'scaled_float', 'date', 'date_nanos', 'boolean', 'binary', 'integer_range', 'float_range', 'long_range', 'double_range', 'date_range', 'ip_range', 'group', 'geo_point', 'object', 'ip', 'nested', 'flattened', 'wildcard', 'version', 'unsigned_long'`,
 			},
 		},
 		{
@@ -135,7 +135,7 @@ func TestValidateFields(t *testing.T) {
 				},
 			},
 			expectedErrors: []string{
-				`field 0: object_type is required`,
+				`field 0: missing property 'object_type'`,
 			},
 		},
 		{
@@ -155,7 +155,7 @@ func TestValidateFields(t *testing.T) {
 				},
 			},
 			expectedErrors: []string{
-				`field 0.type: 0.type must be one of the following: "group", "nested"`,
+				`field 0.type: value must be one of 'group', 'nested'`,
 			},
 		},
 		{
@@ -171,7 +171,7 @@ func TestValidateFields(t *testing.T) {
 				},
 			},
 			expectedErrors: []string{
-				`field 0.enabled: 0.enabled does not match: false`,
+				`field 0.enabled: value must be false`,
 			},
 		},
 		{
@@ -188,7 +188,7 @@ func TestValidateFields(t *testing.T) {
 				},
 			},
 			expectedErrors: []string{
-				`field 0.enabled: 0.enabled does not match: true`,
+				`field 0.enabled: value must be true`,
 			},
 		},
 		{
@@ -244,7 +244,7 @@ func TestValidateFields(t *testing.T) {
 				},
 			},
 			expectedErrors: []string{
-				`field 0.type: 0.type must be one of the following: "object"`,
+				`field 0.type: value must be 'object'`,
 			},
 		},
 
@@ -272,7 +272,7 @@ func TestValidateFields(t *testing.T) {
 				},
 			},
 			expectedErrors: []string{
-				`field 0: metrics is required`,
+				`field 0: missing property 'metrics'`,
 			},
 		},
 		{
@@ -286,7 +286,7 @@ func TestValidateFields(t *testing.T) {
 				},
 			},
 			expectedErrors: []string{
-				`field 0: default_metric is required`,
+				`field 0: missing property 'default_metric'`,
 			},
 		},
 		{
@@ -301,7 +301,7 @@ func TestValidateFields(t *testing.T) {
 				},
 			},
 			expectedErrors: []string{
-				`field 0.metrics.2: 0.metrics.2 must be one of the following: "min", "max", "sum", "value_count", "avg"`,
+				`field 0.metrics.2: value must be one of 'min', 'max', 'sum', 'value_count', 'avg'`,
 			},
 		},
 		{
@@ -383,7 +383,7 @@ func TestValidateFields(t *testing.T) {
 				},
 			},
 			expectedErrors: []string{
-				`field 0.type: 0.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
+				`field 0.type: value must be one of 'histogram', 'aggregate_metric_double', 'long', 'integer', 'short', 'byte', 'double', 'float', 'half_float', 'scaled_float', 'unsigned_long'`,
 			},
 		},
 		{
@@ -398,7 +398,7 @@ func TestValidateFields(t *testing.T) {
 				},
 			},
 			expectedErrors: []string{
-				`field 0: type is required`,
+				`field 0: missing property 'type'`,
 			},
 		},
 		{
@@ -431,7 +431,7 @@ func TestValidateFields(t *testing.T) {
 				},
 			},
 			expectedErrors: []string{
-				`field 0.type: 0.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
+				`field 0.type: value must be one of 'histogram', 'aggregate_metric_double', 'long', 'integer', 'short', 'byte', 'double', 'float', 'half_float', 'scaled_float', 'unsigned_long'`,
 			},
 		},
 
@@ -477,7 +477,7 @@ func TestValidateFields(t *testing.T) {
 				},
 			},
 			expectedErrors: []string{
-				`field 0.runtime: Invalid type. Expected: string, given: integer`,
+				`field 0.runtime: got number, want string`,
 			},
 		},
 		{

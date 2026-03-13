@@ -21,12 +21,15 @@ type FileSchema interface {
 // FileSchemaLoader loads schemas for files.
 type FileSchemaLoader interface {
 	// Load loads an schema from the given path.
-	Load(fs fs.FS, specPath string, opts FileSchemaLoadOptions) (FileSchema, error)
+	Load(specPath string, opts FileSchemaLoadOptions) (FileSchema, error)
+	// FS returns the spec filesystem this loader uses.
+	FS() fs.FS
+	// Version returns the spec version this loader was initialised with.
+	Version() semver.Version
 }
 
 // FileSchemaLoadOptions provides additional information for package loading.
 type FileSchemaLoadOptions struct {
 	ContentType *ContentType
 	Limits      LimitsSpec
-	SpecVersion semver.Version
 }
