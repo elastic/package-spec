@@ -261,6 +261,7 @@ spec:
               $ref: "#/definitions/index_template_setting_analysis"
             index:
               $ref: "#/definitions/index_template_setting_index"
+              unevaluatedProperties: false
             number_of_shards:
               $ref: "#/definitions/index_template_setting_number_of_shards"
             auto_expand_replicas:
@@ -468,7 +469,6 @@ spec:
                 type: string
     index_template_setting_index:
       type: object
-      additionalProperties: false
       properties:
         codec:
           description: >

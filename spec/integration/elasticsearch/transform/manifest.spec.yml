@@ -14,25 +14,16 @@ spec:
             analysis:
               $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_analysis"
             index:
-              type: object
-              additionalProperties: false
+              $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_index"
+              unevaluatedProperties: false
               properties:
-                codec:
-                  $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_index/properties/codec"
-                mapping:
-                  $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_index/properties/mapping"
                 mode:
                   description: Index mode for lookup indices.
                   type: string
                   enum:
                     - lookup
                 refresh_interval:
-                  description: >
-                    How often to perform a refresh operation, which makes recent changes to the index visible to search.
-                  type: string
-                  example: 1s
-                sort:
-                  $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_index/properties/sort"
+                  $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_refresh_interval"
                 number_of_shards:
                   $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_number_of_shards"
                 number_of_routing_shards:

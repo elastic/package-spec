@@ -42,11 +42,7 @@ spec:
       description: The version of the package specification format used by this package.
       $ref: "../integration/manifest.spec.yml#/definitions/version"
     name:
-      description: The name of the package.
-      type: string
-      pattern: '^[a-z0-9_]+$'
-      examples:
-      - apache
+      $ref: "../integration/manifest.spec.yml#/definitions/name"
     title:
       $ref: "../integration/manifest.spec.yml#/definitions/title"
     description:
