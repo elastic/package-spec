@@ -5,62 +5,89 @@
 package validator
 
 import (
+	"errors"
+	"fmt"
 	"io/fs"
 	"log"
+	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
-	"github.com/pkg/errors"
 
-	spec "github.com/elastic/package-spec/v2"
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
-	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v2/code/go/internal/loader"
-	"github.com/elastic/package-spec/v2/code/go/internal/packages"
-	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
-	"github.com/elastic/package-spec/v2/code/go/internal/validator/semantic"
+	spec "github.com/elastic/package-spec/v3"
+	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/loader"
+	"github.com/elastic/package-spec/v3/code/go/internal/packages"
+	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/v3/code/go/internal/validator/semantic"
+	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // Spec represents a package specification
 type Spec struct {
+	// version is the version requested, what is included in the package, possibly without prerelease tags.
 	version semver.Version
-	fs      fs.FS
+	// specVersion is the version of the spec actually loaded, what can include prerelease tags.
+	specVersion semver.Version
+	// fs contains the filesystem of the spec.
+	fs fs.FS
+
+	// WarningsAsErrors causes validation warnings to be reported as errors when true.
+	WarningsAsErrors bool
 }
 
-type validationRule func(pkg fspath.FS) ve.ValidationErrors
+type validationRule func(pkg fspath.FS) specerrors.ValidationErrors
 
 type validationRules []validationRule
+
+// GASpecCheckVersion represents minimum version to start checking for unreleased version of the spec
+var GASpecCheckVersion = semver.MustParse("3.0.1")
 
 // NewSpec creates a new Spec for the given version
 func NewSpec(version semver.Version) (*Spec, error) {
 	specVersion, err := spec.CheckVersion(version)
 	if err != nil {
-		return nil, errors.Wrapf(err, "could not load specification for version [%s]", version.String())
+		return nil, fmt.Errorf("could not load specification for version [%s]: %w", version.String(), err)
 	}
-	if specVersion.Prerelease() != "" {
-		log.Printf("Warning: package using an unreleased version of the spec (%s)", specVersion)
+
+	// With more current versions this is reported as a filterable validation error for GA packages.
+	if version.LessThan(GASpecCheckVersion) {
+		if specVersion.Prerelease() != "" {
+			log.Printf("Warning: package using an unreleased version of the spec (%s)", specVersion)
+		}
 	}
 
 	s := Spec{
-		version,
-		spec.FS(),
+		version:     version,
+		specVersion: *specVersion,
+		fs:          spec.FS(),
 	}
 
 	return &s, nil
 }
 
 // ValidatePackage validates the given Package against the Spec
-func (s Spec) ValidatePackage(pkg packages.Package) ve.ValidationErrors {
-	var errs ve.ValidationErrors
+func (s Spec) ValidatePackage(pkg packages.Package) specerrors.ValidationErrors {
+	var errs specerrors.ValidationErrors
 
 	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkg.Type)
 	if err != nil {
-		errs = append(errs, errors.Wrap(err, "could not read root folder spec file"))
+		errs = append(errs, specerrors.NewStructuredErrorf("could not read root folder spec file: %w", err))
 		return errs
 	}
 
+	if !s.version.LessThan(GASpecCheckVersion) && pkg.IsGA() {
+		if s.specVersion.Prerelease() != "" {
+			err := specerrors.NewStructuredError(
+				fmt.Errorf("file \"%s\": package with GA version (%s) is using an unreleased version of the spec (%s)", pkg.Path("manifest.yml"), pkg.Version, s.specVersion),
+				specerrors.CodeNonGASpecOnGAPackage)
+			errs = append(errs, err)
+		}
+	}
+
 	// Syntactic validations
-	validator := newValidator(rootSpec, &pkg)
+	validator := newValidator(rootSpec, &pkg, s.WarningsAsErrors)
 	errs = append(errs, validator.Validate()...)
 
 	// Semantic validations
@@ -78,39 +105,95 @@ func substringInSlice(str string, list []string) bool {
 	return false
 }
 
-func processErrors(errs ve.ValidationErrors) ve.ValidationErrors {
-	// Rename unclear error messages and filter out redundant errors
-	var processedErrs ve.ValidationErrors
+func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors {
+	var processedErrs specerrors.ValidationErrors
+
+	// Rename unclear error messages
 	msgTransforms := []struct {
-		original string
-		new      string
+		matcher *regexp.Regexp
+		new     string
 	}{
-		{"Must not validate the schema (not)", "Must not be present"},
+		{
+			matcher: regexp.MustCompile(`Must not validate the schema \(not\)`),
+			new:     "Must not be present",
+		},
+		{
+			matcher: regexp.MustCompile("secret is required"),
+			new:     "variable identified as possible secret, secret parameter required to be set to true or false",
+		},
+		{
+			matcher: regexp.MustCompile(`(field processors.[0-9]+.rename): if is required`),
+			new:     "%s: rename \"message\" to \"event.original\" processor requires if: 'ctx.event?.original == null'",
+		},
+		{
+			matcher: regexp.MustCompile(`(field processors.[0-9]+): remove is required`),
+			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
+		},
+		{
+			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.field(.[0-9]+)?): processors.[0-9]+.remove.field(.[0-9]+)? does not match: "message"`),
+			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
+		},
+		{
+			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.if): processors.[0-9]+.remove.if does not match: "ctx\.event\?\.original != null"`),
+			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null'",
+		},
+		{
+			matcher: regexp.MustCompile(`(field processors.[0-9]+.remove): (ignore_missing|if) is required`),
+			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null'",
+		},
 	}
+
+	// Filter out redundant errors
 	redundant := []string{
 		"Must validate \"then\" as \"if\" was valid",
 		"Must validate \"else\" as \"if\" was not valid",
 		"Must validate all the schemas (allOf)",
 		"Must validate at least one schema (anyOf)",
 		"Must validate one and only one schema (oneOf)",
+		"At least one of the items must match",
 	}
+
+	// Add error code to specific errors
+	addErrorCode := []struct {
+		matcher *regexp.Regexp
+		code    string
+	}{
+		{
+			matcher: regexp.MustCompile(`rename "message" to "event.original" processor`),
+			code:    specerrors.MessageRenameToEventOriginalValidation,
+		},
+	}
+
 	for _, e := range errs {
 		for _, msg := range msgTransforms {
-			if strings.Contains(e.Error(), msg.original) {
-				processedErrs = append(processedErrs, errors.New(strings.Replace(e.Error(), msg.original, msg.new, 1)))
-				continue
+			if match := msg.matcher.FindStringSubmatch(e.Error()); len(match) > 1 {
+				e = specerrors.NewStructuredError(
+					errors.New(strings.Replace(e.Error(), match[0], fmt.Sprintf(msg.new, match[1]), 1)),
+					specerrors.UnassignedCode)
+			} else if msg.matcher.MatchString(e.Error()) {
+				e = specerrors.NewStructuredError(
+					errors.New(strings.Replace(e.Error(), msg.matcher.FindString(e.Error()), msg.new, 1)),
+					specerrors.UnassignedCode)
 			}
-			if substringInSlice(e.Error(), redundant) {
-				continue
-			}
-			processedErrs = append(processedErrs, e)
 		}
+		for _, transform := range addErrorCode {
+			if transform.matcher.MatchString(e.Error()) {
+				e = specerrors.NewStructuredError(e, transform.code)
+			}
+		}
+		if substringInSlice(e.Error(), redundant) {
+			continue
+		}
+		processedErrs = append(processedErrs, e)
 	}
 
 	return processedErrs
 }
 
 func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules {
+	warnOn := func(validation func(fsys fspath.FS) specerrors.ValidationErrors) func(fspath.FS) specerrors.ValidationErrors {
+		return semantic.WarnOn(s.WarningsAsErrors, validation)
+	}
 	rulesDef := []struct {
 		fn    validationRule
 		since *semver.Version
@@ -120,19 +203,43 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateVersionIntegrity},
 		{fn: semantic.ValidateChangelogLinks},
 		{fn: semantic.ValidatePrerelease},
-		{fn: semantic.ValidateMinimumKibanaVersion},
+		{fn: warnOn(semantic.ValidateMinimumKibanaVersion), until: semver.MustParse("3.0.0")},
+		{fn: semantic.ValidateMinimumKibanaVersion, since: semver.MustParse("3.0.0")},
 		{fn: semantic.ValidateFieldGroups},
-		{fn: semantic.ValidateFieldsLimits(rootSpec.MaxFieldsPerDataStream())},
-		{fn: semantic.ValidateUniqueFields, since: semver.MustParse("2.0.0")},
-		{fn: semantic.ValidateDimensionFields},
-		{fn: semantic.ValidateDateFields},
-		{fn: semantic.ValidateRequiredFields},
-		{fn: semantic.ValidateExternalFieldsWithDevFolder},
-		{fn: semantic.ValidateVisualizationsUsedByValue, types: []string{"integration"}},
+		{fn: semantic.ValidateFieldsLimits(rootSpec.MaxFieldsPerDataStream()), types: []string{"integration", "input"}},
+		{fn: semantic.ValidateUniqueFields, since: semver.MustParse("2.0.0"), types: []string{"integration", "input"}},
+		{fn: semantic.ValidateDimensionFields, types: []string{"integration", "input"}},
+		{fn: semantic.ValidateDateFields, types: []string{"integration", "input"}},
+		{fn: semantic.ValidateRequiredFields, types: []string{"integration", "input"}},
+		{fn: semantic.ValidateExternalFieldsWithDevFolder, types: []string{"integration", "input"}},
+		{fn: warnOn(semantic.ValidateVisualizationsUsedByValue), types: []string{"integration", "content"}, until: semver.MustParse("3.0.0")},
+		{fn: semantic.ValidateVisualizationsUsedByValue, types: []string{"integration", "content"}, since: semver.MustParse("3.0.0")},
 		{fn: semantic.ValidateILMPolicyPresent, since: semver.MustParse("2.0.0"), types: []string{"integration"}},
 		{fn: semantic.ValidateProfilingNonGA, types: []string{"integration"}},
-		{fn: semantic.ValidateKibanaObjectIDs, types: []string{"integration"}},
+		{fn: semantic.ValidateKibanaObjectIDs, types: []string{"integration", "content"}},
 		{fn: semantic.ValidateRoutingRulesAndDataset, types: []string{"integration"}, since: semver.MustParse("2.9.0")},
+		{fn: semantic.ValidateKibanaNoDanglingObjectIDs, since: semver.MustParse("3.0.0")},
+		{fn: semantic.ValidateKibanaFilterPresent, since: semver.MustParse("3.0.0")},
+		{fn: semantic.ValidateKibanaNoLegacyVisualizations, types: []string{"integration", "content"}, since: semver.MustParse("3.0.0")},
+		{fn: semantic.ValidateDimensionsPresent, types: []string{"integration"}, since: semver.MustParse("3.0.1")},
+		{fn: semantic.ValidateCapabilitiesRequired, since: semver.MustParse("2.10.0")}, // capabilities definition was added in spec version 2.10.0
+		{fn: semantic.ValidateRequiredVarGroups},
+		{fn: semantic.ValidateVarGroups, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateDocsStructure},
+		{fn: semantic.ValidateDeploymentModes, types: []string{"integration"}},
+		{fn: semantic.ValidateDurationVariables, since: semver.MustParse("3.5.0")},
+		{fn: semantic.ValidateInputPackagesPolicyTemplates, types: []string{"input"}},
+		{fn: semantic.ValidateInputDynamicSignalTypes, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateMinimumAgentVersion},
+		{fn: semantic.ValidateIntegrationPolicyTemplates, types: []string{"integration"}},
+		{fn: semantic.ValidatePipelineTags, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateStaticHandlebarsFiles, types: []string{"integration", "input"}},
+		{fn: semantic.ValidateKibanaTagDuplicates},
+		{fn: semantic.ValidatePipelineOnFailure, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateIntegrationInputsDeprecation, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateDeprecatedReplacedBy, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidatePackageReferences, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateTestPackageRequirements, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
 	}
 
 	var validationRules validationRules
@@ -144,7 +251,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 			continue
 		}
 
-		if rule.types != nil && !stringSliceContains(rule.types, pkgType) {
+		if rule.types != nil && !slices.Contains(rule.types, pkgType) {
 			continue
 		}
 
@@ -154,17 +261,8 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 	return validationRules
 }
 
-func stringSliceContains(elems []string, v string) bool {
-	for _, a := range elems {
-		if a == v {
-			return true
-		}
-	}
-	return false
-}
-
-func (vr validationRules) validate(fsys fspath.FS) ve.ValidationErrors {
-	var errs ve.ValidationErrors
+func (vr validationRules) validate(fsys fspath.FS) specerrors.ValidationErrors {
+	var errs specerrors.ValidationErrors
 	for _, validationRule := range vr {
 		err := validationRule(fsys)
 		errs.Append(err)

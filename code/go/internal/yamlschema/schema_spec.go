@@ -5,12 +5,13 @@
 package yamlschema
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 
 	"github.com/Masterminds/semver/v3"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/specpatch"
+	"github.com/elastic/package-spec/v3/code/go/internal/specpatch"
 )
 
 type itemSchemaSpec struct {
@@ -27,32 +28,21 @@ func (i *itemSchemaSpec) resolve(target semver.Version) (map[string]interface{},
 		// Nothing to do.
 		return i.Spec, nil
 	}
+
 	spec, err := specpatch.ResolvePatch(i.Spec, patchJSON)
 	if err != nil {
 		return nil, fmt.Errorf("failed to apply patch: %w", err)
 	}
 
+	// Doesn't seem to be needed to use a decoder with UseNumber here, but it doesn't do
+	// any harm, and gojsonschema expects the use of `json.Number`.
+	dec := json.NewDecoder(bytes.NewReader(spec))
+	dec.UseNumber()
+
 	var resolved map[string]interface{}
-	err = json.Unmarshal(spec, &resolved)
+	err = dec.Decode(&resolved)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unmarshal resolved spec: %w", err)
 	}
 	return resolved, nil
-}
-
-func (i *itemSchemaSpec) patchForVersion(target semver.Version) ([]byte, error) {
-	var patch []any
-	for _, version := range i.Versions {
-		if sv, err := semver.NewVersion(version.Before); err != nil {
-			return nil, err
-		} else if !target.LessThan(sv) {
-			continue
-		}
-
-		patch = append(patch, version.Patch...)
-	}
-	if len(patch) == 0 {
-		return nil, nil
-	}
-	return json.Marshal(patch)
 }

@@ -11,8 +11,8 @@ import (
 
 	"github.com/creasty/defaults"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
-	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 const (
@@ -81,6 +81,11 @@ func (s *ItemSpec) DevelopmentFolder() bool {
 	return s.itemSpec.DevelopmentFolder
 }
 
+// AllowLink returns true if the item allows links.
+func (s *ItemSpec) AllowLink() bool {
+	return s.itemSpec.AllowLink
+}
+
 // ForbiddenPatterns returns the list of forbidden patterns for the name of this item.
 func (s *ItemSpec) ForbiddenPatterns() []string {
 	return s.itemSpec.ForbiddenPatterns
@@ -117,7 +122,7 @@ func (s *ItemSpec) Type() string {
 }
 
 // ValidateSchema validates if the indicated file complies with the schema of the item.
-func (s *ItemSpec) ValidateSchema(fsys fs.FS, itemPath string) ve.ValidationErrors {
+func (s *ItemSpec) ValidateSchema(fsys fs.FS, itemPath string) specerrors.ValidationErrors {
 	return s.itemSpec.ValidateSchema(fsys, itemPath)
 }
 
@@ -135,6 +140,7 @@ type folderItemSpec struct {
 	AdditionalContents bool              `json:"additionalContents" yaml:"additionalContents"`
 	Contents           []*folderItemSpec `json:"contents" yaml:"contents"`
 	DevelopmentFolder  bool              `json:"developmentFolder" yaml:"developmentFolder"`
+	AllowLink          bool              `json:"allowLink" yaml:"allowLink"`
 
 	// As it is required to be inline both in yaml and json, this struct must be public embedded field
 	SpecLimits `yaml:",inline"`
@@ -202,7 +208,7 @@ func (l *SpecLimits) update(o SpecLimits) {
 	}
 }
 
-func (s *folderItemSpec) ValidateSchema(fsys fs.FS, itemPath string) ve.ValidationErrors {
+func (s *folderItemSpec) ValidateSchema(fsys fs.FS, itemPath string) specerrors.ValidationErrors {
 	if s.schema == nil {
 		return nil
 	}

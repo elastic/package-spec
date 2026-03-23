@@ -5,6 +5,7 @@
 package validator
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path"
@@ -12,12 +13,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/errors"
-	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
-
 	cp "github.com/otiai10/copy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
+	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 func TestValidateFile(t *testing.T) {
@@ -28,19 +29,42 @@ func TestValidateFile(t *testing.T) {
 		invalidPkgFilePath  string
 		expectedErrContains []string
 	}{
-		"good":                               {},
-		"good_v2":                            {},
-		"good_input":                         {},
-		"deploy_custom_agent":                {},
-		"deploy_custom_agent_multi_services": {},
-		"deploy_docker":                      {},
-		"deploy_terraform":                   {},
-		"time_series":                        {},
-		"missing_data_stream":                {},
-		"icons_dark_mode":                    {},
-		"ignored_malformed":                  {},
-		"custom_ilm_policy":                  {},
-		"profiling_symbolizer":               {},
+		"good":                                   {},
+		"good_v2":                                {},
+		"good_v3":                                {},
+		"good_var_groups":                        {},
+		"good_input":                             {},
+		"good_input_otel":                        {},
+		"good_input_dynamic_signal_type":         {},
+		"good_input_profiles":                    {},
+		"good_input_template_paths":              {},
+		"good_integration_template_paths":        {},
+		"good_content":                           {},
+		"good_content_with_dev":                  {},
+		"good_integration_with_dev_tools":        {},
+		"good_lookup_index":                      {},
+		"good_alert_rule_templates":              {},
+		"good_requires":                          {},
+		"good_package_reference_policy_template": {},
+		"deploy_custom_agent":                    {},
+		"deploy_custom_agent_multi_services":     {},
+		"deploy_docker":                          {},
+		"deploy_terraform":                       {},
+		"missing_data_stream":                    {},
+		"icons_dark_mode":                        {},
+		"ignored_malformed":                      {},
+		"custom_ilm_policy":                      {},
+		"profiling_symbolizer":                   {},
+		"logs_synthetic_mode":                    {},
+		"kibana_configuration_links":             {},
+		"with_links":                             {},
+		"bad_duration_vars": {
+			"manifest.yml",
+			[]string{
+				`field vars.1: Must not be present`,
+				`field vars.2: Must not be present`,
+			},
+		},
 		"bad_additional_content": {
 			"bad-bad",
 			[]string{
@@ -79,7 +103,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_github_owner": {
 			"manifest.yml",
 			[]string{
-				"field owner.github: Does not match pattern '^(([a-zA-Z0-9-]+)|([a-zA-Z0-9-]+\\/[a-zA-Z0-9-]+))$'",
+				"field owner.github: Does not match pattern '^(([a-zA-Z0-9-_]+)|([a-zA-Z0-9-_]+\\/[a-zA-Z0-9-_]+))$'",
 			},
 		},
 		"bad_owner_type": {
@@ -88,47 +112,16 @@ func TestValidateFile(t *testing.T) {
 				`field owner.type: owner.type must be one of the following: "elastic", "partner", "community"`,
 			},
 		},
+		"bad_owner_type_missing": {
+			"manifest.yml",
+			[]string{
+				`field owner: type is required`,
+			},
+		},
 		"missing_version": {
 			"manifest.yml",
 			[]string{
 				"package version undefined in the package manifest file",
-			},
-		},
-		"bad_aggregate_metric_double": {
-			"data_stream/foo/fields/fields.yml",
-			[]string{
-				`field 0: metrics is required`,
-				`field 1: default_metric is required`,
-				`field 2.metrics.2: 2.metrics.2 must be one of the following: "min", "max", "sum", "value_count", "avg"`,
-				`field 3: Must not be present`,
-				`field 3: Must not be present`,
-			},
-		},
-		"bad_time_series": {
-			"data_stream/example/fields/fields.yml",
-			[]string{
-				`field 0.fields.4.type: 0.fields.4.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
-				`field 0.fields.5: type is required`,
-				`field 0.fields.8.type: 0.fields.8.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
-				"field \"example.agent.call_duration\" of type histogram can't be a dimension, allowed types for dimensions: constant_keyword, keyword, long, integer, short, byte, double, float, half_float, scaled_float, unsigned_long, ip",
-			},
-		},
-		"bad_metric_type_fields": {
-			"data_stream/example/fields/fields.yml",
-			[]string{
-				`field 0.fields.4.type: 0.fields.4.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
-				`field 0.fields.5: type is required`,
-				`field 0.fields.6.type: 0.fields.6.type must be one of the following: "object"`,
-				`field 0.fields.7.object_type: 0.fields.7.object_type must be one of the following: "histogram", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
-				`field 0.fields.8.type: 0.fields.8.type must be one of the following: "histogram", "aggregate_metric_double", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "unsigned_long"`,
-				"field \"example.agent.call_duration\" of type histogram can't be a dimension, allowed types for dimensions: constant_keyword, keyword, long, integer, short, byte, double, float, half_float, scaled_float, unsigned_long, ip",
-			},
-		},
-		"bad_fields": {
-			"data_stream/foo/fields/fields.yml",
-			[]string{
-				`field 0.type: 0.type must be one of the following: "aggregate_metric_double", "alias", "histogram", "constant_keyword", "text", "match_only_text", "keyword", "long", "integer", "short", "byte", "double", "float", "half_float", "scaled_float", "date", "date_nanos", "boolean", "binary", "integer_range", "float_range", "long_range", "double_range", "date_range", "ip_range", "group", "geo_point", "object", "ip", "nested", "flattened", "wildcard", "version", "unsigned_long"`,
-				`field "my_custom_date" of type keyword can't set date_format. date_format is allowed for date field type only`,
 			},
 		},
 		"deploy_custom_agent_invalid_property": {
@@ -159,8 +152,19 @@ func TestValidateFile(t *testing.T) {
 			"data_stream/foo_stream/manifest.yml",
 			[]string{
 				"field streams.0.vars.1: options is required",
-				"field streams.0.vars.2.options: Invalid type. Expected: array, given: null",
 				"field streams.0.vars.3: Must not be present",
+			},
+		},
+		"bad_policy_api_format": {
+			"data_stream/foo/_dev/test/system/test-default-config.yml",
+			[]string{
+				"field policy_api_format: policy_api_format must be one of the following: \"legacy\", \"simplified\"",
+			},
+		},
+		"bad_skip_ignored_fields": {
+			"data_stream/foo/_dev/test/system/test-default-config.yml",
+			[]string{
+				"field skip_ignored_fields: Invalid type. Expected: array, given: boolean",
 			},
 		},
 		"bad_profiling_symbolizer": {
@@ -169,19 +173,17 @@ func TestValidateFile(t *testing.T) {
 				"profiling data type cannot be used in GA packages",
 			},
 		},
-		"bad_runtime_fields": {
-			"data_stream/foo/fields/fields.yml",
-			[]string{
-				`field 0: Must not be present`,
-				`field 1.runtime: Invalid type. Expected: string, given: integer`,
-				`field 2: Must not be present`,
-				`field 3: Must not be present`,
-			},
-		},
 		"bad_secret_vars": {
 			"manifest.yml",
 			[]string{
 				"field vars.0: Additional property secret is not allowed",
+			},
+		},
+		"bad_secret_vars_v3": {
+			"manifest.yml",
+			[]string{
+				"field vars.0: variable identified as possible secret, secret parameter required to be set to true or false",
+				"field vars.1: variable identified as possible secret, secret parameter required to be set to true or false",
 			},
 		},
 		"bad_lifecycle": {
@@ -193,28 +195,360 @@ func TestValidateFile(t *testing.T) {
 		"bad_saved_object_tags": {
 			"kibana/tags.yml",
 			[]string{
-				`field 0.asset_types.11: 0.asset_types.11 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
-				`field 0.asset_types.12: 0.asset_types.12 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
+				`field 0.asset_types.11: 0.asset_types.11 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "alerting_rule_template", "slo_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
+				`field 0.asset_types.12: 0.asset_types.12 must be one of the following: "dashboard", "visualization", "search", "map", "lens", "index_pattern", "security_rule", "csp_rule_template", "alerting_rule_template", "slo_template", "ml_module", "osquery_pack_asset", "osquery_saved_query"`,
 				`field 1.asset_ids.1: Invalid type. Expected: string, given: integer`,
 				`field 2: text is required`,
 				`field 3: asset_types is required`,
+			},
+		},
+		"bad_dotted_fields": {
+			"manifest.yml",
+			[]string{
+				"field conditions: Additional property elastic.subscription is not allowed",
+				"field conditions: Additional property kibana.version is not allowed",
+			},
+		},
+		"bad_dangling_object_ids": {
+			"kibana/dashboard/bad_dangling_object_ids-82273ffe-6acc-4f2f-bbee-c1004abba63d.json",
+			[]string{
+				`dangling reference found: bad_dangling_object_ids-8287a5d5-1576-4f3a-83c4-444e9058439c (search) (SVR00003)`,
+			},
+		},
+		"kibana_legacy_visualizations": {
+			"kibana/dashboard/kibana_legacy_visualizations-c36e9b90-596c-11ee-adef-4fe896364076.json",
+			[]string{
+				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"TSVB time series\" (timeseries, TSVB)",
+				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"TSVB gauge\" (gauge, TSVB)",
+				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Aggs-based table\" (table, Aggs-based)",
+				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Aggs-based tag cloud\" (tagcloud, Aggs-based)",
+				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"\" (heatmap, Aggs-based)",
+				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Timelion time series\" (timelion, Timelion)",
+			},
+		},
+		"bad_deployment_mode": {
+			"manifest.yml",
+			[]string{
+				`field policy_templates.0.deployment_modes: Additional property default is not allowed`,
+				`field policy_templates.0.inputs.0.vars.0.hide_in_deployment_modes.0: policy_templates.0.inputs.0.vars.0.hide_in_deployment_modes.0 must be one of the following: "agentless"`,
+			},
+		},
+		"bad_deployment_mode_without_identities": {
+			"manifest.yml",
+			[]string{
+				`field policy_templates.0.deployment_modes.agentless: organization is required`,
+				`field policy_templates.0.deployment_modes.agentless: division is required`,
+				`field policy_templates.0.deployment_modes.agentless: team is required`,
+			},
+		},
+		"bad_deployment_mode_resources": {
+			"manifest.yml",
+			[]string{
+				`field policy_templates.0.deployment_modes.agentless.resources.requests: Additional property disk is not allowed`,
+			},
+		},
+		"bad_requires": {
+			"manifest.yml",
+			[]string{
+				`field requires.content.0.package: Does not match pattern '^[a-z0-9_]+$'`,
+				`field requires.input.0: version is required`,
+				`field requires.input.1.version: version "^1.0.0" for package "filelog_otel" must be a valid semantic version, constraints are not allowed`,
+			},
+		},
+		"bad_requires_old_version": {
+			"manifest.yml",
+			[]string{
+				`field (root): Additional property requires is not allowed`,
+			},
+		},
+		"bad_package_field_old_version": {
+			"manifest.yml",
+			[]string{
+				`field policy_templates.0.inputs.0: type is required`,
+				`field policy_templates.0.inputs.0: Additional property package is not allowed`,
+			},
+		},
+		"bad_datastream_package_old_version": {
+			"data_stream/logs/manifest.yml",
+			[]string{
+				`field streams.0: input is required`,
+				`field streams.0: Additional property package is not allowed`,
+			},
+		},
+		"bad_package_not_in_requires": {
+			"manifest.yml",
+			[]string{
+				`policy_templates[0].inputs[0] references package "missing_package" which is not listed in requires section`,
+			},
+		},
+		"bad_test_requires": {
+			"_dev/test/config.yml",
+			[]string{
+				`policy.requires[0] references package "missing_package" which is not listed in manifest requires section`,
+				`system.requires[0] package "sql_input" version "1.5.0" does not satisfy constraint "2.0.0"`,
+			},
+		},
+		"bad_input_dataset_vars": {
+			"_dev/test/policy/test-vars.yml",
+			[]string{
+				`field vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
+			},
+		},
+		"bad_integration_dataset_vars": {
+			"data_stream/datasets/_dev/test/system/test-vars-config.yml",
+			[]string{
+				`field vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
+				`field data_stream.vars.data_stream.dataset: Does not match pattern '^[a-zA-Z0-9]+[a-zA-Z0-9\._]*$'`,
+			},
+		},
+		"bad_missing_capability_security_rules": {
+			"manifest.yml",
+			[]string{
+				"found security rule assets in package but security capability is missing",
+			},
+		},
+		"bad_policy_template_behavior": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates_behavior: policy_templates_behavior must be one of the following: \"all\"",
+			},
+		},
+		"bad_configuration_links": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0.configuration_links: Array must have at least 1 items",
+				"field policy_templates.1.configuration_links.0: url is required",
+				"field policy_templates.1.configuration_links.1.url: Does not match pattern '^(http(s)?://|kbn:/)'",
+				"field policy_templates.1.configuration_links.2.url: Does not match pattern '^(http(s)?://|kbn:/)'",
+			},
+		},
+		"bad_required_vars": {
+			"manifest.yml",
+			[]string{
+				`field policy_templates.0.inputs.0.required_vars.password.1: name is required`,
+				`required var "api_key" in optional group is defined as always required`,
+				`required var "password" in optional group is not defined`,
+			},
+		},
+		"bad_required_vars_data_streams": {
+			"data_stream/test/manifest.yml",
+			[]string{
+				`field streams.0.required_vars.empty_name.0: name is required`,
+				`required var "api_key" in optional group is defined as always required`,
+				`required var "password" in optional group is not defined`,
+			},
+		},
+		"bad_var_groups_missing_var": {
+			"manifest.yml",
+			[]string{
+				`var "non_existent_var" referenced in var_group "credential_type" option "direct_access_key" is not defined`,
+			},
+		},
+		"bad_var_groups_duplicate_name": {
+			"manifest.yml",
+			[]string{
+				`duplicate option name "direct_access_key" in var_group "credential_type"`,
+			},
+		},
+		"bad_var_groups_required_var_in_required_group": {
+			"manifest.yml",
+			[]string{
+				`var "access_key_id" in required var_group "credential_type" should not have required: true (requirement is inferred from var_group)`,
+			},
+		},
+		"bad_var_groups_required_var_in_optional_group": {
+			"manifest.yml",
+			[]string{
+				`var "access_key_id" in non-required var_group "credential_type" should not have required: true (var_group is optional)`,
+			},
+		},
+		"bad_input_deployment_modes": {
+			"manifest.yml",
+			[]string{
+				`field policy_templates.0.inputs.0.deployment_modes.0: policy_templates.0.inputs.0.deployment_modes.0 must be one of the following: "default", "agentless"`,
+				`field policy_templates.0.inputs.1.deployment_modes: Array must have at least 1 items`,
+				`field policy_templates.0.inputs.2.deployment_modes: array items[0,1] must be unique`,
+				`input "test/metrics" in policy template "test" specifies unsupported deployment mode "invalid_mode"`,
+				`input "test/system" in policy template "test" specifies unsupported deployment mode "agentless"`,
+				`policy template "unsupported_modes" enables deployment mode "default" but no input supports this mode`,
+			},
+		},
+		"bad_discovery_fields": {
+			"manifest.yml",
+			[]string{
+				"field discovery.fields.0.name: Invalid type. Expected: string, given: integer",
+				"field discovery.fields.1: name is required",
+				"field discovery.fields.2: name is required",
+				"field discovery.fields.2: Additional property value is not allowed",
+				"field discovery.datasets.0.name: Invalid type. Expected: string, given: integer",
+				"field discovery.datasets.1: Additional property foo is not allowed",
+			},
+		},
+		"bad_input_otel_old_version": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0.input: Must not be present",
+			},
+		},
+		"bad_input_profiles_non_otel": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0.input: policy_templates.0.input must be one of the following: \"otelcol\"",
+			},
+		},
+		"bad_input_dynamic_signal_types_non_otel": {
+			"manifest.yml",
+			[]string{
+				"policy template \"sample\": dynamic_signal_types is only allowed when input is 'otelcol', got 'logfile'",
+			},
+		},
+		"bad_integration_dynamic_signal_types": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0: Additional property dynamic_signal_types is not allowed",
+			},
+		},
+		"bad_integration_dynamic_signal_types_non_otel": {
+			"manifest.yml",
+			[]string{
+				"policy template \"sample\": input type \"logfile\": dynamic_signal_types is only allowed when input is 'otelcol'",
+			},
+		},
+		"bad_integration_otel_old_version": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0.inputs.0.type: Must not be present",
+			},
+		},
+		"bad_input_dynamic_signal_types_old_version": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0: Additional property dynamic_signal_types is not allowed",
+			},
+		},
+		"bad_input_dynamic_signal_type_with_type": {
+			"manifest.yml",
+			[]string{
+				"policy template \"otel_logs\": type field must not be set when dynamic_signal_types is true",
+			},
+		},
+		"bad_input_template_path": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0: template_path is required",
+				"policy template \"sql_query\" references template_path \"\": template_path is required for input type packages",
+			},
+		},
+		"bad_input_both_template_path": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0: Must not be present",
+				"policy template \"sample\" references template_path \"input.yml.hbs\": template file not found",
+			},
+		},
+		"bad_agent_version_v3": {
+			"manifest.yml",
+			[]string{
+				"invalid agent.version condition: improper constraint: version",
+			},
+		},
+		"bad_integration_stream_template_path": {
+			"manifest.yml",
+			[]string{
+				"policy template \"sample\" references input template_path: error validating input from streams \"logfile\": template file not found",
+			},
+		},
+		"bad_integration_stream_template_path_default": {
+			"manifest.yml",
+			[]string{
+				"policy template \"sample\" references input template_path: error validating input from streams \"logfile\": template file not found",
+			},
+		},
+		"bad_integration_input_template_path": {
+			"manifest.yml",
+			[]string{
+				"policy template \"sample\" references input template_path: error validating input \"logfile\": template file not found",
+			},
+		},
+		"bad_esql_view_content": {
+			"elasticsearch/esql_view/view.yml",
+			[]string{"field query: Invalid type. Expected: string, given: null"},
+		},
+		"bad_esql_view_integration": {
+			"elasticsearch/esql_view/view.yml",
+			[]string{"field query: Invalid type. Expected: string, given: null"},
+		},
+		"bad_content_duplicate_tags": {
+			"kibana/tags.yml",
+			[]string{"duplicate tag name 'Tag One' found (SVR00007)"},
+		},
+		"bad_kibana_tag_duplicate": {
+			"kibana/tag/bad_tag-security-solution-default.json",
+			[]string{"tag name 'Security Solution' is already defined in tags.yml (SVR00007)"},
+		},
+		"deprecated_integration":              {},
+		"deprecated_input":                    {},
+		"deprecated_content":                  {},
+		"deprecated_integration_policy_input": {},
+		"deprecated_integration_policy":       {},
+		"deprecated_integration_stream_var":   {},
+		"good_migrate_from":                   {},
+		"bad_migrate_from": {
+			"manifest.yml",
+			[]string{`field policy_templates.0.inputs.0: Additional property migrate_from is not allowed`},
+		},
+		"bad_deprecation_description": {
+			"manifest.yml",
+			[]string{"field deprecated.description: Invalid type. Expected: string, given: null"},
+		},
+		"bad_deprecation_since": {
+			"manifest.yml",
+			[]string{"field deprecated: since is required"},
+		},
+		"bad_deprecated_integration_policy_input": {
+			"manifest.yml",
+			[]string{"all inputs are deprecated but the integration package is not marked as deprecated"},
+		},
+		"good_deployer_system_benchmark": {},
+		"bad_deployer_system_benchmark": {
+			"_dev/benchmark/system/alert-benchmark.yml",
+			[]string{
+				"field deployer: deployer must be one of the following: \"docker\", \"tf\", \"k8s\"",
+			},
+		},
+		"bad_deployer_system_test": {
+			"data_stream/foo/_dev/test/system/test-default-config.yml",
+			[]string{
+				"field deployer: deployer must be one of the following: \"docker\", \"tf\", \"k8s\"",
 			},
 		},
 	}
 
 	for pkgName, test := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 			errPrefix := fmt.Sprintf("file \"%s/%s\" is invalid: ", pkgRootPath, test.invalidPkgFilePath)
 
 			errs := ValidateFromPath(pkgRootPath)
+			if verrs, ok := errs.(specerrors.ValidationErrors); ok {
+				filterConfig, err := specerrors.LoadConfigFilter(os.DirFS(pkgRootPath))
+				if !errors.Is(err, os.ErrNotExist) {
+					filter := specerrors.NewFilter(filterConfig)
+					result, err := filter.Run(verrs)
+					require.NoError(t, err)
+					assert.Empty(t, result.UnusedProcessors, "There are unused exclusion checks in the validation.yml file")
+					errs = result.Processed
+				}
+			}
+
 			if test.expectedErrContains == nil {
 				require.NoError(t, errs)
 			} else {
 				require.Error(t, errs)
-				vErrs, ok := errs.(errors.ValidationErrors)
+				vErrs, ok := errs.(specerrors.ValidationErrors)
 				if ok {
-					require.Len(t, errs, len(test.expectedErrContains))
+					assert.Len(t, errs, len(test.expectedErrContains))
 					var errMessages []string
 					for _, vErr := range vErrs {
 						errMessages = append(errMessages, vErr.Error())
@@ -254,10 +588,27 @@ func TestValidateItemNotAllowed(t *testing.T) {
 				"another-package-visualization.json",
 			},
 		},
+		"bad_nested_knowledge_base": {
+			"docs/knowledge_base": []string{
+				"nested_dir",
+				"file.txt",
+			},
+		},
+		"bad_alert_rule_templates": {
+			"kibana": []string{
+				"alerting_rule_template",
+			},
+		},
+		"bad_content_dev_deploy_variants": {
+			"_dev": []string{
+				"deploy",
+			},
+		},
 	}
 
 	for pkgName, invalidItemsPerFolder := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			requireErrorMessage(t, pkgName, invalidItemsPerFolder, "item [%s] is not allowed in folder [%s/%s]")
 		})
 	}
@@ -274,6 +625,7 @@ func TestValidateItemNotExpected(t *testing.T) {
 
 	for pkgName, invalidItemsPerFolder := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			requireErrorMessage(t, pkgName, invalidItemsPerFolder, "item [%s] is not allowed in folder [%s/%s]")
 		})
 	}
@@ -293,11 +645,12 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 
 	for pkgName, invalidItemsPerFolder := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 
 			errs := ValidateFromPath(pkgRootPath)
 			require.Error(t, errs)
-			vErrs, ok := errs.(errors.ValidationErrors)
+			vErrs, ok := errs.(specerrors.ValidationErrors)
 			require.True(t, ok)
 
 			var errMessages []string
@@ -333,9 +686,10 @@ func TestValidateBadRuleIDs(t *testing.T) {
 
 	for pkgName, expectedError := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			require.Error(t, errs)
-			vErrs, ok := errs.(errors.ValidationErrors)
+			vErrs, ok := errs.(specerrors.ValidationErrors)
 			require.True(t, ok)
 
 			var errMessages []string
@@ -349,11 +703,14 @@ func TestValidateBadRuleIDs(t *testing.T) {
 
 func TestValidateMissingRequiredFields(t *testing.T) {
 	tests := map[string][]string{
-		"good":    {},
-		"good_v2": {},
+		"good":       {},
+		"good_v2":    {},
+		"good_input": {},
 		"missing_required_fields": {
 			`expected type "constant_keyword" for required field "data_stream.dataset", found "keyword" in "../../../../test/packages/missing_required_fields/data_stream/foo/fields/base-fields.yml"`,
 			`expected field "data_stream.type" with type "constant_keyword" not found in datastream "foo"`,
+			// `expected field "data_stream.namespace" with type "constant_keyword" not found in transform "good_example_abc_1"`,
+			// `expected type "date" for required field "@timestamp", found "long" in "../../../../test/packages/missing_required_fields/elasticsearch/transform/good_example_abc_1/fields/base-fields.yml"`,
 		},
 		"missing_required_fields_input": {
 			`expected type "constant_keyword" for required field "data_stream.dataset", found "keyword" in "../../../../test/packages/missing_required_fields_input/fields/base-fields.yml"`,
@@ -363,6 +720,7 @@ func TestValidateMissingRequiredFields(t *testing.T) {
 
 	for pkgName, expectedErrors := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
 			err := ValidateFromPath(pkgRootPath)
 			if len(expectedErrors) == 0 {
@@ -371,7 +729,7 @@ func TestValidateMissingRequiredFields(t *testing.T) {
 			}
 			assert.Error(t, err)
 
-			errs, ok := err.(errors.ValidationErrors)
+			errs, ok := err.(specerrors.ValidationErrors)
 			require.True(t, ok)
 			assert.Len(t, errs, len(expectedErrors))
 
@@ -399,9 +757,10 @@ func TestValidateVersionIntegrity(t *testing.T) {
 
 	for pkgName, expectedErrorMessage := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			require.Error(t, errs)
-			vErrs, ok := errs.(errors.ValidationErrors)
+			vErrs, ok := errs.(specerrors.ValidationErrors)
 			require.True(t, ok)
 
 			var errMessages []string
@@ -414,54 +773,71 @@ func TestValidateVersionIntegrity(t *testing.T) {
 }
 
 func TestValidateDuplicatedFields(t *testing.T) {
-	tests := map[string]string{
-		"bad_duplicated_fields":       "field \"event.dataset\" is defined multiple times for data stream \"wrong\", found in: ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/ecs.yml",
-		"bad_duplicated_fields_input": "field \"event.dataset\" is defined multiple times for data stream \"\", found in: ../../../../test/packages/bad_duplicated_fields_input/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields_input/fields/ecs.yml",
-	}
-
-	for pkgName, expectedErrorMessage := range tests {
-		t.Run(pkgName, func(t *testing.T) {
-			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
-			require.Error(t, errs)
-			vErrs, ok := errs.(errors.ValidationErrors)
-			require.True(t, ok)
-
-			assert.Len(t, vErrs, 1)
-
-			var errMessages []string
-			for _, vErr := range vErrs {
-				errMessages = append(errMessages, vErr.Error())
-			}
-			require.Contains(t, errMessages, expectedErrorMessage)
-		})
-	}
-
-}
-
-func TestValidateMinimumKibanaVersions(t *testing.T) {
 	tests := map[string][]string{
-		"good":       []string{},
-		"good_input": []string{},
-		"good_v2":    []string{},
-		"custom_logs": []string{
-			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
+		"good":       {},
+		"good_v2":    {},
+		"good_input": {},
+		"bad_duplicated_fields": {
+			"field \"event.dataset\" is defined multiple times for data stream \"wrong\", found in: ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields/data_stream/wrong/fields/ecs.yml",
+			"field \"field1\" is defined multiple times for transform \"good_example_abc_1\", found in: ../../../../test/packages/bad_duplicated_fields/elasticsearch/transform/good_example_abc_1/fields/fields.yml, ../../../../test/packages/bad_duplicated_fields/elasticsearch/transform/good_example_abc_1/fields/more-fields.yml",
 		},
-		"httpjson_input": []string{
-			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
-		},
-		"sql_input": []string{
-			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
-		},
-		"bad_runtime_kibana_version": []string{
-			"conditions.kibana.version must be ^8.10.0 or greater to include runtime fields",
-		},
-		"bad_saved_object_tags_kibana_version": []string{
-			"conditions.kibana.version must be ^8.10.0 or greater to include saved object tags file: kibana/tags.yml",
+		"bad_duplicated_fields_input": {
+			"field \"event.dataset\" is defined multiple times, found in: ../../../../test/packages/bad_duplicated_fields_input/fields/base-fields.yml, ../../../../test/packages/bad_duplicated_fields_input/fields/ecs.yml",
 		},
 	}
 
 	for pkgName, expectedErrorMessages := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
+			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			if len(expectedErrorMessages) == 0 {
+				assert.NoError(t, errs)
+				return
+			}
+			require.Error(t, errs)
+			vErrs, ok := errs.(specerrors.ValidationErrors)
+			require.True(t, ok)
+
+			assert.Len(t, vErrs, len(expectedErrorMessages))
+
+			for _, expectedError := range expectedErrorMessages {
+				found := false
+				for _, foundError := range vErrs {
+					if foundError.Error() == expectedError {
+						found = true
+						break
+					}
+				}
+				if !found {
+					t.Errorf("expected error: %q (%v)", expectedError, errs)
+				}
+			}
+		})
+	}
+}
+
+func TestValidateMinimumKibanaVersions(t *testing.T) {
+	tests := map[string][]string{
+		"good":       {},
+		"good_input": {},
+		"good_v2":    {},
+		"custom_logs": {
+			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
+		},
+		"httpjson_input": {
+			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
+		},
+		"sql_input": {
+			"conditions.kibana.version must be ^8.8.0 or greater for non experimental input packages (version > 1.0.0)",
+		},
+		"bad_runtime_kibana_version": {
+			"conditions.kibana.version must be ^8.10.0 or greater to include runtime fields",
+		},
+	}
+
+	for pkgName, expectedErrorMessages := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			err := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			if len(expectedErrorMessages) == 0 {
 				assert.NoError(t, err)
@@ -469,7 +845,7 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 			}
 			assert.Error(t, err)
 
-			errs, ok := err.(errors.ValidationErrors)
+			errs, ok := err.(specerrors.ValidationErrors)
 			require.True(t, ok)
 			assert.Len(t, errs, len(expectedErrorMessages))
 
@@ -487,33 +863,35 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestValidateWarnings(t *testing.T) {
 	tests := map[string][]string{
-		"good":    []string{},
-		"good_v2": []string{},
-		"visualizations_by_reference": []string{
-			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens)",
+		"good":    {},
+		"good_v2": {},
+		"visualizations_by_reference": {
+			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens) (SVR00004)",
 		},
+		"bad_saved_object_tags_kibana_version": {
+			"conditions.kibana.version must be ^8.10.0 or greater to include saved object tags file: kibana/tags.yml (SVR00005)",
+		},
+		"bad_readme_structure": {
+			"missing required section 'Overview' in file 'README_part1.md'\nmissing required section 'How do I deploy this integration?' in file 'README_part2.md'",
+		},
+		"good_readme_structure": {},
 	}
-	if err := common.EnableWarningsAsErrors(); err != nil {
-		require.NoError(t, err)
-	}
-	defer common.DisableWarningsAsErrors()
 
+	warningsAsErrros := true
 	for pkgName, expectedWarnContains := range tests {
 		t.Run(pkgName, func(t *testing.T) {
-			warnPrefix := fmt.Sprintf("Warning: ")
-
+			t.Parallel()
 			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
-			errs := ValidateFromPath(pkgRootPath)
+			errs := validateFromFS(pkgRootPath, linkedfiles.NewFS(pkgRootPath, os.DirFS(pkgRootPath)), warningsAsErrros)
 			if len(expectedWarnContains) == 0 {
 				require.NoError(t, errs)
 			} else {
 				require.Error(t, errs)
-				vErrs, ok := errs.(errors.ValidationErrors)
+				vErrs, ok := errs.(specerrors.ValidationErrors)
 				if ok {
 					require.Len(t, errs, len(expectedWarnContains))
 					var warnMessages []string
@@ -522,8 +900,7 @@ func TestValidateWarnings(t *testing.T) {
 					}
 
 					for _, expectedWarnMessage := range expectedWarnContains {
-						expectedWarn := warnPrefix + expectedWarnMessage
-						require.Contains(t, warnMessages, expectedWarn)
+						require.Contains(t, warnMessages, expectedWarnMessage)
 					}
 					return
 				}
@@ -534,7 +911,6 @@ func TestValidateWarnings(t *testing.T) {
 }
 
 func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
-
 	pkgName := "bad_external_without_dev_build"
 	tests := []struct {
 		title               string
@@ -570,6 +946,7 @@ func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.title, func(t *testing.T) {
+			t.Parallel()
 			tempDir := t.TempDir()
 
 			devFolderPath := filepath.Join(tempDir, "_dev")
@@ -597,7 +974,7 @@ func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
 				require.NoError(t, errs)
 			} else {
 				require.Error(t, errs)
-				vErrs, ok := errs.(errors.ValidationErrors)
+				vErrs, ok := errs.(specerrors.ValidationErrors)
 				if ok {
 					require.Len(t, errs, len(test.expectedErrContains))
 					var errMessages []string
@@ -619,24 +996,25 @@ func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
 
 func TestValidateRoutingRules(t *testing.T) {
 	tests := map[string][]string{
-		"good":    []string{},
-		"good_v2": []string{},
-		"bad_routing_rules": []string{
-			`routing rules defined in data stream "rules" but dataset field is missing: dataset field is required in data stream "rules"`,
+		"good":    {},
+		"good_v2": {},
+		"bad_routing_rules": {
+			`routing rules defined in data stream "rules" but dataset field is missing: dataset field is required in manifest for data stream "rules"`,
 		},
-		"bad_routing_rules_wrong_spec": []string{
+		"bad_routing_rules_wrong_spec": {
 			`item [routing_rules.yml] is not allowed in folder [../../../../test/packages/bad_routing_rules_wrong_spec/data_stream/rules]`,
 		},
-		"bad_routing_rules_missing_if": []string{
+		"bad_routing_rules_missing_if": {
 			`file "../../../../test/packages/bad_routing_rules_missing_if/data_stream/rules/routing_rules.yml" is invalid: field 0.rules.0: if is required`,
 		},
-		"bad_routing_rules_missing_target_dataset": []string{
+		"bad_routing_rules_missing_target_dataset": {
 			`file "../../../../test/packages/bad_routing_rules_missing_target_dataset/data_stream/rules/routing_rules.yml" is invalid: field 0.rules.0: target_dataset is required`,
 		},
 	}
 
 	for pkgName, expectedErrorMessages := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			err := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			if len(expectedErrorMessages) == 0 {
 				assert.NoError(t, err)
@@ -644,7 +1022,7 @@ func TestValidateRoutingRules(t *testing.T) {
 			}
 			assert.Error(t, err)
 
-			errs, ok := err.(errors.ValidationErrors)
+			errs, ok := err.(specerrors.ValidationErrors)
 			require.True(t, ok)
 			assert.Len(t, errs, len(expectedErrorMessages))
 
@@ -653,7 +1031,145 @@ func TestValidateRoutingRules(t *testing.T) {
 			}
 		})
 	}
+}
 
+func TestValidateIngestPipelines(t *testing.T) {
+	tests := map[string]map[string][]string{
+		"good_v3":                         {},
+		"skip_pipeline_rename_validation": {},
+		"bad_ingest_pipeline": {
+			"test": []string{
+				"field processors.1: Additional property reroute is not allowed",
+				"field processors.2.foreach.processor: Additional property paint is not allowed",
+			},
+			"bad_rename_message": []string{
+				"field processors.1.rename: rename \"message\" to \"event.original\" processor requires if: 'ctx.event?.original == null' (JSE00001)",
+				"field processors.0: rename \"message\" to \"event.original\" processor requires remove \"message\" processor (JSE00001)",
+			},
+			"bad_rename_message_2": []string{
+				"field processors.2.remove.field: rename \"message\" to \"event.original\" processor requires remove \"message\" processor (JSE00001)",
+				"field processors.2.remove.if: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null' (JSE00001)",
+			},
+		},
+		"bad_pipeline_tags": {
+			"example": []string{
+				"set processor at line 4 missing required tag (SVR00006)",
+				"set processor at line 15 has duplicate tag value: \"set_sample_field\"",
+			},
+		},
+		"bad_pipeline_on_failure": {
+			"missing": []string{
+				`pipeline on_failure handler must set event.kind to "pipeline_error" (SVR00008)`,
+				`pipeline on_failure handler must set error.message (SVR00009)`,
+			},
+			"incorrect": []string{
+				`pipeline on_failure handler must set event.kind to "pipeline_error" (SVR00008)`,
+				`pipeline on_failure error.message must include "_ingest.on_failure_processor_type" (SVR00009)`,
+				`pipeline on_failure error.message must include "_ingest.on_failure_processor_tag" (SVR00009)`,
+				`pipeline on_failure error.message must include "_ingest.on_failure_message" (SVR00009)`,
+				`pipeline on_failure error.message must include "_ingest.pipeline" (SVR00009)`,
+			},
+		},
+	}
+
+	for pkgName, pipelines := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
+			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
+			var allErrorMessages []string
+			for pipeline, expectedErrorMessages := range pipelines {
+				pipelineFilePath := path.Join(pkgRootPath, "data_stream", pipeline, "elasticsearch", "ingest_pipeline", "default.yml")
+				errPrefix := fmt.Sprintf("file \"%s\" is invalid: ", pipelineFilePath)
+				for _, errMsg := range expectedErrorMessages {
+					allErrorMessages = append(allErrorMessages, errPrefix+errMsg)
+				}
+			}
+
+			errs := ValidateFromPath(pkgRootPath)
+
+			if verrs, ok := errs.(specerrors.ValidationErrors); ok {
+				filterConfig, err := specerrors.LoadConfigFilter(os.DirFS(pkgRootPath))
+				if !errors.Is(err, os.ErrNotExist) {
+					filter := specerrors.NewFilter(filterConfig)
+					result, err := filter.Run(verrs)
+					require.NoError(t, err)
+					errs = result.Processed
+				}
+			}
+
+			if len(allErrorMessages) == 0 {
+				require.NoError(t, errs)
+			} else {
+				require.Error(t, errs)
+				vErrs, ok := errs.(specerrors.ValidationErrors)
+				if ok {
+					var errMessages []string
+					for _, vErr := range vErrs {
+						errMessages = append(errMessages, vErr.Error())
+					}
+					assert.Len(t, errs, len(allErrorMessages))
+					for _, expectedErrMessage := range allErrorMessages {
+						require.Contains(t, errMessages, expectedErrMessage)
+					}
+				}
+			}
+		})
+	}
+}
+
+func TestValidateForbiddenDataStreamName(t *testing.T) {
+	testPackagesPath := path.Join("..", "..", "..", "..", "test", "packages")
+	pkgPath := path.Join(testPackagesPath, "bad_data_stream_name")
+	err := ValidateFromPath(pkgPath)
+	require.Error(t, err)
+
+	expectedErrorMessages := []string{
+		fmt.Sprintf(`item [integration] is not allowed in folder [%s]`, path.Join(pkgPath, "data_stream")),
+	}
+	errs, ok := err.(specerrors.ValidationErrors)
+	require.True(t, ok)
+	assert.Len(t, errs, len(expectedErrorMessages))
+
+	for _, foundError := range errs {
+		assert.Contains(t, expectedErrorMessages, foundError.Error())
+	}
+}
+
+func TestLinksAreBlocked(t *testing.T) {
+	err := ValidateFromFS("test-package", newMockFS().WithLink())
+	errs, ok := err.(specerrors.ValidationErrors)
+	require.True(t, ok)
+	for _, err := range errs {
+		// we want at least one error indicating links are blocked
+		if errors.Is(err, linkedfiles.ErrUnsupportedLinkFile) {
+			return
+		}
+	}
+	t.Error("links should not be allowed in package")
+}
+
+func TestValidateHandlebarsFiles(t *testing.T) {
+	tests := map[string]string{
+		"bad_input_hbs":              "invalid handlebars template: error validating agent/input/input.yml.hbs: Parse error on line 10:\nExpecting OpenEndBlock, got: 'EOF'",
+		"bad_integration_hbs":        "invalid handlebars template: error validating data_stream/foo/agent/stream/filestream.yml.hbs: Parse error on line 43:\nExpecting OpenEndBlock, got: 'EOF'",
+		"bad_integration_hbs_linked": "invalid handlebars template: error validating ../bad_integration_hbs/data_stream/foo/agent/stream/filestream.yml.hbs: Parse error on line 43:\nExpecting OpenEndBlock, got: 'EOF'",
+	}
+
+	for pkgName, expectedErrorMessage := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
+			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
+			require.Error(t, errs)
+			vErrs, ok := errs.(specerrors.ValidationErrors)
+			require.True(t, ok)
+
+			var errMessages []string
+			for _, vErr := range vErrs {
+				errMessages = append(errMessages, vErr.Error())
+			}
+			require.Contains(t, errMessages, expectedErrorMessage)
+		})
+	}
 }
 
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {
@@ -661,7 +1177,7 @@ func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map
 
 	errs := ValidateFromPath(pkgRootPath)
 	require.Error(t, errs)
-	vErrs, ok := errs.(errors.ValidationErrors)
+	vErrs, ok := errs.(specerrors.ValidationErrors)
 	require.True(t, ok)
 
 	var errMessages []string

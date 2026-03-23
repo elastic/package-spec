@@ -32,6 +32,28 @@ spec:
             - 1
           - - array
             - 2
+    required_vars:
+      description: Required conditional variables for the package.
+      type: object
+      additionalProperties: false
+      patternProperties:
+        "^[a-zA-Z0-9_]+$":
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required:
+              - name
+            additionalProperties: false
+            properties:
+              name:
+                description: Required variable name
+                type: string
+                examples:
+                  - hosts
+              value:
+                description: Value of the variable, if not present we validate the var's presense
+                $ref: "#/definitions/input_variable_value"
     vars:
       description: Input variables.
       type: array
@@ -45,7 +67,15 @@ spec:
             examples:
               - hosts
           type:
-            description: Data type of variable.
+            description: >
+              Data type of variable.
+
+              A duration type is a sequence of decimal numbers, each with a unit
+              suffix, such as "60s", "1m" or "2h45m".
+              Duration values must follow these rules:
+              - Use time units of "ms", "s", "m", "h".
+              - When using min_duration, default, and max_duration,
+                they must satisfy: 0 <= min_duration <= default <= max_duration
             type: string
             enum:
               - bool
@@ -58,6 +88,7 @@ spec:
               - time_zone
               - url
               - yaml
+              - duration
             examples:
               - text
           title:
@@ -86,7 +117,7 @@ spec:
           secret:
             description: >
               Specifying that a variable is secret means that Kibana will store the value
-              separate from the package policy in a more secure index. 
+              separate from the package policy in a more secure index.
               This is useful for passwords and other sensitive information.
               One caveat is that secrets are write-only, once a user writes a secret var
               they cannot read it again, only overwrite it.
@@ -100,6 +131,16 @@ spec:
             default: true
             examples:
               - false
+          hide_in_deployment_modes:
+            description: >
+              Whether this variable should be hidden in the UI for agent policies intended
+              to some specific deployment modes.
+            type: array
+            items:
+              type: string
+              enum:
+                - default
+                - agentless
           url_allowed_schemes:
             description: >
               List of allowed URL schemes for the url type. If empty, any scheme is allowed.
@@ -112,45 +153,100 @@ spec:
               - ['http', 'https']
               - ['redis', 'rediss']
               - ['', 'mysql']
+          min_duration:
+            description: The minimum allowed duration value for duration data types. This property can only be used when the type is set to 'duration'.
+            type: string
+            pattern: '^(\d+[smh]|\d+ms)+$'
+          max_duration:
+            description: The maximum allowed duration value for duration data types. This property can only be used when the type is set to 'duration'.
+            type: string
+            pattern: '^(\d+[smh]|\d+ms)+$'
           default:
             description: Default value(s) for variable
             $ref: "#/definitions/input_variable_value"
-        if:
-          properties:
-            type:
-              const: select
-        then:
-          required:
-            - options
-          properties:
-            options:
-              description: List of options for select type
-              type: array
-              items:
-                type: object
-                additionalProperties: false
-                properties:
-                  value:
-                    type: string
-                    examples:
-                    - node
-                    - cluster
-                  text:
-                    type: string
-                    examples:
-                    - node
-                    - cluster
-                required:
-                - value
-                - text
-              min_items: 1
-        else:
-          not:
-            required:
-              - options
+          deprecated:
+            $ref: "../../integration/manifest.spec.yml#/definitions/deprecated"
+        allOf:
+         - if:
+             properties:
+               type:
+                 const: select
+           then:
+             required:
+               - options
+             properties:
+               options:
+                 description: List of options for select type
+                 type: array
+                 items:
+                   type: object
+                   additionalProperties: false
+                   properties:
+                     value:
+                       type: string
+                       examples:
+                       - node
+                       - cluster
+                     text:
+                       type: string
+                       examples:
+                       - node
+                       - cluster
+                   required:
+                   - value
+                   - text
+                 min_items: 1
+           else:
+             not:
+               required:
+                 - options
+         - if:
+             anyOf:
+               - allOf:
+                 - properties:
+                     name:
+                       pattern: "(access_key|api_key|passphrase|password|secret|token)"
+                 - not:
+                     properties:
+                       name:
+                         pattern: "(_file|_url)$"
+               - properties:
+                   type:
+                     const: password
+           then:
+             required:
+               - secret
+         - if:
+             properties:
+               type:
+                 const: duration
+           then:
+             properties:
+               default:
+                 type: string
+                 pattern: '^(\d+[smh]|\d+ms)+$'
+         - if:
+             not:
+               properties:
+                 type:
+                   const: duration
+           then:
+             not:
+               anyOf:
+                 - required: [min_duration]
+                 - required: [max_duration]
         required:
           - name
           - type
+    elasticsearch_index_mode:
+      description: |-
+        Index mode to use. Index mode can be used to enable use case specific functionalities.
+        This setting must be installed in the composable index template, not in the package component templates.
+      type: string
+      enum:
+      - "time_series" # Enables time series data streams https://www.elastic.co/guide/en/elasticsearch/reference/master/tsds.html
+      examples:
+      - "time_series"
     elasticsearch_index_template:
       description: Index template definition
       type: object
@@ -159,9 +255,181 @@ spec:
         settings:
           description: Settings section of index template
           type: object
+          additionalProperties: false
+          properties:
+            analysis:
+              $ref: "#/definitions/index_template_setting_analysis"
+            index:
+              $ref: "#/definitions/index_template_setting_index"
+            number_of_shards:
+              $ref: "#/definitions/index_template_setting_number_of_shards"
+            auto_expand_replicas:
+              $ref: "#/definitions/index_template_setting_auto_expand_replicas"
+            max_result_window:
+              $ref: "#/definitions/index_template_setting_max_result_window"
+            refresh_interval:
+              $ref: "#/definitions/index_template_setting_refresh_interval"
         mappings:
           description: Mappings section of index template
           type: object
+          additionalProperties: false
+          properties:
+            date_detection:
+              description: >
+                If true, new string fields will be checked to see if their contents match with `dynamic_date_formats`.
+                If they do, the field is dynamically added with type `date`. Set to false to disable this feature.
+              type: boolean
+            dynamic:
+              description: >
+                Control if new fields can be added dynamically. When set to `false`, new fields are not indexed.
+                When set to `strict`, fields must be explicitly added to the mapping. With `runtime`, fields are
+                not indexed, but added as runtime fields. Defaults to `true`, where Elasticsearch tries to index
+                any new field.
+              oneOf:
+                - type: boolean
+                - type: string
+                  enum:
+                    - runtime
+                    - strict
+            dynamic_date_formats:
+              # Added to support `date_detection`, but usually `date_detection` is only used to disable it.
+              description: Custom date formats to use for date detection.
+              type: array
+              items:
+                type: string
+              examples:
+                - ["strict_date_optional_time","yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"] # This is the default if not set.
+                - ["MM/dd/yyyy"]
+            dynamic_templates:
+              type: array
+              items:
+                type: object
+                maxProperties: 1
+                additionalProperties:
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    # path_match: false # Dynamic mappings with path match can be defined in fields definitions.
+                    match_mapping_type:
+                      oneOf:
+                        - type: boolean
+                        - type: string
+                          enum:
+                          - "null"
+                          - "true"
+                          - "false"
+                          - double
+                          - long
+                          - string
+                          - object
+                          - array
+                    mapping:
+                      type: object
+                      additionalProperties: false
+                      properties:
+                        type:
+                          $ref: "./fields/fields.spec.yml#/items/properties/type"
+                        scaling_factor:
+                          $ref: "./fields/fields.spec.yml#/items/properties/scaling_factor"
+                        metrics:
+                          $ref: "./fields/fields.spec.yml#/items/properties/metrics"
+                        default_metric:
+                          $ref: "./fields/fields.spec.yml#/items/properties/default_metric"
+                        ignore_above:
+                          $ref: "./fields/fields.spec.yml#/items/properties/ignore_above"
+                        index:
+                          $ref: "./fields/fields.spec.yml#/items/properties/index"
+                patternProperties:
+                  # Exception for fields imported by elastic-package when import_mappings is used.
+                  # TODO: Allow this only on built packages.
+                  "^_embedded_ecs":
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      path_match:
+                        type: string
+                      path_unmatch:
+                        type: string
+                      match:
+                        type: string
+                      match_mapping_type:
+                        $ref: "#/definitions/elasticsearch_index_template/properties/mappings/properties/dynamic_templates/items/additionalProperties/properties/match_mapping_type"
+                      mapping:
+                        type: object
+                        additionalProperties: false
+                        properties:
+                          doc_values:
+                            $ref: "./fields/fields.spec.yml#/items/properties/doc_values"
+                          fields:
+                            type: object
+                            minProperties: 1
+                            additionalProperties:
+                              $ref: "#/definitions/elasticsearch_index_template/properties/mappings/properties/dynamic_templates/items/patternProperties/^_embedded_ecs/properties/mapping"
+                          ignore_malformed:
+                            $ref: "./fields/fields.spec.yml#/items/properties/ignore_malformed"
+                          index:
+                            $ref: "./fields/fields.spec.yml#/items/properties/index"
+                          scaling_factor:
+                            $ref: "./fields/fields.spec.yml#/items/properties/scaling_factor"
+                          type:
+                             $ref: "./fields/fields.spec.yml#/items/properties/type"
+            subobjects:
+              description: >
+                Turn the support for subobjects on or off in the mapping
+                configuration for the data stream.
+
+                By default, it's set to `true`, enabling Elasticsearch to
+                expands fields that contain dots in their names
+                to their corresponding object structure.
+
+                Setting it to `false` restricts objects
+                from holding subobjects, enabling storing documents
+                with dot-contained field names and common prefixes.
+
+                It is still possible to send documents that have
+                objects to a data stream that has set subobjects
+                to `false`.
+
+                Example when the subobjects mapping option is `false`:
+
+                PUT my-index-000001
+                {
+                  "mappings": {
+                    "subobjects": false
+                  }
+                }
+
+                PUT my-index-000001/_doc/metric_1
+                {
+                  "time" : "100ms",
+                  "time.min" : "10ms",
+                  "time.max" : "900ms"
+                }
+
+                Before disabling subobjects, consider the following implications:
+
+                  - Nested field types cannot be used in data streams.
+                  - The subobjects mapping definition is immutable.
+                  - This setting depends on auto-flattening mappings,
+                    which comes with limitations [^1] for integration
+                    and custom mappings in data streams without
+                    subobjects.
+                  - Auto-flattening is available starting from version
+                    8.14, integrations must be on at least this
+                    version.
+
+                For comprehensive details on subobjects, refer to
+                the Elasticsearch documentation [^2].
+
+
+                [^1]: Auto-flattening limitations are documented at:
+                https://www.elastic.co/guide/en/elasticsearch/reference/master/subobjects.html#_auto_flattening_object_mappings
+
+                [^2]: Elasticsearch documentation on subobjects:
+                https://www.elastic.co/guide/en/elasticsearch/reference/current/subobjects.html
+
+              type: boolean
+              default: true
         ingest_pipeline:
           description: Elasticsearch ingest pipeline settings
           type: object
@@ -180,6 +448,102 @@ spec:
             hidden:
               description: Makes the data stream hidden
               type: boolean
+    index_template_setting_analysis:
+      type: object
+      additionalProperties: false
+      properties:
+        analyzer:
+          description: Definition of custom analyzer.
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties: false
+            properties:
+              type:
+                description: Type of analyzer
+                type: string
+                enum:
+                  - pattern
+              pattern:
+                type: string
+    index_template_setting_index:
+      type: object
+      additionalProperties: false
+      properties:
+        codec:
+          description: >
+            Type of compression to use. The default is to use LZ4, `best_compression` uses DEFLATE,
+            with higher compression but lower ingestion performance.
+          type: string
+          enum:
+            - default
+            - best_compression
+        mapping:
+          type: object
+          additionalProperties: false
+          patternProperties:
+            "^(dimension|nested|total)_fields$":
+              type: object
+              additionalProperties: false
+              properties:
+                limit:
+                  description: Limit on the number of fields of this kind on this data stream.
+                  type: integer
+        sort:
+          type: object
+          additionalProperties: false
+          properties:
+            field:
+              description: Fields used to sort the document in the Lucene segments.
+              oneOf:
+                - type: string
+                - type: array
+                  items:
+                    type: string
+            order:
+              description: The sort order to use for each field.
+              oneOf:
+                - type: string
+                  enum:
+                    - asc
+                    - desc
+                - type: array
+                  items:
+                    type: string
+                    enum:
+                      - asc
+                      - desc
+    index_template_setting_number_of_shards:
+      description: Number of primary shards that the data stream should have.
+      type: integer
+      minimum: 1
+      default: 1
+    index_template_setting_auto_expand_replicas:
+      description: |
+        Auto-expand the number of replicas based on the number of data nodes in the cluster.
+        Set to a dash delimited lower and upper bound (e.g. 0-5) or use `all` for the upper bound (e.g. 0-all). Defaults to false (i.e. disabled).
+      type: string
+      examples:
+        - "0-1"
+        - "0-all"
+        - "false"
+    index_template_setting_max_result_window:
+      description: |
+        The maximum value of `from + size` for searches to this index. Defaults to 10000.
+        Search requests take heap memory and time proportional to `from + size` and this limits that memory.
+      type: integer
+      minimum: 1
+      examples:
+        - 50000
+    index_template_setting_refresh_interval:
+      description: |
+        How often to perform a refresh operation, which makes recent changes to the index visible to search. The value defaults to `1s` in Elastic Stack and `5s` in Serverless. In Serverless, `5s` is also the minimum value that can be set.
+        Can be set to `-1` to disable refresh.
+      type: string
+      examples:
+        - "10s"
+        - "1m"
+        - "-1"
   properties:
     dataset:
       description: Name of data set.
@@ -241,6 +605,8 @@ spec:
             - aws/metrics
             - s3
             - file
+          package:
+            $ref: "../../integration/manifest.spec.yml#/definitions/package_reference"
           title:
             description: >
               Title of the stream. It should include the source of the data that is
@@ -261,31 +627,37 @@ spec:
             - Collect Metrics from Linux servers with Elastic Agent.
             - Collect Logs from Apache Web Server using Elastic Agent.
           template_path:
-            description: "Path to Elasticsearch index template for stream."
-            type: string
+            $ref: "../../integration/manifest.spec.yml#/definitions/template_path"
+          template_paths:
+            $ref: "../../integration/manifest.spec.yml#/definitions/template_paths"
+          required_vars:
+            $ref: "#/definitions/required_vars"
           vars:
             $ref: "#/definitions/vars"
+          var_groups:
+            $ref: "../../integration/manifest.spec.yml#/definitions/var_groups"
+          dynamic_signal_types:
+            $ref: "../../integration/manifest.spec.yml#/definitions/dynamic_signal_types"
+          migrate_from:
+            $ref: "../../integration/manifest.spec.yml#/definitions/migrate_from"
           enabled:
             description: Is stream enabled?
             type: boolean
         required:
         - title
         - description
-        - input
+        oneOf:
+        - required: [input]
+        - required: [package]
+    agent:
+      $ref: "../../integration/manifest.spec.yml#/definitions/agent"
     elasticsearch:
       description: Elasticsearch asset definitions
       type: object
       additionalProperties: false
       properties:
         index_mode:
-          description: |-
-            Index mode to use. Index mode can be used to enable use case specific functionalities.
-            This setting must be installed in the composable index template, not in the package component templates.
-          type: string
-          enum:
-          - "time_series" # Enables time series data streams https://www.elastic.co/guide/en/elasticsearch/reference/master/tsds.html
-          examples:
-          - "time_series"
+          $ref: "#/definitions/elasticsearch_index_mode"
         index_template:
           $ref: "#/definitions/elasticsearch_index_template"
         privileges:
@@ -318,10 +690,90 @@ spec:
         dynamic_namespace:
           description: When set to true, agents running this integration are granted data stream privileges for all namespaces of its type
           type: boolean
+    categories:
+      description: >
+        Optional categories that describe the type of data collected by this data stream.
+        Used for telemetry and categorization purposes. Skip if integration-level categories are appropriate.
+      $ref: "../../integration/manifest.spec.yml#/definitions/categories"
+    deprecated:
+      $ref: "../../integration/manifest.spec.yml#/definitions/deprecated"
   required:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.6.0
+    patch:
+      - op: add
+        path: "/properties/streams/items/properties/input"
+        value:
+          not:
+            const: otelcol
+      - op: remove
+        path: "/properties/streams/items/properties/dynamic_signal_types"
+      - op: remove
+        path: "/properties/streams/items/properties/package"
+      - op: remove
+        path: "/properties/streams/items/oneOf"
+      - op: add
+        path: "/properties/streams/items/required/-" # re-add input as required
+        value: input
+      - op: remove # removes template_paths field for streams
+        path: "/properties/streams/items/properties/template_paths"
+      - op: remove
+        path: "/properties/deprecated"
+      - op: remove
+        path: "/definitions/vars/items/properties/deprecated"
+      - op: remove
+        path: "/properties/streams/items/properties/var_groups"
+      # Input migration.
+      - op: remove
+        path: "/properties/streams/items/properties/migrate_from"
+  - before: 3.5.0
+    patch:
+      # Require >=3.5.0 to use the duration variable type.
+      - op: remove
+        path: /definitions/vars/items/properties/type/enum/10
+      - op: remove
+        path: /definitions/vars/items/properties/max_duration
+      - op: remove
+        path: /definitions/vars/items/properties/min_duration
+      - op: remove
+        path: /definitions/vars/items/allOf/2
+  - before: 3.3.2
+    patch:
+      - op: remove
+        path: "/properties/streams/items/properties/required_vars"
+  - before: 3.2.0
+    patch:
+      # Does not allow to hide variables in default mode till this version.
+      - op: remove
+        path: /definitions/vars/items/properties/hide_in_deployment_modes/items/enum/0
+      - op: remove
+        path: /definitions/elasticsearch_index_template/properties/mappings/properties/subobjects
+  - before: 3.1.4
+    patch:
+      - op: remove
+        path: /definitions/vars/items/properties/hide_in_deployment_modes
+  - before: 3.0.2
+    patch:
+      # Required secret for variables that look like secrets.
+      - op: remove
+        path: /definitions/vars/items/allOf/1
+  - before: 3.0.0
+    patch:
+      # Stricter validation of elasticsearch settings and mappings.
+      - op: remove
+        path: /definitions/elasticsearch_index_template/properties/settings/additionalProperties
+      - op: remove
+        path: /definitions/elasticsearch_index_template/properties/settings/properties
+      - op: remove
+        path: /definitions/elasticsearch_index_template/properties/mappings/additionalProperties
+      - op: remove
+        path: /definitions/elasticsearch_index_template/properties/mappings/properties
+  - before: 2.12.0
+    patch:
+      - op: remove
+        path: /properties/agent
   - before: 2.9.0
     patch:
       - op: remove

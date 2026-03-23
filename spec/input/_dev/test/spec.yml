@@ -6,3 +6,14 @@ spec:
       name: system
       required: false
       $ref: "../../../integration/data_stream/_dev/test/system/spec.yml"
+    - description: Folder containing policy tests
+      type: folder
+      name: policy
+      required: false
+      $ref: "../../../integration/data_stream/_dev/test/policy/spec.yml"
+    - description: Common Configuration of tests.
+      type: file
+      name: 'config.yml'
+      contentMediaType: "application/x-yaml"
+      required: false
+      $ref: "./config.spec.yml"

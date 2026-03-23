@@ -86,3 +86,11 @@
   metrics:
     - min
     - max
+- name: enum
+  type: keyword
+  expected_values:
+    - artifact
+    - directory
+- name: empty_expected_values
+  type: keyword
+  expected_values: []

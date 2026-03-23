@@ -17,7 +17,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
 )
 
 func TestLimitsValidation(t *testing.T) {
@@ -82,6 +82,15 @@ func TestLimitsValidation(t *testing.T) {
 			valid: false,
 		},
 		{
+			title: "fieldsPerDataStreamLimit exceeded in transform",
+			fsys: newMockFS().Good().WithFiles(
+				newMockFile("elasticsearch/transform/good/transform.yml").WithContent(transformYml),
+				newMockFile("elasticsearch/transform/good/fields/base-fields.yml").WithContent(fieldsYml),
+				newMockFile("elasticsearch/transform/good/fields/many-fields.yml").WithContent(generateFields(2500)),
+			),
+			valid: false,
+		},
+		{
 			title: "config template sizeLimit exceeded",
 			fsys: newMockFS().Good().WithFiles(
 				newMockFile("agent/input/stream.yml.hbs").WithSize(6 * spectypes.MegaByte),
@@ -106,6 +115,7 @@ func TestLimitsValidation(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
+			t.Parallel()
 			err := ValidateFromFS("test-package", c.fsys)
 			if c.valid {
 				assert.NoError(t, err)
@@ -143,6 +153,9 @@ var datastreamManifestYml string
 //go:embed testdata/limits/data_stream/foo/fields/base-fields.yml
 var fieldsYml string
 
+//go:embed testdata/limits/elasticsearch/transform/good/transform.yml
+var transformYml string
+
 func generateFields(n int) string {
 	var buf strings.Builder
 
@@ -163,6 +176,20 @@ func (fs *mockFS) Good() *mockFS {
 		newMockFile("_dev/deploy/docker/docker-compose.yml").WithContent("version: 2.3"),
 		newMockFile("data_stream/foo/manifest.yml").WithContent(datastreamManifestYml),
 		newMockFile("data_stream/foo/fields/base-fields.yml").WithContent(fieldsYml),
+	)
+}
+
+func (fs *mockFS) WithLink() *mockFS {
+	return fs.WithFiles(
+		newMockFile("manifest.yml").WithContent(manifestYml),
+		newMockFile("changelog.yml").WithContent(changelogYml),
+		newMockFile("docs/README.md").WithContent("## README"),
+		newMockFile("img/kibana-system.png"),
+		newMockFile("img/system.svg"),
+		newMockFile("_dev/deploy/docker/docker-compose.yml").WithContent("version: 2.3"),
+		newMockFile("data_stream/foo/manifest.yml").WithContent(datastreamManifestYml),
+		newMockFile("data_stream/foo/fields/base-fields.yml").WithContent(fieldsYml),
+		newMockFile("data_stream/foo/fields/some_fields.yml.link").WithContent("../../../../somepkg/_dev/shared/some_fields.yml 9fe744e9d6cbf9c6057a38327936b8b66e48a087479e781e9a344bb2502182a0"),
 	)
 }
 
@@ -209,8 +236,10 @@ func (fs *mockFS) Open(name string) (fs.File, error) {
 	return f.open(), nil
 }
 
-var _ fs.File = &mockFile{}
-var _ fs.ReadDirFile = &mockFile{}
+var (
+	_ fs.File        = &mockFile{}
+	_ fs.ReadDirFile = &mockFile{}
+)
 
 type mockFile struct {
 	stat    mockFileInfo
@@ -330,8 +359,7 @@ func (f *mockFile) findFile(name string) (*mockFile, error) {
 }
 
 func (f *mockFile) open() *mockFile {
-	var descriptor mockFile
-	descriptor = *f
+	descriptor := *f
 	if f.content != "" {
 		descriptor.reader = strings.NewReader(f.content)
 	}
@@ -361,8 +389,10 @@ func (f *mockFile) ReadDir(n int) ([]fs.DirEntry, error) {
 	return result, nil
 }
 
-var _ fs.FileInfo = &mockFileInfo{}
-var _ fs.DirEntry = &mockFileInfo{}
+var (
+	_ fs.FileInfo = &mockFileInfo{}
+	_ fs.DirEntry = &mockFileInfo{}
+)
 
 type mockFileInfo struct {
 	name    string

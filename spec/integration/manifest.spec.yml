@@ -6,77 +6,167 @@ spec:
   type: object
   additionalProperties: false
   definitions:
+    agent:
+      description: Declarations related to Agent configurations or requirements.
+      type: object
+      additionalProperties: false
+      properties:
+        privileges:
+          type: object
+          additionalProperties: false
+          properties:
+            root:
+              description: Set to true if collection requires root privileges in the agent.
+              type: boolean
     categories:
       description: Categories to which this package belongs.
       type: array
       items:
         type: string
         enum:
+          # User and entity behavior analytics for advanced threat detection
           - advanced_analytics_ueba
+          # Tools for data analysis and processing
           - analytics_engine
+          # Monitoring and observability for applications
           - application_observability
+          # Application search and retrieval systems
           - app_search
+          # Asset management and inventory systems
+          - asset_inventory
+          # Linux audit daemon monitoring
           - auditd
+          # Identity and access verification systems
           - authentication
+          # Amazon Web Services integrations
           - aws
+          # Microsoft Azure cloud integrations
           - azure
+          # Large-scale data processing systems
           - big_data
+          # Content delivery network security
           - cdn_security
+          # Cloud computing and services
           - cloud
+          # Cloud security and continuous data replication
+          - cloudsecurity_cdr
+          # Configuration management tools and systems
           - config_management
+          # General connection interfaces
           - connector
+          # Client libraries for connecting to services
           - connector_client
+          # Connector packages for specific integrations
           - connector_package
+          # Container technologies like Docker
           - containers
+          # Content management systems and platforms
           - content_source
+          # Web crawling and scraping tools
           - crawler
+          # Password and credential management systems
           - credential_management
+          # Customer relationship management systems
           - crm
+          # Custom integrations
           - custom
+          # User-defined log formats
           - custom_logs
+          # Database protection and monitoring
           - database_security
+          # Data storage systems
           - datastore
+          # Domain name system security
           - dns_security
+          # Endpoint detection and response/extended detection and response
           - edr_xdr
+          # Elastic search SDK
           - elasticsearch_sdk
+          # Elastic Stack components
           - elastic_stack
+          # Email protection and filtering
           - email_security
+          # Enterprise search solutions
           - enterprise_search
+          # Network firewall monitoring and management
           - firewall_security
+          # Google Cloud Platform integrations
           - google_cloud
+          # Identity and access management
           - iam
+          # Intrusion detection/prevention systems
           - ids_ips
+          # IT infrastructure components
           - infrastructure
+          # Java application monitoring
           - java_observability
+          # Container orchestration platform
           - kubernetes
+          # Language-specific client libraries
           - language_client
+          # Programming languages and their ecosystems
           - languages
+          # Traffic distribution systems
           - load_balancer
+          # Message broker and queue systems
           - message_queue
+          # Misconfiguration Workflow related integrations
+          - misconfiguration_workflow
+          # System and service monitoring
           - monitoring
+          # Native search capabilities
           - native_search
+          # Network infrastructure and services
           - network
+          # Network protection and monitoring
           - network_security
+          # Notification systems and services
           - notification
+          # Metrics, logs, and traces collection
           - observability
+          # OpenTelemetry
+          - opentelemetry
+          # Operating system monitoring
           - os_system
+          # Process control and management systems
           - process_manager
+          # Productivity tools and applications
           - productivity
+          # Security for productivity tools
           - productivity_security
+          # Proxy server protection and monitoring
           - proxy_security
+          # SDK for search and data retrieval
           - sdk_search
+          # General security tools and systems
           - security
+          # Security information and event management
+          - siem
+          # Real-time data stream processing
           - stream_processing
+          # Support and ticketing systems
           - support
+          # Threat intelligence platforms
           - threat_intel
+          # Ticketing and issue tracking systems
           - ticketing
+          # Version control systems and tools
           - version_control
+          # Virtual machine technologies
           - virtualization
+          # Virtual private network security
           - vpn_security
+          # Vulnerability scanning and management
           - vulnerability_management
+          # Vulnerability Workflow related integrations
+          - vulnerability_workflow
+          # Web servers and services
           - web
+          # WAF protection systems
           - web_application_firewall
+          # IBM WebSphere application server
           - websphere
+          # Workplace search solutions
           - workplace_search
         examples:
           - web
@@ -94,13 +184,13 @@ spec:
               description: The subscription required for this package.
               type: string
               enum:
-              - basic
-              - gold
-              - platinum
-              - enterprise
+                - basic
+                - gold
+                - platinum
+                - enterprise
               default: basic
               examples:
-              - basic
+                - basic
             capabilities:
               description: |-
                 Stack features that are required by the package to work properly.
@@ -127,6 +217,16 @@ spec:
               description: Kibana versions compatible with this package.
               examples:
                 - ">=7.9.0"
+        agent:
+          description: Elastic Agent conditions
+          type: object
+          additionalProperties: false
+          properties:
+            version:
+              type: string
+              description: Elastic Agent versions compatible with this package.
+              examples:
+                - "^9.5.0"
     description:
       description: >
         A longer description of the package. It should describe, at least all the kinds of
@@ -134,8 +234,136 @@ spec:
         "Collect X from Y with X".
       type: string
       examples:
-      - Collect logs and metrics from Apache HTTP Servers with Elastic Agent.
-      - Collect logs and metrics from Amazon Web Services with Elastic Agent.
+        - Collect logs and metrics from Apache HTTP Servers with Elastic Agent.
+        - Collect logs and metrics from Amazon Web Services with Elastic Agent.
+    deployment_modes:
+      description: >
+        Options related to the deployment modes. The deployment mode refers to the mode used to
+        deploy the Elastic Agents running this policy.
+      type: object
+      additionalProperties: false
+      properties:
+        default:
+          description: >
+            Options specific to the default deployment mode, where agents are normally managed
+            by users, explicitly enrolled to Fleet and visible in UIs.
+          type: object
+          properties:
+            enabled:
+              description: >
+                Indicates if the default deployment mode is available for this template policy.
+                It is enabled by default.
+              type: boolean
+              default: true
+        agentless:
+          description: >
+            Options specific to the Agentless deployment mode. This mode is used in offerings
+            where the Elastic Agents running these policies are fully managed for the user.
+          type: object
+          additionalProperties: false
+          properties:
+            enabled:
+              description: >
+                Indicates if the agentless deployment mode is available for this template policy.
+                It is disabled by default.
+              type: boolean
+              default: false
+            is_default:
+              description: >
+                On policy templates that support multiple deployment modes, this setting can be set to
+                true to use agentless mode by default.
+              type: boolean
+              default: false
+            organization:
+              description: >
+                The responsible organization of the integration. This is used to tag the agentless agent deployments
+                for monitoring.
+              type: string
+              examples:
+                - "security"
+            division:
+              description: >
+                The division responsible for the integration. This is used to tag the agentless agent deployments
+                for monitoring.
+              type: string
+              examples:
+                - "cloud-security"
+            team:
+              description: >
+                The team responsible for the integration. This is used to tag the agentless
+                agent deployments for monitoring.
+              type: string
+              examples:
+                - "cloud-security-posture-management"
+            resources:
+              description: >
+                The computing resources specifications for the Agentless deployment.
+              type: object
+              additionalProperties: false
+              properties:
+                requests:
+                  description: >
+                    The computing resources that the Agentless deployment will be initially allocated.
+                  type: object
+                  additionalProperties: false
+                  properties:
+                    memory:
+                      description: >
+                        The amount of memory that the Agentless deployment will be initially allocated.
+                      type: string
+                      examples:
+                        - "1G"
+                        - "1.5G"
+                    cpu:
+                      description: >
+                        The amount of CPUs that the Agentless deployment will be initially allocated.
+                      type: string
+                      examples:
+                        - "1"
+                        - "1.5"
+                        - "1500m"
+          allOf:
+            - if:
+                properties:
+                  enabled:
+                    const: true
+              then:
+                required:
+                  - organization
+                  - division
+                  - team
+    configuration_links:
+      description: List of links related to inputs and policy templates.
+      type: array
+      minItems: 1
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          title:
+            description: Link title
+            type: string
+          url:
+            description: Link url. Format is `http://...` or `https://...` for external links,  `kbn:/app/...` for links internal to Kibana.
+            type: string
+            pattern: '^(http(s)?://|kbn:/)'
+          type:
+            description: Type of link. `next_steps` for links to locations that can be relevant right after configuring the policy. `action` for actions that can be performed while the policy is in use.
+            type: string
+            enum:
+              - action
+              - next_step
+          content:
+            description: Link description
+            type: string
+        required:
+        - title
+        - url
+        - type
+    fips_compatible:
+      type: boolean
+      description: Indicate if this package is capable of satisfying FIPS requirements. Set to false if it uses any input that cannot be configured to use FIPS cryptography.
+      default: true
     icons:
       description: List of icons for by this package.
       type: array
@@ -220,9 +448,21 @@ spec:
         kind of source being managed by this package.
       type: string
       examples:
-      - Apache HTTP Server
-      - MySQL
-      - AWS
+        - Apache HTTP Server
+        - MySQL
+        - AWS
+    template_path:
+      description: Path of the config template.
+      type: string
+      examples:
+        - ./agent/input/template.yml.hbs
+    template_paths:
+      description: Paths of the config templates. Templates are rendered and merged sequentially; later templates override earlier ones for conflicting keys.
+      type: array
+      items:
+        type: string
+      examples:
+        - ["./agent/input/template1.yml.hbs", "./agent/input/template2.yml.hbs"]
     version:
       description: Version of the package, following semantic versioning. It can include pre-release labels.
       type: string
@@ -239,7 +479,11 @@ spec:
         github:
           description: Github team name of the package maintainer.
           type: string
-          pattern: '^(([a-zA-Z0-9-]+)|([a-zA-Z0-9-]+\/[a-zA-Z0-9-]+))$'
+          pattern: '^(([a-zA-Z0-9-_]+)|([a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+))$'
+          examples:
+            - "elastic"
+            - "apm-agent-java"
+            - "ux_infra_team"
         type:
           description: >
             Describes who owns the package and the level of support that is
@@ -258,6 +502,194 @@ spec:
             - community
       required:
         - github
+        - type
+    deprecated:
+      description: Information on deprecation of a package or an individual feature.
+      type: object
+      additionalProperties: false
+      properties:
+        since:
+          description: Version since when is deprecated.
+          $ref: "#/definitions/version"
+        description:
+          description: Reason of deprecation.
+          type: string
+        replaced_by:
+          type: object
+          additionalProperties: false
+          properties:
+            package:
+              description: Name of the package that replaces the deprecated one.
+              type: string
+            input:
+              description: Name of the input that replaces the deprecated one.
+              type: string
+            policy_template:
+              description: Name of the policy template that replaces the deprecated one.
+              type: string
+            variable:
+              description: Name of the variable that replaces the deprecated one.
+              type: string
+            data_stream:
+              description: Name of the data stream that replaces the deprecated one.
+              type: string
+      required:
+        - since
+        - description
+    package_reference:
+      description: >
+        Reference to an input package. When specified, configuration is inherited
+        from the referenced package. The package must be listed in the manifest's
+        requires section.
+      type: string
+      pattern: '^[a-z0-9_]+$'
+      examples:
+        - filelog_otel
+        - sql_input
+    package_dependency:
+      description: A package dependency with name and version.
+      type: object
+      additionalProperties: false
+      properties:
+        package:
+          description: Name of the required package.
+          type: string
+          pattern: '^[a-z0-9_]+$'
+          examples:
+            - sql_input
+            - elastic_agent
+        version:
+          description: >
+            Version of the required package. For input packages, it is recommended to
+            use specific versions (e.g., "1.0.0") for consistency. For content packages,
+            version constraints (e.g., "^1.0.0") can be used to allow compatible updates.
+          type: string
+          examples:
+            - "1.0.0"
+            - "^1.0.0"
+            - "~1.2.3"
+      required:
+        - package
+        - version
+    requires:
+      description: Dependencies that this package requires to function properly.
+      type: object
+      additionalProperties: false
+      properties:
+        input:
+          description: List of required input packages.
+          type: array
+          items:
+            $ref: "#/definitions/package_dependency"
+        content:
+          description: List of required content packages.
+          type: array
+          items:
+            $ref: "#/definitions/package_dependency"
+    var_groups:
+      description: >
+        Defines mutually exclusive groups of variables. When an option is selected,
+        only the variables in that option's vars array are shown. The selected option
+        name is stored in the policy. Additional properties on options are allowed
+        for feature-specific extensions (e.g., Cloud Connector metadata).
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          name:
+            description: Unique identifier for this variable group selector.
+            type: string
+            pattern: '^[a-z][a-z0-9_]*$'
+            examples:
+              - credential_type
+          title:
+            description: Section header displayed in the UI (e.g., "Setup Access").
+            type: string
+            examples:
+              - Setup Access
+          selector_title:
+            description: Label for the dropdown selector (e.g., "Preferred method").
+            type: string
+            examples:
+              - Preferred method
+          description:
+            description: Help text explaining what this selector controls.
+            type: string
+            examples:
+              - Select how you want to authenticate with AWS.
+          required:
+            description: >
+              Whether a selection is required for this var_group. When true, Fleet UI
+              will require the user to select an option, and all variables within the
+              selected option are treated as required (inferred). When false (default),
+              the entire var_group is optional. Variables within a var_group must not
+              have required: true - the requirement is controlled entirely by this field.
+            type: boolean
+            default: false
+          options:
+            description: Available options. First option is the default.
+            type: array
+            minItems: 1
+            items:
+              type: object
+              additionalProperties: true
+              properties:
+                name:
+                  description: Unique identifier (stored in policy when selected).
+                  type: string
+                  pattern: '^[a-z][a-z0-9_]*$'
+                  examples:
+                    - direct_access_key
+                    - cloud_connectors
+                title:
+                  description: Display title shown in the dropdown.
+                  type: string
+                  examples:
+                    - Direct Access Keys
+                    - Cloud Connector (recommended)
+                description:
+                  description: Help text for this option.
+                  type: string
+                  examples:
+                    - Use AWS access key ID and secret access key directly.
+                vars:
+                  description: Variable names to display when this option is selected.
+                  type: array
+                  items:
+                    type: string
+                  examples:
+                    - [access_key_id, secret_access_key]
+                hide_in_deployment_modes:
+                  description: Deployment modes where this option is hidden.
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - default
+                      - agentless
+              required:
+                - name
+                - title
+                - vars
+        required:
+          - name
+          - title
+          - selector_title
+          - options
+    dynamic_signal_types:
+      description: "When enabled, decides the transforms and index templates that need to be created depending on the pipelines specified in the configuration. This field is only allowed when the input type is 'otelcol'."
+      type: boolean
+      default: false
+    migrate_from:
+      description: >
+        Previous input type to migrate configuration from.
+        This allows Fleet to automatically migrate the policy configuration when
+        replacing one input implementation with an equivalent one.
+        This field should only be used for inputs that don't need agent's state persistence.
+      type: string
+      examples:
+        - httpjson
   properties:
     format_version:
       description: The version of the package specification format used by this package.
@@ -267,7 +699,7 @@ spec:
       type: string
       pattern: '^[a-z0-9_]+$'
       examples:
-      - apache
+        - apache
     title:
       $ref: "#/definitions/title"
     description:
@@ -281,13 +713,24 @@ spec:
       description: The type of package.
       type: string
       enum:
-      - integration
+        - integration
       examples:
-      - integration
+        - integration
     categories:
       $ref: "#/definitions/categories"
     conditions:
       $ref: "#/definitions/conditions"
+    # requires a conditional JSON schema to update the value depending
+    # on the policy_templates length
+    policy_templates_behavior:
+      description: >
+        Expected behavior when there are more than one policy template defined.
+        When set to `combined_policy`, a single policy template is available that
+        combines all the defined templates. When set to `individual_policies`, all
+        policies are individually available, but there is no combined policy.
+        The default value is `all`, where the combined policy template is available
+        along with the individual policies.
+      type: string
     policy_templates:
       description: List of policy templates offered by this package.
       type: array
@@ -323,6 +766,12 @@ spec:
                 - ec2_logs
                 - spamfirewall
                 - access
+          deployment_modes:
+            $ref: "#/definitions/deployment_modes"
+          configuration_links:
+            $ref: "#/definitions/configuration_links"
+          fips_compatible:
+            $ref: "#/definitions/fips_compatible"
           inputs:
             description: List of inputs supported by policy template.
             type: array
@@ -333,6 +782,8 @@ spec:
                 type:
                   description: Type of input.
                   type: string
+                package:
+                  $ref: "#/definitions/package_reference"
                 title:
                   description: Title of input.
                   type: string
@@ -344,10 +795,9 @@ spec:
                   examples:
                     - Collecting Apache access and error logs
                 template_path:
-                  description: Path of the config template for the input.
-                  type: string
-                  examples:
-                    - ./agent/input/template.yml.hbs
+                  $ref: "#/definitions/template_path"
+                template_paths:
+                  $ref: "#/definitions/template_paths"
                 input_group:
                   description: Name of the input group
                   type: string
@@ -358,12 +808,49 @@ spec:
                   description: Can input be defined multiple times
                   type: boolean
                   default: false
+                deployment_modes:
+                  description: >
+                    List of deployment modes that this input is compatible with.
+                    If not specified, the input is compatible with all deployment modes.
+                  type: array
+                  minItems: 1
+                  uniqueItems: true
+                  items:
+                    type: string
+                    enum:
+                      - default
+                      - agentless
+                  examples:
+                    - ["default"]
+                    - ["agentless"]
+                    - ["default", "agentless"]
+                migrate_from:
+                  $ref: "#/definitions/migrate_from"
+                required_vars:
+                  $ref: "./data_stream/manifest.spec.yml#/definitions/required_vars"
                 vars:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
+                dynamic_signal_types:
+                  $ref: "#/definitions/dynamic_signal_types"
+                deprecated:
+                  $ref: "#/definitions/deprecated"
+                hide_in_var_group_options:
+                  description: >
+                    Filter out specific var_group options for this input.
+                    Keys are var_group names, values are arrays of option names to hide.
+                  type: object
+                  additionalProperties:
+                    type: array
+                    items:
+                      type: string
+                  examples:
+                    - credential_type: [cloud_connectors]
               required:
-                - type
                 - title
                 - description
+              oneOf:
+                - required: [type]
+                - required: [package]
           multiple:
             type: boolean
           icons:
@@ -372,6 +859,8 @@ spec:
             $ref: "#/definitions/screenshots"
           vars:
             $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
+          deprecated:
+            $ref: "#/definitions/deprecated"
         required:
           - name
           - title
@@ -382,8 +871,12 @@ spec:
       $ref: "#/definitions/screenshots"
     vars:
       $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
+    var_groups:
+      $ref: "#/definitions/var_groups"
     owner:
       $ref: "#/definitions/owner"
+    agent:
+      $ref: "#/definitions/agent"
     elasticsearch:
       description: Elasticsearch requirements
       type: object
@@ -400,17 +893,124 @@ spec:
               type: array
               items:
                 type: string
+    requires:
+      $ref: "#/definitions/requires"
+    deprecated:
+      $ref: "#/definitions/deprecated"
   required:
-  - format_version
-  - name
-  - title
-  - description
-  - version
-  - type
-  - owner
+    - format_version
+    - name
+    - title
+    - description
+    - version
+    - type
+    - owner
+  allOf:
+    - if:
+        properties:
+          policy_templates:
+            maxItems: 1
+      then:
+        properties:
+          policy_templates_behavior:
+            enum:
+              - all
+            default: all
+      else:
+        properties:
+          policy_templates_behavior:
+            enum:
+              - combined_policy
+              - individual_policies
+              - all
+            default: all
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.6.0
+    patch:
+      # Support for otelcol and dynamic_signal_types in integration packages.
+      - op: add
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/type"
+        value:
+          not:
+            const: otelcol
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/dynamic_signal_types"
+      - op: remove
+        path: "/definitions/dynamic_signal_types"
+      # Package dependencies.
+      - op: remove
+        path: "/properties/requires"
+      - op: remove
+        path: "/definitions/requires"
+      - op: remove
+        path: "/definitions/package_dependency"
+      - op: remove
+        path: "/definitions/package_reference"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/package"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/oneOf"
+      - op: add
+        path: "/properties/policy_templates/items/properties/inputs/items/required/-" # re-add type as required
+        value: type
+      # Multiple template paths.
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/template_paths"
+      - op: remove
+        path: "/definitions/template_paths"
+      # Package deprecation.
+      - op: remove
+        path: "/properties/deprecated"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/deprecated"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/deprecated"
+      - op: remove
+        path: "/definitions/deprecated"
+      # Switchable variable groups.
+      - op: remove
+        path: "/definitions/var_groups"
+      - op: remove
+        path: "/properties/var_groups"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/hide_in_var_group_options"
+      # Input migration.
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/migrate_from"
+      - op: remove
+        path: "/definitions/migrate_from"
+  - before: 3.3.2
+    patch:
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/required_vars"
+      - op: remove
+        path: "/definitions/deployment_modes/properties/agentless/properties/is_default"
+      - op: remove
+        path: "/definitions/deployment_modes/properties/agentless/properties/resources"
+  - before: 3.3.1
+    patch:
+      - op: remove
+        path: "/properties/policy_templates/items/properties/configuration_links"
+  - before: 3.2.0
+    patch:
+      - op: remove
+        path: "/definitions/deployment_modes/properties/default"
+  - before: 3.1.4
+    patch:
+      - op: remove
+        path: "/properties/policy_templates/items/properties/deployment_modes"
+  - before: 3.0.0
+    patch:
+      - op: replace
+        path: "/definitions/owner/required"
+        value:
+          - github
+  - before: 2.12.0
+    patch:
+      - op: remove
+        path: "/properties/agent"
   - before: 2.11.0
     patch:
       - op: replace
@@ -429,12 +1029,12 @@ versions:
           deprecated: true # See https://github.com/elastic/package-spec/issues/225
           type: string
           enum:
-          - experimental
-          - beta
-          - ga
+            - experimental
+            - beta
+            - ga
           default: ga
           examples:
-          - experimental
+            - experimental
   - before: 2.0.0
     patch:
       - op: add
@@ -444,7 +1044,7 @@ versions:
           deprecated: true # See https://github.com/elastic/package-spec/issues/298.
           type: string
           enum:
-          - basic
+            - basic
           default: basic
           examples:
-          - basic
+            - basic

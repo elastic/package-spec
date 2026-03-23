@@ -1,5 +1,0 @@
-- name: some_array
-  type: array
-- name: my_custom_date
-  type: keyword
-  date_format: yyyy-MM-dd

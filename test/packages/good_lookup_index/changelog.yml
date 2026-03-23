@@ -1,0 +1,6 @@
+# newer versions go on top
+- version: 0.1.4
+  changes:
+    - description: "initital"
+      type: bugfix
+      link: https://github.com/elastic/integrations/pull/14883

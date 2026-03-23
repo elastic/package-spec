@@ -10,8 +10,8 @@ import (
 	"github.com/Masterminds/semver/v3"
 	"github.com/stretchr/testify/require"
 
-	spec "github.com/elastic/package-spec/v2"
-	"github.com/elastic/package-spec/v2/code/go/internal/loader"
+	spec "github.com/elastic/package-spec/v3"
+	"github.com/elastic/package-spec/v3/code/go/internal/loader"
 )
 
 func TestLoadAllBundledVersions(t *testing.T) {
@@ -19,6 +19,7 @@ func TestLoadAllBundledVersions(t *testing.T) {
 	require.NoError(t, err)
 
 	for _, version := range versions {
+		testForVersionType(t, version, "content")
 		testForVersionType(t, version, "input")
 		testForVersionType(t, version, "integration")
 	}

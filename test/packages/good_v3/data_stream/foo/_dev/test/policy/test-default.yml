@@ -1,0 +1,5 @@
+data_stream:
+  vars:
+    paths:
+      - "/var/logs/apache/access.log*"
+policy_api_format: simplified

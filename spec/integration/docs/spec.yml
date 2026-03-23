@@ -1,6 +1,6 @@
-  spec:
-    additionalContents: false
-    contents:
+spec:
+  additionalContents: false
+  contents:
     - description: Main README file
       type: file
       contentMediaType: "text/markdown"
@@ -9,5 +9,16 @@
     - description: Other README files (can be used by policy templates)
       type: file
       contentMediaType: "text/markdown"
-      pattern: '^.+.md'
+      pattern: '^.+\.md'
       required: false
+    - description: Folder containing AI assistant knowledge base content in markdown format
+      type: folder
+      name: knowledge_base
+      required: false
+      contents:
+        - description: A markdown file containing AI assistant context
+          type: file
+          contentMediaType: "text/markdown"
+          pattern: '^.+\.md$'
+      additionalContents: false # Disallows nested directories
+

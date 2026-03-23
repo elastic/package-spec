@@ -1,0 +1,12 @@
+name: bad_nested_knowledge_base
+title: Test Package with Invalid Nested Knowledge Base Directory
+version: 1.0.0
+release: beta
+description: >-
+  This is a test package that contains an invalid nested directory within the knowledge_base directory.
+  Used to verify that the nested directory validation works correctly.
+type: integration
+format_version: 2.0.0
+owner:
+  github: elastic/integrations
+  type: elastic

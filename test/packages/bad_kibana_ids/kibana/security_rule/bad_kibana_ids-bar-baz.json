@@ -2,5 +2,6 @@
   "attributes": {
     "rule_id": "something-else"
   },
-  "id": "something-else"
+  "id": "something-else",
+  "type": "security-rule"
 }

@@ -1,5 +1,9 @@
+volumes:
+  example_volume:
 version: "2.3"
 services:
   docker-custom-agent:
     host: pid
     user: root
+    volumes:
+      - example_volume:/volume_mount_point

@@ -9,7 +9,6 @@ spec:
     optionalTestResult:
       anyOf:
         - type: object
-          additionalProperties: true
         - type: "null"
   properties:
     expected:

@@ -4,11 +4,175 @@
 spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
-  additionalProperties: true
   properties:
+    deployer:
+      $ref: "./../config.spec.yml#/definitions/deployer"
     skip:
-      $ref: "./../skip.spec.yml#/definitions/skip"
+      $ref: "./../config.spec.yml#/definitions/skip"
     wait_for_data_timeout:
       description: Timeout for waiting for metrics data during a system test.
       type: string
       example: 10m
+    skip_ignored_fields:
+      description: >
+        If listed here, elastic-package system tests will not fail if values
+        for the specified field names can't be indexed for any incoming documents. This
+        should only be used if the failure is related to the test environment
+        and wouldn't happen in production. Mitigate the issue via mapping or
+        pipeline changes otherwise.
+      type: array
+      items:
+        type: string
+        example: "error.message"
+    agent:
+      description: "Configuration overrides for the Elastic Agent"
+      type: object
+      properties:
+        runtime:
+          description: "Runtime to run the Elastic Agent process"
+          type: string
+          enum:
+            - docker
+          default: docker
+        base_image:
+          description: >
+            Elastic Agent image to be used for testing. Setting `default` will be used the
+            same Elastic Agent image as the stack. Setting `systemd` will use  the image containing
+            all the binaries for running Beats (collectors) based in an OS compatible with systemd.
+            Setting `complete` will use the "complete" image, that includes all supported collectors
+            plus a web browser and the required runtime for synthetic testing.
+          type: string
+          enum:
+            - default
+            - complete
+            - systemd
+          default: "default"
+        user:
+          description: "User that runs the Elastic Agent process"
+          type: string
+          example: root
+          default: ""
+        pid_mode:
+          description: >
+            Control access to PID namespaces. When set to `host`, the Elastic Agent
+            will have access to the PID namespace of the host.
+          type: string
+          enum:
+            - host
+        ports:
+          description: "List of ports to be exposed to access to the Elastic Agent"
+          type: array
+          items:
+            type: string
+            description: Port to be exposed, as defined in https://docs.docker.com/compose/compose-file/compose-file-v2/#ports
+            examples:
+              - "3000"
+              - "8000:8000"
+              - "127.0.0.1:7443:7443"
+              - "8000:8000/udp"
+        linux_capabilities:
+          description: "Linux Capabilities that must been enabled in the system to run the Elastic Agent process"
+          type: array
+          items:
+            type: string
+            description: Capability name
+            # https://docs.docker.com/engine/reference/run/#runtime-privilege-and-linux-capabilities
+            enum:
+              - AUDIT_CONTROL
+              - AUDIT_READ
+              - AUDIT_WRITE
+              - BLOCK_SUSPEND
+              - BPF
+              - CHECKPOINT_RESTORE
+              - CHOWN
+              - DAC_OVERRIDE
+              - DAC_READ_SEARCH
+              - FOWNER
+              - FSETID
+              - IPC_LOCK
+              - IPC_OWNER
+              - KILL
+              - LEASE
+              - LINUX_IMMUTABLE
+              - MAC_ADMIN
+              - MAC_OVERRIDE
+              - MKNOD
+              - NET_ADMIN
+              - NET_BIND_SERVICE
+              - NET_BROADCAST
+              - NET_RAW
+              - PERFORM
+              - SETFCAP
+              - SETGID
+              - SETPCAP
+              - SETUID
+              - SYS_ADMIN
+              - SYS_BOOT
+              - SYS_CHROOT
+              - SYS_MODULE
+              - SYS_NICE
+              - SYS_PACCT
+              - SYS_PTRACE
+              - SYS_RAWIO
+              - SYS_RESOURCE
+              - SYS_TIME
+              - SYS_TTY_CONFIG
+              - SYSLOG
+              - WAKE_ALARM
+            examples:
+              - AUDIT_CONTROL
+              - AUDIT_READ
+        provisioning_script:
+          description: "Optional: Script to run to customize the system where Elastic Agent runs (e.g. installing new libraries/dependencies)"
+          type: object
+          additionalProperties: false
+          properties:
+            language:
+              description: "Programming language of the provisioning script."
+              type: string
+              examples:
+                - "sh"
+                - "bash"
+                - "python"
+              default: "sh"
+            contents:
+              description: "Code to run as a provisioning script."
+              type: string
+              default: ""
+          required:
+            - contents
+        pre_start_script:
+          description: "Optional: Custom sh script to be executed before starting the Elastic Agent process (e.g. export environment variables)"
+          type: object
+          additionalProperties: false
+          properties:
+            language:
+              description: "Programming language of the pre-start script. Currently, only \"sh\" is supported."
+              type: string
+              enum:
+               - sh
+              default: sh
+            contents:
+              description: "Code to run before starting the Elastic Agent."
+              type: string
+              default: ""
+          required:
+            - contents
+    vars:
+      description: Variables used to configure settings defined in the package manifest.
+      $ref: "./../config.spec.yml#/definitions/vars"
+    data_stream:
+      type:
+        - "null"
+        - object
+      properties:
+        vars:
+          description: Variables used to configure settings defined in the data stream manifest.
+          $ref: "./../config.spec.yml#/definitions/vars"
+    policy_api_format:
+      $ref: "./../config.spec.yml#/definitions/policy_api_format"
+    requires:
+      description: Package dependencies required for this test with exact versions.
+      type: array
+      items:
+        $ref: "./../config.spec.yml#/definitions/package_requirement"

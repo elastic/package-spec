@@ -11,5 +11,4 @@ spec:
       type: array
       items:
         type: object
-        additionalProperties: true
   required: [ "events" ]

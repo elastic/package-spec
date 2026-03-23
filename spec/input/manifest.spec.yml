@@ -55,6 +55,7 @@ spec:
               - logs
               - synthetics
               - traces
+              - profiles
             examples:
               - metrics
           title:
@@ -67,6 +68,12 @@ spec:
             type: string
             examples:
               - Collect logs and metrics from Apache instances
+          deployment_modes:
+            $ref: "../integration/manifest.spec.yml#/definitions/deployment_modes"
+          configuration_links:
+            $ref: "../integration/manifest.spec.yml#/definitions/configuration_links"
+          fips_compatible:
+            $ref: "../integration/manifest.spec.yml#/definitions/fips_compatible"
           icons:
             $ref: "../integration/manifest.spec.yml#/definitions/icons"
           screenshots:
@@ -80,13 +87,50 @@ spec:
               - s3
               - file
           template_path:
-            description: "Path to Elasticsearch index template for stream."
-            type: string
+            $ref: "../integration/manifest.spec.yml#/definitions/template_path"
+          template_paths:
+            $ref: "../integration/manifest.spec.yml#/definitions/template_paths"
+          dynamic_signal_types:
+            $ref: "../integration/manifest.spec.yml#/definitions/dynamic_signal_types"
+          deprecated:
+            $ref: "../integration/manifest.spec.yml#/definitions/deprecated"
+        allOf:
+          # Either template_path or template_paths must be present (mutually exclusive)
+          - oneOf:
+            - required:
+                - template_path
+              not:
+                required:
+                  - template_paths
+            - required:
+                - template_paths
+              not:
+                required:
+                  - template_path
+          # Either type is required, or dynamic_signal_types must be true
+          - oneOf:
+            - allOf:
+              - required:
+                - type
+              # If type is profiles, can only use otelcol inputs
+              - if:
+                  properties:
+                    type:
+                      const: profiles
+                then:
+                  properties:
+                    input:
+                      enum:
+                        - otelcol
+            - required:
+                - dynamic_signal_types
+              properties:
+                dynamic_signal_types:
+                  const: true
         required:
           - name
           - title
           - description
-          - type
           - input
     icons:
       $ref: "../integration/manifest.spec.yml#/definitions/icons"
@@ -96,13 +140,19 @@ spec:
       $ref: "../integration/data_stream/manifest.spec.yml#/definitions/vars"
     owner:
       $ref: "../integration/manifest.spec.yml#/definitions/owner"
+    agent:
+      $ref: "../integration/manifest.spec.yml#/definitions/agent"
     elasticsearch:
       description: Elasticsearch asset definitions
       type: object
       additionalProperties: false
       properties:
+        index_mode:
+          $ref: "../integration/data_stream/manifest.spec.yml#/definitions/elasticsearch_index_mode"
         index_template:
           $ref: "../integration/data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template"
+    deprecated:
+      $ref: "../integration/manifest.spec.yml#/definitions/deprecated"
   required:
   - format_version
   - name
@@ -114,6 +164,43 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.6.0
+    patch:
+      - op: remove
+        path: "/properties/policy_templates/items/properties/template_paths" # removes template_paths field for policy templates
+      - op: remove
+        path: "/properties/policy_templates/items/allOf" # removes allOf constraint for template_path/template_paths, dynamic_signal_types/type, and profiles otelcol input
+      - op: add
+        path: "/properties/policy_templates/items/required"
+        value:
+          - name
+          - title
+          - description
+          - type
+          - input
+          - template_path
+      - op: remove
+        path: "/properties/policy_templates/items/properties/dynamic_signal_types" # removes dynamic_signal_types field for policy templates
+      - op: remove
+        path: "/properties/elasticsearch/properties/index_mode" # Fleet needs to check that it is not enabled in non-metrics data streams
+      - op: remove
+        path: "/properties/deprecated" # removes deprecated field for package
+      - op: remove
+        path: "/properties/policy_templates/items/properties/deprecated" # removes deprecated field for policy templates
+      - op: remove
+        path: "/properties/policy_templates/items/properties/type/enum/4" # removes 'profiles' as a valid policy template type, since it requires Kibana version >= 9.4.0 support
+  # Reserve otelcol input name before 3.5.0.
+  - before: 3.5.0
+    patch:
+      - op: add
+        path: "/properties/policy_templates/items/properties/input"
+        value:
+          not:
+            const: otelcol
+  - before: 2.12.0
+    patch:
+      - op: remove
+        path: "/properties/agent"
   - before: 2.3.0
     patch:
       - op: remove

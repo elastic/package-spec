@@ -1,0 +1,9 @@
+format_version: 3.0.0
+name: kibana_legacy_visualizations
+title: Kibana Legacy Visualizations
+description: This package contains a set of legacy and non-legacy Kibana assets
+version: 0.1.2
+type: integration
+owner:
+  github: elastic/foobar
+  type: elastic

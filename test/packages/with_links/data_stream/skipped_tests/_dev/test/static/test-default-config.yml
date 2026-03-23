@@ -1,0 +1,3 @@
+skip:
+  reason: Test was skipped to test skipped test feature in spec.
+  link: https://github.com/elastic/integrations/issues/0

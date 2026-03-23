@@ -1,0 +1,1017 @@
+{
+    "attributes": {
+        "controlGroupInput": {
+            "chainingSystem": "HIERARCHICAL",
+            "controlStyle": "oneLine",
+            "ignoreParentSettingsJSON": "{\"ignoreFilters\":false,\"ignoreQuery\":false,\"ignoreTimerange\":false,\"ignoreValidations\":false}",
+            "panelsJSON": "{\"332c44e9-b2a2-4d26-96c4-49562da1ba93\":{\"type\":\"optionsListControl\",\"order\":0,\"grow\":true,\"width\":\"medium\",\"explicitInput\":{\"id\":\"332c44e9-b2a2-4d26-96c4-49562da1ba93\",\"fieldName\":\"agent.id\",\"title\":\"agent.id\",\"enhancements\":{}}}}"
+        },
+        "description": "",
+        "kibanaSavedObjectMeta": {
+            "searchSourceJSON": {
+                "filter": [
+                    {
+                        "$state": {
+                            "store": "appState"
+                        },
+                        "meta": {
+                            "alias": null,
+                            "disabled": false,
+                            "field": "agent.type",
+                            "indexRefName": "kibanaSavedObjectMeta.searchSourceJSON.filter[0].meta.index",
+                            "key": "agent.type",
+                            "negate": false,
+                            "params": {
+                                "query": "filebeat"
+                            },
+                            "type": "phrase"
+                        },
+                        "query": {
+                            "match_phrase": {
+                                "agent.type": "filebeat"
+                            }
+                        }
+                    }
+                ],
+                "query": {
+                    "language": "kuery",
+                    "query": ""
+                }
+            }
+        },
+        "optionsJSON": {
+            "hidePanelTitles": false,
+            "syncColors": false,
+            "syncCursor": true,
+            "syncTooltips": false,
+            "useMargins": true
+        },
+        "panelsJSON": [
+            {
+                "embeddableConfig": {
+                    "enhancements": {},
+                    "hidePanelTitles": false,
+                    "savedVis": {
+                        "data": {
+                            "aggs": [],
+                            "searchSource": {
+                                "filter": [],
+                                "query": {
+                                    "language": "kuery",
+                                    "query": ""
+                                }
+                            }
+                        },
+                        "description": "",
+                        "id": "",
+                        "params": {
+                            "controls": [
+                                {
+                                    "fieldName": "agent.id",
+                                    "id": "1695403260945",
+                                    "indexPatternRefName": "control_9d6acabf-1b0a-4b36-99c4-eb3a2f1f4673_0_index_pattern",
+                                    "label": "I'm a control",
+                                    "options": {
+                                        "dynamicOptions": true,
+                                        "multiselect": true,
+                                        "order": "desc",
+                                        "size": 5,
+                                        "type": "terms"
+                                    },
+                                    "parent": "",
+                                    "type": "list"
+                                }
+                            ],
+                            "pinFilters": false,
+                            "updateFiltersOnChange": true,
+                            "useTimeFilter": false
+                        },
+                        "title": "",
+                        "type": "input_control_vis",
+                        "uiState": {}
+                    }
+                },
+                "gridData": {
+                    "h": 5,
+                    "i": "9d6acabf-1b0a-4b36-99c4-eb3a2f1f4673",
+                    "w": 12,
+                    "x": 0,
+                    "y": 0
+                },
+                "panelIndex": "9d6acabf-1b0a-4b36-99c4-eb3a2f1f4673",
+                "title": "Legacy input control vis",
+                "type": "visualization",
+                "version": "8.7.1"
+            },
+            {
+                "embeddableConfig": {
+                    "enhancements": {},
+                    "savedVis": {
+                        "data": {
+                            "aggs": [],
+                            "searchSource": {
+                                "filter": [],
+                                "query": {
+                                    "language": "kuery",
+                                    "query": ""
+                                }
+                            }
+                        },
+                        "description": "",
+                        "id": "",
+                        "params": {
+                            "fontSize": 12,
+                            "markdown": "# The Good",
+                            "openLinksInNewTab": false
+                        },
+                        "title": "",
+                        "type": "markdown",
+                        "uiState": {}
+                    }
+                },
+                "gridData": {
+                    "h": 3,
+                    "i": "e9f4b7cd-8f6b-498f-9934-16e187139a9e",
+                    "w": 48,
+                    "x": 0,
+                    "y": 5
+                },
+                "panelIndex": "e9f4b7cd-8f6b-498f-9934-16e187139a9e",
+                "type": "visualization",
+                "version": "8.7.1"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "references": [
+                            {
+                                "id": "logs-*",
+                                "name": "indexpattern-datasource-layer-85c9c01e-13df-42a2-b33d-8441fb83afaf",
+                                "type": "index-pattern"
+                            }
+                        ],
+                        "state": {
+                            "adHocDataViews": {},
+                            "datasourceStates": {
+                                "formBased": {
+                                    "layers": {
+                                        "85c9c01e-13df-42a2-b33d-8441fb83afaf": {
+                                            "columnOrder": [
+                                                "e88818c5-d9ff-467e-b231-2e97d611a9a7",
+                                                "17c707aa-0ede-444e-81ed-9816983d6479"
+                                            ],
+                                            "columns": {
+                                                "17c707aa-0ede-444e-81ed-9816983d6479": {
+                                                    "dataType": "number",
+                                                    "isBucketed": false,
+                                                    "label": "Count of records",
+                                                    "operationType": "count",
+                                                    "params": {
+                                                        "emptyAsNull": true
+                                                    },
+                                                    "scale": "ratio",
+                                                    "sourceField": "___records___"
+                                                },
+                                                "e88818c5-d9ff-467e-b231-2e97d611a9a7": {
+                                                    "dataType": "string",
+                                                    "isBucketed": true,
+                                                    "label": "Top 5 values of agent.id",
+                                                    "operationType": "terms",
+                                                    "params": {
+                                                        "exclude": [],
+                                                        "excludeIsRegex": false,
+                                                        "include": [],
+                                                        "includeIsRegex": false,
+                                                        "missingBucket": false,
+                                                        "orderBy": {
+                                                            "columnId": "17c707aa-0ede-444e-81ed-9816983d6479",
+                                                            "type": "column"
+                                                        },
+                                                        "orderDirection": "desc",
+                                                        "otherBucket": true,
+                                                        "parentFormat": {
+                                                            "id": "terms"
+                                                        },
+                                                        "size": 5
+                                                    },
+                                                    "scale": "ordinal",
+                                                    "sourceField": "agent.id"
+                                                }
+                                            },
+                                            "incompleteColumns": {},
+                                            "sampling": 1
+                                        }
+                                    }
+                                },
+                                "textBased": {
+                                    "layers": {}
+                                }
+                            },
+                            "filters": [],
+                            "internalReferences": [],
+                            "query": {
+                                "language": "kuery",
+                                "query": ""
+                            },
+                            "visualization": {
+                                "axisTitlesVisibilitySettings": {
+                                    "x": true,
+                                    "yLeft": true,
+                                    "yRight": true
+                                },
+                                "fittingFunction": "None",
+                                "gridlinesVisibilitySettings": {
+                                    "x": true,
+                                    "yLeft": true,
+                                    "yRight": true
+                                },
+                                "labelsOrientation": {
+                                    "x": 0,
+                                    "yLeft": 0,
+                                    "yRight": 0
+                                },
+                                "layers": [
+                                    {
+                                        "accessors": [
+                                            "17c707aa-0ede-444e-81ed-9816983d6479"
+                                        ],
+                                        "layerId": "85c9c01e-13df-42a2-b33d-8441fb83afaf",
+                                        "layerType": "data",
+                                        "position": "top",
+                                        "seriesType": "bar_stacked",
+                                        "showGridlines": false,
+                                        "xAccessor": "e88818c5-d9ff-467e-b231-2e97d611a9a7"
+                                    }
+                                ],
+                                "legend": {
+                                    "isVisible": true,
+                                    "position": "right"
+                                },
+                                "preferredSeriesType": "bar_stacked",
+                                "tickLabelsVisibilitySettings": {
+                                    "x": true,
+                                    "yLeft": true,
+                                    "yRight": true
+                                },
+                                "valueLabels": "hide"
+                            }
+                        },
+                        "title": "",
+                        "type": "lens",
+                        "visualizationType": "lnsXY"
+                    },
+                    "enhancements": {},
+                    "hidePanelTitles": false
+                },
+                "gridData": {
+                    "h": 15,
+                    "i": "46426c7d-7683-400c-b625-49d0114f41a0",
+                    "w": 24,
+                    "x": 0,
+                    "y": 8
+                },
+                "panelIndex": "46426c7d-7683-400c-b625-49d0114f41a0",
+                "title": "Lens bar",
+                "type": "lens",
+                "version": "8.7.1"
+            },
+            {
+                "embeddableConfig": {
+                    "enhancements": {},
+                    "hidePanelTitles": false,
+                    "savedVis": {
+                        "data": {
+                            "aggs": [],
+                            "searchSource": {}
+                        },
+                        "description": "",
+                        "id": "",
+                        "params": {
+                            "spec": "{\n/*\n\nWelcome to Vega visualizations.  Here you can design your own dataviz from scratch using a declarative language called Vega, or its simpler form Vega-Lite.  In Vega, you have the full control of what data is loaded, even from multiple sources, how that data is transformed, and what visual elements are used to show it.  Use help icon to view Vega examples, tutorials, and other docs.  Use the wrench icon to reformat this text, or to remove comments.\n\nThis example graph shows the document count in all indexes in the current time range.  You might need to adjust the time filter in the upper right corner.\n*/\n\n  $schema: https://vega.github.io/schema/vega-lite/v5.json\n  title: Event counts from all indexes\n\n  // Define the data source\n  data: {\n    url: {\n/*\nAn object instead of a string for the \"url\" param is treated as an Elasticsearch query. Anything inside this object is not part of the Vega language, but only understood by Kibana and Elasticsearch server. This query counts the number of documents per time interval, assuming you have a @timestamp field in your data.\n\nKibana has a special handling for the fields surrounded by \"%\".  They are processed before the the query is sent to Elasticsearch. This way the query becomes context aware, and can use the time range and the dashboard filters.\n*/\n\n      // Apply dashboard context filters when set\n      %context%: true\n      // Filter the time picker (upper right corner) with this field\n      %timefield%: @timestamp\n\n/*\nSee .search() documentation for :  https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/api-reference.html#api-search\n*/\n\n      // Which index to search\n      index: _all\n      // Aggregate data by the time field into time buckets, counting the number of documents in each bucket.\n      body: {\n        aggs: {\n          time_buckets: {\n            date_histogram: {\n              // Use date histogram aggregation on @timestamp field\n              field: @timestamp\n              // The interval value will depend on the daterange picker (true), or use an integer to set an approximate bucket count\n              interval: {%autointerval%: true}\n              // Make sure we get an entire range, even if it has no data\n              extended_bounds: {\n                // Use the current time range's start and end\n                min: {%timefilter%: \"min\"}\n                max: {%timefilter%: \"max\"}\n              }\n              // Use this for linear (e.g. line, area) graphs.  Without it, empty buckets will not show up\n              min_doc_count: 0\n            }\n          }\n        }\n        // Speed up the response by only including aggregation results\n        size: 0\n      }\n    }\n/*\nElasticsearch will return results in this format:\n\naggregations: {\n  time_buckets: {\n    buckets: [\n      {\n        key_as_string: 2015-11-30T22:00:00.000Z\n        key: 1448920800000\n        doc_count: 0\n      },\n      {\n        key_as_string: 2015-11-30T23:00:00.000Z\n        key: 1448924400000\n        doc_count: 0\n      }\n      ...\n    ]\n  }\n}\n\nFor our graph, we only need the list of bucket values.  Use the format.property to discard everything else.\n*/\n    format: {property: \"aggregations.time_buckets.buckets\"}\n  }\n\n  // \"mark\" is the graphics element used to show our data.  Other mark values are: area, bar, circle, line, point, rect, rule, square, text, and tick.  See https://vega.github.io/vega-lite/docs/mark.html\n  mark: line\n\n  // \"encoding\" tells the \"mark\" what data to use and in what way.  See https://vega.github.io/vega-lite/docs/encoding.html\n  encoding: {\n    x: {\n      // The \"key\" value is the timestamp in milliseconds.  Use it for X axis.\n      field: key\n      type: temporal\n      axis: {title: false} // Customize X axis format\n    }\n    y: {\n      // The \"doc_count\" is the count per bucket.  Use it for Y axis.\n      field: doc_count\n      type: quantitative\n      axis: {title: \"Document count\"}\n    }\n  }\n}\n"
+                        },
+                        "title": "",
+                        "type": "vega",
+                        "uiState": {}
+                    }
+                },
+                "gridData": {
+                    "h": 15,
+                    "i": "12316c43-e92e-415b-9b6f-7a1a1c0a0f07",
+                    "w": 24,
+                    "x": 24,
+                    "y": 8
+                },
+                "panelIndex": "12316c43-e92e-415b-9b6f-7a1a1c0a0f07",
+                "title": "Vega time series",
+                "type": "visualization",
+                "version": "8.7.1"
+            },
+            {
+                "embeddableConfig": {
+                    "attributes": {
+                        "description": "",
+                        "layerListJSON": "[{\"locale\":\"autoselect\",\"sourceDescriptor\":{\"type\":\"EMS_TMS\",\"isAutoSelect\":true,\"lightModeDefault\":\"road_map_desaturated\"},\"id\":\"909a0001-15f6-40b7-8be5-fadddcc358c1\",\"label\":null,\"minZoom\":0,\"maxZoom\":24,\"alpha\":1,\"visible\":true,\"style\":{\"type\":\"EMS_VECTOR_TILE\",\"color\":\"\"},\"includeInFitToBounds\":true,\"type\":\"EMS_VECTOR_TILE\"}]",
+                        "mapStateJSON": "{\"adHocDataViews\":[],\"zoom\":1.6,\"center\":{\"lon\":0,\"lat\":19.94277},\"timeFilters\":{\"from\":\"now-15m\",\"to\":\"now\"},\"refreshConfig\":{\"isPaused\":true,\"interval\":60000},\"query\":{\"query\":\"\",\"language\":\"kuery\"},\"filters\":[],\"settings\":{\"autoFitToDataBounds\":false,\"backgroundColor\":\"#ffffff\",\"customIcons\":[],\"disableInteractive\":false,\"disableTooltipControl\":false,\"hideToolbarOverlay\":false,\"hideLayerControl\":false,\"hideViewControl\":false,\"initialLocation\":\"LAST_SAVED_LOCATION\",\"fixedLocation\":{\"lat\":0,\"lon\":0,\"zoom\":2},\"browserLocation\":{\"zoom\":2},\"keydownScrollZoom\":false,\"maxZoom\":24,\"minZoom\":0,\"showScaleControl\":false,\"showSpatialFilters\":true,\"showTimesliderToggleButton\":true,\"spatialFiltersAlpa\":0.3,\"spatialFiltersFillColor\":\"#DA8B45\",\"spatialFiltersLineColor\":\"#DA8B45\"}}",
+                        "title": "",
+                        "uiStateJSON": "{\"isLayerTOCOpen\":true,\"openTOCDetails\":[]}"
+                    },
+                    "enhancements": {},
+                    "hiddenLayers": [],
+                    "isLayerTOCOpen": true,
+                    "mapBuffer": {
+                        "maxLat": 66.51326,
+                        "maxLon": 180,
+                        "minLat": -66.51326,
+                        "minLon": -180
+                    },
+                    "mapCenter": {
+                        "lat": 19.94277,
+                        "lon": 0,
+                        "zoom": 1.6
+                    },
+                    "openTOCDetails": []
+                },
+                "gridData": {
+                    "h": 15,
+                    "i": "9d948dba-ebb0-4b9e-aa1c-de56ada1d9fb",
+                    "w": 24,
+                    "x": 0,
+                    "y": 23
+                },
+                "panelIndex": "9d948dba-ebb0-4b9e-aa1c-de56ada1d9fb",
+                "type": "map",
+                "version": "8.7.1"
+            },
+            {
+                "embeddableConfig": {
+                    "enhancements": {},
+                    "hidePanelTitles": false,
+                    "savedVis": {
+                        "data": {
+                            "aggs": [],
+                            "searchSource": {
+                                "filter": [],
+                                "query": {
+                                    "language": "kuery",
+                                    "query": ""
+                                }
+                            }
+                        },
+                        "description": "",
+                        "id": "",
+                        "params": {
+                            "axis_formatter": "number",
+                            "axis_position": "left",
+                            "axis_scale": "normal",
+                            "drop_last_bucket": 0,
+                            "id": "269c9bd6-6d39-43ee-a736-ca2d3bc8c86d",
+                            "index_pattern_ref_name": "metrics_aa45e28a-56ef-49a9-bf7b-57e7adbe74e9_0_index_pattern",
+                            "interval": "",
+                            "markdown": "# Hai {{ count.last.raw }}",
+                            "max_lines_legend": 1,
+                            "series": [
+                                {
+                                    "axis_position": "right",
+                                    "chart_type": "line",
+                                    "color": "#68BC00",
+                                    "fill": 0.5,
+                                    "formatter": "default",
+                                    "id": "a9130cea-528c-40ce-b67d-d5a1d650a9f3",
+                                    "line_width": 1,
+                                    "metrics": [
+                                        {
+                                            "id": "1e09d941-507c-4621-8431-69582d7f1f52",
+                                            "type": "count"
+                                        }
+                                    ],
+                                    "override_index_pattern": 0,
+                                    "palette": {
+                                        "name": "default",
+                                        "type": "palette"
+                                    },
+                                    "point_size": 1,
+                                    "separate_axis": 0,
+                                    "series_drop_last_bucket": 0,
+                                    "split_mode": "everything",
+                                    "stacked": "none",
+                                    "time_range_mode": "entire_time_range"
+                                }
+                            ],
+                            "show_grid": 1,
+                            "show_legend": 1,
+                            "time_field": "",
+                            "time_range_mode": "entire_time_range",
+                            "tooltip_mode": "show_all",
+                            "truncate_legend": 1,
+                            "type": "markdown",
+                            "use_kibana_indexes": true
+                        },
+                        "title": "",
+                        "type": "metrics",
+                        "uiState": {}
+                    }
+                },
+                "gridData": {
+                    "h": 15,
+                    "i": "aa45e28a-56ef-49a9-bf7b-57e7adbe74e9",
+                    "w": 24,
+                    "x": 0,
+                    "y": 59
+                },
+                "panelIndex": "aa45e28a-56ef-49a9-bf7b-57e7adbe74e9",
+                "title": "TSVB Markdown",
+                "type": "visualization",
+                "version": "8.7.1"
+            },
+            {
+                "embeddableConfig": {
+                    "enhancements": {},
+                    "savedVis": {
+                        "data": {
+                            "aggs": [],
+                            "searchSource": {
+                                "filter": [],
+                                "query": {
+                                    "language": "kuery",
+                                    "query": ""
+                                }
+                            }
+                        },
+                        "description": "",
+                        "params": {
+                            "fontSize": 12,
+                            "markdown": "# The Bad",
+                            "openLinksInNewTab": false
+                        },
+                        "title": "",
+                        "type": "markdown",
+                        "uiState": {}
+                    }
+                },
+                "gridData": {
+                    "h": 3,
+                    "i": "1aa4828f-cac5-406c-8dcc-cc91c4b23564",
+                    "w": 48,
+                    "x": 0,
+                    "y": 38
+                },
+                "panelIndex": "1aa4828f-cac5-406c-8dcc-cc91c4b23564",
+                "title": "",
+                "type": "visualization",
+                "version": "8.7.1"
+            },
+            {
+                "embeddableConfig": {
+                    "enhancements": {},
+                    "savedVis": {
+                        "data": {
+                            "aggs": [],
+                            "searchSource": {
+                                "filter": [],
+                                "query": {
+                                    "language": "kuery",
+                                    "query": ""
+                                }
+                            }
+                        },
+                        "description": "",
+                        "params": {
+                            "fontSize": 12,
+                            "markdown": "## TSVB",
+                            "openLinksInNewTab": false
+                        },
+                        "title": "",
+                        "type": "markdown",
+                        "uiState": {}
+                    }
+                },
+                "gridData": {
+                    "h": 3,
+                    "i": "20be122a-5169-4551-b519-f346ca91ce93",
+                    "w": 48,
+                    "x": 0,
+                    "y": 41
+                },
+                "panelIndex": "20be122a-5169-4551-b519-f346ca91ce93",
+                "title": "",
+                "type": "visualization",
+                "version": "8.7.1"
+            },
+            {
+                "embeddableConfig": {
+                    "enhancements": {},
+                    "hidePanelTitles": false,
+                    "savedVis": {
+                        "data": {
+                            "aggs": [],
+                            "searchSource": {}
+                        },
+                        "description": "",
+                        "id": "",
+                        "params": {
+                            "axis_formatter": "number",
+                            "axis_position": "left",
+                            "axis_scale": "normal",
+                            "drop_last_bucket": 0,
+                            "id": "2151dff1-0ac0-4364-bd3b-1b2dc6ad4a9d",
+                            "index_pattern_ref_name": "metrics_fc613301-637a-4fb8-a9c1-408041b534eb_0_index_pattern",
+                            "interval": "",
+                            "max_lines_legend": 1,
+                            "series": [
+                                {
+                                    "axis_position": "right",
+                                    "chart_type": "line",
+                                    "color": "#68BC00",
+                                    "fill": 0.5,
+                                    "formatter": "default",
+                                    "id": "9d2312fc-5cd1-4704-bed6-c90a189fdc3c",
+                                    "line_width": 1,
+                                    "metrics": [
+                                        {
+                                            "id": "ff45b058-0b35-43e9-b5cc-86cf6bb59a2f",
+                                            "type": "count"
+                                        }
+                                    ],
+                                    "override_index_pattern": 0,
+                                    "palette": {
+                                        "name": "default",
+                                        "type": "palette"
+                                    },
+                                    "point_size": 1,
+                                    "separate_axis": 0,
+                                    "series_drop_last_bucket": 0,
+                                    "split_mode": "everything",
+                                    "stacked": "none"
+                                }
+                            ],
+                            "show_grid": 1,
+                            "show_legend": 1,
+                            "time_field": "",
+                            "tooltip_mode": "show_all",
+                            "truncate_legend": 1,
+                            "type": "timeseries",
+                            "use_kibana_indexes": true
+                        },
+                        "title": "",
+                        "type": "metrics",
+                        "uiState": {}
+                    }
+                },
+                "gridData": {
+                    "h": 15,
+                    "i": "fc613301-637a-4fb8-a9c1-408041b534eb",
+                    "w": 24,
+                    "x": 0,
+                    "y": 44
+                },
+                "panelIndex": "fc613301-637a-4fb8-a9c1-408041b534eb",
+                "title": "TSVB time series",
+                "type": "visualization",
+                "version": "8.7.1"
+            },
+            {
+                "embeddableConfig": {
+                    "enhancements": {},
+                    "hidePanelTitles": false,
+                    "savedVis": {
+                        "data": {
+                            "aggs": [],
+                            "searchSource": {
+                                "filter": [],
+                                "query": {
+                                    "language": "kuery",
+                                    "query": ""
+                                }
+                            }
+                        },
+                        "description": "",
+                        "id": "",
+                        "params": {
+                            "axis_formatter": "number",
+                            "axis_position": "left",
+                            "axis_scale": "normal",
+                            "drop_last_bucket": 0,
+                            "gauge_color_rules": [
+                                {
+                                    "id": "9ad81810-596b-11ee-9f91-cf341ef7bf75"
+                                }
+                            ],
+                            "gauge_inner_width": 10,
+                            "gauge_style": "half",
+                            "gauge_width": 10,
+                            "id": "6be570b5-d3f4-41d3-8b67-b01c235bd94d",
+                            "index_pattern_ref_name": "metrics_57c0c87b-3c99-4d2a-8eab-c0f6be5100df_0_index_pattern",
+                            "interval": "",
+                            "isModelInvalid": false,
+                            "max_lines_legend": 1,
+                            "series": [
+                                {
+                                    "axis_position": "right",
+                                    "chart_type": "line",
+                                    "color": "#68BC00",
+                                    "fill": 0.5,
+                                    "formatter": "default",
+                                    "id": "ba95c76c-afd7-4cd5-9632-459a6678bc13",
+                                    "line_width": 1,
+                                    "metrics": [
+                                        {
+                                            "id": "4ec74301-3205-4f85-9c8d-a11f44638603",
+                                            "type": "count"
+                                        }
+                                    ],
+                                    "override_index_pattern": 0,
+                                    "palette": {
+                                        "name": "default",
+                                        "type": "palette"
+                                    },
+                                    "point_size": 1,
+                                    "separate_axis": 0,
+                                    "series_drop_last_bucket": 0,
+                                    "split_mode": "everything",
+                                    "stacked": "none",
+                                    "time_range_mode": "entire_time_range"
+                                }
+                            ],
+                            "show_grid": 1,
+                            "show_legend": 1,
+                            "time_field": "",
+                            "time_range_mode": "last_value",
+                            "tooltip_mode": "show_all",
+                            "truncate_legend": 1,
+                            "type": "gauge",
+                            "use_kibana_indexes": true
+                        },
+                        "title": "",
+                        "type": "metrics",
+                        "uiState": {}
+                    }
+                },
+                "gridData": {
+                    "h": 15,
+                    "i": "57c0c87b-3c99-4d2a-8eab-c0f6be5100df",
+                    "w": 24,
+                    "x": 24,
+                    "y": 44
+                },
+                "panelIndex": "57c0c87b-3c99-4d2a-8eab-c0f6be5100df",
+                "title": "TSVB gauge",
+                "type": "visualization",
+                "version": "8.7.1"
+            },
+            {
+                "embeddableConfig": {
+                    "enhancements": {},
+                    "savedVis": {
+                        "data": {
+                            "aggs": [],
+                            "searchSource": {
+                                "filter": [],
+                                "query": {
+                                    "language": "kuery",
+                                    "query": ""
+                                }
+                            }
+                        },
+                        "description": "",
+                        "params": {
+                            "fontSize": 12,
+                            "markdown": "## Aggs-based",
+                            "openLinksInNewTab": false
+                        },
+                        "title": "",
+                        "type": "markdown",
+                        "uiState": {}
+                    }
+                },
+                "gridData": {
+                    "h": 3,
+                    "i": "24272e20-9101-47b0-914f-13bd0a75c34f",
+                    "w": 48,
+                    "x": 0,
+                    "y": 74
+                },
+                "panelIndex": "24272e20-9101-47b0-914f-13bd0a75c34f",
+                "title": "",
+                "type": "visualization",
+                "version": "8.7.1"
+            },
+            {
+                "embeddableConfig": {
+                    "enhancements": {},
+                    "hidePanelTitles": false,
+                    "savedVis": {
+                        "data": {
+                            "aggs": [
+                                {
+                                    "enabled": true,
+                                    "id": "1",
+                                    "params": {
+                                        "emptyAsNull": false
+                                    },
+                                    "schema": "metric",
+                                    "type": "count"
+                                }
+                            ],
+                            "searchSource": {
+                                "indexRefName": "kibanaSavedObjectMeta.searchSourceJSON.index"
+                            }
+                        },
+                        "description": "",
+                        "id": "",
+                        "params": {
+                            "autoFitRowToContent": false,
+                            "perPage": 10,
+                            "percentageCol": "",
+                            "showMetricsAtAllLevels": false,
+                            "showPartialRows": false,
+                            "showToolbar": false,
+                            "showTotal": false,
+                            "totalFunc": "sum"
+                        },
+                        "title": "",
+                        "type": "table",
+                        "uiState": {}
+                    }
+                },
+                "gridData": {
+                    "h": 15,
+                    "i": "c8a5f48d-411a-49cf-bfc2-2647eb4354e3",
+                    "w": 24,
+                    "x": 0,
+                    "y": 77
+                },
+                "panelIndex": "c8a5f48d-411a-49cf-bfc2-2647eb4354e3",
+                "title": "Aggs-based table",
+                "type": "visualization",
+                "version": "8.7.1"
+            },
+            {
+                "embeddableConfig": {
+                    "enhancements": {},
+                    "hidePanelTitles": false,
+                    "savedVis": {
+                        "data": {
+                            "aggs": [
+                                {
+                                    "enabled": true,
+                                    "id": "1",
+                                    "params": {
+                                        "emptyAsNull": false
+                                    },
+                                    "schema": "metric",
+                                    "type": "count"
+                                },
+                                {
+                                    "enabled": true,
+                                    "id": "2",
+                                    "params": {
+                                        "excludeIsRegex": true,
+                                        "field": "host.ip",
+                                        "includeIsRegex": true,
+                                        "missingBucket": false,
+                                        "missingBucketLabel": "Missing",
+                                        "order": "desc",
+                                        "orderBy": "1",
+                                        "otherBucket": false,
+                                        "otherBucketLabel": "Other",
+                                        "size": 5
+                                    },
+                                    "schema": "segment",
+                                    "type": "terms"
+                                }
+                            ],
+                            "searchSource": {
+                                "filter": [],
+                                "indexRefName": "kibanaSavedObjectMeta.searchSourceJSON.index",
+                                "query": {
+                                    "language": "kuery",
+                                    "query": ""
+                                }
+                            }
+                        },
+                        "description": "",
+                        "id": "",
+                        "params": {
+                            "maxFontSize": 72,
+                            "minFontSize": 18,
+                            "orientation": "single",
+                            "palette": {
+                                "name": "default",
+                                "type": "palette"
+                            },
+                            "scale": "linear",
+                            "showLabel": true
+                        },
+                        "title": "",
+                        "type": "tagcloud",
+                        "uiState": {}
+                    }
+                },
+                "gridData": {
+                    "h": 15,
+                    "i": "faf4e2b9-c4b7-4f7f-9688-124fc99d9c0c",
+                    "w": 24,
+                    "x": 24,
+                    "y": 77
+                },
+                "panelIndex": "faf4e2b9-c4b7-4f7f-9688-124fc99d9c0c",
+                "title": "Aggs-based tag cloud",
+                "type": "visualization",
+                "version": "8.7.1"
+            },
+            {
+                "embeddableConfig": {
+                    "enhancements": {},
+                    "savedVis": {
+                        "data": {
+                            "aggs": [
+                                {
+                                    "enabled": true,
+                                    "id": "1",
+                                    "params": {
+                                        "emptyAsNull": false
+                                    },
+                                    "schema": "metric",
+                                    "type": "count"
+                                }
+                            ],
+                            "searchSource": {
+                                "indexRefName": "kibanaSavedObjectMeta.searchSourceJSON.index"
+                            }
+                        },
+                        "description": "",
+                        "id": "",
+                        "params": {
+                            "addLegend": true,
+                            "addTooltip": true,
+                            "colorSchema": "Green to Red",
+                            "colorsNumber": 4,
+                            "colorsRange": [],
+                            "enableHover": false,
+                            "invertColors": false,
+                            "legendPosition": "right",
+                            "percentageMode": false,
+                            "setColorRange": false,
+                            "type": "heatmap",
+                            "valueAxes": [
+                                {
+                                    "id": "ValueAxis-1",
+                                    "labels": {
+                                        "color": "black",
+                                        "overwriteColor": false,
+                                        "rotate": 0,
+                                        "show": false
+                                    },
+                                    "scale": {
+                                        "defaultYExtents": false,
+                                        "type": "linear"
+                                    },
+                                    "show": false,
+                                    "type": "value"
+                                }
+                            ]
+                        },
+                        "title": "",
+                        "type": "heatmap",
+                        "uiState": {
+                            "vis": {
+                                "defaultColors": {
+                                    "0 - 600": "rgb(0,104,55)",
+                                    "1,200 - 1,800": "rgb(254,254,189)",
+                                    "1,800 - 2,400": "rgb(248,141,82)",
+                                    "600 - 1,200": "rgb(134,203,102)"
+                                }
+                            }
+                        }
+                    },
+                    "vis": null
+                },
+                "gridData": {
+                    "h": 15,
+                    "i": "f630e819-7606-456a-a722-325e4c88716c",
+                    "w": 24,
+                    "x": 0,
+                    "y": 92
+                },
+                "panelIndex": "f630e819-7606-456a-a722-325e4c88716c",
+                "type": "visualization",
+                "version": "8.7.1"
+            },
+            {
+                "embeddableConfig": {
+                    "enhancements": {},
+                    "hidePanelTitles": false,
+                    "savedVis": {
+                        "data": {
+                            "aggs": [],
+                            "searchSource": {}
+                        },
+                        "description": "",
+                        "id": "",
+                        "params": {
+                            "expression": ".es(*)",
+                            "interval": "auto"
+                        },
+                        "title": "",
+                        "type": "timelion",
+                        "uiState": {}
+                    }
+                },
+                "gridData": {
+                    "h": 15,
+                    "i": "56cffae7-57b2-4c9b-b186-15741c6b20b6",
+                    "w": 24,
+                    "x": 24,
+                    "y": 92
+                },
+                "panelIndex": "56cffae7-57b2-4c9b-b186-15741c6b20b6",
+                "title": "Timelion time series",
+                "type": "visualization",
+                "version": "8.7.1"
+            },
+            {
+                "embeddableConfig": {
+                    "enhancements": {}
+                },
+                "gridData": {
+                    "h": 15,
+                    "i": "6cc10baa-1976-4288-ba3a-9b8b8d5a5373",
+                    "w": 24,
+                    "x": 24,
+                    "y": 23
+                },
+                "panelIndex": "6cc10baa-1976-4288-ba3a-9b8b8d5a5373",
+                "panelRefName": "panel_6cc10baa-1976-4288-ba3a-9b8b8d5a5373",
+                "type": "search",
+                "version": "8.7.1"
+            }
+        ],
+        "timeRestore": false,
+        "title": "Dashboard with mixed by-value visualizations",
+        "version": 1
+    },
+    "coreMigrationVersion": "8.7.1",
+    "created_at": "2023-09-22T20:06:49.801Z",
+    "id": "kibana_legacy_visualizations-c36e9b90-596c-11ee-adef-4fe896364076",
+    "migrationVersion": {
+        "dashboard": "8.7.0"
+    },
+    "references": [
+        {
+            "id": "logs-*",
+            "name": "kibanaSavedObjectMeta.searchSourceJSON.filter[0].meta.index",
+            "type": "index-pattern"
+        },
+        {
+            "id": "logs-*",
+            "name": "9d6acabf-1b0a-4b36-99c4-eb3a2f1f4673:control_9d6acabf-1b0a-4b36-99c4-eb3a2f1f4673_0_index_pattern",
+            "type": "index-pattern"
+        },
+        {
+            "id": "logs-*",
+            "name": "46426c7d-7683-400c-b625-49d0114f41a0:indexpattern-datasource-layer-85c9c01e-13df-42a2-b33d-8441fb83afaf",
+            "type": "index-pattern"
+        },
+        {
+            "id": "logs-*",
+            "name": "aa45e28a-56ef-49a9-bf7b-57e7adbe74e9:metrics_aa45e28a-56ef-49a9-bf7b-57e7adbe74e9_0_index_pattern",
+            "type": "index-pattern"
+        },
+        {
+            "id": "logs-*",
+            "name": "fc613301-637a-4fb8-a9c1-408041b534eb:metrics_fc613301-637a-4fb8-a9c1-408041b534eb_0_index_pattern",
+            "type": "index-pattern"
+        },
+        {
+            "id": "logs-*",
+            "name": "57c0c87b-3c99-4d2a-8eab-c0f6be5100df:metrics_57c0c87b-3c99-4d2a-8eab-c0f6be5100df_0_index_pattern",
+            "type": "index-pattern"
+        },
+        {
+            "id": "logs-*",
+            "name": "c8a5f48d-411a-49cf-bfc2-2647eb4354e3:kibanaSavedObjectMeta.searchSourceJSON.index",
+            "type": "index-pattern"
+        },
+        {
+            "id": "logs-*",
+            "name": "faf4e2b9-c4b7-4f7f-9688-124fc99d9c0c:kibanaSavedObjectMeta.searchSourceJSON.index",
+            "type": "index-pattern"
+        },
+        {
+            "id": "logs-*",
+            "name": "f630e819-7606-456a-a722-325e4c88716c:kibanaSavedObjectMeta.searchSourceJSON.index",
+            "type": "index-pattern"
+        },
+        {
+            "id": "kibana_legacy_visualizations-8f2e0810-596d-11ee-adef-4fe896364076",
+            "name": "6cc10baa-1976-4288-ba3a-9b8b8d5a5373:panel_6cc10baa-1976-4288-ba3a-9b8b8d5a5373",
+            "type": "search"
+        },
+        {
+            "id": "logs-*",
+            "name": "controlGroup_332c44e9-b2a2-4d26-96c4-49562da1ba93:optionsListDataView",
+            "type": "index-pattern"
+        }
+    ],
+    "type": "dashboard"
+}

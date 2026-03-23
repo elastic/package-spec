@@ -46,11 +46,14 @@ spec:
         description: >
           Name of field. Names containing dots are automatically split into
           sub-fields.
+          Names with wildcards generate dynamic mappings.
         type: string
         pattern: '^[\-*_\/@A-Za-z0-9]+(\.[\-*_\/@A-Za-z0-9]+)*$'
 
       type:
-        description: Datatype of field
+        description: >
+          Datatype of field. If the type is set to object, a dynamic mapping is created. In this case, if the name doesn't
+          contain any wildcard, the wildcard is added as the last segment of the path.
         type: string
         enum:
         - aggregate_metric_double
@@ -87,10 +90,18 @@ spec:
         - wildcard
         - version
         - unsigned_long
+        - counted_keyword
+        - semantic_text
 
       description:
         description: Short description of field
         type: string
+
+      expected_values:
+        description: An array of expected values for the field. When defined, these are the only expected values.
+        type: array
+        items:
+          type: string
 
       value:
         description: The value to associate with a constant_keyword field.
@@ -110,7 +121,6 @@ spec:
                 - type: number
                 - type: boolean
           - type: object
-            additionalProperties: true
 
       metric_type:
         description: >
@@ -196,6 +206,16 @@ spec:
           that are not indexed are typically not queryable.
         type: boolean
         default: true
+
+      store:
+        description: >
+          By default, field values are indexed, but not stored. This means that
+          the field can be queried, but the original field cannot be retrieved.
+          Setting this value to true ensures that the field is also stored, what
+          is useful in situations where the field would not be available even in
+          the _source, like when synthetic source mode is enabled.
+        type: boolean
+        default: false
 
       copy_to:
         description: >
@@ -394,6 +414,21 @@ spec:
         type: boolean
         default: false
 
+      subobjects:
+        description: >
+          Specifies if field names containing dots should be expanded into subobjects.
+          For example, if this is set to `true`, a field named `foo.bar` will be
+          expanded into an object with a field named `bar` inside an object
+          named `foo`.
+        type: boolean
+        default: true
+
+      inference_id:
+        description: >
+          For semantic_text fields, this specifies the id of the inference
+          endpoint associated with the field
+        type: string
+
       # Conditional properties.
       default_metric: true
       metrics: true
@@ -462,22 +497,25 @@ spec:
             required:
               - object_type
         then:
-          properties:
-            type:
-              enum:
-                - histogram
-                - aggregate_metric_double
-                - long
-                - integer
-                - short
-                - byte
-                - double
-                - float
-                - half_float
-                - scaled_float
-                - unsigned_long
-          required:
-            - type
+          oneOf:
+            - properties:
+                type:
+                  enum:
+                    - histogram
+                    - aggregate_metric_double
+                    - long
+                    - integer
+                    - short
+                    - byte
+                    - double
+                    - float
+                    - half_float
+                    - scaled_float
+                    - unsigned_long
+              required:
+                - type
+            - required:
+                - external
       - if:
           required:
             - object_type
@@ -515,11 +553,99 @@ spec:
           required:
             - type
             - object_type
+      - if:
+          properties:
+            type:
+              const: object
+          required:
+            - type
+        then:
+          oneOf:
+            - required:
+              - object_type
+              properties:
+                enabled:
+                  const: true
+            - properties:
+                enabled:
+                  const: false
+              required:
+                - enabled
+              not:
+                required:
+                  - object_type
+      - if:
+          properties:
+            fields:
+              minContent: 1
+          required:
+            - fields
+        then:
+          properties:
+            type:
+              enum:
+                - group
+                - nested
+      - if:
+          required:
+            - subobjects
+        then:
+          properties:
+            type:
+              enum:
+                - object
+          required:
+            - type
+      - if:
+          required:
+            - inference_id
+        then:
+          properties:
+            type:
+              enum:
+                - semantic_text
+          required:
+            - type
+
     required:
     - name
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.6.0
+    patch:
+      - op: remove
+        path: "/items/properties/type/enum/35" #remove semantic_text type
+      - op: remove
+        path: "/items/allOf/9" # removing inference_id when type is semantic_text
+      - op: remove
+        path: "/items/properties/inference_id" # removing inference_id field
+  - before: 3.2.0
+    patch:
+      - op: remove
+        path: "/items/properties/store"
+  - before: 3.1.0
+    patch:
+      - op: remove
+        path: "/items/properties/type/enum/34" #remove counted_keyword type
+      - op: remove
+        path: "/items/allOf/8" # removing subobjects when type is object
+      - op: remove
+        path: "/items/properties/subobjects"
+  - before: 3.0.3
+    patch:
+      - op: remove
+        path: "/items/allOf/6/then/oneOf"
+      - op: add
+        path: "/items/allOf/6/then/required"
+        value:
+          - object_type
+  - before: 3.0.0
+    patch:
+      - op: remove
+        path: "/items/allOf/7" # removing requirement of object_type and minimum fields when type is object
+      - op: remove
+        path: "/items/allOf/6" # removing requirement of type group when element has subfields
   - before: 2.10.0
     patch:
       - op: remove

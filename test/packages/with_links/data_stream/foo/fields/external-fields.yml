@@ -1,0 +1,8 @@
+- name: "@timestamp"
+  external: ecs
+- name: event
+  type: group
+  description: Event family
+  fields:
+    - name: category
+      external: ecs

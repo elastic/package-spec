@@ -1,0 +1,5 @@
+vars:
+  data_stream.dataset: '-this.is-wrong'
+data_stream:
+  vars:
+    data_stream.dataset: '_wrong-dataset'

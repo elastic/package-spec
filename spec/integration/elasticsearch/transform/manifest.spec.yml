@@ -1,18 +1,61 @@
-##
-## Describes the specification for a transform's manifest.yml file
-##
 spec:
   type: object
   additionalProperties: false
-  definitions:
-    index_template:
-      $ref: "../../data_stream/manifest.spec.yml#/properties/elasticsearch/properties/index_template"
   properties:
     destination_index_template:
       description: Elasticsearch index template for the transform's destination index
-      $ref: "#/definitions/index_template"
-      required: false
+      type: object
+      additionalProperties: false
+      properties:
+        settings:
+          type: object
+          additionalProperties: false
+          properties:
+            analysis:
+              $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_analysis"
+            index:
+              type: object
+              additionalProperties: false
+              properties:
+                codec:
+                  $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_index/properties/codec"
+                mapping:
+                  $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_index/properties/mapping"
+                mode:
+                  description: Index mode for lookup indices.
+                  type: string
+                  enum:
+                    - lookup
+                refresh_interval:
+                  description: >
+                    How often to perform a refresh operation, which makes recent changes to the index visible to search.
+                  type: string
+                  example: 1s
+                sort:
+                  $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_index/properties/sort"
+                number_of_shards:
+                  $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_number_of_shards"
+                number_of_routing_shards:
+                  description: Number used when splitting shards.
+                  $ref: "../../data_stream/manifest.spec.yml#/definitions/index_template_setting_number_of_shards"
+                hidden:
+                  description: Makes the index hidden.
+                  type: boolean
+                  default: false
+        mappings:
+          $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/mappings"
+        ingest_pipeline:
+          $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/ingest_pipeline"
+        data_stream:
+          $ref: "../../data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template/properties/data_stream"
     start:
       description: Determines if the transform will be started upon installation
       type: boolean
       default: true
+
+
+versions:
+  - before: 3.4.0
+    patch:
+      - op: remove
+        path: "/properties/destination_index_template/properties/settings/properties/index/properties/mode" # Lookup index mode is not supported in older stacks.

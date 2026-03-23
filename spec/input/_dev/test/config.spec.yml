@@ -1,0 +1,14 @@
+##
+## Describes the specification for a system test configuration file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  properties:
+    system:
+      description: Configuration for system tests
+      $ref: "../../../integration/_dev/test/config.spec.yml#/definitions/config_tests"
+    policy:
+      description: Configuration for policy tests
+      $ref: "../../../integration/_dev/test/config.spec.yml#/definitions/config_tests"

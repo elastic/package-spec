@@ -1,0 +1,39 @@
+format_version: 3.6.0
+name: good_integration_template_paths
+title: "Good Integration Template Paths"
+version: 0.0.1
+source:
+  license: "Apache-2.0"
+description: "Test package for integration with multiple template paths (inputs and streams)."
+type: integration
+categories:
+  - custom
+conditions:
+  kibana:
+    version: "^8.0.0"
+  elastic:
+    subscription: "basic"
+screenshots:
+  - src: /img/sample-screenshot.png
+    title: Sample screenshot
+    size: 600x600
+    type: image/png
+icons:
+  - src: /img/sample-logo.svg
+    title: Sample logo
+    size: 32x32
+    type: image/svg+xml
+policy_templates:
+  - name: sample
+    title: Sample logs
+    description: Collect sample logs
+    inputs:
+      - type: logfile
+        title: Collect logs from files
+        description: Collecting logs from files with multiple templates
+        template_paths:
+          - template.yml.hbs
+          - example.yml.hbs
+owner:
+  github: elastic/foobar
+  type: community

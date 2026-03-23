@@ -1,3 +1,4 @@
 {
-  "id": "bad-foobar-ecs"
+  "id": "bad-foobar-ecs",
+  "type": "dashboard"
 }

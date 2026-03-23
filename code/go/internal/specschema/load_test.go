@@ -12,8 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
-	"github.com/elastic/package-spec/v2/code/go/internal/yamlschema"
+	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/v3/code/go/internal/yamlschema"
 )
 
 func TestLoadFolderSpec(t *testing.T) {

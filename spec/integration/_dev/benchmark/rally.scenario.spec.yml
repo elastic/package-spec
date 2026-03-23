@@ -3,6 +3,7 @@ spec:
   additionalProperties: false
   required:
     - data_stream
+    - corpora
   properties:
     package:
       $ref: "./system.scenario.spec.yml#/definitions/package"
@@ -12,11 +13,5 @@ spec:
       $ref: "../../manifest.spec.yml#/definitions/version"
     data_stream:
       $ref: "./system.scenario.spec.yml#/definitions/data_stream"
-    warmup_time_period:
-      $ref: "./system.scenario.spec.yml#/definitions/warmup_time_period"
-    benchmark_time_period:
-      $ref: "./system.scenario.spec.yml#/definitions/benchmark_time_period"
-    wait_for_data_timeout:
-      $ref: "./system.scenario.spec.yml#/definitions/wait_for_data_timeout"
     corpora:
       $ref: "./system.scenario.spec.yml#/definitions/corpora"

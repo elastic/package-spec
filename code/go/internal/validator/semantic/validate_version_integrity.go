@@ -5,55 +5,56 @@
 package semantic
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 
-	"github.com/pkg/errors"
+	"github.com/Masterminds/semver/v3"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
-	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v2/code/go/internal/pkgpath"
+	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/pkgpath"
+	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // ValidateVersionIntegrity returns validation errors if the version defined in manifest isn't referenced in the latest
 // entry of the changelog file.
-func ValidateVersionIntegrity(fsys fspath.FS) ve.ValidationErrors {
+func ValidateVersionIntegrity(fsys fspath.FS) specerrors.ValidationErrors {
 	manifestVersion, err := readManifestVersion(fsys)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
 	changelogVersions, err := readChangelogVersions(fsys)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
 	err = ensureUniqueVersions(changelogVersions)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
 	err = ensureManifestVersionHasChangelogEntry(manifestVersion, changelogVersions)
 	if err != nil {
-		return ve.ValidationErrors{err}
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
+	}
+
+	err = ensureChangelogLatestVersionIsGreaterThanOthers(changelogVersions)
+	if err != nil {
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 	return nil
 }
 
 func readManifestVersion(fsys fspath.FS) (string, error) {
-	manifestPath := "manifest.yml"
-	f, err := pkgpath.Files(fsys, manifestPath)
+	manifest, err := readManifest(fsys)
 	if err != nil {
-		return "", errors.Wrap(err, "can't locate manifest file")
+		return "", err
 	}
 
-	if len(f) != 1 {
-		return "", errors.New("single manifest file expected")
-	}
-
-	val, err := f[0].Values("$.version")
+	val, err := manifest.Values("$.version")
 	if err != nil {
-		return "", errors.Wrap(err, "can't read manifest version")
+		return "", fmt.Errorf("can't read manifest version: %w", err)
 	}
 
 	sVal, ok := val.(string)
@@ -71,7 +72,7 @@ func readChangelog(fsys fspath.FS, jsonpath string) ([]string, error) {
 	changelogPath := "changelog.yml"
 	f, err := pkgpath.Files(fsys, changelogPath)
 	if err != nil {
-		return nil, errors.Wrap(err, "can't locate changelog file")
+		return nil, fmt.Errorf("can't locate changelog file: %w", err)
 	}
 
 	if len(f) != 1 {
@@ -80,12 +81,12 @@ func readChangelog(fsys fspath.FS, jsonpath string) ([]string, error) {
 
 	vals, err := f[0].Values(jsonpath)
 	if err != nil {
-		return nil, errors.Wrap(err, "can't changelog entries")
+		return nil, fmt.Errorf("can't read changelog entries: %w", err)
 	}
 
 	versions, err := toStringSlice(vals)
 	if err != nil {
-		return nil, errors.Wrap(err, "can't convert slice entries")
+		return nil, fmt.Errorf("can't convert slice entries: %w", err)
 	}
 	return versions, nil
 }
@@ -119,6 +120,10 @@ func ensureUniqueVersions(versions []string) error {
 }
 
 func ensureManifestVersionHasChangelogEntry(manifestVersion string, versions []string) error {
+	if len(versions) == 0 {
+		return errors.New("no versions found in changelog")
+	}
+
 	if manifestVersion == versions[0] {
 		return nil
 	}
@@ -130,4 +135,26 @@ func ensureManifestVersionHasChangelogEntry(manifestVersion string, versions []s
 		}
 	}
 	return errors.New("current manifest version doesn't have changelog entry")
+}
+
+func ensureChangelogLatestVersionIsGreaterThanOthers(versions []string) error {
+	if len(versions) == 0 {
+		return errors.New("no versions found in changelog")
+	}
+
+	latestVersion, err := semver.NewVersion(versions[0])
+	if err != nil {
+		return fmt.Errorf("could not read package manifest version [%s]: %w", versions[0], err)
+	}
+
+	for _, v := range versions[1:] {
+		changelogVersion, err := semver.NewVersion(v)
+		if err != nil {
+			return fmt.Errorf("could not read package manifest version [%s]: %w", changelogVersion, err)
+		}
+		if changelogVersion.GreaterThanEqual(latestVersion) {
+			return fmt.Errorf("changelog entry %s is greater than or equal to first changelog entry: %s", changelogVersion, latestVersion)
+		}
+	}
+	return nil
 }

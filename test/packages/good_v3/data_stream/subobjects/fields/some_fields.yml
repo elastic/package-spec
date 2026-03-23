@@ -1,0 +1,13 @@
+- name: source
+  title: Source
+  group: 2
+  type: group
+  fields:
+    - name: a.labels.*
+      type: object
+      object_type: keyword
+      subobjects: false
+    - name: b.labels
+      type: object
+      object_type: keyword
+      subobjects: false

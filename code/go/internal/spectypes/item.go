@@ -7,7 +7,7 @@ package spectypes
 import (
 	"io/fs"
 
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
+	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 const (
@@ -57,6 +57,9 @@ type ItemSpec interface {
 	// DevelopmentFolder returns true if the item is inside a development folder.
 	DevelopmentFolder() bool
 
+	// AllowLink returns true if the item allows links.
+	AllowLink() bool
+
 	// ForbiddenPatterns returns the list of forbidden patterns for the name of this item.
 	ForbiddenPatterns() []string
 
@@ -79,5 +82,5 @@ type ItemSpec interface {
 	Type() string
 
 	// ValidateSchema validates if the indicated file complies with the schema of the item.
-	ValidateSchema(fsys fs.FS, itemPath string) ve.ValidationErrors
+	ValidateSchema(fsys fs.FS, itemPath string) specerrors.ValidationErrors
 }

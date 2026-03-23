@@ -1,0 +1,1 @@
+# Good alert rule templates

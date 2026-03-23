@@ -1,0 +1,33 @@
+##
+## Describes the specification for a policy test configuration file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  properties:
+    skip:
+      $ref: "./../config.spec.yml#/definitions/skip"
+    data_stream:
+      description: Configuration for the data stream.
+      type:
+        - "null"
+        - object
+      additionalProperties: false
+      properties:
+        vars:
+          description: Variables used to configure settings defined in the data stream manifest.
+          $ref: "./../config.spec.yml#/definitions/vars"
+    input:
+      description: The input of the package to test.
+      type: string
+    vars:
+      description: Variables used to configure settings defined in the package manifest.
+      $ref: "./../config.spec.yml#/definitions/vars"
+    requires:
+      description: Package dependencies required for this test with exact versions.
+      type: array
+      items:
+        $ref: "./../config.spec.yml#/definitions/package_requirement"
+    policy_api_format:
+      $ref: "./../config.spec.yml#/definitions/policy_api_format"

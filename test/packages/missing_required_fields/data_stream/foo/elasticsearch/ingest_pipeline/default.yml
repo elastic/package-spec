@@ -2,3 +2,6 @@
 description: Pipeline for Microsoft DHCP
 
 processors:
+  - set:
+      field: foo
+      value: bar

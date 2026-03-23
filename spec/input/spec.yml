@@ -1,6 +1,5 @@
 ##
 ## Entrypoint of "input packages" specification.
-## The specification is considered "beta" at the moment, so it may change until we release it as GA.
 ##
 ## Describes the folders and files that make up a package.
 ##
@@ -44,7 +43,7 @@ spec:
   - description: Folder containing field definitions
     type: folder
     name: fields
-    required: true
+    required: false
     $ref: "../integration/data_stream/fields/spec.yml"
   - description: Sample event file
     type: file
@@ -63,8 +62,28 @@ spec:
     name: "lifecycle.yml"
     required: false
     $ref: "../integration/data_stream/lifecycle.spec.yml"
+  - description: Configuration file to process the results returned from the package validation. This file is just for package validation and it should be ignored when installing or using the package.
+    type: file
+    contentMediaType: "application/x-yaml"
+    name: "validation.yml"
+    required: false
+    $ref: "../integration/validation.spec.yml"
+  - description: Folder containing images for the package
+    type: folder
+    name: img
+    required: false
+    $ref: "../integration/img/spec.yml"
 
 versions:
+  - before: 3.5.0
+    patch:
+      - op: replace
+        path: "/contents/5/required" # Input packages don't require field definitions.
+        value: true
+  - before: 3.2.2
+    patch:
+      - op: remove
+        path: "/contents/10" # Definition for img folder.
   - before: 2.10.0
     patch:
       - op: remove

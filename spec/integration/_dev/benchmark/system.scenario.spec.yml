@@ -28,11 +28,7 @@ spec:
           type: string
         vars:
           description: The data_stream specific variables.
-          type:
-            - object
-            - "null"
-          additionalProperties: true
-          default: ~
+          $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/vars"
     warmup_time_period:
       description: |
         A time period as a duration string for warmup of the benchmark. 
@@ -65,17 +61,12 @@ spec:
           type: object
           additionalProperties: false
           required:
-            - size
+            - total_events
             - template
             - config
             - fields
           properties:
-            size:
-              description: A string describing the amount of data to generate.
-              type: string
-              example: 10MiB
-              deprecated: true # as for https://github.com/elastic/elastic-integration-corpus-generator-tool/pull/94
-            tot_events:
+            total_events:
               description: An integer describing the total number of events to generate.
               type: integer
               example: 1000
@@ -105,7 +96,6 @@ spec:
                 raw:
                   description: Raw config.
                   type: object
-                  additionalProperties: true
                 path:
                   description: Config path.
                   type: string
@@ -117,7 +107,6 @@ spec:
                 raw:
                   description: Raw fields.
                   type: object
-                  additionalProperties: true
                 path:
                   description: Fields path.
                   type: string
@@ -151,13 +140,11 @@ spec:
     input:
       description: The input of the package to benchmark.
       type: string
+    policy_template:
+      $ref: "#/definitions/policy_template"
     vars:
       description: The package level variables.
-      type:
-        - object
-        - "null"
-      additionalProperties: true
-      default: ~
+      $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/vars"
     data_stream:
       $ref: "#/definitions/data_stream"
     warmup_time_period:
@@ -166,5 +153,7 @@ spec:
       $ref: "#/definitions/benchmark_time_period"
     wait_for_data_timeout:
       $ref: "#/definitions/wait_for_data_timeout"
+    deployer:
+      $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/deployer"
     corpora:
       $ref: "#/definitions/corpora"

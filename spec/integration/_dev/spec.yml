@@ -17,3 +17,18 @@ spec:
       name: deploy
       required: false
       $ref: "./deploy/spec.yml"
+    - description: Folder containing configuration related test configuration.
+      type: folder
+      name: test
+      required: false
+      $ref: "./test/spec.yml"
+    - description: Folder containing shared files.
+      type: folder
+      name: shared
+      required: false
+      $ref: "./shared/spec.yml"
+    - description: Folder containing scripts used for development.
+      type: folder
+      name: scripts
+      required: false
+      $ref: "./scripts/spec.yml"

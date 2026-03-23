@@ -5,32 +5,59 @@
 package semantic
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 
-	"github.com/pkg/errors"
-
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
-	"github.com/elastic/package-spec/v2/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
-// ValidateUniqueFields verifies that any field is defined only once on each data stream.
-func ValidateUniqueFields(fsys fspath.FS) ve.ValidationErrors {
-	// data_stream -> field -> files
-	fields := make(map[string]map[string][]string)
+type uniqueField struct {
+	name       string
+	dataStream string
+	transform  string
+}
 
-	countField := func(metadata fieldFileMetadata, f field) ve.ValidationErrors {
+// ValidateUniqueFields verifies that any field is defined only once on each data stream.
+func ValidateUniqueFields(fsys fspath.FS) specerrors.ValidationErrors {
+	// data_stream -> field -> files
+	// if data stream is empty string, it means it is an input package
+	fields := make(map[string]map[uniqueField][]string)
+	// transform -> field -> files
+	// Created a new map to avoid collisions with data stream names
+	transformFields := make(map[string]map[uniqueField][]string)
+
+	countField := func(metadata fieldFileMetadata, f field) specerrors.ValidationErrors {
 		if len(f.Fields) > 0 {
 			// Don't count groups
 			return nil
 		}
 
+		if metadata.transform != "" {
+			transformMap, found := transformFields[metadata.transform]
+			if !found {
+				transformMap = make(map[uniqueField][]string)
+				transformFields[metadata.transform] = transformMap
+			}
+			field := uniqueField{
+				name:      f.Name,
+				transform: metadata.transform,
+			}
+			transformMap[field] = append(transformMap[field], metadata.fullFilePath)
+			return nil
+		}
+
 		dsMap, found := fields[metadata.dataStream]
 		if !found {
-			dsMap = make(map[string][]string)
+			dsMap = make(map[uniqueField][]string)
 			fields[metadata.dataStream] = dsMap
 		}
-		dsMap[f.Name] = append(dsMap[f.Name], metadata.fullFilePath)
+		field := uniqueField{
+			name:       f.Name,
+			dataStream: metadata.dataStream,
+		}
+		dsMap[field] = append(dsMap[field], metadata.fullFilePath)
 		return nil
 	}
 
@@ -39,17 +66,36 @@ func ValidateUniqueFields(fsys fspath.FS) ve.ValidationErrors {
 		return err
 	}
 
-	var errs ve.ValidationErrors
+	var errs specerrors.ValidationErrors
 	for id, defs := range fields {
 		for field, files := range defs {
 			if len(files) > 1 {
 				sort.Strings(files)
+				message := fmt.Sprintf("field %q is defined multiple times", field.name)
+				if id != "" && field.dataStream != "" {
+					message += fmt.Sprintf(" for data stream %q", id)
+				}
 				errs = append(errs,
-					errors.Errorf("field %q is defined multiple times for data stream %q, found in: %s",
-						field, id, strings.Join(files, ", ")))
+					specerrors.NewStructuredErrorf("%s, found in: %s", message, strings.Join(files, ", ")),
+				)
 			}
 		}
-
 	}
+
+	for id, defs := range transformFields {
+		for field, files := range defs {
+			if len(files) > 1 {
+				sort.Strings(files)
+				message := fmt.Sprintf("field %q is defined multiple times", field.name)
+				if id != "" && field.transform != "" {
+					message += fmt.Sprintf(" for transform %q", id)
+				}
+				errs = append(errs,
+					specerrors.NewStructuredErrorf("%s, found in: %s", message, strings.Join(files, ", ")),
+				)
+			}
+		}
+	}
+
 	return errs
 }

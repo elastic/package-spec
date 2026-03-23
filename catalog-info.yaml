@@ -32,7 +32,7 @@ metadata:
 spec:
   type: buildkite-pipeline
   owner: group:ingest-fp
-  system: buildkite
+  system: platform-ingest
   implementation:
     apiVersion: buildkite.elastic.dev/v1
     kind: Pipeline
@@ -50,7 +50,7 @@ spec:
         build_pull_requests: true # requires filter_enabled and filter_condition settings as below when used with buildkite-pr-bot
         filter_enabled: true
         filter_condition: >-
-          build.pull_request.id == null || (build.creator.name == 'elasticmachine' && build.pull_request.id != null)
+          build.pull_request.id == null || (build.creator.name == 'elasticmachine' && build.pull_request.id != null && build.source == 'api')
       repository: elastic/package-spec
       cancel_intermediate_builds: true
       cancel_intermediate_builds_branch_filter: '!main'
@@ -78,7 +78,7 @@ metadata:
 spec:
   type: buildkite-pipeline
   owner: group:ingest-fp
-  system: buildkite
+  system: platform-ingest
   implementation:
     apiVersion: buildkite.elastic.dev/v1
     kind: Pipeline
@@ -86,7 +86,7 @@ spec:
       name: package-spec
       description: 'EPR package specifications'
     spec:
-      branch_configuration: "main v2.*"
+      branch_configuration: "main v2.* v3.*"
       pipeline_file: ".buildkite/pipeline.yml"
       provider_settings:
         build_pull_request_forks: false
@@ -94,7 +94,7 @@ spec:
         build_tags: true
         filter_enabled: true
         filter_condition: >-
-          build.pull_request.id == null || (build.creator.name == 'elasticmachine' && build.pull_request.id != null)
+          build.pull_request.id == null || (build.creator.name == 'elasticmachine' && build.pull_request.id != null && build.source == 'api')
       repository: elastic/package-spec
       cancel_intermediate_builds: true
       cancel_intermediate_builds_branch_filter: '!main'

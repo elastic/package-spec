@@ -19,18 +19,23 @@ spec:
             reference:
               type: string
               description: Source reference
-              pattern: '^git@.+'
+              pattern: "^git@.+"
             import_mappings:
               type: boolean
               description: >
                 Whether or not import common used dynamic templates and properties into the package
               default: false
+              deprecated: true # See: https://github.com/elastic/package-spec/pull/726
           required:
             - reference
   required:
-  - dependencies
+    - dependencies
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.1.3
+    patch:
+      - op: remove
+        path: "/properties/dependencies/properties/ecs/properties/import_mappings/deprecated"
   - before: 2.3.0
     patch:
       - op: remove

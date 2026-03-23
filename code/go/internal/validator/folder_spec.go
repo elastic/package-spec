@@ -5,6 +5,7 @@
 package validator
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"log"
@@ -12,47 +13,50 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/pkg/errors"
-
-	ve "github.com/elastic/package-spec/v2/code/go/internal/errors"
-	"github.com/elastic/package-spec/v2/code/go/internal/packages"
-	"github.com/elastic/package-spec/v2/code/go/internal/spectypes"
-	"github.com/elastic/package-spec/v2/code/go/internal/validator/common"
+	"github.com/elastic/package-spec/v3/code/go/internal/packages"
+	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 type validator struct {
-	spec       spectypes.ItemSpec
-	pkg        *packages.Package
-	folderPath string
+	spec             spectypes.ItemSpec
+	pkg              *packages.Package
+	folderPath       string
+	warningsAsErrors bool
 
 	totalSize     spectypes.FileSize
 	totalContents int
 }
 
-func newValidator(spec spectypes.ItemSpec, pkg *packages.Package) *validator {
-	return newValidatorForPath(spec, pkg, ".")
+func newValidator(spec spectypes.ItemSpec, pkg *packages.Package, warningsAsErrors bool) *validator {
+	return newValidatorForPath(spec, pkg, ".", warningsAsErrors)
 }
 
-func newValidatorForPath(spec spectypes.ItemSpec, pkg *packages.Package, folderPath string) *validator {
+func newValidatorForPath(spec spectypes.ItemSpec, pkg *packages.Package, folderPath string, warningsAsErrors bool) *validator {
 	return &validator{
-		spec:       spec,
-		pkg:        pkg,
-		folderPath: folderPath,
+		spec:             spec,
+		pkg:              pkg,
+		folderPath:       folderPath,
+		warningsAsErrors: warningsAsErrors,
 	}
 }
 
-func (v *validator) Validate() ve.ValidationErrors {
-	var errs ve.ValidationErrors
+func (v *validator) Validate() specerrors.ValidationErrors {
+	var errs specerrors.ValidationErrors
 	files, err := fs.ReadDir(v.pkg, v.folderPath)
 	if err != nil {
-		errs = append(errs, errors.Wrapf(err, "could not read folder [%s]", v.pkg.Path(v.folderPath)))
+		errs = append(errs,
+			specerrors.NewStructuredErrorf("could not read folder [%s]: %w", v.pkg.Path(v.folderPath), err),
+		)
 		return errs
 	}
 
 	// This is not taking into account if the folder is for development. Enforce
 	// this limit in all cases to avoid having to read too many files.
 	if contentsLimit := v.spec.MaxTotalContents(); contentsLimit > 0 && len(files) > contentsLimit {
-		errs = append(errs, errors.Errorf("folder [%s] exceeds the limit of %d files", v.pkg.Path(v.folderPath), contentsLimit))
+		errs = append(errs,
+			specerrors.NewStructuredErrorf("folder [%s] exceeds the limit of %d files", v.pkg.Path(v.folderPath), contentsLimit),
+		)
 		return errs
 	}
 
@@ -60,24 +64,28 @@ func (v *validator) Validate() ve.ValidationErrors {
 	switch v.spec.Release() {
 	case "", "ga": // do nothing
 	case "beta":
-		if v.pkg.Version.Major() > 0 && v.pkg.Version.Prerelease() == "" {
-			errs = append(errs, errors.Errorf("spec for [%s] defines beta features which can't be enabled for packages with a stable semantic version", v.pkg.Path(v.folderPath)))
+		if v.pkg.IsGA() {
+			errs = append(errs,
+				specerrors.NewStructuredErrorf("spec for [%s] defines beta features which can't be enabled for packages with a stable semantic version", v.pkg.Path(v.folderPath)),
+			)
 		} else {
-			if common.IsDefinedWarningsAsErrors() {
-				errs = append(errs, errors.Errorf("Warning: package with non-stable semantic version and active beta features (enabled in [%s]) can't be released as stable version.", v.pkg.Path(v.folderPath)))
+			message := fmt.Sprintf("package with non-stable semantic version and active beta features (enabled in [%s]) can't be released as stable version.", v.pkg.Path(v.folderPath))
+			if v.warningsAsErrors || v.pkg.SpecVersion.Major() >= 3 {
+				err = errors.New(message)
+				errs = append(errs, specerrors.NewStructuredError(err, specerrors.CodePrereleaseFeatureOnGAPackage))
 			} else {
-				log.Printf("Warning: package with non-stable semantic version and active beta features (enabled in [%s]) can't be released as stable version.", v.pkg.Path(v.folderPath))
+				log.Print("Warning: ", message)
 			}
 		}
 	default:
-		errs = append(errs, errors.Errorf("unsupport release level, supported values: beta, ga"))
+		errs = append(errs, specerrors.NewStructuredErrorf("unsupport release level, supported values: beta, ga"))
 	}
 
 	for _, file := range files {
 		fileName := file.Name()
 		itemSpec, err := v.findItemSpec(fileName)
 		if err != nil {
-			errs = append(errs, err)
+			errs = append(errs, specerrors.NewStructuredError(err, specerrors.UnassignedCode))
 			continue
 		}
 
@@ -86,8 +94,10 @@ func (v *validator) Validate() ve.ValidationErrors {
 			if file.IsDir() {
 				if !v.spec.DevelopmentFolder() && strings.Contains(fileName, "-") {
 					errs = append(errs,
-						fmt.Errorf(`file "%s" is invalid: directory name inside package %s contains -: %s`,
-							v.pkg.Path(v.folderPath, fileName), v.pkg.Name, fileName))
+						specerrors.NewStructuredErrorf(
+							`file "%s" is invalid: directory name inside package %s contains -: %s`,
+							v.pkg.Path(v.folderPath, fileName), v.pkg.Name, fileName),
+					)
 				}
 			}
 			continue
@@ -95,18 +105,22 @@ func (v *validator) Validate() ve.ValidationErrors {
 
 		if itemSpec == nil && !v.spec.AdditionalContents() {
 			// No spec found for current folder item and we do not allow additional contents in folder.
-			errs = append(errs, fmt.Errorf("item [%s] is not allowed in folder [%s]", fileName, v.pkg.Path(v.folderPath)))
+			errs = append(errs,
+				specerrors.NewStructuredErrorf("item [%s] is not allowed in folder [%s]", fileName, v.pkg.Path(v.folderPath)),
+			)
 			continue
 		}
 
 		if file.IsDir() {
 			if !itemSpec.IsDir() {
-				errs = append(errs, fmt.Errorf("[%s] is a folder but is expected to be a file", fileName))
+				errs = append(errs,
+					specerrors.NewStructuredErrorf("[%s] is a folder but is expected to be a file", fileName),
+				)
 				continue
 			}
 
 			subFolderPath := path.Join(v.folderPath, fileName)
-			itemValidator := newValidatorForPath(itemSpec, v.pkg, subFolderPath)
+			itemValidator := newValidatorForPath(itemSpec, v.pkg, subFolderPath, v.warningsAsErrors)
 			subErrs := itemValidator.Validate()
 			if len(subErrs) > 0 {
 				errs = append(errs, subErrs...)
@@ -119,19 +133,25 @@ func (v *validator) Validate() ve.ValidationErrors {
 			}
 		} else {
 			if itemSpec.IsDir() {
-				errs = append(errs, fmt.Errorf("[%s] is a file but is expected to be a folder", v.pkg.Path(fileName)))
+				errs = append(errs,
+					specerrors.NewStructuredErrorf("[%s] is a file but is expected to be a folder", v.pkg.Path(fileName)),
+				)
 				continue
 			}
 
 			itemPath := path.Join(v.folderPath, file.Name())
 			itemValidationErrs := validateFile(itemSpec, v.pkg, itemPath)
 			for _, ive := range itemValidationErrs {
-				errs = append(errs, errors.Wrapf(ive, "file \"%s\" is invalid", v.pkg.Path(itemPath)))
+				errs = append(errs,
+					specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", v.pkg.Path(itemPath), ive),
+				)
 			}
 
 			info, err := fs.Stat(v.pkg, itemPath)
 			if err != nil {
-				errs = append(errs, errors.Wrapf(err, "failed to obtain file size for \"%s\"", v.pkg.Path(itemPath)))
+				errs = append(errs,
+					specerrors.NewStructuredErrorf("failed to obtain file size for \"%s\": %w", v.pkg.Path(itemPath), err),
+				)
 			} else {
 				v.totalContents++
 				v.totalSize += spectypes.FileSize(info.Size())
@@ -140,7 +160,9 @@ func (v *validator) Validate() ve.ValidationErrors {
 	}
 
 	if sizeLimit := v.spec.MaxTotalSize(); sizeLimit > 0 && v.totalSize > sizeLimit {
-		errs = append(errs, errors.Errorf("folder [%s] exceeds the total size limit of %s", v.pkg.Path(v.folderPath), sizeLimit))
+		errs = append(errs,
+			specerrors.NewStructuredErrorf("folder [%s] exceeds the total size limit of %s", v.pkg.Path(v.folderPath), sizeLimit),
+		)
 	}
 
 	// validate that required items in spec are all accounted for
@@ -151,7 +173,7 @@ func (v *validator) Validate() ve.ValidationErrors {
 
 		fileFound, err := matchingFileExists(itemSpec, files)
 		if err != nil {
-			errs = append(errs, err)
+			errs = append(errs, specerrors.NewStructuredError(err, specerrors.UnassignedCode))
 			continue
 		}
 
@@ -162,13 +184,14 @@ func (v *validator) Validate() ve.ValidationErrors {
 			} else if itemSpec.Pattern() != "" {
 				err = fmt.Errorf("expecting to find %s matching pattern [%s] in folder [%s]", itemSpec.Type(), itemSpec.Pattern(), v.pkg.Path(v.folderPath))
 			}
-			errs = append(errs, err)
+			errs = append(errs, specerrors.NewStructuredError(err, specerrors.UnassignedCode))
 		}
 	}
 	return errs
 }
 
 func (v *validator) findItemSpec(folderItemName string) (spectypes.ItemSpec, error) {
+	isLink, folderItemName := checkLink(folderItemName)
 	for _, itemSpec := range v.spec.Contents() {
 		if itemSpec.Name() != "" && itemSpec.Name() == folderItemName {
 			return itemSpec, nil
@@ -176,14 +199,14 @@ func (v *validator) findItemSpec(folderItemName string) (spectypes.ItemSpec, err
 		if itemSpec.Pattern() != "" {
 			isMatch, err := regexp.MatchString(strings.ReplaceAll(itemSpec.Pattern(), "{PACKAGE_NAME}", v.pkg.Name), folderItemName)
 			if err != nil {
-				return nil, errors.Wrap(err, "invalid folder item spec pattern")
+				return nil, fmt.Errorf("invalid folder item spec pattern: %w", err)
 			}
 			if isMatch {
 				var isForbidden bool
 				for _, forbidden := range itemSpec.ForbiddenPatterns() {
 					isForbidden, err = regexp.MatchString(forbidden, folderItemName)
 					if err != nil {
-						return nil, errors.Wrap(err, "invalid forbidden pattern for folder item")
+						return nil, fmt.Errorf("invalid forbidden pattern for folder item: %w", err)
 					}
 
 					if isForbidden {
@@ -192,6 +215,9 @@ func (v *validator) findItemSpec(folderItemName string) (spectypes.ItemSpec, err
 				}
 
 				if !isForbidden {
+					if isLink && !itemSpec.AllowLink() {
+						return nil, fmt.Errorf("item [%s] is a link but is not allowed", folderItemName)
+					}
 					return itemSpec, nil
 				}
 			}
@@ -200,4 +226,14 @@ func (v *validator) findItemSpec(folderItemName string) (spectypes.ItemSpec, err
 
 	// No item spec found
 	return nil, nil
+}
+
+// checkLink checks if an item is a link and returns the item name without the
+// ".link" suffix if it is a link.
+func checkLink(itemName string) (bool, string) {
+	const linkExtension = ".link"
+	if strings.HasSuffix(itemName, linkExtension) {
+		return true, strings.TrimSuffix(itemName, linkExtension)
+	}
+	return false, itemName
 }
