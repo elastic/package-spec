@@ -830,6 +830,8 @@ spec:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/required_vars"
                 vars:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
+                var_groups:
+                  $ref: "#/definitions/var_groups"
                 dynamic_signal_types:
                   $ref: "#/definitions/dynamic_signal_types"
                 deprecated:
@@ -859,6 +861,8 @@ spec:
             $ref: "#/definitions/screenshots"
           vars:
             $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
+          var_groups:
+            $ref: "#/definitions/var_groups"
           deprecated:
             $ref: "#/definitions/deprecated"
         required:
@@ -974,6 +978,10 @@ versions:
         path: "/definitions/var_groups"
       - op: remove
         path: "/properties/var_groups"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/var_groups"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/var_groups"
       - op: remove
         path: "/properties/policy_templates/items/properties/inputs/items/properties/hide_in_var_group_options"
       # Input migration.
