@@ -49,6 +49,9 @@
     - description: Add support for `profiles` policy template type in input packages
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1092
+    - description: Support including multiple sample events
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/582
 - version: 3.5.8
   changes:
     - description: Add deployer option to system benchmark configuration.
