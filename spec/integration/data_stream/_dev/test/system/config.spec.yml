@@ -176,3 +176,36 @@ spec:
       type: array
       items:
         $ref: "./../config.spec.yml#/definitions/package_requirement"
+    samples:
+      description: >
+        List of sample event files to collect from this test. Each entry selects a sample
+        event file by name (the suffix in `sample_event_<name>.json`) and can optionally
+        define a condition to restrict which documents are used.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          name:
+            description: >
+              Name identifying the sample event file to use. Corresponds to the suffix in
+              `sample_event_<name>.json`.
+            type: string
+            example: one
+          condition:
+            description: Condition to filter documents used for the sample event.
+            type: object
+            additionalProperties: false
+            properties:
+              key:
+                description: Field name to check in the document.
+                type: string
+                example: "sql.driver"
+              value:
+                description: Expected value of the field.
+                type: string
+                example: "mysql"
+            required:
+              - key
+        required:
+          - name
