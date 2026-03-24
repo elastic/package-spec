@@ -49,6 +49,9 @@
     - description: Add support for `profiles` policy template type in input packages
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1092
+    - description: Align integration template path semantic validation with Fleet (template_paths first, validate all data stream streams, independent of policy input templates).
+      type: bugfix
+      link: TBD
 - version: 3.5.8
   changes:
     - description: Add deployer option to system benchmark configuration.
