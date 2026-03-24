@@ -26,7 +26,7 @@
       link: https://github.com/elastic/package-spec/issues/1054
     - description: Add var_groups support to policy template and input levels in integration packages, and to policy template and package root levels in input packages.
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/PLACEHOLDER
+      link: https://github.com/elastic/package-spec/pull/1120
     - description: Allow to set time series index mode in input packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1066
