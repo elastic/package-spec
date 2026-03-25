@@ -49,6 +49,15 @@ type dataStreamManifest struct {
 	Streams []stream `yaml:"streams"`
 }
 
+// dataStreamManifestReadError records which data_stream/<name>/manifest.yml failed to read or parse.
+type dataStreamManifestReadError struct {
+	relPath string
+	err     error
+}
+
+func (e *dataStreamManifestReadError) Error() string { return e.err.Error() }
+func (e *dataStreamManifestReadError) Unwrap() error { return e.err }
+
 // ValidateIntegrationPolicyTemplates validates agent input and stream template files for
 // integration packages, following Fleet/EPM resolution (template_paths before template_path;
 // stream default stream.yml.hbs when neither is set on a stream).
@@ -75,11 +84,16 @@ func ValidateIntegrationPolicyTemplates(fsys fspath.FS) specerrors.ValidationErr
 
 	dataStreamsManifestMap, err := readDataStreamsManifests(fsys)
 	if err != nil {
+		var dsReadErr *dataStreamManifestReadError
+		if errors.As(err, &dsReadErr) {
+			return specerrors.ValidationErrors{
+				specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(dsReadErr.relPath), dsReadErr.err)}
+		}
 		return specerrors.ValidationErrors{
-			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), err)}
+			specerrors.NewStructuredErrorf("invalid data stream manifests: %w", err)}
 	}
 
-	errs = append(errs, validateAllDataStreamStreamTemplates(fsys, manifestPath, dataStreamsManifestMap)...)
+	errs = append(errs, validateAllDataStreamStreamTemplates(fsys, dataStreamsManifestMap)...)
 
 	for _, policyTemplate := range manifest.PolicyTemplates {
 		if err := validateIntegrationPolicyTemplateInputs(fsys, policyTemplate); err != nil {
@@ -114,7 +128,7 @@ func validateIntegrationPolicyTemplateInputs(fsys fspath.FS, policyTemplate inte
 }
 
 // validateAllDataStreamStreamTemplates validates every stream row in every data stream manifest.
-func validateAllDataStreamStreamTemplates(fsys fspath.FS, manifestPath string, dsMap map[string]dataStreamManifest) specerrors.ValidationErrors {
+func validateAllDataStreamStreamTemplates(fsys fspath.FS, dsMap map[string]dataStreamManifest) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	dsDirs := make([]string, 0, len(dsMap))
@@ -124,12 +138,13 @@ func validateAllDataStreamStreamTemplates(fsys fspath.FS, manifestPath string, d
 	slices.Sort(dsDirs)
 
 	for _, dsDir := range dsDirs {
+		dsManifestPath := path.Join(dsDir, "manifest.yml")
 		manifest := dsMap[dsDir]
 		for i, s := range manifest.Streams {
 			if err := validateSingleDataStreamStreamTemplates(fsys, dsDir, s); err != nil {
 				errs = append(errs, specerrors.NewStructuredErrorf(
 					"file \"%s\" is invalid: data stream \"%s\" stream %d (input %q): %w",
-					fsys.Path(manifestPath), dsDir, i+1, streamInputLabel(s.Input), err))
+					fsys.Path(dsManifestPath), dsDir, i+1, streamInputLabel(s.Input), err))
 			}
 		}
 	}
@@ -190,12 +205,12 @@ func readDataStreamsManifests(fsys fspath.FS) (map[string]dataStreamManifest, er
 	for _, file := range dsManifests {
 		data, err := fs.ReadFile(fsys, file)
 		if err != nil {
-			return nil, err
+			return nil, &dataStreamManifestReadError{relPath: file, err: err}
 		}
 		var m dataStreamManifest
 		err = yaml.Unmarshal(data, &m)
 		if err != nil {
-			return nil, err
+			return nil, &dataStreamManifestReadError{relPath: file, err: err}
 		}
 
 		dsDir := path.Dir(file)

@@ -453,13 +453,13 @@ func TestValidateFile(t *testing.T) {
 			},
 		},
 		"bad_integration_stream_template_path": {
-			"manifest.yml",
+			"data_stream/datasets/manifest.yml",
 			[]string{
 				"data stream \"data_stream/datasets\" stream 1 (input \"logfile\"): template file not found",
 			},
 		},
 		"bad_integration_stream_template_path_default": {
-			"manifest.yml",
+			"data_stream/datasets/manifest.yml",
 			[]string{
 				"data stream \"data_stream/datasets\" stream 1 (input \"logfile\"): template file not found",
 			},
