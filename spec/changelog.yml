@@ -49,6 +49,9 @@
     - description: Add support for `profiles` policy template type in input packages
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1092
+    - description: Support including multiple sample events
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/582
     - description: Align integration template path semantic validation with Fleet
       type: bugfix
       link: https://github.com/elastic/package-spec/pull/1122
