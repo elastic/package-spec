@@ -115,7 +115,7 @@ streams:
 
 		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
 		require.Len(t, errs, 1)
-		require.Contains(t, errs[0].Error(), `data stream "data_stream/logs" stream 2`)
+		require.Contains(t, errs[0].Error(), `data stream "data_stream/logs" stream`)
 		require.Contains(t, errs[0].Error(), `input "nginx/error"`)
 		require.Contains(t, errs[0].Error(), "template file not found")
 	})

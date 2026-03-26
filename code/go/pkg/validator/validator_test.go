@@ -455,19 +455,19 @@ func TestValidateFile(t *testing.T) {
 		"bad_integration_stream_template_path": {
 			"data_stream/datasets/manifest.yml",
 			[]string{
-				"data stream \"data_stream/datasets\" stream 1 (input \"logfile\"): template file not found",
+				"data stream \"data_stream/datasets\" stream input \"logfile\": template file not found",
 			},
 		},
 		"bad_integration_stream_template_path_default": {
 			"data_stream/datasets/manifest.yml",
 			[]string{
-				"data stream \"data_stream/datasets\" stream 1 (input \"logfile\"): template file not found",
+				"data stream \"data_stream/datasets\" stream input \"logfile\": template file not found",
 			},
 		},
 		"bad_integration_input_template_path": {
 			"manifest.yml",
 			[]string{
-				"policy template \"sample\": policy input \"logfile\": template file not found",
+				"policy template \"sample\": failed validation for policy input \"logfile\": template file not found",
 			},
 		},
 		"bad_esql_view_content": {

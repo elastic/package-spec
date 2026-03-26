@@ -140,22 +140,15 @@ func validateAllDataStreamStreamTemplates(fsys fspath.FS, dsMap map[string]dataS
 	for _, dsDir := range dsDirs {
 		dsManifestPath := path.Join(dsDir, "manifest.yml")
 		manifest := dsMap[dsDir]
-		for i, s := range manifest.Streams {
+		for _, s := range manifest.Streams {
 			if err := validateSingleDataStreamStreamTemplates(fsys, dsDir, s); err != nil {
 				errs = append(errs, specerrors.NewStructuredErrorf(
-					"file \"%s\" is invalid: data stream \"%s\" stream %d (input %q): %w",
-					fsys.Path(dsManifestPath), dsDir, i+1, streamInputLabel(s.Input), err))
+					"file \"%s\" is invalid: data stream \"%s\" stream input %q: %w",
+					fsys.Path(dsManifestPath), dsDir, s.Input, err))
 			}
 		}
 	}
 	return errs
-}
-
-func streamInputLabel(input string) string {
-	if input == "" {
-		return ""
-	}
-	return input
 }
 
 // validateSingleDataStreamStreamTemplates checks stream template files under dsDir/agent/stream
