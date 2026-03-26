@@ -27,6 +27,7 @@ const (
 	apiLoadPrebuiltDetectionRulesPath = "/api/detection_engine/rules/prepackaged"
 	apiSavedObjects                   = "/api/saved_objects"
 	apiStatusPath                     = "/api/status"
+	apiInstalledPackagesPath          = "/api/fleet/epm/packages"
 
 	defaultSpace = "default"
 )
@@ -504,6 +505,37 @@ func (k *Kibana) MustExistSavedObject(soType, id string) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
+	}
+
+	return nil
+}
+
+// IsPackageInstalled checks if a package with the given name is installed.
+func (k *Kibana) IsPackageInstalled(packageName string) error {
+	apiPath, err := url.JoinPath(apiInstalledPackagesPath, packageName)
+	if err != nil {
+		return err
+	}
+	req, err := k.newRequest(http.MethodGet, apiPath, nil)
+	if err != nil {
+		return err
+	}
+
+	resp, err := k.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return fmt.Errorf("package %q is not installed", packageName)
+	}
+	if resp.StatusCode >= 400 {
 		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)

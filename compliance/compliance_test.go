@@ -19,6 +19,7 @@ import (
 	"github.com/cucumber/godog"
 	messages "github.com/cucumber/messages/go/v21"
 	"golang.org/x/exp/slices"
+	"gopkg.in/yaml.v3"
 )
 
 //go:embed features/*
@@ -294,6 +295,42 @@ func thereIsASecurityAIPrompt(promptID string) error {
 	return nil
 }
 
+func theContentPackagesRequireAreInstalled(packageName string) error {
+	packagePath, err := findTestPackage(packageName)
+	if err != nil {
+		return err
+	}
+
+	manifestData, err := os.ReadFile(filepath.Join(packagePath, "manifest.yml"))
+	if err != nil {
+		return fmt.Errorf("failed to read manifest for package %q: %w", packageName, err)
+	}
+
+	var manifest struct {
+		Requires struct {
+			Content []struct {
+				Package string `yaml:"package"`
+			} `yaml:"content"`
+		} `yaml:"requires"`
+	}
+	if err := yaml.Unmarshal(manifestData, &manifest); err != nil {
+		return fmt.Errorf("failed to parse manifest for package %q: %w", packageName, err)
+	}
+
+	kibana, err := NewKibanaClient()
+	if err != nil {
+		return err
+	}
+
+	for _, dep := range manifest.Requires.Content {
+		if err := kibana.IsPackageInstalled(dep.Package); err != nil {
+			return fmt.Errorf("required content package %q is not installed: %w", dep.Package, err)
+		}
+	}
+
+	return nil
+}
+
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
 		skipped := slices.ContainsFunc(sc.Tags, func(elem *messages.PickleTag) bool {
@@ -318,4 +355,5 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^there is a detection rule "([^"]*)"$`, thereIsADetectionRule)
 	ctx.Step(`^prebuilt detection rules are loaded$`, prebuiltDetectionRulesAreLoaded)
 	ctx.Step(`^there is a security AI prompt "([^"]*)"$`, thereIsASecurityAIPrompt)
+	ctx.Step(`^the content packages "([^"]*)" require are installed$`, theContentPackagesRequireAreInstalled)
 }

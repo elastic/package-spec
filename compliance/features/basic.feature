@@ -31,7 +31,6 @@ Feature: Basic package types support
    Given the "good_content" package is installed
      And prebuilt detection rules are loaded
     Then there is a dashboard "good_content-dashboard-abc-1"
-     # Missing support in Kibana (Fleet) https://github.com/elastic/kibana/pull/186974
      And there is an SLO "good_content-slo-abc-1"
      And there is a detection rule "12cea9e9-5766-474d-a9dc-34ef7c7677c6"
 
@@ -45,4 +44,4 @@ Feature: Basic package types support
   Scenario: OTel input package with profiles type can be installed
    Given the "good_input_profiles" package is installed
      And a policy is created with "good_input_profiles" package, "0.0.1" version, "profilingreceiver" template, "profilingreceiver" input, "otelcol" input type and dataset "spec.otel_input_test"
-     # We omit assertions here because 'profiles' OTel packages should not produce ES assets which is currently handled by an ES plugin. https://github.com/elastic/package-spec/pull/1092#discussion_r2857893043
+     # We omit assertions here because 'profiles' OTel packages should not produce ES assets which is currently handled by an ES plugin. https://github.com/elastic/kibana/pull/254090
