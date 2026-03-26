@@ -113,14 +113,14 @@ func validateIntegrationPolicyTemplateInputs(fsys fspath.FS, policyTemplate inte
 		if len(input.TemplatePaths) > 0 {
 			for _, tp := range input.TemplatePaths {
 				if err := validateAgentInputTemplatePath(fsys, tp); err != nil {
-					return fmt.Errorf("policy input %q: %w", input.Type, err)
+					return fmt.Errorf("failed validation for policy input %q: %w", input.Type, err)
 				}
 			}
 			continue
 		}
 		if input.TemplatePath != "" {
 			if err := validateAgentInputTemplatePath(fsys, input.TemplatePath); err != nil {
-				return fmt.Errorf("policy input %q: %w", input.Type, err)
+				return fmt.Errorf("failed validation for policy input %q: %w", input.Type, err)
 			}
 		}
 	}
