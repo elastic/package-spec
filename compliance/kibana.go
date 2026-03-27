@@ -21,7 +21,7 @@ const (
 	apiAgentPolicyPath   = "/api/fleet/agent_policies"
 	apiPackagePolicyPath = "/api/fleet/package_policies"
 
-	apiGetSloTemplatePath = "/s/%s/api/observability/slo_templates"
+	apiGetSloTemplatePath             = "/s/%s/api/observability/slo_templates"
 	apiExportSavedObjectPath          = "/api/saved_objects/_export"
 	apiGetDetecionRulePath            = "/api/detection_engine/rules"
 	apiLoadPrebuiltDetectionRulesPath = "/api/detection_engine/rules/prepackaged"
