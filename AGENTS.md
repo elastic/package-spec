@@ -205,6 +205,74 @@ Feature: Basic package types support
 - Verification: `Then there is an index template "template_name" with pattern "pattern-*"`
 - Dependencies: `And the required input/content packages are installed`
 
+### Executing Compliance Tests
+
+Compliance tests require a running Kibana and Elasticsearch stack. The easiest
+way to run them locally is with `elastic-package stack`:
+
+```bash
+# Start a local stack (run from the compliance/ directory)
+cd compliance
+go run github.com/elastic/elastic-package stack up -d --version 9.4.0-SNAPSHOT
+
+# Export stack connection env vars into the current shell
+eval $(go run github.com/elastic/elastic-package stack shellinit)
+cd ..
+
+# Run compliance tests against spec version 3.6.0
+TEST_SPEC_VERSION=3.6.0 make -C compliance test
+
+# Run only specific feature files (comma-separated, paths relative to compliance/)
+TEST_SPEC_VERSION=3.6.0 TEST_SPEC_FEATURES=features/basic.feature,features/package-dependencies.feature make -C compliance test
+
+# Stop the stack when done
+cd compliance && go run github.com/elastic/elastic-package stack down
+```
+
+If you already have a stack running elsewhere, set these env vars manually
+before running `make -C compliance test`:
+
+```bash
+export ELASTICSEARCH_HOST=https://localhost:9200
+export ELASTICSEARCH_USERNAME=elastic
+export ELASTICSEARCH_PASSWORD=changeme
+export KIBANA_HOST=https://localhost:5601
+export CA_CERT=/path/to/ca.crt  # only if needed
+TEST_SPEC_VERSION=3.6.0 make -C compliance test
+```
+
+CI version combinations (stack version ↔ spec version) are in
+`.buildkite/pipeline.trigger.compliance.tests.sh`. The full CI script that
+starts a stack and runs tests is `.buildkite/scripts/run-installer-compliance.sh`.
+
+### Step Definitions
+
+Step definitions are implemented in `compliance/compliance_test.go`. Kibana API
+calls live in `compliance/kibana.go` and Elasticsearch calls in
+`compliance/elasticsearch.go`.
+
+To add a new step:
+1. Implement a function in `compliance_test.go` (or a helper file)
+2. Register it in `InitializeScenario` with `ctx.Step()`
+
+```go
+// 1. Implement
+func thereIsAFoo(fooID string) error {
+    kibana, err := NewKibanaClient()
+    if err != nil {
+        return err
+    }
+    return kibana.MustExistFoo(fooID)
+}
+
+// 2. Register in InitializeScenario
+ctx.Step(`^there is a foo "([^"]*)"$`, thereIsAFoo)
+```
+
+Test packages used by compliance scenarios are looked up first in
+`compliance/testdata/packages/`, then in `test/packages/` — so most scenarios
+reuse the existing packages from `test/packages/`.
+
 ## Semantic Validators
 
 Semantic validators implement custom validation logic beyond JSON schema constraints. They are located in `code/go/internal/validator/semantic/`.

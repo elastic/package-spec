@@ -1,4 +1,13 @@
 {
-    "id": "good_v3-search-abc-1",
-    "type": "search"
+  "id": "good_v3-search-abc-1",
+  "type": "search",
+  "typeMigrationVersion": "8.0.0",
+  "attributes": {
+    "title": "Good v3 search",
+    "columns": [],
+    "sort": [],
+    "kibanaSavedObjectMeta": {
+      "searchSourceJSON": "{\"filter\":[],\"query\":{\"language\":\"kuery\",\"query\":\"\"}}"
+    }
+  }
 }

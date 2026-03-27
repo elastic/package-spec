@@ -235,16 +235,12 @@ func indexTemplateIsConfiguredFor(indexTemplateName, option string) error {
 	return godog.ErrPending
 }
 
-func thereIsAnSlo(sloID string) error {
+func thereIsAnSloTemplate(templateID string) error {
 	kibana, err := NewKibanaClient()
 	if err != nil {
 		return err
 	}
-	err = kibana.MustExistSLO(sloID)
-	if err != nil {
-		return err
-	}
-	return nil
+	return kibana.MustExistSLOTemplate(templateID)
 }
 
 func thereIsADashboard(dashboardID string) error {
@@ -350,7 +346,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^there is a transform "([^"]*)"$`, thereIsATransform)
 	ctx.Step(`^there is a transform alias "([^"]*)"$`, thereIsATransformAlias)
 	ctx.Step(`^index template "([^"]*)" is configured for "([^"]*)"$`, indexTemplateIsConfiguredFor)
-	ctx.Step(`^there is an SLO "([^"]*)"$`, thereIsAnSlo)
+	ctx.Step(`^there is an SLO template "([^"]*)"$`, thereIsAnSloTemplate)
 	ctx.Step(`^there is a dashboard "([^"]*)"$`, thereIsADashboard)
 	ctx.Step(`^there is a detection rule "([^"]*)"$`, thereIsADetectionRule)
 	ctx.Step(`^prebuilt detection rules are loaded$`, prebuiltDetectionRulesAreLoaded)

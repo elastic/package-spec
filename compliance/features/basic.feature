@@ -31,7 +31,7 @@ Feature: Basic package types support
    Given the "good_content" package is installed
      And prebuilt detection rules are loaded
     Then there is a dashboard "good_content-dashboard-abc-1"
-     And there is an SLO "good_content-slo-abc-1"
+     And there is an SLO template "good_content-slo-abc-1"
      And there is a detection rule "12cea9e9-5766-474d-a9dc-34ef7c7677c6"
 
   @3.6.0
