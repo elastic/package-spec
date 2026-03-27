@@ -115,9 +115,7 @@ streams:
 
 		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
 		require.Len(t, errs, 1)
-		require.Contains(t, errs[0].Error(), `data stream "data_stream/logs" stream`)
-		require.Contains(t, errs[0].Error(), `input "nginx/error"`)
-		require.Contains(t, errs[0].Error(), "template file not found")
+		require.Contains(t, errs[0].Error(), `data stream "data_stream/logs" stream input "nginx/error": template file not found`)
 	})
 
 	t.Run("default stream.yml.hbs when template_path omitted", func(t *testing.T) {
@@ -215,8 +213,7 @@ streams:
 
 		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
 		require.Len(t, errs, 1)
-		require.Contains(t, errs[0].Error(), `data stream "data_stream/logs"`)
-		require.Contains(t, errs[0].Error(), "template file not found")
+		require.Contains(t, errs[0].Error(), `data stream "data_stream/logs" stream input "logfile": template file not found`)
 	})
 
 	t.Run("policy input template_paths", func(t *testing.T) {
