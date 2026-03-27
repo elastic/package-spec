@@ -200,8 +200,11 @@ func thereIsATransform(transformID string) error {
 }
 
 func thereIsATransformAlias(transformAliasName string) error {
-	// TODO: How to test this?
-	return godog.ErrPending
+	es, err := NewElasticsearchClient()
+	if err != nil {
+		return err
+	}
+	return es.ExistsAlias(transformAliasName)
 }
 
 func indexTemplateIsConfiguredFor(indexTemplateName, option string) error {

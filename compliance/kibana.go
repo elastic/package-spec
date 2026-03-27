@@ -73,7 +73,6 @@ type dashboardResponse struct {
 	Type string `json:"type"`
 }
 
-
 type detectionRuleResponse struct {
 	Description string `json:"description"`
 	ID          string `json:"id"`

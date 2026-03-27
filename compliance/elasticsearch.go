@@ -123,6 +123,24 @@ func (es *Elasticsearch) SimulateIndexTemplate(name string) (*SimulatedIndexTemp
 	return simulateResponse.Template, nil
 }
 
+// ExistsAlias checks whether an index alias exists.
+func (es *Elasticsearch) ExistsAlias(aliasName string) error {
+	resp, err := es.client.Indices.GetAlias(
+		es.client.Indices.GetAlias.WithContext(context.TODO()),
+		es.client.Indices.GetAlias.WithName(aliasName),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to get alias %q: %w", aliasName, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("alias %q not found", aliasName)
+	}
+
+	return nil
+}
+
 func newJSONDecoder(r io.Reader) *json.Decoder {
 	dec := json.NewDecoder(r)
 	dec.UseNumber()
