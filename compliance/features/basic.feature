@@ -18,6 +18,7 @@ Feature: Basic package types support
    Given the "good_input_otel" package is installed
      And a policy is created with "good_input_otel" package, "0.0.1" version, "httpcheckreceiver" template, "httpcheckreceiver" input, "otelcol" input type and dataset "spec.otel_input_test"
     Then there is an index template "metrics-spec.otel_input_test" with pattern "metrics-spec.otel_input_test.otel-*"
+     And index template "metrics-spec.otel_input_test" is configured for "time_series index mode"
 
   @3.3.0
   Scenario: Basic content package can be installed

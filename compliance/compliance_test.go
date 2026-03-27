@@ -238,6 +238,12 @@ func indexTemplateIsConfiguredFor(indexTemplateName, option string) error {
 			return nil
 		}
 		return errors.New("lookup mode is not enabled")
+
+	case "time_series index mode":
+		if indexTemplate.Settings.Index.Mode == "time_series" {
+			return nil
+		}
+		return errors.New("time_series mode is not enabled")
 	}
 
 	return godog.ErrPending
