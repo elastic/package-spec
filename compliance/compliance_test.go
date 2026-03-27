@@ -199,12 +199,17 @@ func thereIsATransform(transformID string) error {
 	return nil
 }
 
-func thereIsATransformAlias(transformAliasName string) error {
+// theTransformHasAliasConfigured checks that the alias is present in the
+// transform's dest.aliases configuration. Actual alias creation on the
+// destination index can only be tested with real source data, because
+// Elasticsearch applies dest.aliases only when the destination index is
+// created by the transform indexer.
+func theTransformHasAliasConfigured(transformID, aliasName string) error {
 	es, err := NewElasticsearchClient()
 	if err != nil {
 		return err
 	}
-	return es.ExistsAlias(transformAliasName)
+	return es.TransformHasAlias(transformID, aliasName)
 }
 
 func indexTemplateIsConfiguredFor(indexTemplateName, option string) error {
@@ -347,7 +352,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^a policy is created with "([^"]*)" package, "([^"]*)" version, "([^"]*)" template, "([^"]*)" input, "([^"]*)" input type and dataset "([^"]*)"$`, aPolicyIsCreatedWithPackageInputAndDataset)
 	ctx.Step(`^there is an index template "([^"]*)" with pattern "([^"]*)"$`, thereIsAnIndexTemplateWithPattern)
 	ctx.Step(`^there is a transform "([^"]*)"$`, thereIsATransform)
-	ctx.Step(`^there is a transform alias "([^"]*)"$`, thereIsATransformAlias)
+	ctx.Step(`^the transform "([^"]*)" has alias "([^"]*)" configured$`, theTransformHasAliasConfigured)
 	ctx.Step(`^index template "([^"]*)" is configured for "([^"]*)"$`, indexTemplateIsConfiguredFor)
 	ctx.Step(`^there is an SLO template "([^"]*)"$`, thereIsAnSloTemplate)
 	ctx.Step(`^there is a dashboard "([^"]*)"$`, thereIsADashboard)
