@@ -1,8 +1,8 @@
 {
-  "id": "good_v3-lens-abc-1",
-  "type": "lens",
-  "typeMigrationVersion": "8.9.0",
-  "attributes": {
-    "title": "Good v3 lens"
-  }
+    "id": "good_v3-lens-abc-1",
+    "type": "lens",
+    "typeMigrationVersion": "8.9.0",
+    "attributes": {
+        "title": "Good v3 lens"
+    }
 }
