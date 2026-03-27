@@ -199,6 +199,18 @@ Feature: Basic package types support
 
 **Version tags**: Use `@X.Y.Z` to indicate the minimum spec version required for the test. Tests tagged with versions higher than the current version won't be executed until that version is released.
 
+**Skipping scenarios**: When a scenario cannot pass because Kibana or elastic-package hasn't implemented support yet, add `@skip` with a comment referencing the blocking issue:
+
+```gherkin
+  @3.6.0
+  @skip
+  # Pending elastic-package support for composable packages: https://github.com/elastic/elastic-package/issues/3277
+  Scenario: Integration package with dependencies installs required packages
+   Given the "good_requires" package is installed
+```
+
+Always restore the corresponding `# Pending on <issue>` comment in `spec/changelog.yml` when adding a `@skip`. Remove both when the blocker is resolved.
+
 **Common patterns**:
 - Package installation: `Given the "package_name" package is installed`
 - Policy creation: `And a policy is created with "package_name" package`
@@ -270,8 +282,25 @@ ctx.Step(`^there is a foo "([^"]*)"$`, thereIsAFoo)
 ```
 
 Test packages used by compliance scenarios are looked up first in
-`compliance/testdata/packages/`, then in `test/packages/` — so most scenarios
-reuse the existing packages from `test/packages/`.
+`compliance/testdata/packages/`, then in `test/packages/`. Use `compliance/testdata/packages/`
+for packages that exist solely for compliance testing (e.g. transforms) and `test/packages/`
+for packages that also serve as spec validation examples.
+
+### Transform packages in compliance tests
+
+Transforms that are installed and uninstalled repeatedly across test runs must use non-hidden
+destination indices and run with superuser credentials. Otherwise Fleet's uninstall will fail
+with a 403 because `kibana_system` lacks `delete_index` on arbitrary indices.
+
+Always set in `transform.yml`:
+
+```yaml
+dest:
+  index: "metrics-mypackage.my_dest_default"  # no leading dot
+_meta:
+  managed: true
+  run_as_kibana_system: false  # use logged-in user credentials for install/uninstall
+```
 
 ## Semantic Validators
 
@@ -458,7 +487,7 @@ make check
 Location: `spec/changelog.yml`
 
 ```yaml
-- version: 3.6.0-next
+- version: 3.7.0-next
   changes:
     - description: Brief description of the change.
       type: enhancement|breaking-change|bugfix
@@ -466,6 +495,19 @@ Location: `spec/changelog.yml`
 ```
 
 Add new entries at the BOTTOM of the current version's changes list. Use "TBD" for PR link if not yet created.
+
+### Pending changes
+
+When a spec feature is complete but blocked on Kibana or elastic-package support, add a `# Pending on <issue-url>` comment above the changelog entry:
+
+```yaml
+    # Pending on https://github.com/elastic/kibana/issues/NNNNNN
+    - description: Add support for foo.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/NNN
+```
+
+Remove the comment once the blocker is resolved. Also add a corresponding `@skip` tag in the compliance feature file (see below).
 
 ## Common Pitfalls
 
@@ -526,7 +568,7 @@ Add new entries at the BOTTOM of the current version's changes list. Use "TBD" f
 
 ## Notes
 
-- Spec versions with `-next` suffix are in development (3.6.0-next)
+- Spec versions with `-next` suffix are in development (currently `3.7.0-next`)
 - Use `-count=1` flag to bypass test cache
 - Custom validation logic exists beyond JSON schema in `code/go/internal/validator/semantic/`
 - For real package examples, see [elastic/integrations](https://github.com/elastic/integrations)
