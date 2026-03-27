@@ -56,60 +56,204 @@ streams:
 	require.Equal(t, "error_stream.yml.hbs", logsManifest.Streams[1].TemplatePath)
 }
 
-func TestValidateInputWithStreams(t *testing.T) {
-	d := t.TempDir()
-	err := os.MkdirAll(filepath.Join(d, "data_stream", "logs", "agent", "stream"), 0o755)
+func writeMinimalIntegrationManifest(t *testing.T, root string) {
+	t.Helper()
+	err := os.WriteFile(filepath.Join(root, "manifest.yml"), []byte(`
+type: integration
+policy_templates:
+  - name: pt
+    title: t
+    description: d
+    inputs:
+      - type: nginx/access
+        title: a
+        description: b
+`), 0o644)
 	require.NoError(t, err)
-	err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "access.yml.hbs"), []byte(`access stream template`), 0o644)
-	require.NoError(t, err)
+}
 
-	dsMap := make(map[string]dataStreamManifest)
-	dsMap[filepath.ToSlash(path.Join("data_stream", "logs"))] = dataStreamManifest{
-		Streams: []stream{
-			{
-				Input:        "nginx/access",
-				TemplatePath: "access.yml.hbs",
-			},
-			{
-				Input:        "nginx/error",
-				TemplatePath: "error_stream.yml.hbs",
-			},
-			{
-				Input: "nginx/other",
-			},
-			{
-				Input: "prefix/stream",
-			},
-		},
-	}
-	t.Run("valid input with existing template_path", func(t *testing.T) {
-		err = validateInputWithStreams(fspath.DirFS(d), "nginx/access", dsMap)
+func TestValidateIntegrationPolicyTemplates_DataStreamStreams(t *testing.T) {
+	t.Run("all stream templates valid", func(t *testing.T) {
+		d := t.TempDir()
+		writeMinimalIntegrationManifest(t, d)
+		err := os.MkdirAll(filepath.Join(d, "data_stream", "logs", "agent", "stream"), 0o755)
 		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "access.yml.hbs"), []byte(`x`), 0o644)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "manifest.yml"), []byte(`
+streams:
+  - input: nginx/access
+    title: A
+    description: d
+    template_path: access.yml.hbs
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
+		require.Empty(t, errs)
 	})
 
-	t.Run("input with non-existing template_path", func(t *testing.T) {
-		err = validateInputWithStreams(fspath.DirFS(d), "nginx/error", dsMap)
-		require.ErrorIs(t, errTemplateNotFound, err)
+	t.Run("missing stream template_path file", func(t *testing.T) {
+		d := t.TempDir()
+		writeMinimalIntegrationManifest(t, d)
+		err := os.MkdirAll(filepath.Join(d, "data_stream", "logs", "agent", "stream"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "manifest.yml"), []byte(`
+streams:
+  - input: nginx/access
+    title: A
+    description: d
+    template_path: access.yml.hbs
+  - input: nginx/error
+    title: E
+    description: d
+    template_path: error_stream.yml.hbs
+`), 0o644)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "access.yml.hbs"), []byte(`x`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
+		require.Len(t, errs, 1)
+		require.Contains(t, errs[0].Error(), `data stream "data_stream/logs" stream input "nginx/error": template file not found`)
 	})
 
-	t.Run("valid input with default template_path", func(t *testing.T) {
-		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "stream.yml.hbs"), []byte(`default stream template`), 0o644)
+	t.Run("default stream.yml.hbs when template_path omitted", func(t *testing.T) {
+		d := t.TempDir()
+		writeMinimalIntegrationManifest(t, d)
+		err := os.MkdirAll(filepath.Join(d, "data_stream", "logs", "agent", "stream"), 0o755)
 		require.NoError(t, err)
-		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", "stream.yml.hbs"))
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "stream.yml.hbs"), []byte(`x`), 0o644)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "manifest.yml"), []byte(`
+streams:
+  - input: nginx/other
+    title: O
+    description: d
+`), 0o644)
+		require.NoError(t, err)
 
-		err = validateInputWithStreams(fspath.DirFS(d), "nginx/other", dsMap)
-		require.NoError(t, err)
+		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
+		require.Empty(t, errs)
 	})
 
-	t.Run("valid input with default prefixed template_path", func(t *testing.T) {
-		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "prefixstream.yml.hbs"), []byte(`access stream template`), 0o644)
+	t.Run("prefixed stream template filename", func(t *testing.T) {
+		d := t.TempDir()
+		writeMinimalIntegrationManifest(t, d)
+		err := os.MkdirAll(filepath.Join(d, "data_stream", "logs", "agent", "stream"), 0o755)
 		require.NoError(t, err)
-		defer os.Remove(filepath.Join(d, "data_stream", "logs", "agent", "stream", "prefixstream.yml.hbs"))
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "prefixstream.yml.hbs"), []byte(`x`), 0o644)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "manifest.yml"), []byte(`
+streams:
+  - input: prefix/stream
+    title: P
+    description: d
+`), 0o644)
+		require.NoError(t, err)
 
-		err = validateInputWithStreams(fspath.DirFS(d), "prefix/stream", dsMap)
-		require.NoError(t, err)
+		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
+		require.Empty(t, errs)
 	})
 
+	t.Run("template_paths on stream Fleet precedence over template_path", func(t *testing.T) {
+		d := t.TempDir()
+		writeMinimalIntegrationManifest(t, d)
+		err := os.MkdirAll(filepath.Join(d, "data_stream", "logs", "agent", "stream"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "a.yml.hbs"), []byte(`x`), 0o644)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "b.yml.hbs"), []byte(`y`), 0o644)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "manifest.yml"), []byte(`
+streams:
+  - input: custom
+    title: C
+    description: d
+    template_path: missing-only-this-would-matter.yml.hbs
+    template_paths:
+      - a.yml.hbs
+      - b.yml.hbs
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
+		require.Empty(t, errs)
+	})
+
+	t.Run("policy input template_path set still validates stream templates", func(t *testing.T) {
+		d := t.TempDir()
+		err := os.MkdirAll(filepath.Join(d, "agent", "input"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "agent", "input", "input.yml.hbs"), []byte(`x`), 0o644)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "manifest.yml"), []byte(`
+type: integration
+policy_templates:
+  - name: pt
+    title: t
+    description: d
+    inputs:
+      - type: logfile
+        title: a
+        description: b
+        template_path: input.yml.hbs
+`), 0o644)
+		require.NoError(t, err)
+		err = os.MkdirAll(filepath.Join(d, "data_stream", "logs", "agent", "stream"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "manifest.yml"), []byte(`
+streams:
+  - input: logfile
+    title: L
+    description: d
+    template_path: does-not-exist.yml.hbs
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
+		require.Len(t, errs, 1)
+		require.Contains(t, errs[0].Error(), `data stream "data_stream/logs" stream input "logfile": template file not found`)
+	})
+
+	t.Run("policy input template_paths", func(t *testing.T) {
+		d := t.TempDir()
+		err := os.MkdirAll(filepath.Join(d, "agent", "input"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "agent", "input", "t1.yml.hbs"), []byte(`x`), 0o644)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "agent", "input", "t2.yml.hbs"), []byte(`y`), 0o644)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "manifest.yml"), []byte(`
+type: integration
+policy_templates:
+  - name: pt
+    title: t
+    description: d
+    inputs:
+      - type: logfile
+        title: a
+        description: b
+        template_paths:
+          - t1.yml.hbs
+          - t2.yml.hbs
+`), 0o644)
+		require.NoError(t, err)
+		err = os.MkdirAll(filepath.Join(d, "data_stream", "logs", "agent", "stream"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "stream.yml.hbs"), []byte(`z`), 0o644)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "manifest.yml"), []byte(`
+streams:
+  - input: logfile
+    title: L
+    description: d
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
+		require.Empty(t, errs)
+	})
 }
 func TestValidateIntegrationPolicyTemplates_NonIntegrationType(t *testing.T) {
 	d := t.TempDir()

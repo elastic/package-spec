@@ -4,7 +4,7 @@ streams:
   - input: logfile
     title: Sample logs
     description: Collect sample logs
-    template_path: missing.yml.hbs
+    template_path: stream.yml.hbs
     vars:
       - name: paths
         type: text
