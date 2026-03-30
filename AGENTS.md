@@ -199,11 +199,108 @@ Feature: Basic package types support
 
 **Version tags**: Use `@X.Y.Z` to indicate the minimum spec version required for the test. Tests tagged with versions higher than the current version won't be executed until that version is released.
 
+**Skipping scenarios**: When a scenario cannot pass because Kibana or elastic-package hasn't implemented support yet, add `@skip` with a comment referencing the blocking issue:
+
+```gherkin
+  @3.6.0
+  @skip
+  # Pending elastic-package support for composable packages: https://github.com/elastic/elastic-package/issues/3277
+  Scenario: Integration package with dependencies installs required packages
+   Given the "good_requires" package is installed
+```
+
+Always restore the corresponding `# Pending on <issue>` comment in `spec/changelog.yml` when adding a `@skip`. Remove both when the blocker is resolved.
+
 **Common patterns**:
 - Package installation: `Given the "package_name" package is installed`
 - Policy creation: `And a policy is created with "package_name" package`
 - Verification: `Then there is an index template "template_name" with pattern "pattern-*"`
 - Dependencies: `And the required input/content packages are installed`
+
+### Executing Compliance Tests
+
+Compliance tests require a running Kibana and Elasticsearch stack. The easiest
+way to run them locally is with `elastic-package stack`:
+
+```bash
+# Start a local stack (run from the compliance/ directory)
+cd compliance
+go run github.com/elastic/elastic-package stack up -d --version 9.4.0-SNAPSHOT
+
+# Export stack connection env vars into the current shell
+eval $(go run github.com/elastic/elastic-package stack shellinit)
+cd ..
+
+# Run compliance tests against spec version 3.6.0
+TEST_SPEC_VERSION=3.6.0 make -C compliance test
+
+# Run only specific feature files (comma-separated, paths relative to compliance/)
+TEST_SPEC_VERSION=3.6.0 TEST_SPEC_FEATURES=features/basic.feature,features/package-dependencies.feature make -C compliance test
+
+# Stop the stack when done
+cd compliance && go run github.com/elastic/elastic-package stack down
+```
+
+If you already have a stack running elsewhere, set these env vars manually
+before running `make -C compliance test`:
+
+```bash
+export ELASTICSEARCH_HOST=https://localhost:9200
+export ELASTICSEARCH_USERNAME=elastic
+export ELASTICSEARCH_PASSWORD=changeme
+export KIBANA_HOST=https://localhost:5601
+export CA_CERT=/path/to/ca.crt  # only if needed
+TEST_SPEC_VERSION=3.6.0 make -C compliance test
+```
+
+CI version combinations (stack version ↔ spec version) are in
+`.buildkite/pipeline.trigger.compliance.tests.sh`. The full CI script that
+starts a stack and runs tests is `.buildkite/scripts/run-installer-compliance.sh`.
+
+### Step Definitions
+
+Step definitions are implemented in `compliance/compliance_test.go`. Kibana API
+calls live in `compliance/kibana.go` and Elasticsearch calls in
+`compliance/elasticsearch.go`.
+
+To add a new step:
+1. Implement a function in `compliance_test.go` (or a helper file)
+2. Register it in `InitializeScenario` with `ctx.Step()`
+
+```go
+// 1. Implement
+func thereIsAFoo(fooID string) error {
+    kibana, err := NewKibanaClient()
+    if err != nil {
+        return err
+    }
+    return kibana.MustExistFoo(fooID)
+}
+
+// 2. Register in InitializeScenario
+ctx.Step(`^there is a foo "([^"]*)"$`, thereIsAFoo)
+```
+
+Test packages used by compliance scenarios are looked up first in
+`compliance/testdata/packages/`, then in `test/packages/`. Use `compliance/testdata/packages/`
+for packages that exist solely for compliance testing (e.g. transforms) and `test/packages/`
+for packages that also serve as spec validation examples.
+
+### Transform packages in compliance tests
+
+Transforms that are installed and uninstalled repeatedly across test runs must use non-hidden
+destination indices and run with superuser credentials. Otherwise Fleet's uninstall will fail
+with a 403 because `kibana_system` lacks `delete_index` on arbitrary indices.
+
+Always set in `transform.yml`:
+
+```yaml
+dest:
+  index: "metrics-mypackage.my_dest_default"  # no leading dot
+_meta:
+  managed: true
+  run_as_kibana_system: false  # use logged-in user credentials for install/uninstall
+```
 
 ## Semantic Validators
 
@@ -390,7 +487,7 @@ make check
 Location: `spec/changelog.yml`
 
 ```yaml
-- version: 3.6.0-next
+- version: 3.7.0-next
   changes:
     - description: Brief description of the change.
       type: enhancement|breaking-change|bugfix
@@ -398,6 +495,19 @@ Location: `spec/changelog.yml`
 ```
 
 Add new entries at the BOTTOM of the current version's changes list. Use "TBD" for PR link if not yet created.
+
+### Pending changes
+
+When a spec feature is complete but blocked on Kibana or elastic-package support, add a `# Pending on <issue-url>` comment above the changelog entry:
+
+```yaml
+    # Pending on https://github.com/elastic/kibana/issues/NNNNNN
+    - description: Add support for foo.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/NNN
+```
+
+Remove the comment once the blocker is resolved. Also add a corresponding `@skip` tag in the compliance feature file (see below).
 
 ## Common Pitfalls
 
@@ -458,7 +568,7 @@ Add new entries at the BOTTOM of the current version's changes list. Use "TBD" f
 
 ## Notes
 
-- Spec versions with `-next` suffix are in development (3.6.0-next)
+- Spec versions with `-next` suffix are in development (currently `3.7.0-next`)
 - Use `-count=1` flag to bypass test cache
 - Custom validation logic exists beyond JSON schema in `code/go/internal/validator/semantic/`
 - For real package examples, see [elastic/integrations](https://github.com/elastic/integrations)

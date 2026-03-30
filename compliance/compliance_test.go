@@ -19,6 +19,7 @@ import (
 	"github.com/cucumber/godog"
 	messages "github.com/cucumber/messages/go/v21"
 	"golang.org/x/exp/slices"
+	"gopkg.in/yaml.v3"
 )
 
 //go:embed features/*
@@ -198,9 +199,17 @@ func thereIsATransform(transformID string) error {
 	return nil
 }
 
-func thereIsATransformAlias(transformAliasName string) error {
-	// TODO: How to test this?
-	return godog.ErrPending
+// theTransformHasAliasConfigured checks that the alias is present in the
+// transform's dest.aliases configuration. Actual alias creation on the
+// destination index can only be tested with real source data, because
+// Elasticsearch applies dest.aliases only when the destination index is
+// created by the transform indexer.
+func theTransformHasAliasConfigured(transformID, aliasName string) error {
+	es, err := NewElasticsearchClient()
+	if err != nil {
+		return err
+	}
+	return es.TransformHasAlias(transformID, aliasName)
 }
 
 func indexTemplateIsConfiguredFor(indexTemplateName, option string) error {
@@ -229,21 +238,23 @@ func indexTemplateIsConfiguredFor(indexTemplateName, option string) error {
 			return nil
 		}
 		return errors.New("lookup mode is not enabled")
+
+	case "time_series index mode":
+		if indexTemplate.Settings.Index.Mode == "time_series" {
+			return nil
+		}
+		return errors.New("time_series mode is not enabled")
 	}
 
 	return godog.ErrPending
 }
 
-func thereIsAnSlo(sloID string) error {
+func thereIsAnSloTemplate(templateID string) error {
 	kibana, err := NewKibanaClient()
 	if err != nil {
 		return err
 	}
-	err = kibana.MustExistSLO(sloID)
-	if err != nil {
-		return err
-	}
-	return nil
+	return kibana.MustExistSLOTemplate(templateID)
 }
 
 func thereIsADashboard(dashboardID string) error {
@@ -294,6 +305,42 @@ func thereIsASecurityAIPrompt(promptID string) error {
 	return nil
 }
 
+func theContentPackagesRequireAreInstalled(packageName string) error {
+	packagePath, err := findTestPackage(packageName)
+	if err != nil {
+		return err
+	}
+
+	manifestData, err := os.ReadFile(filepath.Join(packagePath, "manifest.yml"))
+	if err != nil {
+		return fmt.Errorf("failed to read manifest for package %q: %w", packageName, err)
+	}
+
+	var manifest struct {
+		Requires struct {
+			Content []struct {
+				Package string `yaml:"package"`
+			} `yaml:"content"`
+		} `yaml:"requires"`
+	}
+	if err := yaml.Unmarshal(manifestData, &manifest); err != nil {
+		return fmt.Errorf("failed to parse manifest for package %q: %w", packageName, err)
+	}
+
+	kibana, err := NewKibanaClient()
+	if err != nil {
+		return err
+	}
+
+	for _, dep := range manifest.Requires.Content {
+		if err := kibana.IsPackageInstalled(dep.Package); err != nil {
+			return fmt.Errorf("required content package %q is not installed: %w", dep.Package, err)
+		}
+	}
+
+	return nil
+}
+
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
 		skipped := slices.ContainsFunc(sc.Tags, func(elem *messages.PickleTag) bool {
@@ -311,11 +358,12 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^a policy is created with "([^"]*)" package, "([^"]*)" version, "([^"]*)" template, "([^"]*)" input, "([^"]*)" input type and dataset "([^"]*)"$`, aPolicyIsCreatedWithPackageInputAndDataset)
 	ctx.Step(`^there is an index template "([^"]*)" with pattern "([^"]*)"$`, thereIsAnIndexTemplateWithPattern)
 	ctx.Step(`^there is a transform "([^"]*)"$`, thereIsATransform)
-	ctx.Step(`^there is a transform alias "([^"]*)"$`, thereIsATransformAlias)
+	ctx.Step(`^the transform "([^"]*)" has alias "([^"]*)" configured$`, theTransformHasAliasConfigured)
 	ctx.Step(`^index template "([^"]*)" is configured for "([^"]*)"$`, indexTemplateIsConfiguredFor)
-	ctx.Step(`^there is an SLO "([^"]*)"$`, thereIsAnSlo)
+	ctx.Step(`^there is an SLO template "([^"]*)"$`, thereIsAnSloTemplate)
 	ctx.Step(`^there is a dashboard "([^"]*)"$`, thereIsADashboard)
 	ctx.Step(`^there is a detection rule "([^"]*)"$`, thereIsADetectionRule)
 	ctx.Step(`^prebuilt detection rules are loaded$`, prebuiltDetectionRulesAreLoaded)
 	ctx.Step(`^there is a security AI prompt "([^"]*)"$`, thereIsASecurityAIPrompt)
+	ctx.Step(`^the content packages "([^"]*)" require are installed$`, theContentPackagesRequireAreInstalled)
 }

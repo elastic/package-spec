@@ -23,6 +23,6 @@
     "tags": ["nginx"],
     "groupBy": ["url.domain"]
   },
-  "id": "nginx-availability",
+  "id": "good_content-slo-abc-1",
   "type": "slo_template"
 }
