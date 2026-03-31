@@ -87,6 +87,35 @@ policy_templates:
     description: Collect sample logs and metrics
     data_streams:
       - findings
+    vars:
+      - name: username
+        type: text
+        title: Username
+        show_user: true
+      - name: password
+        type: password
+        title: Password
+        show_user: true
+        secret: true
+      - name: token
+        type: password
+        title: API Token
+        show_user: true
+        secret: true
+    var_groups:
+      - name: auth_method
+        title: Authentication Method
+        selector_title: Authentication method
+        options:
+          - name: basic
+            title: Basic Auth
+            vars:
+              - username
+              - password
+          - name: token
+            title: Token Auth
+            vars:
+              - token
     inputs:
       - type: httpjson
         title: Collect via API
@@ -98,6 +127,29 @@ policy_templates:
             title: API URL
             show_user: true
             required: true
+          - name: bearer_token
+            type: password
+            title: Bearer Token
+            show_user: true
+            secret: true
+          - name: api_key
+            type: password
+            title: API Key
+            show_user: true
+            secret: true
+        var_groups:
+          - name: auth_method
+            title: Authentication
+            selector_title: Authentication method
+            options:
+              - name: bearer
+                title: Bearer Token
+                vars:
+                  - bearer_token
+              - name: api_key
+                title: API Key
+                vars:
+                  - api_key
       - type: aws-s3
         title: Collect from S3
         description: Collecting logs from AWS S3 bucket

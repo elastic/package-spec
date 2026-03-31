@@ -1,0 +1,86 @@
+format_version: 3.6.0
+name: good_var_groups_input
+title: Good Var Groups Input Package
+description: This package demonstrates valid var_groups usage in an input package.
+version: 0.0.1
+type: input
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: "^8.10.0"
+  elastic:
+    subscription: "basic"
+icons:
+  - src: /img/sample-logo.svg
+    title: Sample logo
+    size: 32x32
+    type: image/svg+xml
+vars:
+  - name: access_key
+    type: text
+    title: Access Key
+    show_user: true
+    secret: false
+  - name: secret_key
+    type: password
+    title: Secret Key
+    show_user: true
+    secret: true
+  - name: iam_role
+    type: text
+    title: IAM Role ARN
+    show_user: true
+var_groups:
+  - name: credential_type
+    title: Credential Type
+    selector_title: Preferred method
+    options:
+      - name: access_key
+        title: Access Key
+        vars:
+          - access_key
+          - secret_key
+      - name: iam_role
+        title: IAM Role
+        vars:
+          - iam_role
+policy_templates:
+  - name: logs
+    type: logs
+    title: Logs
+    description: Collect logs.
+    input: logfile
+    template_path: input.yml.hbs
+    vars:
+      - name: username
+        type: text
+        title: Username
+        show_user: true
+      - name: password
+        type: password
+        title: Password
+        show_user: true
+        secret: true
+      - name: token
+        type: password
+        title: API Token
+        show_user: true
+        secret: true
+    var_groups:
+      - name: auth_method
+        title: Authentication Method
+        selector_title: Authentication method
+        options:
+          - name: basic
+            title: Basic Auth
+            vars:
+              - username
+              - password
+          - name: token
+            title: Token Auth
+            vars:
+              - token
+owner:
+  github: elastic/ecosystem
+  type: elastic

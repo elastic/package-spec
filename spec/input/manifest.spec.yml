@@ -80,6 +80,8 @@ spec:
             $ref: "../integration/manifest.spec.yml#/definitions/screenshots"
           vars:
             $ref: "../integration/data_stream/manifest.spec.yml#/definitions/vars"
+          var_groups:
+            $ref: "../integration/manifest.spec.yml#/definitions/var_groups"
           input:
             type: string
             examples:
@@ -138,6 +140,8 @@ spec:
       $ref: "../integration/manifest.spec.yml#/definitions/screenshots"
     vars:
       $ref: "../integration/data_stream/manifest.spec.yml#/definitions/vars"
+    var_groups:
+      $ref: "../integration/manifest.spec.yml#/definitions/var_groups"
     owner:
       $ref: "../integration/manifest.spec.yml#/definitions/owner"
     agent:
@@ -166,6 +170,10 @@ spec:
 versions:
   - before: 3.6.0
     patch:
+      - op: remove
+        path: "/properties/var_groups" # removes var_groups from package root
+      - op: remove
+        path: "/properties/policy_templates/items/properties/var_groups" # removes var_groups from policy templates
       - op: remove
         path: "/properties/policy_templates/items/properties/template_paths" # removes template_paths field for policy templates
       - op: remove
