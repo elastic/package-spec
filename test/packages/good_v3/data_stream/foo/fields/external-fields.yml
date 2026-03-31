@@ -6,6 +6,6 @@
   fields:
     - name: category
       external: ecs
-- name: timeseries
+- name: event.duration
   external: ecs
   metric_type: gauge

@@ -1,0 +1,18 @@
+---
+description: Pipeline that adds a timestamp.
+processors:
+  - set:
+      tag: set_timestamp
+      field: '@timestamp'
+      value: '{{{_ingest.timestamp}}}'
+on_failure:
+  - set:
+      field: event.kind
+      value: pipeline_error
+  - set:
+      field: error.message
+      value: >-
+        Processor '{{{ _ingest.on_failure_processor_type }}}'
+        with tag '{{{ _ingest.on_failure_processor_tag }}}'
+        in pipeline '{{{ _ingest.pipeline }}}'
+        failed with message '{{{ _ingest.on_failure_message }}}'

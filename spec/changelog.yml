@@ -2,12 +2,14 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 3.6.0-next
+- version: 3.7.0-next
   changes:
     # Pending on https://github.com/elastic/kibana/issues/220294
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+- version: 3.6.0
+  changes:
     - description: Add pipeline tag validations.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/1010
@@ -33,7 +35,6 @@
     - description: Add support for dynamic_signal_types field in input package policy templates for OTel input type.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1067
-    # Pending on https://github.com/elastic/kibana/issues/252939
     - description: Add support for multiple template paths in input packages, integration inputs, and data streams.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1089
@@ -45,13 +46,18 @@
     - description: Allow otelcol input type and dynamic_signal_types field in integration packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1091
-    # Pending on https://github.com/elastic/kibana/pull/242934
     - description: Add support for migrating input types at integrations policy templates and data streams.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1021
     - description: Add support for `profiles` policy template type in input packages
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1092
+    - description: Support including multiple sample events
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/582
+    - description: Align integration template path semantic validation with Fleet
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/1122
 - version: 3.5.8
   changes:
     - description: Add deployer option to system benchmark configuration.
