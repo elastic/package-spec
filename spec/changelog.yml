@@ -8,6 +8,11 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+- version: 3.6.1-next
+  changes:
+    - description: Add var_groups support to policy template and input levels in integration packages, and to policy template and package root levels in input packages.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1120
 - version: 3.6.0
   changes:
     - description: Add pipeline tag validations.
@@ -26,9 +31,6 @@
     - description: Add var_groups schema to support conditional variable groups for Cloud Connector integration.
       type: enhancement
       link: https://github.com/elastic/package-spec/issues/1054
-    - description: Add var_groups support to policy template and input levels in integration packages, and to policy template and package root levels in input packages.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/1120
     - description: Allow to set time series index mode in input packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1066
