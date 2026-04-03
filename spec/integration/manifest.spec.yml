@@ -295,6 +295,21 @@ spec:
               type: string
               examples:
                 - "cloud-security-posture-management"
+            release:
+              description: >
+                The maturity level of the agentless deployment mode for this policy template.
+                Only needs to be set when the agentless deployment mode has a different maturity than the package's overall release state.
+                Not allowed in single policy template packages where agentless is the only
+                deployment mode.
+              type: string
+              enum:
+                - beta
+                - rc
+                - preview
+              examples:
+                - beta
+                - rc
+                - preview
             resources:
               description: >
                 The computing resources specifications for the Agentless deployment.

@@ -18,6 +18,7 @@
     - description: Add var_groups support to policy template and input levels in integration packages, and to policy template and package root levels in input packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1120
+<<<<<<< HEAD
     # Pending on https://github.com/elastic/kibana/pull/262138
     - description: Add support for named inputs in policy templates to disambiguate multiple inputs of the same type.
       type: enhancement
@@ -40,6 +41,11 @@
     - description: Add `show_divider` optional boolean to input objects to suppress horizontal dividers in the Fleet UI.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1133
+=======
+    - description: Add optional `release` field to agentless deployment mode to allow declaring a different maturity level than that of the package version.
+      type: enhancement
+      link: TBD
+>>>>>>> 6b7538c (Add support for  field in agentless deployment mode)
 - version: 3.6.0
   changes:
     - description: Add pipeline tag validations.

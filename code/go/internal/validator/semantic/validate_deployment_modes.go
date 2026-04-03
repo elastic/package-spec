@@ -31,7 +31,8 @@ func ValidateDeploymentModes(fsys fspath.FS) specerrors.ValidationErrors {
 					Enabled *bool `yaml:"enabled"` // Use pointer to detect if field was set, default is true
 				} `yaml:"default"`
 				Agentless struct {
-					Enabled bool `yaml:"enabled"`
+					Enabled bool   `yaml:"enabled"`
+					Release string `yaml:"release"`
 				} `yaml:"agentless"`
 			} `yaml:"deployment_modes"`
 			Inputs []struct {
@@ -47,6 +48,19 @@ func ValidateDeploymentModes(fsys fspath.FS) specerrors.ValidationErrors {
 	}
 
 	var errs specerrors.ValidationErrors
+
+	// Check that agentless.release is not set in a single-policy-template package
+	// where agentless is the only deployment mode. In that case the package version
+	// is the authoritative source of maturity and an explicit override would conflict.
+	if len(manifest.PolicyTemplates) == 1 {
+		tmpl := manifest.PolicyTemplates[0]
+		isSingleDeployment := tmpl.DeploymentModes.Default.Enabled != nil && !*tmpl.DeploymentModes.Default.Enabled
+		if isSingleDeployment && tmpl.DeploymentModes.Agentless.Release != "" {
+			err := fmt.Errorf("file \"%s\" is invalid: policy template \"%s\" sets agentless.release but agentless is the only deployment mode; use the package version to indicate maturity instead", fsys.Path(manifestPath), tmpl.Name)
+			errs = append(errs, specerrors.NewStructuredError(err, specerrors.UnassignedCode))
+		}
+	}
+
 	for _, template := range manifest.PolicyTemplates {
 		// Collect enabled deployment modes for this policy template
 		enabledModes := []string{}
