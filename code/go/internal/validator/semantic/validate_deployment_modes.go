@@ -19,9 +19,9 @@ type deploymentModesManifest struct {
 }
 
 type deploymentModesPolicyTemplate struct {
-	Name            string                    `yaml:"name"`
-	DeploymentModes deploymentModesSpec       `yaml:"deployment_modes"`
-	Inputs          []deploymentModesInput    `yaml:"inputs"`
+	Name            string                 `yaml:"name"`
+	DeploymentModes deploymentModesSpec    `yaml:"deployment_modes"`
+	Inputs          []deploymentModesInput `yaml:"inputs"`
 }
 
 type deploymentModesSpec struct {
