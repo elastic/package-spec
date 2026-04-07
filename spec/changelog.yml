@@ -13,6 +13,9 @@
     - description: Add var_groups support to policy template and input levels in integration packages, and to policy template and package root levels in input packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1120
+    - description: Add geo_shape as a valid field type for integrations.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1132
 - version: 3.6.0
   changes:
     - description: Add pipeline tag validations.
