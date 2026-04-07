@@ -1,0 +1,3 @@
+- name: region
+  type: geo_shape
+  description: Geographic shape of the region.

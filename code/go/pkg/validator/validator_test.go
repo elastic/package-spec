@@ -34,6 +34,7 @@ func TestValidateFile(t *testing.T) {
 		"good_v3":                                {},
 		"good_var_groups":                        {},
 		"good_var_groups_input":                  {},
+		"good_geo_shape":                         {},
 		"good_input":                             {},
 		"good_input_otel":                        {},
 		"good_input_dynamic_signal_type":         {},

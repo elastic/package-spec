@@ -1,0 +1,23 @@
+format_version: 3.6.1
+name: good_geo_shape
+title: Good Geo Shape Package
+description: This package demonstrates valid geo_shape field type usage.
+version: 0.0.1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+policy_templates:
+  - name: geo_shape
+    title: Geo shape logs
+    description: Collect geo shape data
+    inputs:
+      - type: logfile
+        title: Collect geo shape logs
+        description: Collecting geo shape log data
+        multi: false
+owner:
+  github: elastic/foobar
+  type: community
