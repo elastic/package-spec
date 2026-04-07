@@ -613,6 +613,10 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.6.1
+    patch:
+      - op: remove
+        path: "/items/properties/type/enum/36" #remove geo_shape type
   - before: 3.7.0
     patch:
       - op: remove
