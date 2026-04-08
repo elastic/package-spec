@@ -125,22 +125,31 @@ spec:
     name: "tags.yml"
     required: false
     $ref: "./tags.spec.yml"
-  - description: Folder containing Kibana SLO assets
+  - description: Folder containing alerting rule templates
     type: folder
-    name: slo
+    name: "alerting_rule_template"
     required: false
     contents:
-    - description: An SLO asset file
+    - description: An individual alerting rule template file
       type: file
       contentMediaType: "application/json"
-      pattern: '^{PACKAGE_NAME}-.+\.json$'
-      forbiddenPatterns:
-        - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden 
+      pattern: '^.+\.json$'
+  - description: Folder containing SLO templates
+    type: folder
+    name: "slo_template"
+    required: false
+    contents:
+      - description: Individual SLO template files
+        type: file
+        contentMediaType: "application/json"
+        pattern: '^.+\.json$'
 versions:
-  - before: 3.5.0
+  - before: 3.4.0
     patch:
       - op: remove
-        path: "/contents/13" # remove SLO definitions
+        path: "/contents/14" # remove SLO template definitions
+      - op: remove
+        path: "/contents/13" # remove alerting rule template definitions
   - before: 2.10.0
     patch:
       - op: remove

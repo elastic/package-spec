@@ -21,4 +21,8 @@ const (
 	CodeKibanaDanglingObjectsIDs            = "SVR00003"
 	CodeVisualizationByValue                = "SVR00004"
 	CodeMinimumKibanaVersion                = "SVR00005"
+	CodePipelineTagRequired                 = "SVR00006"
+	CodeKibanaTagDuplicates                 = "SVR00007"
+	CodePipelineOnFailureEventKind          = "SVR00008"
+	CodePipelineOnFailureMessage            = "SVR00009"
 )

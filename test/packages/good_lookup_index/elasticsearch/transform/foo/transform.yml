@@ -1,0 +1,28 @@
+description: "Test transform that always runs and creates an index."
+source:
+  index:
+    - ".ds-.logs-elasticsearch.deprecation-default-*"
+dest:
+  index: test-foo-dest-index
+frequency: 1m
+sync:
+  time:
+    field: "@timestamp"
+    delay: 0s
+pivot:
+  group_by:
+    "@timestamp":
+      date_histogram:
+        field: "@timestamp"
+        calendar_interval: 1d
+  aggregations:
+    doc_count:
+      value_count:
+        field: "_id"
+settings:
+  deduce_mappings: false
+  unattended: true
+_meta:
+  managed: true
+  run_as_kibana_system: false
+  fleet_transform_version: 0.1.0

@@ -15,7 +15,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/elastic/go-elasticsearch/v9"
 )
 
 // Elasticsearch is an elasticsearch client.
@@ -121,6 +121,48 @@ func (es *Elasticsearch) SimulateIndexTemplate(name string) (*SimulatedIndexTemp
 	}
 
 	return simulateResponse.Template, nil
+}
+
+// TransformHasAlias checks whether a transform has the given alias configured
+// in its dest.aliases definition. This verifies the configuration stored in
+// Elasticsearch, not whether the alias exists as an index alias (which only
+// happens after the transform runs and creates its destination index).
+func (es *Elasticsearch) TransformHasAlias(transformID, aliasName string) error {
+	resp, err := es.client.TransformGetTransform(
+		es.client.TransformGetTransform.WithContext(context.TODO()),
+		es.client.TransformGetTransform.WithTransformID(transformID),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to get transform %q: %w", transformID, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("transform %q not found", transformID)
+	}
+
+	var response struct {
+		Transforms []struct {
+			Dest struct {
+				Aliases []struct {
+					Alias string `json:"alias"`
+				} `json:"aliases"`
+			} `json:"dest"`
+		} `json:"transforms"`
+	}
+	if err := newJSONDecoder(resp.Body).Decode(&response); err != nil {
+		return fmt.Errorf("failed to decode transform response: %w", err)
+	}
+
+	for _, transform := range response.Transforms {
+		for _, alias := range transform.Dest.Aliases {
+			if alias.Alias == aliasName {
+				return nil
+			}
+		}
+	}
+
+	return fmt.Errorf("alias %q not found in transform %q configuration", aliasName, transformID)
 }
 
 func newJSONDecoder(r io.Reader) *json.Decoder {

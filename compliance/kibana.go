@@ -21,12 +21,13 @@ const (
 	apiAgentPolicyPath   = "/api/fleet/agent_policies"
 	apiPackagePolicyPath = "/api/fleet/package_policies"
 
-	apiGetSloPath                     = "/s/%s/api/observability/slos"
+	apiGetSloTemplatePath             = "/s/%s/api/observability/slo_templates"
 	apiExportSavedObjectPath          = "/api/saved_objects/_export"
 	apiGetDetecionRulePath            = "/api/detection_engine/rules"
 	apiLoadPrebuiltDetectionRulesPath = "/api/detection_engine/rules/prepackaged"
 	apiSavedObjects                   = "/api/saved_objects"
 	apiStatusPath                     = "/api/status"
+	apiInstalledPackagesPath          = "/api/fleet/epm/packages"
 
 	defaultSpace = "default"
 )
@@ -70,12 +71,6 @@ type dashboardResponse struct {
 	} `json:"attributes"`
 	ID   string `json:"id"`
 	Type string `json:"type"`
-}
-
-type sloResponse struct {
-	Description string `json:"description"`
-	ID          string `json:"id"`
-	Enabled     bool   `json:"enabled"`
 }
 
 type detectionRuleResponse struct {
@@ -331,47 +326,35 @@ func (k *Kibana) createPackagePolicy(agentPolicyID, name, version, templateName,
 	return nil
 }
 
-// MustExistSLO checks if an SLO with the given ID exists.
-func (k *Kibana) MustExistSLO(sloID string) error {
-	_, err := k.getSLO(sloID, defaultSpace)
+// MustExistSLOTemplate checks if an SLO template with the given ID exists.
+// SLO templates are installed by Fleet as kibana assets of type slo_template
+// and are accessible via the observability SLO templates API (internal).
+func (k *Kibana) MustExistSLOTemplate(templateID string) error {
+	apiPath := fmt.Sprintf(apiGetSloTemplatePath, defaultSpace)
+	apiPath, err := url.JoinPath(apiPath, templateID)
 	if err != nil {
 		return err
 	}
-	return nil
-}
-
-func (k *Kibana) getSLO(sloID, space string) (*sloResponse, error) {
-	apiPath := fmt.Sprintf(apiGetSloPath, space)
-	apiPath, err := url.JoinPath(apiPath, sloID)
+	req, err := k.newInternalRequest(http.MethodGet, apiPath, nil)
 	if err != nil {
-		return nil, err
-	}
-	req, err := k.newRequest(http.MethodGet, apiPath, nil)
-	if err != nil {
-		return nil, err
+		return err
 	}
 
 	resp, err := k.client.Do(req)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
 		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return nil, fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
 		}
-		return nil, fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
+		return fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
 	}
 
-	var slo sloResponse
-	err = json.NewDecoder(resp.Body).Decode(&slo)
-	if err != nil {
-		return nil, err
-	}
-
-	return &slo, nil
+	return nil
 }
 
 // MustExistDashboard checks if a dashboard with the given ID exists.
@@ -514,6 +497,37 @@ func (k *Kibana) MustExistSavedObject(soType, id string) error {
 	return nil
 }
 
+// IsPackageInstalled checks if a package with the given name is installed.
+func (k *Kibana) IsPackageInstalled(packageName string) error {
+	apiPath, err := url.JoinPath(apiInstalledPackagesPath, packageName)
+	if err != nil {
+		return err
+	}
+	req, err := k.newRequest(http.MethodGet, apiPath, nil)
+	if err != nil {
+		return err
+	}
+
+	resp, err := k.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return fmt.Errorf("package %q is not installed", packageName)
+	}
+	if resp.StatusCode >= 400 {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
+	}
+
+	return nil
+}
+
 func (k *Kibana) newRequest(method string, path string, body io.Reader) (*http.Request, error) {
 	urlPath, err := url.JoinPath(k.Host, path)
 	if err != nil {
@@ -530,7 +544,15 @@ func (k *Kibana) newRequest(method string, path string, body io.Reader) (*http.R
 	req.Header.Set("kbn-xsrf", "package-spec")
 
 	return req, nil
+}
 
+func (k *Kibana) newInternalRequest(method string, path string, body io.Reader) (*http.Request, error) {
+	req, err := k.newRequest(method, path, body)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("x-elastic-internal-origin", "kibana")
+	return req, nil
 }
 
 func addRequestParams(request *http.Request, params map[string]string) *http.Request {

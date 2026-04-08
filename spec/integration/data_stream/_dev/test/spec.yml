@@ -21,3 +21,8 @@ spec:
       name: policy
       required: false
       $ref: "./policy/spec.yml"
+    - description: Folder containing script tests
+      type: folder
+      name: scripts
+      required: false
+      $ref: "./scripts/spec.yml"

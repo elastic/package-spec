@@ -137,7 +137,7 @@ func expandItemKey(c interface{}) interface{} {
 
 func adjustErrorDescription(description string) string {
 	if description == "Does not match format '"+relativePathFormat+"'" {
-		return fmt.Sprintf("relative path is invalid, target doesn't exist or it exceeds the file size limit")
+		return "relative path is invalid, target doesn't exist or it exceeds the file size limit"
 	} else if description == "Does not match format '"+dataStreamNameFormat+"'" {
 		return "data stream doesn't exist"
 	}

@@ -1,3 +1,8 @@
+- version: 1.1.0
+  changes:
+    - description: Add processor tags
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1010
 - version: 1.0.1
   changes:
     - description: Add kibana configuration links

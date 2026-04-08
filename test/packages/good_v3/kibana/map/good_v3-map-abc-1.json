@@ -1,4 +1,6 @@
 {
     "id": "good_v3-map-abc-1",
-    "type": "map"
+    "type": "map",
+    "typeMigrationVersion": "8.4.0",
+    "attributes": {}
 }

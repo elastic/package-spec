@@ -43,11 +43,11 @@ spec:
   - description: Folder containing field definitions
     type: folder
     name: fields
-    required: true
+    required: false
     $ref: "../integration/data_stream/fields/spec.yml"
   - description: Sample event file
     type: file
-    name: "sample_event.json"
+    pattern: "^sample_event(_[a-z0-9]+)?.json$"
     contentMediaType: "application/json"
     required: false
   - description: Folder containing development resources
@@ -75,6 +75,11 @@ spec:
     $ref: "../integration/img/spec.yml"
 
 versions:
+  - before: 3.5.0
+    patch:
+      - op: replace
+        path: "/contents/5/required" # Input packages don't require field definitions.
+        value: true
   - before: 3.2.2
     patch:
       - op: remove

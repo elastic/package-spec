@@ -4,7 +4,11 @@
 spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
-  additionalProperties: true
   properties:
     skip:
       $ref: "./../config.spec.yml#/definitions/skip"
+    requires:
+      description: Package dependencies required for this test with exact versions.
+      type: array
+      items:
+        $ref: "./../config.spec.yml#/definitions/package_requirement"

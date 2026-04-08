@@ -28,6 +28,7 @@ func (i *itemSchemaSpec) resolve(target semver.Version) (map[string]interface{},
 		// Nothing to do.
 		return i.Spec, nil
 	}
+
 	spec, err := specpatch.ResolvePatch(i.Spec, patchJSON)
 	if err != nil {
 		return nil, fmt.Errorf("failed to apply patch: %w", err)
@@ -44,21 +45,4 @@ func (i *itemSchemaSpec) resolve(target semver.Version) (map[string]interface{},
 		return nil, fmt.Errorf("failed to unmarshal resolved spec: %w", err)
 	}
 	return resolved, nil
-}
-
-func (i *itemSchemaSpec) patchForVersion(target semver.Version) ([]byte, error) {
-	var patch []any
-	for _, version := range i.Versions {
-		if sv, err := semver.NewVersion(version.Before); err != nil {
-			return nil, err
-		} else if !target.LessThan(sv) {
-			continue
-		}
-
-		patch = append(patch, version.Patch...)
-	}
-	if len(patch) == 0 {
-		return nil, nil
-	}
-	return json.Marshal(patch)
 }

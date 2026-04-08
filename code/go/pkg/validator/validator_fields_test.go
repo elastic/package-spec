@@ -513,6 +513,7 @@ func TestValidateFields(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
+			t.Parallel()
 			packagePath := createPackageWithFields(t, "testpackage", c.packageTemplate, c.specVersion, c.patches, c.fields)
 			err := ValidateFromPath(packagePath)
 			if len(c.expectedErrors) == 0 {
@@ -538,11 +539,11 @@ func TestValidateFields(t *testing.T) {
 
 // encodeContent encodes the content as YAML, unless it is already an array of bytes, that is returned as is.
 func encodeContent(content any) ([]byte, error) {
-	switch content.(type) {
+	switch content := content.(type) {
 	case nil:
 		return nil, nil
 	case []byte:
-		return content.([]byte), nil
+		return content, nil
 	default:
 		var jsonFields bytes.Buffer
 		enc := yaml.NewEncoder(&jsonFields)

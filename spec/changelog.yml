@@ -2,23 +2,218 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 3.5.0-next
+- version: 3.7.0-next
   changes:
-    - description: Add support for `slo` assets.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/767
+    # Pending on https://github.com/elastic/kibana/issues/220294
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
     - description: Add `section_header` as a valid var type for decorative section headings in the Fleet UI.
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/000
+      link: https://github.com/elastic/package-spec/pull/1133
     - description: Add `show_divider` optional boolean to input objects to suppress horizontal dividers in the Fleet UI.
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/000
+      link: https://github.com/elastic/package-spec/pull/1133
     - description: Add `var_groups` optional array to input, stream, and input-package policy template objects for Fleet UI grouping.
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/000
+      link: https://github.com/elastic/package-spec/pull/1133
+- version: 3.6.1-next
+  changes:
+    - description: Add var_groups support to policy template and input levels in integration packages, and to policy template and package root levels in input packages.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1120
+- version: 3.6.0
+  changes:
+    - description: Add pipeline tag validations.
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/1010
+    # Pending on https://github.com/elastic/kibana/issues/244655
+    - description: Add support for ES|QL query assets in integration and content packages.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1028
+    - description: Add pipeline global on_failure validations.
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/1038
+    - description: Add support for deprecating packages or individual features (policy_templates, inputs, data_streams or variables).
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1053
+    - description: Add var_groups schema to support conditional variable groups for Cloud Connector integration.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/1054
+    - description: Allow to set time series index mode in input packages.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1066
+    - description: Add support for dynamic_signal_types field in input package policy templates for OTel input type.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1067
+    - description: Add support for multiple template paths in input packages, integration inputs, and data streams.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1089
+    # Pending on https://github.com/elastic/kibana/issues/252938
+    - description: Add support for package dependencies in integration packages via requires field with input and content package types.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1071
+    # Pending on https://github.com/elastic/kibana/issues/252949
+    - description: Allow otelcol input type and dynamic_signal_types field in integration packages.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1091
+    - description: Add support for migrating input types at integrations policy templates and data streams.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1021
+    - description: Add support for `profiles` policy template type in input packages
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1092
+    - description: Support including multiple sample events
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/582
+    - description: Align integration template path semantic validation with Fleet
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/1122
+- version: 3.5.8
+  changes:
+    - description: Add deployer option to system benchmark configuration.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1099
+    - description: Allow to force the format used in the policy API in system and policy tests.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1103
+    - description: Add support for auto_expand_replicas, max_result_window, and refresh_interval index settings in data stream templates.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1092
+    - description: Add deployer option to system test configuration.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1104
+    - description: Allow optional _dev/scripts directory in integration, input, and content packages for development tooling files.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1090
+- version: 3.5.7
+  changes:
+    - description: Allow _dev directory for content-only packages; use _dev/shared for development files (e.g. dashboard YML sources).
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/1068
+- version: 3.5.6
+  changes:
+    - description: Add validation for Kibana tag duplicates.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1042
+    - description: Add support for Kibana `slo_template` assets
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1037
+    - description: Add version patches to exclude `slo_template` assets for spec versions before 3.4.0.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1064
+    - description: Add categories to data_stream
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1065
+- version: 3.5.5
+  changes:
+    - description: Run validation semantic rules also in transform fields.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1027
+    - description: Run static validation for handlebars templates in input and integration packages.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1030
+- version: 3.5.4
+  changes:
+    - description: Fix rule matching processor for event.original handling.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/1024/
+- version: 3.5.3
+  changes:
+    - description: Make support for alert rule templates more permissive.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1012
+    - description: Allow to define the message field in an array in the remove procesor for event.original.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1013
+- version: 3.5.2
+  changes:
+    - description: Fix validation of policy_template paths with linked files.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/1009
+- version: 3.5.1
+  changes:
+    - description: Input packages don't require to define fields.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/994
+    - description: Add support for script testing in data streams.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/985
+    - description: Input packages require to define template_path in manifest.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1000
+    - description: Allow to define agent version constrains in input and integration packages.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/999
+    - description: Allow to define policy_template in system benchmark configuration files.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/1004
+    - description: Integration packages validation of template paths.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1002
+- version: 3.5.0
+  changes:
+    - description: Add `duration` variable data type with `min_duration` and `max_duration` validation properties.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/948
+    - description: Add support for Kibana `alerting_rule_template` assets, which can be used to create alert rules.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/918
+    - description: Fix required_var minItems validation in data stream manifest schema.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/965
+    - description: Add support for OTel collector configuration in input packages.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/975
+- version: 3.4.2
+  changes:
+    - description: Add support for opentelemetry category.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/940
+    - description: Add optional docs_structure_enforced parameter to validation.yml.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/924
+    - description: Allow to use underscores in benchmark file names.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/945
+    - description: Introduce asset_inventory category
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/938
+    - description: Fix paths with slashes displayed on Windows.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/953
+    - description: Add support for lookup indices in transforms.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/936
+    - description: Fix dynamic_date_formats example type in data stream manifest schema.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/966
+    - description: Introduce misconfiguration_workflow and vulnerability_workflow category
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/974
+    - description: Reserve input type "otelcol" for future use.
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/975
+- version: 3.4.1
+  changes:
+    - description: Add fips_compatible boolean flag for input package policy templates.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/914
+    - description: Add support for discovery content packages based on datasets.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/922
+    - description: Disallow to add additional properties in discovery.fields.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/922
+    - description: Added support for '*.csv' and '*.gz' file patterns in terraform deployer spec.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/926
+    - description: Add support for `knowledge_base` directory under docs to store markdown files for AI assistant context.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/916
+    - description: Add definition for input-level deployment modes.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/915
 - version: 3.4.0
   changes:
     - description: Add kibana/security_ai_prompt to support security AI prompt assets.
@@ -217,7 +412,7 @@
     - description: Using non-GA versions of the spec in GA packages produces a filterable validation error instead of a warning
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/627
-    - description: 'Allow to set index: false in dynamic templates defined in data stream manifests'
+    - description: "Allow to set index: false in dynamic templates defined in data stream manifests"
       type: enhancement
       link: https://github.com/elastic/package-spec/issues/650
     - description: Validate that data streams with time series enabled have configured dimensions
@@ -715,7 +910,7 @@
     - description: Add `hidden` fields to data stream manifest file.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/91
-    - description: 'Revert: Allow `condition` under inputs.'
+    - description: "Revert: Allow `condition` under inputs."
       type: bugfix
       link: https://github.com/elastic/package-spec/pull/93
     - description: Support `lens` Kibana type.

@@ -29,6 +29,8 @@ spec:
              - index_pattern
              - security_rule
              - csp_rule_template
+             - alerting_rule_template
+             - slo_template
              - ml_module
              - osquery_pack_asset
              - osquery_saved_query

@@ -32,6 +32,9 @@ type Spec struct {
 	specVersion semver.Version
 	// fs contains the filesystem of the spec.
 	fs fs.FS
+
+	// WarningsAsErrors causes validation warnings to be reported as errors when true.
+	WarningsAsErrors bool
 }
 
 type validationRule func(pkg fspath.FS) specerrors.ValidationErrors
@@ -56,9 +59,9 @@ func NewSpec(version semver.Version) (*Spec, error) {
 	}
 
 	s := Spec{
-		version,
-		*specVersion,
-		spec.FS(),
+		version:     version,
+		specVersion: *specVersion,
+		fs:          spec.FS(),
 	}
 
 	return &s, nil
@@ -84,7 +87,7 @@ func (s Spec) ValidatePackage(pkg packages.Package) specerrors.ValidationErrors 
 	}
 
 	// Syntactic validations
-	validator := newValidator(rootSpec, &pkg)
+	validator := newValidator(rootSpec, &pkg, s.WarningsAsErrors)
 	errs = append(errs, validator.Validate()...)
 
 	// Semantic validations
@@ -127,11 +130,15 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
 		},
 		{
-			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.field): processors.[0-9]+.remove.field does not match: "message"`),
+			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.field(.[0-9]+)?): processors.[0-9]+.remove.field(.[0-9]+)? does not match: "message"`),
 			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor",
 		},
 		{
 			matcher: regexp.MustCompile(`(processors.[0-9]+.remove.if): processors.[0-9]+.remove.if does not match: "ctx\.event\?\.original != null"`),
+			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null'",
+		},
+		{
+			matcher: regexp.MustCompile(`(field processors.[0-9]+.remove): (ignore_missing|if) is required`),
 			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null'",
 		},
 	}
@@ -184,6 +191,9 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 }
 
 func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules {
+	warnOn := func(validation func(fsys fspath.FS) specerrors.ValidationErrors) func(fspath.FS) specerrors.ValidationErrors {
+		return semantic.WarnOn(s.WarningsAsErrors, validation)
+	}
 	rulesDef := []struct {
 		fn    validationRule
 		since *semver.Version
@@ -193,7 +203,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateVersionIntegrity},
 		{fn: semantic.ValidateChangelogLinks},
 		{fn: semantic.ValidatePrerelease},
-		{fn: semantic.WarnOn(semantic.ValidateMinimumKibanaVersion), until: semver.MustParse("3.0.0")},
+		{fn: warnOn(semantic.ValidateMinimumKibanaVersion), until: semver.MustParse("3.0.0")},
 		{fn: semantic.ValidateMinimumKibanaVersion, since: semver.MustParse("3.0.0")},
 		{fn: semantic.ValidateFieldGroups},
 		{fn: semantic.ValidateFieldsLimits(rootSpec.MaxFieldsPerDataStream()), types: []string{"integration", "input"}},
@@ -202,7 +212,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateDateFields, types: []string{"integration", "input"}},
 		{fn: semantic.ValidateRequiredFields, types: []string{"integration", "input"}},
 		{fn: semantic.ValidateExternalFieldsWithDevFolder, types: []string{"integration", "input"}},
-		{fn: semantic.WarnOn(semantic.ValidateVisualizationsUsedByValue), types: []string{"integration", "content"}, until: semver.MustParse("3.0.0")},
+		{fn: warnOn(semantic.ValidateVisualizationsUsedByValue), types: []string{"integration", "content"}, until: semver.MustParse("3.0.0")},
 		{fn: semantic.ValidateVisualizationsUsedByValue, types: []string{"integration", "content"}, since: semver.MustParse("3.0.0")},
 		{fn: semantic.ValidateILMPolicyPresent, since: semver.MustParse("2.0.0"), types: []string{"integration"}},
 		{fn: semantic.ValidateProfilingNonGA, types: []string{"integration"}},
@@ -214,6 +224,22 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateDimensionsPresent, types: []string{"integration"}, since: semver.MustParse("3.0.1")},
 		{fn: semantic.ValidateCapabilitiesRequired, since: semver.MustParse("2.10.0")}, // capabilities definition was added in spec version 2.10.0
 		{fn: semantic.ValidateRequiredVarGroups},
+		{fn: semantic.ValidateVarGroups, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateDocsStructure},
+		{fn: semantic.ValidateDeploymentModes, types: []string{"integration"}},
+		{fn: semantic.ValidateDurationVariables, since: semver.MustParse("3.5.0")},
+		{fn: semantic.ValidateInputPackagesPolicyTemplates, types: []string{"input"}},
+		{fn: semantic.ValidateInputDynamicSignalTypes, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateMinimumAgentVersion},
+		{fn: semantic.ValidateIntegrationPolicyTemplates, types: []string{"integration"}},
+		{fn: semantic.ValidatePipelineTags, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateStaticHandlebarsFiles, types: []string{"integration", "input"}},
+		{fn: semantic.ValidateKibanaTagDuplicates},
+		{fn: semantic.ValidatePipelineOnFailure, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateIntegrationInputsDeprecation, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateDeprecatedReplacedBy, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidatePackageReferences, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateTestPackageRequirements, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
 	}
 
 	var validationRules validationRules

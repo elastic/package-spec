@@ -9,5 +9,5 @@ Feature: Transforms
   @2.10.0
   Scenario: Configure aliases for transforms
     Given the "transform_aliases" package is installed
-     Then there is a transform "logs-transform.metadata_united-*"
-      And there is a transform alias "transform_aliases_transform_alias"
+     Then there is a transform "logs-transform_aliases.metadata_united-*"
+      And the transform "logs-transform_aliases.metadata_united-*" has alias "transform_aliases_transform_alias" configured

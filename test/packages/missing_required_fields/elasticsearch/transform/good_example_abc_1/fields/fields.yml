@@ -1,0 +1,4 @@
+- name: field1
+  type: keyword
+- name: field2
+  type: long

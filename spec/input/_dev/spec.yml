@@ -17,6 +17,11 @@ spec:
       name: test
       required: false
       $ref: "./test/spec.yml"
+    - description: Folder containing scripts used for development.
+      type: folder
+      name: scripts
+      required: false
+      $ref: "../../integration/_dev/scripts/spec.yml"
     - description: Folder containing shared files.
       type: folder
       name: shared

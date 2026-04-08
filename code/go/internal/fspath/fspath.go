@@ -7,7 +7,7 @@ package fspath
 import (
 	"io/fs"
 	"os"
-	"path"
+	"path/filepath"
 )
 
 // FS implements the fs interface and can also show a path where the fs is located.
@@ -26,11 +26,20 @@ type fsDir struct {
 
 // Path returns a path for the given names, based on the location of the file system.
 func (fs *fsDir) Path(names ...string) string {
-	return path.Join(append([]string{fs.path}, names...)...)
+	return filepath.Join(append([]string{fs.path}, namesFromSlash(names)...)...)
+}
+
+func namesFromSlash(names []string) []string {
+	result := make([]string, len(names))
+	for i, name := range names {
+		result[i] = filepath.FromSlash(name)
+	}
+	return result
 }
 
 // DirFS returns a file system for a directory, it keeps the path to implement the FS interface.
 func DirFS(path string) FS {
+	path = filepath.FromSlash(path)
 	return &fsDir{
 		FS:   os.DirFS(path),
 		path: path,

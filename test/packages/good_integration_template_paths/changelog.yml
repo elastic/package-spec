@@ -1,0 +1,6 @@
+# newer versions go on top
+- version: "0.0.1"
+  changes:
+    - description: Test package for template_paths in inputs and streams
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/1084

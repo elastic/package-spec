@@ -1,0 +1,14 @@
+format_version: 3.4.0
+name: good_alert_rule_templates
+title: "Good Alert Rule Templates"
+version: 1.0.0
+description: "This package contains alerting rule templates with a supported 'format_version'."
+type: integration
+conditions:
+  kibana:
+    version: "^8.19.0"
+  elastic:
+    subscription: "basic"
+owner:
+  github: elastic/integrations
+  type: elastic

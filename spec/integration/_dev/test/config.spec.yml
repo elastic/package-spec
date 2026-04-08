@@ -16,6 +16,11 @@ spec:
           default: false
         skip:
           $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/skip"
+        requires:
+          description: Package dependencies required for these tests with exact versions.
+          type: array
+          items:
+            $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/package_requirement"
   properties:
     system:
       description: Configuration for system tests

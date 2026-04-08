@@ -96,7 +96,6 @@ spec:
                 raw:
                   description: Raw config.
                   type: object
-                  additionalProperties: true
                 path:
                   description: Config path.
                   type: string
@@ -108,7 +107,6 @@ spec:
                 raw:
                   description: Raw fields.
                   type: object
-                  additionalProperties: true
                 path:
                   description: Fields path.
                   type: string
@@ -142,6 +140,8 @@ spec:
     input:
       description: The input of the package to benchmark.
       type: string
+    policy_template:
+      $ref: "#/definitions/policy_template"
     vars:
       description: The package level variables.
       $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/vars"
@@ -153,5 +153,7 @@ spec:
       $ref: "#/definitions/benchmark_time_period"
     wait_for_data_timeout:
       $ref: "#/definitions/wait_for_data_timeout"
+    deployer:
+      $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/deployer"
     corpora:
       $ref: "#/definitions/corpora"

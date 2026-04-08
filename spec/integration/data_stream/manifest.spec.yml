@@ -39,8 +39,8 @@ spec:
       patternProperties:
         "^[a-zA-Z0-9_]+$":
           type: array
+          minItems: 1
           items:
-            minItems: 1
             type: object
             required:
               - name
@@ -67,7 +67,15 @@ spec:
             examples:
               - hosts
           type:
-            description: Data type of variable.
+            description: >
+              Data type of variable.
+
+              A duration type is a sequence of decimal numbers, each with a unit
+              suffix, such as "60s", "1m" or "2h45m".
+              Duration values must follow these rules:
+              - Use time units of "ms", "s", "m", "h".
+              - When using min_duration, default, and max_duration,
+                they must satisfy: 0 <= min_duration <= default <= max_duration
             type: string
             enum:
               - bool
@@ -81,6 +89,7 @@ spec:
               - time_zone
               - url
               - yaml
+              - duration
             examples:
               - text
           title:
@@ -109,7 +118,7 @@ spec:
           secret:
             description: >
               Specifying that a variable is secret means that Kibana will store the value
-              separate from the package policy in a more secure index. 
+              separate from the package policy in a more secure index.
               This is useful for passwords and other sensitive information.
               One caveat is that secrets are write-only, once a user writes a secret var
               they cannot read it again, only overwrite it.
@@ -145,9 +154,19 @@ spec:
               - ['http', 'https']
               - ['redis', 'rediss']
               - ['', 'mysql']
+          min_duration:
+            description: The minimum allowed duration value for duration data types. This property can only be used when the type is set to 'duration'.
+            type: string
+            pattern: '^(\d+[smh]|\d+ms)+$'
+          max_duration:
+            description: The maximum allowed duration value for duration data types. This property can only be used when the type is set to 'duration'.
+            type: string
+            pattern: '^(\d+[smh]|\d+ms)+$'
           default:
             description: Default value(s) for variable
             $ref: "#/definitions/input_variable_value"
+          deprecated:
+            $ref: "../../integration/manifest.spec.yml#/definitions/deprecated"
         allOf:
          - if:
              properties:
@@ -198,73 +217,37 @@ spec:
            then:
              required:
                - secret
+         - if:
+             properties:
+               type:
+                 const: duration
+           then:
+             properties:
+               default:
+                 type: string
+                 pattern: '^(\d+[smh]|\d+ms)+$'
+         - if:
+             not:
+               properties:
+                 type:
+                   const: duration
+           then:
+             not:
+               anyOf:
+                 - required: [min_duration]
+                 - required: [max_duration]
         required:
           - name
           - type
-    var_groups:
-      description: List of variable groups for UI display grouping.
-      type: array
-      items:
-        type: object
-        additionalProperties: false
-        properties:
-          name:
-            description: Unique name of the variable group.
-            type: string
-          title:
-            description: Title of the variable group.
-            type: string
-          selector_title:
-            description: Title shown in the selector for this group.
-            type: string
-          description:
-            description: Short description of the variable group.
-            type: string
-          required:
-            description: When true, all vars in the selected option are treated as required.
-            type: boolean
-          show_divider:
-            description: When false, suppresses the automatic horizontal divider rendered after this var_group's section.
-            type: boolean
-          options:
-            description: List of options for this variable group.
-            type: array
-            minItems: 1
-            items:
-              type: object
-              additionalProperties: true
-              properties:
-                name:
-                  description: Unique name of the option.
-                  type: string
-                title:
-                  description: Title of the option.
-                  type: string
-                description:
-                  description: Short description of the option.
-                  type: string
-                vars:
-                  description: List of variable names included in this option.
-                  type: array
-                  items:
-                    type: string
-                hide_in_deployment_modes:
-                  description: Whether this option should be hidden in the UI for specific deployment modes.
-                  type: array
-                  items:
-                    type: string
-                    enum:
-                      - default
-                      - agentless
-              required:
-                - name
-                - title
-                - vars
-        required:
-          - name
-          - title
-          - selector_title
-          - options
+    elasticsearch_index_mode:
+      description: |-
+        Index mode to use. Index mode can be used to enable use case specific functionalities.
+        This setting must be installed in the composable index template, not in the package component templates.
+      type: string
+      enum:
+      - "time_series" # Enables time series data streams https://www.elastic.co/guide/en/elasticsearch/reference/master/tsds.html
+      examples:
+      - "time_series"
     elasticsearch_index_template:
       description: Index template definition
       type: object
@@ -276,75 +259,17 @@ spec:
           additionalProperties: false
           properties:
             analysis:
-              type: object
-              additionalProperties: false
-              properties:
-                analyzer:
-                  description: Definition of custom analyzer.
-                  type: object
-                  additionalProperties:
-                    type: object
-                    additionalProperties: false
-                    properties:
-                      type:
-                        description: Type of analyzer
-                        type: string
-                        enum:
-                          - pattern
-                      pattern:
-                        type: string
+              $ref: "#/definitions/index_template_setting_analysis"
             index:
-              type: object
-              additionalProperties: false
-              properties:
-                codec:
-                  description: >
-                    Type of compression to use. The default is to use LZ4, `best_compression` uses DEFLATE,
-                    with higher compression but lower ingestion performance.
-                  type: string
-                  enum:
-                    - default
-                    - best_compression
-                mapping:
-                  type: object
-                  additionalProperties: false
-                  patternProperties:
-                    "^(dimension|nested|total)_fields$":
-                      type: object
-                      additionalProperties: false
-                      properties:
-                        limit:
-                          description: Limit on the number of fields of this kind on this data stream.
-                          type: integer
-                sort:
-                  type: object
-                  additionalProperties: false
-                  properties:
-                    field:
-                      description: Fields used to sort the document in the Lucene segments.
-                      oneOf:
-                        - type: string
-                        - type: array
-                          items:
-                            type: string
-                    order:
-                      description: The sort order to use for each field.
-                      oneOf:
-                        - type: string
-                          enum:
-                            - asc
-                            - desc
-                        - type: array
-                          items:
-                            type: string
-                            enum:
-                              - asc
-                              - desc
+              $ref: "#/definitions/index_template_setting_index"
             number_of_shards:
-              description: Number of primary shards that the data stream should have.
-              type: integer
-              minimum: 1
-              default: 1
+              $ref: "#/definitions/index_template_setting_number_of_shards"
+            auto_expand_replicas:
+              $ref: "#/definitions/index_template_setting_auto_expand_replicas"
+            max_result_window:
+              $ref: "#/definitions/index_template_setting_max_result_window"
+            refresh_interval:
+              $ref: "#/definitions/index_template_setting_refresh_interval"
         mappings:
           description: Mappings section of index template
           type: object
@@ -373,9 +298,9 @@ spec:
               type: array
               items:
                 type: string
-                examples:
-                  - ["strict_date_optional_time","yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"] # This is the default if not set.
-                  - ["MM/dd/yyyy"]
+              examples:
+                - ["strict_date_optional_time","yyyy/MM/dd HH:mm:ss Z||yyyy/MM/dd Z"] # This is the default if not set.
+                - ["MM/dd/yyyy"]
             dynamic_templates:
               type: array
               items:
@@ -453,7 +378,7 @@ spec:
               description: >
                 Turn the support for subobjects on or off in the mapping
                 configuration for the data stream.
-                
+
                 By default, it's set to `true`, enabling Elasticsearch to
                 expands fields that contain dots in their names
                 to their corresponding object structure.
@@ -461,7 +386,7 @@ spec:
                 Setting it to `false` restricts objects
                 from holding subobjects, enabling storing documents
                 with dot-contained field names and common prefixes.
-                
+
                 It is still possible to send documents that have
                 objects to a data stream that has set subobjects
                 to `false`.
@@ -471,16 +396,16 @@ spec:
                 PUT my-index-000001
                 {
                   "mappings": {
-                    "subobjects": false 
+                    "subobjects": false
                   }
                 }
 
                 PUT my-index-000001/_doc/metric_1
                 {
-                  "time" : "100ms", 
+                  "time" : "100ms",
                   "time.min" : "10ms",
                   "time.max" : "900ms"
-                }                
+                }
 
                 Before disabling subobjects, consider the following implications:
 
@@ -496,7 +421,7 @@ spec:
 
                 For comprehensive details on subobjects, refer to
                 the Elasticsearch documentation [^2].
-                
+
 
                 [^1]: Auto-flattening limitations are documented at:
                 https://www.elastic.co/guide/en/elasticsearch/reference/master/subobjects.html#_auto_flattening_object_mappings
@@ -506,7 +431,6 @@ spec:
 
               type: boolean
               default: true
-
         ingest_pipeline:
           description: Elasticsearch ingest pipeline settings
           type: object
@@ -525,6 +449,102 @@ spec:
             hidden:
               description: Makes the data stream hidden
               type: boolean
+    index_template_setting_analysis:
+      type: object
+      additionalProperties: false
+      properties:
+        analyzer:
+          description: Definition of custom analyzer.
+          type: object
+          additionalProperties:
+            type: object
+            additionalProperties: false
+            properties:
+              type:
+                description: Type of analyzer
+                type: string
+                enum:
+                  - pattern
+              pattern:
+                type: string
+    index_template_setting_index:
+      type: object
+      additionalProperties: false
+      properties:
+        codec:
+          description: >
+            Type of compression to use. The default is to use LZ4, `best_compression` uses DEFLATE,
+            with higher compression but lower ingestion performance.
+          type: string
+          enum:
+            - default
+            - best_compression
+        mapping:
+          type: object
+          additionalProperties: false
+          patternProperties:
+            "^(dimension|nested|total)_fields$":
+              type: object
+              additionalProperties: false
+              properties:
+                limit:
+                  description: Limit on the number of fields of this kind on this data stream.
+                  type: integer
+        sort:
+          type: object
+          additionalProperties: false
+          properties:
+            field:
+              description: Fields used to sort the document in the Lucene segments.
+              oneOf:
+                - type: string
+                - type: array
+                  items:
+                    type: string
+            order:
+              description: The sort order to use for each field.
+              oneOf:
+                - type: string
+                  enum:
+                    - asc
+                    - desc
+                - type: array
+                  items:
+                    type: string
+                    enum:
+                      - asc
+                      - desc
+    index_template_setting_number_of_shards:
+      description: Number of primary shards that the data stream should have.
+      type: integer
+      minimum: 1
+      default: 1
+    index_template_setting_auto_expand_replicas:
+      description: |
+        Auto-expand the number of replicas based on the number of data nodes in the cluster.
+        Set to a dash delimited lower and upper bound (e.g. 0-5) or use `all` for the upper bound (e.g. 0-all). Defaults to false (i.e. disabled).
+      type: string
+      examples:
+        - "0-1"
+        - "0-all"
+        - "false"
+    index_template_setting_max_result_window:
+      description: |
+        The maximum value of `from + size` for searches to this index. Defaults to 10000.
+        Search requests take heap memory and time proportional to `from + size` and this limits that memory.
+      type: integer
+      minimum: 1
+      examples:
+        - 50000
+    index_template_setting_refresh_interval:
+      description: |
+        How often to perform a refresh operation, which makes recent changes to the index visible to search. The value defaults to `1s` in Elastic Stack and `5s` in Serverless. In Serverless, `5s` is also the minimum value that can be set.
+        Can be set to `-1` to disable refresh.
+      type: string
+      examples:
+        - "10s"
+        - "1m"
+        - "-1"
   properties:
     dataset:
       description: Name of data set.
@@ -586,6 +606,8 @@ spec:
             - aws/metrics
             - s3
             - file
+          package:
+            $ref: "../../integration/manifest.spec.yml#/definitions/package_reference"
           title:
             description: >
               Title of the stream. It should include the source of the data that is
@@ -606,21 +628,28 @@ spec:
             - Collect Metrics from Linux servers with Elastic Agent.
             - Collect Logs from Apache Web Server using Elastic Agent.
           template_path:
-            description: "Path to Elasticsearch index template for stream."
-            type: string
+            $ref: "../../integration/manifest.spec.yml#/definitions/template_path"
+          template_paths:
+            $ref: "../../integration/manifest.spec.yml#/definitions/template_paths"
           required_vars:
             $ref: "#/definitions/required_vars"
           vars:
             $ref: "#/definitions/vars"
           var_groups:
-            $ref: "#/definitions/var_groups"
+            $ref: "../../integration/manifest.spec.yml#/definitions/var_groups"
+          dynamic_signal_types:
+            $ref: "../../integration/manifest.spec.yml#/definitions/dynamic_signal_types"
+          migrate_from:
+            $ref: "../../integration/manifest.spec.yml#/definitions/migrate_from"
           enabled:
             description: Is stream enabled?
             type: boolean
         required:
         - title
         - description
-        - input
+        oneOf:
+        - required: [input]
+        - required: [package]
     agent:
       $ref: "../../integration/manifest.spec.yml#/definitions/agent"
     elasticsearch:
@@ -629,14 +658,7 @@ spec:
       additionalProperties: false
       properties:
         index_mode:
-          description: |-
-            Index mode to use. Index mode can be used to enable use case specific functionalities.
-            This setting must be installed in the composable index template, not in the package component templates.
-          type: string
-          enum:
-          - "time_series" # Enables time series data streams https://www.elastic.co/guide/en/elasticsearch/reference/master/tsds.html
-          examples:
-          - "time_series"
+          $ref: "#/definitions/elasticsearch_index_mode"
         index_template:
           $ref: "#/definitions/elasticsearch_index_template"
         privileges:
@@ -669,18 +691,60 @@ spec:
         dynamic_namespace:
           description: When set to true, agents running this integration are granted data stream privileges for all namespaces of its type
           type: boolean
+    categories:
+      description: >
+        Optional categories that describe the type of data collected by this data stream.
+        Used for telemetry and categorization purposes. Skip if integration-level categories are appropriate.
+      $ref: "../../integration/manifest.spec.yml#/definitions/categories"
+    deprecated:
+      $ref: "../../integration/manifest.spec.yml#/definitions/deprecated"
   required:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
-  - before: 3.5.0
+  - before: 3.7.0
     patch:
+      # section_header var type added in 3.7.0.
       - op: remove
         path: /definitions/vars/items/properties/type/enum/4
+  - before: 3.6.0
+    patch:
+      - op: add
+        path: "/properties/streams/items/properties/input"
+        value:
+          not:
+            const: otelcol
       - op: remove
-        path: /properties/streams/items/properties/var_groups
+        path: "/properties/streams/items/properties/dynamic_signal_types"
       - op: remove
-        path: /definitions/var_groups
+        path: "/properties/streams/items/properties/package"
+      - op: remove
+        path: "/properties/streams/items/oneOf"
+      - op: add
+        path: "/properties/streams/items/required/-" # re-add input as required
+        value: input
+      - op: remove # removes template_paths field for streams
+        path: "/properties/streams/items/properties/template_paths"
+      - op: remove
+        path: "/properties/deprecated"
+      - op: remove
+        path: "/definitions/vars/items/properties/deprecated"
+      - op: remove
+        path: "/properties/streams/items/properties/var_groups"
+      # Input migration.
+      - op: remove
+        path: "/properties/streams/items/properties/migrate_from"
+  - before: 3.5.0
+    patch:
+      # Require >=3.5.0 to use the duration variable type.
+      - op: remove
+        path: /definitions/vars/items/properties/type/enum/10
+      - op: remove
+        path: /definitions/vars/items/properties/max_duration
+      - op: remove
+        path: /definitions/vars/items/properties/min_duration
+      - op: remove
+        path: /definitions/vars/items/allOf/2
   - before: 3.3.2
     patch:
       - op: remove

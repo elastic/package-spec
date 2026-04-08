@@ -2,30 +2,49 @@ $ErrorActionPreference = "Stop" # set -e
 # Forcing to checkout again all the files with a correct autocrlf.
 # Doing this here because we cannot set git clone options before.
 function fixCRLF {
-    Write-Host "-- Fixing CRLF in git checkout --"
+    Write-Host "--- Fixing CRLF in git checkout"
     git config core.autocrlf input
     git rm --quiet --cached -r .
     git reset --quiet --hard
 }
+function ensureBinPath {
+    $workDir = if ($env:WORKSPACE) { $env:WORKSPACE } else { $PWD.Path }
+    $binDir = Join-Path $workDir "bin"
+    if (-not (Test-Path $binDir)) { New-Item -ItemType Directory -Path $binDir | Out-Null }
+    $env:PATH = "$binDir;$env:PATH"
+    return $binDir
+}
+
 function withGolang($version) {
-    Write-Host "-- Install golang $version --"
-    choco install -y golang --version $version
-    $env:ChocolateyInstall = Convert-Path "$((Get-Command choco).Path)\..\.."
-    Import-Module "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
-    refreshenv
+    Write-Host "--- Install golang (GVM)"
+    $binDir = ensureBinPath
+    $gvmExe = Join-Path $binDir "gvm-windows-amd64.exe"
+    $gvmUrl = "https://github.com/andrewkroh/gvm/releases/download/$env:SETUP_GVM_VERSION/gvm-windows-amd64.exe"
+
+    Write-Host "Installing GVM tool"
+    $maxTries = 5
+    for ($i = 1; $i -le $maxTries; $i++) {
+        try {
+            Invoke-WebRequest -Uri $gvmUrl -OutFile $gvmExe -UseBasicParsing
+            break
+        } catch {
+            if ($i -eq $maxTries) { throw }
+            Start-Sleep -Seconds 3
+        }
+    }
+
+    Write-Host "Installing Go version $version"
+    & $gvmExe --format=powershell $version | Invoke-Expression
+    $env:PATH = "$(go env GOPATH)\bin;$env:PATH"
     go version
     go env
 }
 function installGoDependencies {
     $installPackages = @(
         "github.com/magefile/mage"
-        "github.com/elastic/go-licenser"
-        "golang.org/x/tools/cmd/goimports"
-        "github.com/jstemmer/go-junit-report/v2"
-        "gotest.tools/gotestsum"
     )
     foreach ($pkg in $installPackages) {
-        go install "$pkg@latest"
+        go install "$pkg@$env:SETUP_MAGE_VERSION"
     }
 }
 
@@ -33,9 +52,13 @@ fixCRLF
 withGolang $env:GO_VERSION
 installGoDependencies
 
+echo "--- Downloading Go modules"
+go mod download -x
+
+echo "--- Running unit tests"
 $ErrorActionPreference = "Continue" # set +e
 
-gotestsum --format testname --junitfile junit-win-report.xml -- -v ./code/go/...
+go run gotest.tools/gotestsum --format testname --junitfile junit-win-report.xml -- -v ./code/go/...
 
 $EXITCODE=$LASTEXITCODE
 $ErrorActionPreference = "Stop"

@@ -1,0 +1,46 @@
+format_version: 3.4.1
+name: bad_input_deployment_modes
+title: Bad input deployment modes
+description: Test package with invalid deployment_modes on inputs
+version: 0.0.1
+type: integration
+policy_templates:
+  - name: test
+    title: Test
+    description: Test policy template
+    inputs:
+      - type: test/metrics
+        title: Test metrics with invalid mode
+        description: Test metrics collection with invalid deployment mode
+        deployment_modes: ['invalid_mode']  # Invalid deployment mode
+      - type: test/logs
+        title: Test logs with empty array
+        description: Test logs collection with empty deployment modes array
+        deployment_modes: []  # Empty array should be invalid
+      - type: test/traces
+        title: Test traces with duplicate modes
+        description: Test traces collection with duplicate deployment modes
+        deployment_modes: ['default', 'default']  # Duplicate values should be invalid
+      - type: test/system
+        title: Test system with disabled agentless
+        description: Test input that tries to use agentless when it's disabled
+        deployment_modes: ['agentless']  # Agentless is disabled by default
+  - name: unsupported_modes
+    title: Policy with unsupported deployment modes
+    description: Policy template that enables deployment modes not supported by any input
+    deployment_modes:
+      default:
+        enabled: true
+      agentless:
+        enabled: true
+        organization: elastic
+        division: observability
+        team: test
+    inputs:
+      - type: test/metrics
+        title: Test metrics (agentless only)
+        description: Test metrics collection only for agentless mode
+        deployment_modes: ['agentless']  # Only supports agentless, but default is also enabled in template
+owner:
+  github: elastic/test
+  type: elastic

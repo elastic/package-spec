@@ -1,7 +1,7 @@
 title: Nginx access logs
 type: logs
 streams:
-  - input: logfile
+  - input: logfile-link
     vars:
       - name: empty_array
         type: text

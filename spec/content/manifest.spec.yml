@@ -13,15 +13,30 @@ spec:
       type: object
       additionalProperties: false
       properties:
-        fields:
-          description: Description of the fields this package can be used with.
+        datasets:
+          description: List of the datasets this package can be used with. For a package to be used with an index, the `data_stream.dataset` field of this index should be one of the datasets listed here.
           type: array
           items:
             type: object
+            additionalProperties: false
+            properties:
+              name:
+                description: Name of the dataset.
+                type: string
+            required:
+              - name
+        fields:
+          description: List of fields this package expects to find in an index. For a package to be used with an index, the index should contain all the fields listed here.
+          type: array
+          items:
+            type: object
+            additionalProperties: false
             properties:
               name:
                 description: Name of the field.
                 type: string
+            required:
+              - name
   properties:
     format_version:
       description: The version of the package specification format used by this package.
@@ -51,7 +66,14 @@ spec:
     categories:
       $ref: "../integration/manifest.spec.yml#/definitions/categories"
     conditions:
-      $ref: "../integration/manifest.spec.yml#/definitions/conditions"
+      description: Conditions under which this package can be installed.
+      type: object
+      additionalProperties: false
+      properties:
+        elastic:
+          $ref: "../integration/manifest.spec.yml#/definitions/conditions/properties/elastic"
+        kibana:
+          $ref: "../integration/manifest.spec.yml#/definitions/conditions/properties/kibana"
     discovery:
       $ref: "#/definitions/discovery"
     icons:
@@ -60,6 +82,8 @@ spec:
       $ref: "../integration/manifest.spec.yml#/definitions/screenshots"
     owner:
       $ref: "../integration/manifest.spec.yml#/definitions/owner"
+    deprecated:
+      $ref: "../integration/manifest.spec.yml#/definitions/deprecated"
   required:
   - format_version
   - name
@@ -68,3 +92,10 @@ spec:
   - version
   - type
   - owner
+
+# JSON patches for newer versions should be placed on top
+versions:
+  - before: 3.6.0
+    patch:
+      - op: remove # remove deprecated field for package
+        path: "/properties/deprecated"

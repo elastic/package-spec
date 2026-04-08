@@ -19,7 +19,12 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
-const dataStreamDir = "data_stream"
+const (
+	dataStreamDir = "data_stream"
+
+	inputPackageType       = "input"
+	integrationPackageType = "integration"
+)
 
 type fields []field
 
@@ -91,6 +96,60 @@ func (r *runtimeField) UnmarshalYAML(value *yaml.Node) error {
 	return r.unmarshalString(value.Value)
 }
 
+type position struct {
+	file   string
+	line   int
+	column int
+}
+
+func (p position) String() string {
+	return fmt.Sprintf("%s:%d:%d", p.file, p.line, p.column)
+}
+
+type processor struct {
+	Type       string
+	Attributes map[string]any
+	OnFailure  []processor
+
+	position position
+}
+
+func (p *processor) GetAttributeString(key string) (string, bool) {
+	s, ok := p.Attributes[key].(string)
+	if !ok {
+		return "", false
+	}
+
+	return s, true
+}
+
+func (p *processor) UnmarshalYAML(value *yaml.Node) error {
+	var procMap map[string]struct {
+		Attributes map[string]any `yaml:",inline"`
+		OnFailure  []processor    `yaml:"on_failure"`
+	}
+	if err := value.Decode(&procMap); err != nil {
+		return err
+	}
+
+	for k, v := range procMap {
+		p.Type = k
+		p.Attributes = v.Attributes
+		p.OnFailure = v.OnFailure
+		break
+	}
+
+	p.position.line = value.Line
+	p.position.column = value.Column
+
+	return nil
+}
+
+type ingestPipeline struct {
+	Processors []processor `yaml:"processors"`
+	OnFailure  []processor `yaml:"on_failure"`
+}
+
 type field struct {
 	Name       string `yaml:"name"`
 	Type       string `yaml:"type"`
@@ -106,6 +165,13 @@ type field struct {
 }
 
 type fieldFileMetadata struct {
+	dataStream   string
+	transform    string
+	filePath     string
+	fullFilePath string
+}
+
+type pipelineFileMetadata struct {
 	dataStream   string
 	filePath     string
 	fullFilePath string
@@ -180,6 +246,7 @@ func listFieldsFiles(fsys fspath.FS) ([]fieldFileMetadata, error) {
 					filePath:     file,
 					fullFilePath: fsys.Path(file),
 					dataStream:   dataStream,
+					transform:    "",
 				})
 		}
 	}
@@ -197,7 +264,33 @@ func listFieldsFiles(fsys fspath.FS) ([]fieldFileMetadata, error) {
 				filePath:     file,
 				fullFilePath: fsys.Path(file),
 				dataStream:   "",
+				transform:    "",
 			})
+	}
+
+	// transform definitions
+	transforms, err := listTransforms(fsys)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, transform := range transforms {
+		fieldsDir := path.Join("elasticsearch", "transform", transform, "fields")
+		transformFieldsFiles, err := readFieldsFolder(fsys, fieldsDir)
+		if err != nil {
+			return nil, fmt.Errorf("cannot read fields file from integration packages: %w", err)
+		}
+
+		for _, file := range transformFieldsFiles {
+			fieldsFilesMetadata = append(
+				fieldsFilesMetadata,
+				fieldFileMetadata{
+					filePath:     file,
+					fullFilePath: fsys.Path(file),
+					dataStream:   "",
+					transform:    transform,
+				})
+		}
 	}
 
 	return fieldsFilesMetadata, nil
@@ -217,6 +310,23 @@ func readFieldsFolder(fsys fspath.FS, fieldsDir string) ([]string, error) {
 		fieldsFiles = append(fieldsFiles, path.Join(fieldsDir, f.Name()))
 	}
 	return fieldsFiles, nil
+}
+
+func readPipelinesFolder(fsys fspath.FS, pipelinesDir string) ([]string, error) {
+	var pipelineFiles []string
+	entries, err := fs.ReadDir(fsys, pipelinesDir)
+	if errors.Is(err, os.ErrNotExist) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("can't list pipelines directory (path: %s): %w", fsys.Path(pipelinesDir), err)
+	}
+
+	for _, v := range entries {
+		pipelineFiles = append(pipelineFiles, path.Join(pipelinesDir, v.Name()))
+	}
+
+	return pipelineFiles, nil
 }
 
 func unmarshalFields(fsys fspath.FS, fieldsPath string) (fields, error) {
@@ -247,4 +357,62 @@ func listDataStreams(fsys fspath.FS) ([]string, error) {
 		list[i] = dataStream.Name()
 	}
 	return list, nil
+}
+
+func listTransforms(fsys fspath.FS) ([]string, error) {
+	transformDirectory := path.Join("elasticsearch", "transform")
+	transforms, err := fs.ReadDir(fsys, transformDirectory)
+	if errors.Is(err, os.ErrNotExist) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("can't list transforms directory: %w", err)
+	}
+
+	list := make([]string, len(transforms))
+	for i, transform := range transforms {
+		list[i] = transform.Name()
+	}
+	return list, nil
+
+}
+
+func listPipelineFiles(fsys fspath.FS) ([]pipelineFileMetadata, error) {
+	var pipelineFileMetadatas []pipelineFileMetadata
+
+	type pipelineDirMetadata struct {
+		dir        string
+		dataStream string
+	}
+
+	// Empty directory is used here to read ingest pipelines defined in the package root.
+	dirs := []pipelineDirMetadata{{dir: ""}}
+
+	dataStreams, err := listDataStreams(fsys)
+	if err != nil {
+		return nil, specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
+	}
+	for _, dataStream := range dataStreams {
+		dirs = append(dirs, pipelineDirMetadata{
+			dir:        path.Join(dataStreamDir, dataStream),
+			dataStream: dataStream,
+		})
+	}
+
+	for _, d := range dirs {
+		pipelinePath := path.Join(d.dir, "elasticsearch", "ingest_pipeline")
+		pipelineFiles, err := readPipelinesFolder(fsys, pipelinePath)
+		if err != nil {
+			return nil, fmt.Errorf("cannot read pipeline files from integration package: %w", err)
+		}
+		for _, file := range pipelineFiles {
+			pipelineFileMetadatas = append(pipelineFileMetadatas, pipelineFileMetadata{
+				filePath:     file,
+				fullFilePath: fsys.Path(file),
+				dataStream:   d.dataStream,
+			})
+		}
+	}
+
+	return pipelineFileMetadatas, nil
 }
