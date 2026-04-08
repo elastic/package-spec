@@ -298,16 +298,17 @@ spec:
             release:
               description: >
                 The maturity level of the agentless deployment mode for this policy template.
-                Only needs to be set when the agentless deployment mode has a different maturity than the package's overall release state.
-                Not allowed in single policy template packages where agentless is the only
-                deployment mode.
+                When absent, the implicit maturity is "beta".
+                Only needs to be set to "ga" when the agentless deployment mode has reached general availability.
+                Not set in packages where agentless is the only deployment mode — in that case
+                defer to the package's top-level release.
               type: string
               enum:
                 - beta
-                - preview
+                - ga
               examples:
                 - beta
-                - preview
+                - ga
             resources:
               description: >
                 The computing resources specifications for the Agentless deployment.

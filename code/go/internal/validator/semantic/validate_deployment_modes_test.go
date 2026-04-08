@@ -231,7 +231,7 @@ func TestValidateAgentlessReleaseDeployment(t *testing.T) {
 						Name: "test",
 						DeploymentModes: deploymentModesSpec{
 							Default:   deploymentModesDefault{Enabled: boolPtr(true)},
-							Agentless: deploymentModesAgentless{Enabled: true, Release: "beta"},
+							Agentless: deploymentModesAgentless{Enabled: true, Release: "ga"},
 						},
 					},
 				},
@@ -245,7 +245,7 @@ func TestValidateAgentlessReleaseDeployment(t *testing.T) {
 						Name: "test",
 						DeploymentModes: deploymentModesSpec{
 							Default:   deploymentModesDefault{Enabled: nil},
-							Agentless: deploymentModesAgentless{Enabled: true, Release: "beta"},
+							Agentless: deploymentModesAgentless{Enabled: true, Release: "ga"},
 						},
 					},
 				},
@@ -280,7 +280,7 @@ func TestValidateAgentlessReleaseDeployment(t *testing.T) {
 						Name: "test2",
 						DeploymentModes: deploymentModesSpec{
 							Default:   deploymentModesDefault{Enabled: boolPtr(false)},
-							Agentless: deploymentModesAgentless{Enabled: true, Release: "beta"},
+							Agentless: deploymentModesAgentless{Enabled: true, Release: "ga"},
 						},
 					},
 				},
@@ -294,7 +294,7 @@ func TestValidateAgentlessReleaseDeployment(t *testing.T) {
 						Name: "test",
 						DeploymentModes: deploymentModesSpec{
 							Default:   deploymentModesDefault{Enabled: boolPtr(false)},
-							Agentless: deploymentModesAgentless{Enabled: true, Release: "beta"},
+							Agentless: deploymentModesAgentless{Enabled: true, Release: "ga"},
 						},
 					},
 				},
