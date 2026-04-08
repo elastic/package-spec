@@ -1,0 +1,29 @@
+format_version: 3.6.0
+name: bad_integration_fleet_reserved_vars
+title: "Bad integration with incorrectly defined Fleet-reserved variables"
+version: 0.0.1
+source:
+  license: "Apache-2.0"
+description: "Integration package with a data stream whose stream entries define Fleet-reserved variables incorrectly."
+type: integration
+categories:
+  - custom
+conditions:
+  kibana:
+    version: "^9.2.0"
+  elastic:
+    subscription: "basic"
+policy_templates:
+  - name: sample
+    title: Sample
+    description: Collect sample data
+    inputs:
+      - type: otelcol
+        title: Collect via OTel receiver
+        description: Collecting data via OpenTelemetry receiver
+      - type: logfile
+        title: Log files
+        description: Collect log files
+owner:
+  github: elastic/ecosystem
+  type: elastic

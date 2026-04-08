@@ -1,0 +1,33 @@
+format_version: 3.6.0
+name: good_integration_fleet_reserved_vars
+title: "Good integration with valid Fleet-reserved variable overrides"
+version: 0.0.1
+source:
+  license: "Apache-2.0"
+description: "Integration package with multiple streams that correctly override Fleet-reserved variables."
+type: integration
+categories:
+  - custom
+conditions:
+  kibana:
+    version: "^9.2.0"
+  elastic:
+    subscription: "basic"
+policy_templates:
+  - name: otel
+    title: OTel logs
+    description: Collect logs via OTel
+    inputs:
+      - type: otelcol
+        title: Collect via OTel receiver
+        description: Collecting data via OpenTelemetry receiver
+  - name: log
+    title: Logs
+    description: Collect logs
+    inputs:
+      - type: logfile
+        title: Log files
+        description: Collect log files
+owner:
+  github: elastic/ecosystem
+  type: elastic
