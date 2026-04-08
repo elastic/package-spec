@@ -360,7 +360,7 @@ spec:
           url:
             description: Link url. Format is `http://...` or `https://...` for external links,  `kbn:/app/...` for links internal to Kibana.
             type: string
-            pattern: "^(http(s)?://|kbn:/)"
+            pattern: '^(http(s)?://|kbn:/)'
           type:
             description: Type of link. `next_steps` for links to locations that can be relevant right after configuring the policy. `action` for actions that can be performed while the policy is in use.
             type: string
@@ -371,9 +371,9 @@ spec:
             description: Link description
             type: string
         required:
-          - title
-          - url
-          - type
+        - title
+        - url
+        - type
     fips_compatible:
       type: boolean
       description: Indicate if this package is capable of satisfying FIPS requirements. Set to false if it uses any input that cannot be configured to use FIPS cryptography.
@@ -556,7 +556,7 @@ spec:
         from the referenced package. The package must be listed in the manifest's
         requires section.
       type: string
-      pattern: "^[a-z0-9_]+$"
+      pattern: '^[a-z0-9_]+$'
       examples:
         - filelog_otel
         - sql_input
@@ -568,7 +568,7 @@ spec:
         package:
           description: Name of the required package.
           type: string
-          pattern: "^[a-z0-9_]+$"
+          pattern: '^[a-z0-9_]+$'
           examples:
             - sql_input
             - elastic_agent
@@ -645,7 +645,7 @@ spec:
           name:
             description: Unique identifier for this variable group selector.
             type: string
-            pattern: "^[a-z][a-z0-9_]*$"
+            pattern: '^[a-z][a-z0-9_]*$'
             examples:
               - credential_type
           title:
@@ -685,7 +685,7 @@ spec:
                 name:
                   description: Unique identifier (stored in policy when selected).
                   type: string
-                  pattern: "^[a-z][a-z0-9_]*$"
+                  pattern: '^[a-z][a-z0-9_]*$'
                   examples:
                     - direct_access_key
                     - cloud_connectors
@@ -744,7 +744,7 @@ spec:
     name:
       description: The name of the package.
       type: string
-      pattern: "^[a-z0-9_]+$"
+      pattern: '^[a-z0-9_]+$'
       examples:
         - apache
     title:
