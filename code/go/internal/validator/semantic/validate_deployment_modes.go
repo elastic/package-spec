@@ -30,7 +30,6 @@ type deploymentModesSpec struct {
 }
 
 type deploymentModesDefault struct {
-
 	Enabled *bool `yaml:"enabled"` // pointer to detect if field was set; when unset (nil) semantical meaning is default deployment is enabled
 }
 
