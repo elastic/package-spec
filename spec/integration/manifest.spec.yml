@@ -520,6 +520,11 @@ spec:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/required_vars"
                 vars:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
+                var_groups:
+                  $ref: "./data_stream/manifest.spec.yml#/definitions/var_groups"
+                show_divider:
+                  description: When false, suppresses the automatic horizontal divider rendered after the input-level config section.
+                  type: boolean
               required:
                 - type
                 - title
@@ -596,6 +601,12 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.5.0
+    patch:
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/var_groups"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/show_divider"
   - before: 3.3.2
     patch:
       - op: remove

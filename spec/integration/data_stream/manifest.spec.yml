@@ -74,6 +74,7 @@ spec:
               - email
               - integer
               - password
+              - section_header
               - select
               - text
               - textarea
@@ -200,6 +201,70 @@ spec:
         required:
           - name
           - type
+    var_groups:
+      description: List of variable groups for UI display grouping.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          name:
+            description: Unique name of the variable group.
+            type: string
+          title:
+            description: Title of the variable group.
+            type: string
+          selector_title:
+            description: Title shown in the selector for this group.
+            type: string
+          description:
+            description: Short description of the variable group.
+            type: string
+          required:
+            description: When true, all vars in the selected option are treated as required.
+            type: boolean
+          show_divider:
+            description: When false, suppresses the automatic horizontal divider rendered after this var_group's section.
+            type: boolean
+          options:
+            description: List of options for this variable group.
+            type: array
+            minItems: 1
+            items:
+              type: object
+              additionalProperties: true
+              properties:
+                name:
+                  description: Unique name of the option.
+                  type: string
+                title:
+                  description: Title of the option.
+                  type: string
+                description:
+                  description: Short description of the option.
+                  type: string
+                vars:
+                  description: List of variable names included in this option.
+                  type: array
+                  items:
+                    type: string
+                hide_in_deployment_modes:
+                  description: Whether this option should be hidden in the UI for specific deployment modes.
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - default
+                      - agentless
+              required:
+                - name
+                - title
+                - vars
+        required:
+          - name
+          - title
+          - selector_title
+          - options
     elasticsearch_index_template:
       description: Index template definition
       type: object
@@ -547,6 +612,8 @@ spec:
             $ref: "#/definitions/required_vars"
           vars:
             $ref: "#/definitions/vars"
+          var_groups:
+            $ref: "#/definitions/var_groups"
           enabled:
             description: Is stream enabled?
             type: boolean
@@ -606,6 +673,14 @@ spec:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.5.0
+    patch:
+      - op: remove
+        path: /definitions/vars/items/properties/type/enum/4
+      - op: remove
+        path: /properties/streams/items/properties/var_groups
+      - op: remove
+        path: /definitions/var_groups
   - before: 3.3.2
     patch:
       - op: remove

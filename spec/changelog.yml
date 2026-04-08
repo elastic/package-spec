@@ -10,6 +10,15 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: Add `section_header` as a valid var type for decorative section headings in the Fleet UI.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/000
+    - description: Add `show_divider` optional boolean to input objects to suppress horizontal dividers in the Fleet UI.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/000
+    - description: Add `var_groups` optional array to input, stream, and input-package policy template objects for Fleet UI grouping.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/000
 - version: 3.4.0
   changes:
     - description: Add kibana/security_ai_prompt to support security AI prompt assets.
