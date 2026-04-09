@@ -36,6 +36,7 @@ func TestValidateFile(t *testing.T) {
 		"good_var_groups_input":                  {},
 		"good_input":                             {},
 		"good_input_otel":                        {},
+		"good_input_qualifier":                   {},
 		"good_input_dynamic_signal_type":         {},
 		"good_input_profiles":                    {},
 		"good_input_template_paths":              {},
@@ -419,6 +420,19 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				"field policy_templates.0.inputs.0.type: Must not be present",
+			},
+		},
+		"bad_input_qualifier_ambiguous": {
+			"manifest.yml",
+			[]string{
+				`policy template "nginx": input with type "otelcol" must have a name when multiple inputs of the same type are present (SVR00010)`,
+			},
+		},
+		"bad_input_qualifier_old_version": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0.inputs.0.type: Must not be present",
+				"field policy_templates.0.inputs.0: Additional property name is not allowed",
 			},
 		},
 		"bad_input_dynamic_signal_types_old_version": {
