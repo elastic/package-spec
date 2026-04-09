@@ -1,5 +1,5 @@
-title: OTel logs
-type: logs
+title: OTel traces
+type: traces
 streams:
   - input: otelcol
     title: Collect via OTel receiver

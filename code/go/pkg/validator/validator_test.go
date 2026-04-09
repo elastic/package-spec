@@ -460,7 +460,9 @@ func TestValidateFile(t *testing.T) {
 			"data_stream/sample/manifest.yml",
 			[]string{
 				"stream with input type \"otelcol\": variable \"use_apm\" must be type \"bool\", got \"text\"",
+				"stream with input type \"otelcol\": variable \"use_apm\" must be \"traces\" data stream type or \"dynamic_signal_types: true\", got \"logs\" data stream type",
 				"stream with input type \"logfile\": variable \"use_apm\" must be \"otelcol\" input, got \"logfile\"",
+				"stream with input type \"logfile\": variable \"use_apm\" must be \"traces\" data stream type or \"dynamic_signal_types: true\", got \"logs\" data stream type",
 				"stream with input type \"logfile\": variable \"data_stream.dataset\" must be type \"text\", got \"yaml\"",
 			},
 		},

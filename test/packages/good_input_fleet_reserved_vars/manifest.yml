@@ -15,7 +15,7 @@ conditions:
     subscription: "basic"
 policy_templates:
   - name: sample
-    type: metrics
+    dynamic_signal_types: true
     title: Sample OTel metrics
     description: Collect sample OTel metrics
     input: otelcol

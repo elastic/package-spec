@@ -54,6 +54,7 @@ policy_templates:
 type: input
 policy_templates:
   - name: sample
+    type: traces
     input: logfile
     vars:
       - name: use_apm
@@ -65,5 +66,45 @@ policy_templates:
 		require.Len(t, errs, 2, "expected both input type and variable type violations to be reported")
 		assert.Contains(t, errs[0].Error(), `variable "use_apm" must be "otelcol" input, got "logfile"`)
 		assert.Contains(t, errs[1].Error(), `variable "use_apm" must be type "bool", got "text"`)
+	})
+
+	t.Run("use_apm_wrong_eligibility_reported", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.WriteFile(d+"/manifest.yml", []byte(`
+type: input
+policy_templates:
+  - name: sample
+    type: logs
+    input: otelcol
+    vars:
+      - name: use_apm
+        type: bool
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateFleetReservedVars(fspath.DirFS(d))
+		require.Len(t, errs, 1, "expected one eligibility violation to be reported")
+		assert.Contains(t, errs[0].Error(), `variable "use_apm" must be "traces" data stream type or "dynamic_signal_types: true", got "logs" data stream type`)
+	})
+
+	t.Run("use_apm_dynamic_signal_types_bypasses_eligibility", func(t *testing.T) {
+		d := t.TempDir()
+
+		err := os.WriteFile(d+"/manifest.yml", []byte(`
+type: input
+policy_templates:
+  - name: sample
+    type: logs
+    input: otelcol
+    dynamic_signal_types: true
+    vars:
+      - name: use_apm
+        type: bool
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateFleetReservedVars(fspath.DirFS(d))
+		require.Empty(t, errs, "expected no errors when dynamic_signal_types is true")
 	})
 }
