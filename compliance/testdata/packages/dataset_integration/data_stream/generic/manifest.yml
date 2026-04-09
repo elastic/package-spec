@@ -1,0 +1,22 @@
+title: Generic logs
+type: logs
+streams:
+  - input: logfile
+    title: Generic logs
+    description: Collect generic logs with custom dataset
+    vars:
+      - name: data_stream.dataset
+        type: text
+        title: Dataset name
+        description: Set the name for your dataset.
+        default: dataset_integration.generic
+        required: true
+        show_user: true
+      - name: paths
+        type: text
+        title: Paths
+        multi: true
+        required: true
+        show_user: true
+        default:
+          - /var/log/*.log

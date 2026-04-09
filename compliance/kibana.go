@@ -28,6 +28,7 @@ const (
 	apiSavedObjects                   = "/api/saved_objects"
 	apiStatusPath                     = "/api/status"
 	apiInstalledPackagesPath          = "/api/fleet/epm/packages"
+	apiFullAgentPolicyPath            = "/api/fleet/agent_policies/%s/full"
 
 	defaultSpace = "default"
 )
@@ -526,6 +527,38 @@ func (k *Kibana) IsPackageInstalled(packageName string) error {
 	}
 
 	return nil
+}
+
+// GetFullAgentPolicy retrieves the compiled/full agent policy for a given agent policy ID.
+func (k *Kibana) GetFullAgentPolicy(agentPolicyID string) (map[string]interface{}, error) {
+	apiPath := fmt.Sprintf(apiFullAgentPolicyPath, agentPolicyID)
+	req, err := k.newRequest(http.MethodGet, apiPath, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := k.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return nil, fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
+	}
+
+	var response struct {
+		Item map[string]interface{} `json:"item"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		return nil, fmt.Errorf("failed to decode full agent policy response: %w", err)
+	}
+
+	return response.Item, nil
 }
 
 func (k *Kibana) newRequest(method string, path string, body io.Reader) (*http.Request, error) {

@@ -130,33 +130,35 @@ func findTestPackage(packageName string) (string, error) {
 	return "", godog.ErrPending
 }
 
-func aPolicyIsCreatedWithPackage(packageName string) error {
+const agentPolicyIDKey = "agentPolicyID"
+
+func aPolicyIsCreatedWithPackage(ctx context.Context, packageName string) (context.Context, error) {
 	const version = "1.0.0"
-	return aPolicyIsCreatedWithPackageAndVersion(packageName, version)
+	return aPolicyIsCreatedWithPackageAndVersion(ctx, packageName, version)
 }
 
-func aPolicyIsCreatedWithPackageAndVersion(packageName, packageVersion string) error {
+func aPolicyIsCreatedWithPackageAndVersion(ctx context.Context, packageName, packageVersion string) (context.Context, error) {
 	kibana, err := NewKibanaClient()
 	if err != nil {
-		return err
+		return ctx, err
 	}
-	_, err = kibana.CreatePolicyForPackage(packageName, packageVersion)
+	agentPolicyID, err := kibana.CreatePolicyForPackage(packageName, packageVersion)
 	if err != nil {
-		return err
+		return ctx, err
 	}
-	return nil
+	return context.WithValue(ctx, agentPolicyIDKey, agentPolicyID), nil
 }
 
-func aPolicyIsCreatedWithPackageInputAndDataset(packageName, packageVersion, templateName, inputName, inputType, dataset string) error {
+func aPolicyIsCreatedWithPackageInputAndDataset(ctx context.Context, packageName, packageVersion, templateName, inputName, inputType, dataset string) (context.Context, error) {
 	kibana, err := NewKibanaClient()
 	if err != nil {
-		return err
+		return ctx, err
 	}
-	_, err = kibana.CreatePolicyForPackageInputAndDataset(packageName, packageVersion, templateName, inputName, inputType, dataset)
+	agentPolicyID, err := kibana.CreatePolicyForPackageInputAndDataset(packageName, packageVersion, templateName, inputName, inputType, dataset)
 	if err != nil {
-		return err
+		return ctx, err
 	}
-	return nil
+	return context.WithValue(ctx, agentPolicyIDKey, agentPolicyID), nil
 }
 
 func thereIsAnIndexTemplateWithPattern(indexTemplateName, pattern string) error {
@@ -341,6 +343,117 @@ func theContentPackagesRequireAreInstalled(packageName string) error {
 	return nil
 }
 
+func theCompiledPolicyHasDataset(ctx context.Context, expectedDataset, inputType string) error {
+	agentPolicyID, ok := ctx.Value(agentPolicyIDKey).(string)
+	if !ok || agentPolicyID == "" {
+		return fmt.Errorf("agent policy ID not found in context; ensure a policy creation step ran first")
+	}
+
+	kibana, err := NewKibanaClient()
+	if err != nil {
+		return err
+	}
+
+	fullPolicy, err := kibana.GetFullAgentPolicy(agentPolicyID)
+	if err != nil {
+		return fmt.Errorf("failed to get full agent policy: %w", err)
+	}
+
+	if inputType == "otelcol" {
+		return checkDatasetInOTelPolicy(fullPolicy, expectedDataset)
+	}
+	return checkDatasetInInputs(fullPolicy, expectedDataset)
+}
+
+func checkDatasetInInputs(fullPolicy map[string]interface{}, expectedDataset string) error {
+	inputs, ok := fullPolicy["inputs"].([]interface{})
+	if !ok {
+		return fmt.Errorf("no inputs found in compiled policy")
+	}
+
+	for _, rawInput := range inputs {
+		input, ok := rawInput.(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		// Check dataset in streams (most common case).
+		if streams, ok := input["streams"].([]interface{}); ok {
+			for _, rawStream := range streams {
+				stream, ok := rawStream.(map[string]interface{})
+				if !ok {
+					continue
+				}
+				dataStream, ok := stream["data_stream"].(map[string]interface{})
+				if !ok {
+					continue
+				}
+				if dataset, ok := dataStream["dataset"].(string); ok && dataset == expectedDataset {
+					return nil
+				}
+			}
+		}
+
+		// For inputs without streams (e.g. beat-based integration inputs),
+		// check the input-level data_stream.
+		if dataStream, ok := input["data_stream"].(map[string]interface{}); ok {
+			if dataset, ok := dataStream["dataset"].(string); ok && dataset == expectedDataset {
+				return nil
+			}
+		}
+	}
+
+	d, _ := json.MarshalIndent(fullPolicy["inputs"], "", "  ")
+	return fmt.Errorf("dataset %q not found in compiled policy inputs:\n%s", expectedDataset, string(d))
+}
+
+func checkDatasetInOTelPolicy(fullPolicy map[string]interface{}, expectedDataset string) error {
+	expectedStatement := fmt.Sprintf(`set(attributes["data_stream.dataset"], "%s")`, expectedDataset)
+
+	processors, ok := fullPolicy["processors"].(map[string]interface{})
+	if !ok {
+		return fmt.Errorf("no processors found in compiled policy for OTel")
+	}
+
+	for name, rawProcessor := range processors {
+		if !strings.HasPrefix(name, "transform/") {
+			continue
+		}
+		processor, ok := rawProcessor.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		for _, statementsKey := range []string{"log_statements", "metric_statements"} {
+			rawStatements, ok := processor[statementsKey].([]interface{})
+			if !ok {
+				continue
+			}
+			for _, rawStatement := range rawStatements {
+				statement, ok := rawStatement.(map[string]interface{})
+				if !ok {
+					continue
+				}
+				stmts, ok := statement["statements"].([]interface{})
+				if !ok {
+					continue
+				}
+				for _, rawStmt := range stmts {
+					stmt, ok := rawStmt.(string)
+					if !ok {
+						continue
+					}
+					if stmt == expectedStatement {
+						return nil
+					}
+				}
+			}
+		}
+	}
+
+	d, _ := json.MarshalIndent(processors, "", "  ")
+	return fmt.Errorf("dataset statement %q not found in compiled policy processors:\n%s", expectedStatement, string(d))
+}
+
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
 		skipped := slices.ContainsFunc(sc.Tags, func(elem *messages.PickleTag) bool {
@@ -366,4 +479,5 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^prebuilt detection rules are loaded$`, prebuiltDetectionRulesAreLoaded)
 	ctx.Step(`^there is a security AI prompt "([^"]*)"$`, thereIsASecurityAIPrompt)
 	ctx.Step(`^the content packages "([^"]*)" require are installed$`, theContentPackagesRequireAreInstalled)
+	ctx.Step(`^the compiled policy has dataset "([^"]*)" for "([^"]*)" input type$`, theCompiledPolicyHasDataset)
 }
