@@ -16,7 +16,7 @@
     # Pending on https://github.com/elastic/kibana/pull/262138
     - description: Add support for named inputs in policy templates to disambiguate multiple inputs of the same type.
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/TBD
+      link: https://github.com/elastic/package-spec/pull/1135
 - version: 3.6.0
   changes:
     - description: Add pipeline tag validations.
