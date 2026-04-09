@@ -130,7 +130,9 @@ func findTestPackage(packageName string) (string, error) {
 	return "", godog.ErrPending
 }
 
-const agentPolicyIDKey = "agentPolicyID"
+type contextKey string
+
+const agentPolicyIDKey contextKey = "agentPolicyID"
 
 func aPolicyIsCreatedWithPackage(ctx context.Context, packageName string) (context.Context, error) {
 	const version = "1.0.0"
