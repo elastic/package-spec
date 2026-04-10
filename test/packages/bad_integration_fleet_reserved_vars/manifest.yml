@@ -1,4 +1,4 @@
-format_version: 3.6.0
+format_version: 3.6.1
 name: bad_integration_fleet_reserved_vars
 title: "Bad integration with incorrectly defined Fleet-reserved variables"
 version: 0.0.1

@@ -7,6 +7,7 @@ package semantic
 import (
 	"fmt"
 	"io/fs"
+	"path"
 
 	"gopkg.in/yaml.v3"
 
@@ -128,7 +129,7 @@ func normalizeIntegrationStreams(fsys fspath.FS) ([]normalizedStream, specerrors
 	}
 
 	for _, ds := range dataStreams {
-		manifestPath := dataStreamDir + "/" + ds + "/manifest.yml"
+		manifestPath := path.Join(dataStreamDir, ds, "manifest.yml")
 		data, err := fs.ReadFile(fsys, manifestPath)
 		if err != nil {
 			errs = append(errs, specerrors.NewStructuredErrorf(

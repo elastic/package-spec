@@ -17,6 +17,9 @@
     - description: Add support for named inputs in policy templates to disambiguate multiple inputs of the same type.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1135
+    - description: Add validation for Fleet-reserved variables (use_apm, data_stream.dataset) to enforce correct types and constraints when explicitly overridden in package manifests.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1134
 - version: 3.6.0
   changes:
     - description: Add pipeline tag validations.

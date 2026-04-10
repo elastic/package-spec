@@ -1,4 +1,4 @@
-format_version: 3.6.0
+format_version: 3.6.1
 name: good_integration_fleet_reserved_vars
 title: "Good integration with valid Fleet-reserved variable overrides"
 version: 0.0.1
