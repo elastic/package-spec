@@ -28,9 +28,7 @@ type varDef struct {
 
 // normalizedStream is a unified representation of a stream for reserved variable
 // validation, regardless of whether it originates from an input package policy
-// template or an integration data stream manifest. This mirrors Fleet's own
-// stream normalization approach, letting validation logic run once without
-// branching on package type.
+// template or an integration data stream manifest.
 type normalizedStream struct {
 	inputType          string
 	dataStreamType     string
@@ -39,8 +37,6 @@ type normalizedStream struct {
 	contextStr         string
 	filePath           string
 }
-
-// YAML parsing structs — used only for deserialization, not for validation logic.
 
 // policyTemplate parses the fields needed from an input package policy template.
 type policyTemplate struct {
