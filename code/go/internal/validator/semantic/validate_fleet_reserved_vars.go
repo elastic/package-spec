@@ -115,13 +115,13 @@ func validateInputReservedVars(fsys fspath.FS, manifest packageManifest) specerr
 	filePath := fsys.Path("manifest.yml")
 	var errs specerrors.ValidationErrors
 
-	// Root-level vars are not stream context for input packages.
+	// Root-level vars
 	for _, v := range manifest.Vars {
 		errs = append(errs, checkReservedVarScope(v, filePath, "package root vars")...)
 	}
 
-	// Policy template vars are stream context for input packages: Fleet synthesizes
-	// a data stream from each policy template, placing these vars into streams[0].vars.
+	// Policy template vars
+	// Also considered stream context for input packages
 	for _, pt := range manifest.PolicyTemplates {
 		stream := normalizeInputStream(pt, filePath)
 		for _, v := range stream.vars {
@@ -136,19 +136,21 @@ func validateIntegrationReservedVars(fsys fspath.FS, manifest packageManifest) s
 	filePath := fsys.Path("manifest.yml")
 	var errs specerrors.ValidationErrors
 
-	// Root-level vars are shared credentials/config, not stream context.
+	// Root-level vars
 	for _, v := range manifest.Vars {
 		errs = append(errs, checkReservedVarScope(v, filePath, "package root vars")...)
 	}
 
-	// Policy template vars and input vars are not stream context for integration packages.
 	for _, pt := range manifest.PolicyTemplates {
 		ptCtx := fmt.Sprintf("policy template %q vars", pt.Name)
+		// Policy template vars
 		for _, v := range pt.Vars {
 			errs = append(errs, checkReservedVarScope(v, filePath, ptCtx)...)
 		}
+
 		for _, input := range pt.Inputs {
 			inputCtx := fmt.Sprintf("policy template %q input %q vars", pt.Name, input.Type)
+			// Input vars
 			for _, v := range input.Vars {
 				errs = append(errs, checkReservedVarScope(v, filePath, inputCtx)...)
 			}
