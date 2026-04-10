@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"io/fs"
 	"path"
+	"slices"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -22,28 +24,44 @@ const (
 )
 
 // varScope identifies where in a package manifest a variable is declared.
-type varScope int
+type varScope string
 
 const (
-	scopeRoot            varScope = iota // package-level vars
-	scopePolicyTemplate                  // policy_templates[].vars
-	scopeInput                           // policy_templates[].inputs[].vars
-	scopeStream                          // data stream stream entries (the valid scope for reserved vars)
+	scopeRoot           varScope = "root"           // package-level vars
+	scopePolicyTemplate varScope = "policy template" // policy_templates[].vars
+	scopeInput          varScope = "input"           // policy_templates[].inputs[].vars
+	scopeStream         varScope = "stream"          // data stream stream entries (the valid scope for reserved vars)
 )
 
 // reservedVarRule defines the constraints for a single Fleet-reserved variable.
+// Adding a new reserved variable is a matter of adding an entry to reservedVarRules.
 type reservedVarRule struct {
-	// streamOnly marks vars that are invalid outside stream-level declarations.
-	// Declarations at root, policy template, or input level produce an error.
-	streamOnly bool
-	// validateAtStream checks type and eligibility constraints when the var is
-	// declared at a valid stream scope. May be nil if only scope enforcement applies.
-	validateAtStream func(v varDef, stream normalizedStream) specerrors.ValidationErrors
+	// allowedScopes lists the scopes where this variable may be declared.
+	allowedScopes []varScope
+	// validate checks type and eligibility constraints at an allowed scope.
+	// May be nil if only scope enforcement is needed.
+	validate func(v varDef, ctx varValidationContext) specerrors.ValidationErrors
+}
+
+// isAllowedAt reports whether scope is in the rule's allowedScopes.
+func (r reservedVarRule) isAllowedAt(scope varScope) bool {
+	return slices.Contains(r.allowedScopes, scope)
+}
+
+// scopeViolationMsg returns a human-readable description of where the variable
+// must be declared, derived from allowedScopes (e.g. "stream level" or
+// "root or stream level").
+func (r reservedVarRule) scopeViolationMsg() string {
+	names := make([]string, len(r.allowedScopes))
+	for i, s := range r.allowedScopes {
+		names[i] = string(s) + " level"
+	}
+	return strings.Join(names, " or ")
 }
 
 var reservedVarRules = map[string]reservedVarRule{
-	useAPMVarName:  {streamOnly: true, validateAtStream: validateUseAPMVar},
-	datasetVarName: {streamOnly: true, validateAtStream: validateDatasetVar},
+	useAPMVarName:  {allowedScopes: []varScope{scopeStream}, validate: validateUseAPMVar},
+	datasetVarName: {allowedScopes: []varScope{scopeStream}, validate: validateDatasetVar},
 }
 
 type varDef struct {
@@ -51,16 +69,27 @@ type varDef struct {
 	Type string `yaml:"type"`
 }
 
-// normalizedStream is a unified representation of a stream for reserved variable
-// validation, regardless of whether it originates from an input package policy
-// template or an integration data stream manifest.
+// varValidationContext carries all available context at the point a variable is
+// validated. filePath, contextStr, manifest, and scope are always set.
+// policyTemplate is set at scopePolicyTemplate, scopeInput, and scopeStream
+// for input packages. stream is set at scopeStream only.
+type varValidationContext struct {
+	manifest       packageManifest
+	scope          varScope
+	filePath       string
+	contextStr     string
+	policyTemplate *policyTemplate
+	stream         *normalizedStream
+}
+
+// normalizedStream holds stream-specific fields used for content validation.
+// It is a unified representation regardless of whether the stream originates
+// from an input package policy template or an integration data stream manifest,
+// mirroring Fleet's own stream normalization approach.
 type normalizedStream struct {
 	inputType          string
 	dataStreamType     string
 	dynamicSignalTypes bool
-	vars               []varDef
-	contextStr         string
-	filePath           string
 }
 
 // policyInput parses the type and vars from an integration policy template input entry.
@@ -96,7 +125,13 @@ type streamEntry struct {
 }
 
 // ValidateFleetReservedVars validates that Fleet-reserved variables, when
-// explicitly defined in package manifests, conform to Fleet's expectations.
+// explicitly defined in package manifests, conform to Fleet's expectations:
+//   - use_apm: must be type "bool", only on otelcol inputs that are "traces"
+//     data streams or when "dynamic_signal_types" is true
+//   - data_stream.dataset: must be type "text"
+//
+// Both variables are stream-level concerns. Declarations outside of stream
+// context (root vars, policy template vars, input vars) are flagged as errors.
 func ValidateFleetReservedVars(fsys fspath.FS) specerrors.ValidationErrors {
 	manifestPath := "manifest.yml"
 	data, err := fs.ReadFile(fsys, manifestPath)
@@ -121,64 +156,88 @@ func ValidateFleetReservedVars(fsys fspath.FS) specerrors.ValidationErrors {
 	return nil
 }
 
+// reservedVarChecker accumulates validation errors while walking the var
+// declarations in a package manifest. Its check method is the single call
+// site for all reserved variable validation, regardless of scope.
+type reservedVarChecker struct {
+	errs specerrors.ValidationErrors
+}
+
+// check validates every var in vars using the provided context.
+func (c *reservedVarChecker) check(vars []varDef, ctx varValidationContext) {
+	for _, v := range vars {
+		c.errs = append(c.errs, validateReservedVar(v, ctx)...)
+	}
+}
+
 func validateInputReservedVars(fsys fspath.FS, manifest packageManifest) specerrors.ValidationErrors {
 	filePath := fsys.Path("manifest.yml")
-	var errs specerrors.ValidationErrors
+	c := &reservedVarChecker{}
 
-	// Root-level vars
-	for _, v := range manifest.Vars {
-		errs = append(errs, checkReservedVarScope(v, filePath, "package root vars", scopeRoot)...)
-	}
+	c.check(manifest.Vars, varValidationContext{
+		manifest:   manifest,
+		scope:      scopeRoot,
+		filePath:   filePath,
+		contextStr: "package root vars",
+	})
 
 	// Policy template vars are stream context for input packages: Fleet synthesizes
 	// a data stream from each policy template, placing these vars into streams[0].vars.
 	for _, pt := range manifest.PolicyTemplates {
-		stream := normalizeInputStream(pt, filePath)
-		for _, v := range stream.vars {
-			errs = append(errs, checkReservedVarScope(v, filePath, stream.contextStr, scopeStream)...)
-			errs = append(errs, validateReservedVar(v, stream)...)
-		}
+		stream := normalizeInputStream(pt)
+		c.check(pt.Vars, varValidationContext{
+			manifest:       manifest,
+			scope:          scopeStream,
+			filePath:       filePath,
+			contextStr:     fmt.Sprintf("policy template %q", pt.Name),
+			policyTemplate: &pt,
+			stream:         &stream,
+		})
 	}
 
-	return errs
+	return c.errs
 }
 
 func validateIntegrationReservedVars(fsys fspath.FS, manifest packageManifest) specerrors.ValidationErrors {
 	filePath := fsys.Path("manifest.yml")
-	var errs specerrors.ValidationErrors
+	c := &reservedVarChecker{}
 
-	// Root-level vars
-	for _, v := range manifest.Vars {
-		errs = append(errs, checkReservedVarScope(v, filePath, "package root vars", scopeRoot)...)
-	}
+	c.check(manifest.Vars, varValidationContext{
+		manifest:   manifest,
+		scope:      scopeRoot,
+		filePath:   filePath,
+		contextStr: "package root vars",
+	})
 
 	for _, pt := range manifest.PolicyTemplates {
-		ptCtx := fmt.Sprintf("policy template %q vars", pt.Name)
-		// Policy template vars
-		for _, v := range pt.Vars {
-			errs = append(errs, checkReservedVarScope(v, filePath, ptCtx, scopePolicyTemplate)...)
-		}
-
+		c.check(pt.Vars, varValidationContext{
+			manifest:       manifest,
+			scope:          scopePolicyTemplate,
+			filePath:       filePath,
+			contextStr:     fmt.Sprintf("policy template %q vars", pt.Name),
+			policyTemplate: &pt,
+		})
 		for _, input := range pt.Inputs {
-			inputCtx := fmt.Sprintf("policy template %q input %q vars", pt.Name, input.Type)
-			// Input vars
-			for _, v := range input.Vars {
-				errs = append(errs, checkReservedVarScope(v, filePath, inputCtx, scopeInput)...)
-			}
+			c.check(input.Vars, varValidationContext{
+				manifest:       manifest,
+				scope:          scopeInput,
+				filePath:       filePath,
+				contextStr:     fmt.Sprintf("policy template %q input %q vars", pt.Name, input.Type),
+				policyTemplate: &pt,
+			})
 		}
 	}
 
-	// Stream-level vars
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
-		return append(errs, specerrors.NewStructuredErrorf("failed to list data streams: %w", err))
+		return append(c.errs, specerrors.NewStructuredErrorf("failed to list data streams: %w", err))
 	}
 
 	for _, ds := range dataStreams {
 		manifestPath := path.Join(dataStreamDir, ds, "manifest.yml")
 		data, err := fs.ReadFile(fsys, manifestPath)
 		if err != nil {
-			errs = append(errs, specerrors.NewStructuredErrorf(
+			c.errs = append(c.errs, specerrors.NewStructuredErrorf(
 				"file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(manifestPath), err))
 			continue
 		}
@@ -188,91 +247,85 @@ func validateIntegrationReservedVars(fsys fspath.FS, manifest packageManifest) s
 			Streams []streamEntry `yaml:"streams"`
 		}
 		if err := yaml.Unmarshal(data, &dsManifest); err != nil {
-			errs = append(errs, specerrors.NewStructuredErrorf(
+			c.errs = append(c.errs, specerrors.NewStructuredErrorf(
 				"file \"%s\" is invalid: failed to parse manifest: %w", fsys.Path(manifestPath), err))
 			continue
 		}
 
+		dsFilePath := fsys.Path(manifestPath)
 		for _, entry := range dsManifest.Streams {
-			stream := normalizeIntegrationStream(entry, dsManifest.Type, fsys.Path(manifestPath))
-			for _, v := range stream.vars {
-				errs = append(errs, validateReservedVar(v, stream)...)
-			}
+			stream := normalizeIntegrationStream(entry, dsManifest.Type)
+			c.check(entry.Vars, varValidationContext{
+				manifest:   manifest,
+				scope:      scopeStream,
+				filePath:   dsFilePath,
+				contextStr: fmt.Sprintf("stream with input type %q", entry.Input),
+				stream:     &stream,
+			})
 		}
 	}
 
-	return errs
+	return c.errs
 }
 
-func normalizeInputStream(pt policyTemplate, filePath string) normalizedStream {
+func normalizeInputStream(pt policyTemplate) normalizedStream {
 	return normalizedStream{
 		inputType:          pt.Input,
 		dataStreamType:     pt.Type,
 		dynamicSignalTypes: pt.DynamicSignalTypes,
-		vars:               pt.Vars,
-		contextStr:         fmt.Sprintf("policy template %q", pt.Name),
-		filePath:           filePath,
 	}
 }
 
-func normalizeIntegrationStream(entry streamEntry, dsType string, filePath string) normalizedStream {
+func normalizeIntegrationStream(entry streamEntry, dsType string) normalizedStream {
 	return normalizedStream{
 		inputType:          entry.Input,
 		dataStreamType:     dsType,
 		dynamicSignalTypes: entry.DynamicSignalTypes,
-		vars:               entry.Vars,
-		contextStr:         fmt.Sprintf("stream with input type %q", entry.Input),
-		filePath:           filePath,
 	}
 }
 
-// checkReservedVarScope returns an error if v is a reserved variable that is
-// not permitted at the given scope. scope identifies the declaration location
-// so the function can enforce scope constraints regardless of call site.
-// contextStr describes the location in human-readable form (e.g. "package root
-// vars", "policy template \"foo\" vars").
-func checkReservedVarScope(v varDef, filePath, contextStr string, scope varScope) specerrors.ValidationErrors {
+// validateReservedVar is the single entry point for all reserved variable
+// validation. It checks scope constraints via the rule's allowedScopes and,
+// when the scope is valid, runs per-variable content validation.
+func validateReservedVar(v varDef, ctx varValidationContext) specerrors.ValidationErrors {
 	rule, ok := reservedVarRules[v.Name]
 	if !ok {
 		return nil
 	}
-	if rule.streamOnly && scope != scopeStream {
-		return specerrors.ValidationErrors{
-			specerrors.NewStructuredErrorf(
-				"file \"%s\" is invalid: %s: variable \"%s\" must only be declared at stream level",
-				filePath, contextStr, v.Name),
-		}
-	}
-	return nil
-}
 
-// validateReservedVar dispatches to per-variable stream-scope validation via
-// the reservedVarRules registry.
-func validateReservedVar(v varDef, stream normalizedStream) specerrors.ValidationErrors {
-	rule, ok := reservedVarRules[v.Name]
-	if !ok || rule.validateAtStream == nil {
-		return nil
+	var errs specerrors.ValidationErrors
+
+	if !rule.isAllowedAt(ctx.scope) {
+		errs = append(errs, specerrors.NewStructuredErrorf(
+			"file \"%s\" is invalid: %s: variable \"%s\" must only be declared at %s",
+			ctx.filePath, ctx.contextStr, v.Name, rule.scopeViolationMsg()))
 	}
-	return rule.validateAtStream(v, stream)
+
+	if rule.isAllowedAt(ctx.scope) && rule.validate != nil {
+		errs = append(errs, rule.validate(v, ctx)...)
+	}
+
+	return errs
 }
 
 // validateUseAPMVar enforces that use_apm is:
 //   - defined on an otelcol input
 //   - of type "bool"
 //   - only present on "traces" data streams or when "dynamic_signal_types" is true
-func validateUseAPMVar(v varDef, stream normalizedStream) specerrors.ValidationErrors {
+func validateUseAPMVar(v varDef, ctx varValidationContext) specerrors.ValidationErrors {
+	stream := ctx.stream
 	var errs specerrors.ValidationErrors
 
 	if stream.inputType != otelcolInputType {
-		errs = append(errs, newReservedVarError(stream.filePath, stream.contextStr, useAPMVarName,
+		errs = append(errs, newReservedVarError(ctx.filePath, ctx.contextStr, useAPMVarName,
 			fmt.Sprintf("%q input", otelcolInputType), fmt.Sprintf("%q", stream.inputType)))
 	}
 	if v.Type != "bool" {
-		errs = append(errs, newReservedVarError(stream.filePath, stream.contextStr, useAPMVarName,
+		errs = append(errs, newReservedVarError(ctx.filePath, ctx.contextStr, useAPMVarName,
 			`type "bool"`, fmt.Sprintf("%q", v.Type)))
 	}
 	if stream.dataStreamType != tracesDataStreamType && !stream.dynamicSignalTypes {
-		errs = append(errs, newReservedVarError(stream.filePath, stream.contextStr, useAPMVarName,
+		errs = append(errs, newReservedVarError(ctx.filePath, ctx.contextStr, useAPMVarName,
 			fmt.Sprintf("%q data stream type or \"dynamic_signal_types: true\"", tracesDataStreamType),
 			fmt.Sprintf("%q data stream type", stream.dataStreamType)))
 	}
@@ -281,10 +334,10 @@ func validateUseAPMVar(v varDef, stream normalizedStream) specerrors.ValidationE
 }
 
 // validateDatasetVar enforces that data_stream.dataset is of type "text".
-func validateDatasetVar(v varDef, stream normalizedStream) specerrors.ValidationErrors {
+func validateDatasetVar(v varDef, ctx varValidationContext) specerrors.ValidationErrors {
 	if v.Type != "text" {
 		return specerrors.ValidationErrors{
-			newReservedVarError(stream.filePath, stream.contextStr, datasetVarName,
+			newReservedVarError(ctx.filePath, ctx.contextStr, datasetVarName,
 				`type "text"`, fmt.Sprintf("%q", v.Type)),
 		}
 	}
