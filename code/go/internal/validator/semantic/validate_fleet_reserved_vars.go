@@ -28,7 +28,9 @@ type varDef struct {
 
 // normalizedStream is a unified representation of a stream for reserved variable
 // validation, regardless of whether it originates from an input package policy
-// template or an integration data stream manifest.
+// template or an integration data stream manifest. This mirrors Fleet's own
+// stream normalization approach, letting validation logic run once without
+// branching on package type.
 type normalizedStream struct {
 	inputType          string
 	dataStreamType     string
@@ -37,6 +39,8 @@ type normalizedStream struct {
 	contextStr         string
 	filePath           string
 }
+
+// YAML parsing structs — used only for deserialization, not for validation logic.
 
 // policyTemplate parses the fields needed from an input package policy template.
 type policyTemplate struct {
@@ -80,51 +84,34 @@ func ValidateFleetReservedVars(fsys fspath.FS) specerrors.ValidationErrors {
 			specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to parse manifest: %w", fsys.Path(manifestPath), err)}
 	}
 
-	streams, errs := normalizePackageStreams(fsys, manifest)
-	for _, stream := range streams {
+	switch manifest.Type {
+	case inputPackageType:
+		return validateInputReservedVars(fsys, manifest)
+	case integrationPackageType:
+		return validateIntegrationReservedVars(fsys)
+	}
+
+	return nil
+}
+
+func validateInputReservedVars(fsys fspath.FS, manifest packageManifest) specerrors.ValidationErrors {
+	filePath := fsys.Path("manifest.yml")
+	var errs specerrors.ValidationErrors
+	for _, pt := range manifest.PolicyTemplates {
+		stream := normalizeInputStream(pt, filePath)
 		for _, v := range stream.vars {
 			errs = append(errs, validateReservedVar(v, stream)...)
 		}
 	}
-
 	return errs
 }
 
-// normalizePackageStreams converts a package's manifests into a flat list of
-// normalizedStream values.
-func normalizePackageStreams(fsys fspath.FS, manifest packageManifest) ([]normalizedStream, specerrors.ValidationErrors) {
-	switch manifest.Type {
-	case inputPackageType:
-		return normalizeInputStreams(fsys, manifest), nil
-	case integrationPackageType:
-		return normalizeIntegrationStreams(fsys)
-	}
-	return nil, nil
-}
-
-func normalizeInputStreams(fsys fspath.FS, manifest packageManifest) []normalizedStream {
-	filePath := fsys.Path("manifest.yml")
-	streams := make([]normalizedStream, 0, len(manifest.PolicyTemplates))
-	for _, pt := range manifest.PolicyTemplates {
-		streams = append(streams, normalizedStream{
-			inputType:          pt.Input,
-			dataStreamType:     pt.Type,
-			dynamicSignalTypes: pt.DynamicSignalTypes,
-			vars:               pt.Vars,
-			contextStr:         fmt.Sprintf("policy template %q", pt.Name),
-			filePath:           filePath,
-		})
-	}
-	return streams
-}
-
-func normalizeIntegrationStreams(fsys fspath.FS) ([]normalizedStream, specerrors.ValidationErrors) {
-	var streams []normalizedStream
+func validateIntegrationReservedVars(fsys fspath.FS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
-		return nil, specerrors.ValidationErrors{
+		return specerrors.ValidationErrors{
 			specerrors.NewStructuredErrorf("failed to list data streams: %w", err)}
 	}
 
@@ -147,19 +134,37 @@ func normalizeIntegrationStreams(fsys fspath.FS) ([]normalizedStream, specerrors
 			continue
 		}
 
-		for _, stream := range dsManifest.Streams {
-			streams = append(streams, normalizedStream{
-				inputType:          stream.Input,
-				dataStreamType:     dsManifest.Type,
-				dynamicSignalTypes: stream.DynamicSignalTypes,
-				vars:               stream.Vars,
-				contextStr:         fmt.Sprintf("stream with input type %q", stream.Input),
-				filePath:           fsys.Path(manifestPath),
-			})
+		for _, entry := range dsManifest.Streams {
+			stream := normalizeIntegrationStream(entry, dsManifest.Type, fsys.Path(manifestPath))
+			for _, v := range stream.vars {
+				errs = append(errs, validateReservedVar(v, stream)...)
+			}
 		}
 	}
 
-	return streams, errs
+	return errs
+}
+
+func normalizeInputStream(pt policyTemplate, filePath string) normalizedStream {
+	return normalizedStream{
+		inputType:          pt.Input,
+		dataStreamType:     pt.Type,
+		dynamicSignalTypes: pt.DynamicSignalTypes,
+		vars:               pt.Vars,
+		contextStr:         fmt.Sprintf("policy template %q", pt.Name),
+		filePath:           filePath,
+	}
+}
+
+func normalizeIntegrationStream(entry streamEntry, dsType string, filePath string) normalizedStream {
+	return normalizedStream{
+		inputType:          entry.Input,
+		dataStreamType:     dsType,
+		dynamicSignalTypes: entry.DynamicSignalTypes,
+		vars:               entry.Vars,
+		contextStr:         fmt.Sprintf("stream with input type %q", entry.Input),
+		filePath:           filePath,
+	}
 }
 
 // validateReservedVar dispatches to per-variable validation based on the
