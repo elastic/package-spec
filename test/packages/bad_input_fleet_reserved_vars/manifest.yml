@@ -6,6 +6,11 @@ source:
   license: "Elastic-2.0"
 description: "Input package that declares Fleet-reserved variables with wrong types."
 type: input
+vars:
+  - name: data_stream.dataset
+    type: text
+    title: Dataset name
+    show_user: false
 categories:
   - custom
 conditions:

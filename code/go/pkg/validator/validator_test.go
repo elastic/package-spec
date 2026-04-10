@@ -452,6 +452,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_input_fleet_reserved_vars": {
 			"manifest.yml",
 			[]string{
+				"package root vars: variable \"data_stream.dataset\" must only be declared at stream level",
 				"policy template \"sample\": variable \"use_apm\" must be type \"bool\", got \"text\"",
 				"policy template \"sample\": variable \"data_stream.dataset\" must be type \"text\", got \"bool\"",
 			},
