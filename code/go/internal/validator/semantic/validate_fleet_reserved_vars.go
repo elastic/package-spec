@@ -27,7 +27,7 @@ const (
 type varScope string
 
 const (
-	scopeRoot           varScope = "root"           // package-level vars
+	scopeRoot           varScope = "root"            // package-level vars
 	scopePolicyTemplate varScope = "policy template" // policy_templates[].vars
 	scopeInput          varScope = "input"           // policy_templates[].inputs[].vars
 	scopeStream         varScope = "stream"          // data stream stream entries (the valid scope for reserved vars)
@@ -125,13 +125,7 @@ type streamEntry struct {
 }
 
 // ValidateFleetReservedVars validates that Fleet-reserved variables, when
-// explicitly defined in package manifests, conform to Fleet's expectations:
-//   - use_apm: must be type "bool", only on otelcol inputs that are "traces"
-//     data streams or when "dynamic_signal_types" is true
-//   - data_stream.dataset: must be type "text"
-//
-// Both variables are stream-level concerns. Declarations outside of stream
-// context (root vars, policy template vars, input vars) are flagged as errors.
+// explicitly defined in package manifests, conform to Fleet's expectations.
 func ValidateFleetReservedVars(fsys fspath.FS) specerrors.ValidationErrors {
 	manifestPath := "manifest.yml"
 	data, err := fs.ReadFile(fsys, manifestPath)
