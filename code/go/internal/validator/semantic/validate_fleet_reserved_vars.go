@@ -21,6 +21,16 @@ const (
 	tracesDataStreamType = "traces"
 )
 
+// varScope identifies where in a package manifest a variable is declared.
+type varScope int
+
+const (
+	scopeRoot            varScope = iota // package-level vars
+	scopePolicyTemplate                  // policy_templates[].vars
+	scopeInput                           // policy_templates[].inputs[].vars
+	scopeStream                          // data stream stream entries (the valid scope for reserved vars)
+)
+
 // reservedVarRule defines the constraints for a single Fleet-reserved variable.
 type reservedVarRule struct {
 	// streamOnly marks vars that are invalid outside stream-level declarations.
@@ -117,14 +127,15 @@ func validateInputReservedVars(fsys fspath.FS, manifest packageManifest) specerr
 
 	// Root-level vars
 	for _, v := range manifest.Vars {
-		errs = append(errs, checkReservedVarScope(v, filePath, "package root vars")...)
+		errs = append(errs, checkReservedVarScope(v, filePath, "package root vars", scopeRoot)...)
 	}
 
-	// Policy template vars
-	// Also considered stream context for input packages
+	// Policy template vars are stream context for input packages: Fleet synthesizes
+	// a data stream from each policy template, placing these vars into streams[0].vars.
 	for _, pt := range manifest.PolicyTemplates {
 		stream := normalizeInputStream(pt, filePath)
 		for _, v := range stream.vars {
+			errs = append(errs, checkReservedVarScope(v, filePath, stream.contextStr, scopeStream)...)
 			errs = append(errs, validateReservedVar(v, stream)...)
 		}
 	}
@@ -138,26 +149,26 @@ func validateIntegrationReservedVars(fsys fspath.FS, manifest packageManifest) s
 
 	// Root-level vars
 	for _, v := range manifest.Vars {
-		errs = append(errs, checkReservedVarScope(v, filePath, "package root vars")...)
+		errs = append(errs, checkReservedVarScope(v, filePath, "package root vars", scopeRoot)...)
 	}
 
 	for _, pt := range manifest.PolicyTemplates {
 		ptCtx := fmt.Sprintf("policy template %q vars", pt.Name)
 		// Policy template vars
 		for _, v := range pt.Vars {
-			errs = append(errs, checkReservedVarScope(v, filePath, ptCtx)...)
+			errs = append(errs, checkReservedVarScope(v, filePath, ptCtx, scopePolicyTemplate)...)
 		}
 
 		for _, input := range pt.Inputs {
 			inputCtx := fmt.Sprintf("policy template %q input %q vars", pt.Name, input.Type)
 			// Input vars
 			for _, v := range input.Vars {
-				errs = append(errs, checkReservedVarScope(v, filePath, inputCtx)...)
+				errs = append(errs, checkReservedVarScope(v, filePath, inputCtx, scopeInput)...)
 			}
 		}
 	}
 
-	// Stream-level vars in data stream manifests are the valid scope.
+	// Stream-level vars
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
 		return append(errs, specerrors.NewStructuredErrorf("failed to list data streams: %w", err))
@@ -216,18 +227,23 @@ func normalizeIntegrationStream(entry streamEntry, dsType string, filePath strin
 }
 
 // checkReservedVarScope returns an error if v is a reserved variable that is
-// not permitted at the given scope. contextStr describes the location (e.g.
-// "package root vars", "policy template \"foo\" vars").
-func checkReservedVarScope(v varDef, filePath, contextStr string) specerrors.ValidationErrors {
+// not permitted at the given scope. scope identifies the declaration location
+// so the function can enforce scope constraints regardless of call site.
+// contextStr describes the location in human-readable form (e.g. "package root
+// vars", "policy template \"foo\" vars").
+func checkReservedVarScope(v varDef, filePath, contextStr string, scope varScope) specerrors.ValidationErrors {
 	rule, ok := reservedVarRules[v.Name]
-	if !ok || !rule.streamOnly {
+	if !ok {
 		return nil
 	}
-	return specerrors.ValidationErrors{
-		specerrors.NewStructuredErrorf(
-			"file \"%s\" is invalid: %s: variable \"%s\" must only be declared at stream level",
-			filePath, contextStr, v.Name),
+	if rule.streamOnly && scope != scopeStream {
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredErrorf(
+				"file \"%s\" is invalid: %s: variable \"%s\" must only be declared at stream level",
+				filePath, contextStr, v.Name),
+		}
 	}
+	return nil
 }
 
 // validateReservedVar dispatches to per-variable stream-scope validation via
