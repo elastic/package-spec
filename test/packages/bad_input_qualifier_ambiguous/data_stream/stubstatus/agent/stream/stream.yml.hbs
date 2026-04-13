@@ -1,0 +1,13 @@
+receivers:
+  nginx:
+    endpoint: http://127.0.0.1/nginx_status
+    collection_interval: {{period}}
+exporters:
+  {{#each exporters}}
+  {{this}}
+  {{/each}}
+service:
+  pipelines:
+    {{#each pipelines}}
+    {{this}}
+    {{/each}}

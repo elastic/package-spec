@@ -25,4 +25,5 @@ const (
 	CodeKibanaTagDuplicates                 = "SVR00007"
 	CodePipelineOnFailureEventKind          = "SVR00008"
 	CodePipelineOnFailureMessage            = "SVR00009"
+	CodeIntegrationInputQualifierRequired   = "SVR00010"
 )
