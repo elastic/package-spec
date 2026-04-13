@@ -1,0 +1,37 @@
+format_version: 3.6.0
+name: dataset_input_otel_dynamic
+title: "OTel Input with dynamic signal types"
+version: 0.0.1
+source:
+  license: "Elastic-2.0"
+description: "Input package with OTel and dynamic_signal_types for dataset compliance testing."
+type: input
+categories:
+  - custom
+conditions:
+  kibana:
+    version: "^9.2.0"
+  elastic:
+    subscription: "basic"
+icons:
+  - src: /img/sample-logo.svg
+    title: Sample logo
+    size: 32x32
+    type: image/svg+xml
+policy_templates:
+  - name: otel_receiver
+    title: OTel receiver
+    description: Collect logs via OTel receiver
+    input: otelcol
+    template_path: input.yml.hbs
+    dynamic_signal_types: true
+    vars:
+      - name: paths
+        type: text
+        title: Paths
+        multi: true
+        default:
+          - /var/log/*.log
+owner:
+  github: elastic/ecosystem
+  type: elastic

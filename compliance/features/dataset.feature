@@ -46,6 +46,39 @@ Feature: Data stream dataset configuration
       And there is an index template "metrics-custom.otel_test" with pattern "metrics-custom.otel_test.otel-*"
 
   @3.6.0
+  @skip
+  # Pending dataset routing fix for dynamic_signal_types: https://github.com/elastic/kibana/pull/262000
+  Scenario: Input OTel package with dynamic signal types uses default dataset
+    Given the "dataset_input_otel_dynamic" package is installed
+      And a policy is created with "dataset_input_otel_dynamic" package, "0.0.1" version, "otel_receiver" template, "otel_receiver" input, "otelcol" input type and dataset ""
+     Then the compiled policy has dataset "otel_receiver" for "otelcol" input type
+      And there is an index template "logs-otel_receiver" with pattern "logs-otel_receiver.otel-*"
+      And there is an index template "metrics-otel_receiver" with pattern "metrics-otel_receiver.otel-*"
+      And there is an index template "traces-otel_receiver" with pattern "traces-otel_receiver.otel-*"
+
+  @3.6.0
+  @skip
+  # Pending dataset routing fix for dynamic_signal_types: https://github.com/elastic/kibana/pull/262000
+  Scenario: Input OTel package with dynamic signal types dataset can be overridden
+    Given the "dataset_input_otel_dynamic" package is installed
+      And a policy is created with "dataset_input_otel_dynamic" package, "0.0.1" version, "otel_receiver" template, "otel_receiver" input, "otelcol" input type and dataset "custom.dynamic_test"
+     Then the compiled policy has dataset "custom.dynamic_test" for "otelcol" input type
+      And there is an index template "logs-custom.dynamic_test" with pattern "logs-custom.dynamic_test.otel-*"
+      And there is an index template "metrics-custom.dynamic_test" with pattern "metrics-custom.dynamic_test.otel-*"
+      And there is an index template "traces-custom.dynamic_test" with pattern "traces-custom.dynamic_test.otel-*"
+
+  @3.6.0
+  @skip
+  # Pending dataset routing fix for dynamic_signal_types: https://github.com/elastic/kibana/pull/262000
+  Scenario: Input OTel package with dynamic signal types and dataset variable uses developer default
+    Given the "dataset_input_otel_dynamic_generic" package is installed
+      And a policy is created with "dataset_input_otel_dynamic_generic" package, "0.0.1" version, "otel_receiver" template, "otel_receiver" input, "otelcol" input type and dataset ""
+     Then the compiled policy has dataset "generic" for "otelcol" input type
+      And there is an index template "logs-generic" with pattern "logs-generic.otel-*"
+      And there is an index template "metrics-generic" with pattern "metrics-generic.otel-*"
+      And there is an index template "traces-generic" with pattern "traces-generic.otel-*"
+
+  @3.6.0
   Scenario: Integration OTel package with dataset variable uses default dataset
     Given the "dataset_integration_otel" package is installed
       And a policy is created with "dataset_integration_otel" package and "0.0.1" version
