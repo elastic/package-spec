@@ -529,8 +529,38 @@ func (k *Kibana) IsPackageInstalled(packageName string) error {
 	return nil
 }
 
+type fullAgentPolicy struct {
+	Inputs     []fullAgentPolicyInput               `json:"inputs"`
+	Processors map[string]otelTransformProcessor     `json:"processors"`
+}
+
+type fullAgentPolicyInput struct {
+	DataStream dataStreamRef            `json:"data_stream"`
+	Streams    []fullAgentPolicyStream   `json:"streams"`
+}
+
+type fullAgentPolicyStream struct {
+	DataStream dataStreamRef `json:"data_stream"`
+}
+
+type dataStreamRef struct {
+	Dataset   string `json:"dataset"`
+	Namespace string `json:"namespace"`
+}
+
+type otelTransformProcessor struct {
+	LogStatements    []otelStatementGroup `json:"log_statements"`
+	MetricStatements []otelStatementGroup `json:"metric_statements"`
+	TraceStatements  []otelStatementGroup `json:"trace_statements"`
+}
+
+type otelStatementGroup struct {
+	Context    string   `json:"context"`
+	Statements []string `json:"statements"`
+}
+
 // GetFullAgentPolicy retrieves the compiled/full agent policy for a given agent policy ID.
-func (k *Kibana) GetFullAgentPolicy(agentPolicyID string) (map[string]interface{}, error) {
+func (k *Kibana) GetFullAgentPolicy(agentPolicyID string) (*fullAgentPolicy, error) {
 	apiPath := fmt.Sprintf(apiFullAgentPolicyPath, agentPolicyID)
 	req, err := k.newRequest(http.MethodGet, apiPath, nil)
 	if err != nil {
@@ -552,13 +582,13 @@ func (k *Kibana) GetFullAgentPolicy(agentPolicyID string) (map[string]interface{
 	}
 
 	var response struct {
-		Item map[string]interface{} `json:"item"`
+		Item fullAgentPolicy `json:"item"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
 		return nil, fmt.Errorf("failed to decode full agent policy response: %w", err)
 	}
 
-	return response.Item, nil
+	return &response.Item, nil
 }
 
 func (k *Kibana) newRequest(method string, path string, body io.Reader) (*http.Request, error) {

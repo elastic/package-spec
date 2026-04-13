@@ -356,104 +356,65 @@ func theCompiledPolicyHasDataset(ctx context.Context, expectedDataset, inputType
 		return err
 	}
 
-	fullPolicy, err := kibana.GetFullAgentPolicy(agentPolicyID)
+	policy, err := kibana.GetFullAgentPolicy(agentPolicyID)
 	if err != nil {
 		return fmt.Errorf("failed to get full agent policy: %w", err)
 	}
 
 	if inputType == "otelcol" {
-		return checkDatasetInOTelPolicy(fullPolicy, expectedDataset)
+		return checkDatasetInOTelPolicy(policy, expectedDataset)
 	}
-	return checkDatasetInInputs(fullPolicy, expectedDataset)
+	return checkDatasetInInputs(policy, expectedDataset)
 }
 
-func checkDatasetInInputs(fullPolicy map[string]interface{}, expectedDataset string) error {
-	inputs, ok := fullPolicy["inputs"].([]interface{})
-	if !ok {
-		return fmt.Errorf("no inputs found in compiled policy")
-	}
-
-	for _, rawInput := range inputs {
-		input, ok := rawInput.(map[string]interface{})
-		if !ok {
-			continue
-		}
-
-		// Check dataset in streams (most common case).
-		if streams, ok := input["streams"].([]interface{}); ok {
-			for _, rawStream := range streams {
-				stream, ok := rawStream.(map[string]interface{})
-				if !ok {
-					continue
-				}
-				dataStream, ok := stream["data_stream"].(map[string]interface{})
-				if !ok {
-					continue
-				}
-				if dataset, ok := dataStream["dataset"].(string); ok && dataset == expectedDataset {
-					return nil
-				}
-			}
-		}
-
-		// For inputs without streams (e.g. beat-based integration inputs),
-		// check the input-level data_stream.
-		if dataStream, ok := input["data_stream"].(map[string]interface{}); ok {
-			if dataset, ok := dataStream["dataset"].(string); ok && dataset == expectedDataset {
+func checkDatasetInInputs(policy *fullAgentPolicy, expectedDataset string) error {
+	for _, input := range policy.Inputs {
+		for _, stream := range input.Streams {
+			if stream.DataStream.Dataset == expectedDataset {
 				return nil
 			}
 		}
+		if input.DataStream.Dataset == expectedDataset {
+			return nil
+		}
 	}
 
-	d, _ := json.MarshalIndent(fullPolicy["inputs"], "", "  ")
+	d, _ := json.MarshalIndent(policy.Inputs, "", "  ")
 	return fmt.Errorf("dataset %q not found in compiled policy inputs:\n%s", expectedDataset, string(d))
 }
 
-func checkDatasetInOTelPolicy(fullPolicy map[string]interface{}, expectedDataset string) error {
+func checkDatasetInOTelPolicy(policy *fullAgentPolicy, expectedDataset string) error {
 	expectedStatement := fmt.Sprintf(`set(attributes["data_stream.dataset"], "%s")`, expectedDataset)
 
-	processors, ok := fullPolicy["processors"].(map[string]interface{})
-	if !ok {
-		return fmt.Errorf("no processors found in compiled policy for OTel")
-	}
-
-	for name, rawProcessor := range processors {
+	for name, processor := range policy.Processors {
 		if !strings.HasPrefix(name, "transform/") {
 			continue
 		}
-		processor, ok := rawProcessor.(map[string]interface{})
-		if !ok {
-			continue
+		if transformHasStatement(processor, expectedStatement) {
+			return nil
 		}
-		for _, statementsKey := range []string{"log_statements", "metric_statements", "trace_statements"} {
-			rawStatements, ok := processor[statementsKey].([]interface{})
-			if !ok {
-				continue
-			}
-			for _, rawStatement := range rawStatements {
-				statement, ok := rawStatement.(map[string]interface{})
-				if !ok {
-					continue
-				}
-				stmts, ok := statement["statements"].([]interface{})
-				if !ok {
-					continue
-				}
-				for _, rawStmt := range stmts {
-					stmt, ok := rawStmt.(string)
-					if !ok {
-						continue
-					}
-					if stmt == expectedStatement {
-						return nil
-					}
+	}
+
+	d, _ := json.MarshalIndent(policy.Processors, "", "  ")
+	return fmt.Errorf("dataset statement %q not found in compiled policy processors:\n%s", expectedStatement, string(d))
+}
+
+func transformHasStatement(processor otelTransformProcessor, expected string) bool {
+	allGroups := [][]otelStatementGroup{
+		processor.LogStatements,
+		processor.MetricStatements,
+		processor.TraceStatements,
+	}
+	for _, groups := range allGroups {
+		for _, group := range groups {
+			for _, stmt := range group.Statements {
+				if stmt == expected {
+					return true
 				}
 			}
 		}
 	}
-
-	d, _ := json.MarshalIndent(processors, "", "  ")
-	return fmt.Errorf("dataset statement %q not found in compiled policy processors:\n%s", expectedStatement, string(d))
+	return false
 }
 
 func InitializeScenario(ctx *godog.ScenarioContext) {
