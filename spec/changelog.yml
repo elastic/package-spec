@@ -2,12 +2,22 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 3.6.0-next
+- version: 3.7.0-next
   changes:
     # Pending on https://github.com/elastic/kibana/issues/220294
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+- version: 3.6.1-next
+  changes:
+    - description: Add var_groups support to policy template and input levels in integration packages, and to policy template and package root levels in input packages.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1120
+    - description: Add semantic validator to verify data stream manifest categories match policy template categories.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1095
+- version: 3.6.0
+  changes:
     - description: Add pipeline tag validations.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/1010
@@ -21,22 +31,15 @@
     - description: Add support for deprecating packages or individual features (policy_templates, inputs, data_streams or variables).
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1053
-    # Pending on https://github.com/elastic/kibana/pull/249449
-    # Pending on https://github.com/elastic/integrations/pull/16985
     - description: Add var_groups schema to support conditional variable groups for Cloud Connector integration.
       type: enhancement
       link: https://github.com/elastic/package-spec/issues/1054
-    # Pending on https://github.com/elastic/kibana/pull/251205
     - description: Allow to set time series index mode in input packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1066
     - description: Add support for dynamic_signal_types field in input package policy templates for OTel input type.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1067
-    - description: Allow optional _dev/scripts directory in integration, input, and content packages for development tooling files.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/1090
-    # Pending on https://github.com/elastic/kibana/issues/252939
     - description: Add support for multiple template paths in input packages, integration inputs, and data streams.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1089
@@ -44,16 +47,39 @@
     - description: Add support for package dependencies in integration packages via requires field with input and content package types.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1071
-    # Pending on https://github.com/elastic/package-spec/issues/1085
+    # Pending on https://github.com/elastic/kibana/issues/252949
     - description: Allow otelcol input type and dynamic_signal_types field in integration packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1091
+    - description: Add support for migrating input types at integrations policy templates and data streams.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1021
+    - description: Add support for `profiles` policy template type in input packages
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1092
+    - description: Support including multiple sample events
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/582
+    - description: Align integration template path semantic validation with Fleet
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/1122
+- version: 3.5.8
+  changes:
     - description: Add deployer option to system benchmark configuration.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1099
-    - description: Add semantic validator to verify data stream manifest categories match policy template categories.
+    - description: Allow to force the format used in the policy API in system and policy tests.
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/1095
+      link: https://github.com/elastic/package-spec/pull/1103
+    - description: Add support for auto_expand_replicas, max_result_window, and refresh_interval index settings in data stream templates.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1092
+    - description: Add deployer option to system test configuration.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1104
+    - description: Allow optional _dev/scripts directory in integration, input, and content packages for development tooling files.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1090
 - version: 3.5.7
   changes:
     - description: Allow _dev directory for content-only packages; use _dev/shared for development files (e.g. dashboard YML sources).

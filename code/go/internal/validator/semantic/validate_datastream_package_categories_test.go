@@ -55,12 +55,31 @@ type: logs
 			},
 		},
 		{
-			title: "datastream has subcategory only, no parent to enforce",
+			title: "datastream subcategory requires its parent in package",
 			setup: func(t *testing.T, dir string) {
 				writeManifest(t, dir, `
 type: integration
 categories:
   - observability
+`)
+				writeDataStreamManifest(t, dir, "mylogs", `
+title: My Logs
+categories:
+  - credential_management
+type: logs
+`)
+			},
+			expectedErrs: []string{
+				`package manifest categories [observability] are missing parent categories [security] from data stream "mylogs"`,
+			},
+		},
+		{
+			title: "datastream subcategory parent already in package",
+			setup: func(t *testing.T, dir string) {
+				writeManifest(t, dir, `
+type: integration
+categories:
+  - security
 `)
 				writeDataStreamManifest(t, dir, "mylogs", `
 title: My Logs

@@ -30,7 +30,8 @@ type registryCategories struct {
 	} `yaml:"categories"`
 }
 
-func fetchRegistryParentCategories() (map[string]struct{}, error) {
+
+func fetchRegistryCategoryToParentMap() (map[string]string, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Get(packageRegistryCategoriesURL)
 	if err != nil {
@@ -56,11 +57,14 @@ func fetchRegistryParentCategories() (map[string]struct{}, error) {
 		return nil, fmt.Errorf("no categories found in response from %s", packageRegistryCategoriesURL)
 	}
 
-	parentCategories := make(map[string]struct{}, len(rc.Categories))
-	for id := range rc.Categories {
-		parentCategories[id] = struct{}{}
+	categoryToParent := make(map[string]string)
+	for parentID, cat := range rc.Categories {
+		categoryToParent[parentID] = parentID
+		for subID := range cat.Subcategories {
+			categoryToParent[subID] = parentID
+		}
 	}
-	return parentCategories, nil
+	return categoryToParent, nil
 }
 
 func readPackageManifestTypeAndCategories(fsys fspath.FS) (string, []string, error) {
@@ -91,7 +95,7 @@ func readPackageManifestTypeAndCategories(fsys fspath.FS) (string, []string, err
 }
 
 // ValidateDatastreamPackageCategories validates that the package manifest
-// categories include all parent-level categories present in any data stream
+// categories include all parent-level equivalent categories present in any data stream
 // manifest. Parent categories are determined by fetching the package registry
 // categories.yml. Data stream manifests without a categories field are skipped.
 func ValidateDatastreamPackageCategories(fsys fspath.FS) specerrors.ValidationErrors {
@@ -116,7 +120,7 @@ func ValidateDatastreamPackageCategories(fsys fspath.FS) specerrors.ValidationEr
 		return nil
 	}
 
-	parentCategories, err := fetchRegistryParentCategories()
+	categoryToParent, err := fetchRegistryCategoryToParentMap()
 	if err != nil {
 		return specerrors.ValidationErrors{
 			specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to load registry categories: %w", fsys.Path(manifestPath), err)}
@@ -124,10 +128,19 @@ func ValidateDatastreamPackageCategories(fsys fspath.FS) specerrors.ValidationEr
 
 	var errs specerrors.ValidationErrors
 	for dsName, dsCats := range dsCategories {
+		seen := make(map[string]bool)
 		var missingCats []string
 		for _, dsCat := range dsCats {
-			if _, isParent := parentCategories[dsCat]; isParent && !slices.Contains(pkgCategories, dsCat) {
-				missingCats = append(missingCats, dsCat)
+			parent, known := categoryToParent[dsCat]
+			if !known {
+				continue
+			}
+			if seen[parent] {
+				continue
+			}
+			seen[parent] = true
+			if !slices.Contains(pkgCategories, parent) {
+				missingCats = append(missingCats, parent)
 			}
 		}
 
