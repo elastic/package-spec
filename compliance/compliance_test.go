@@ -144,7 +144,7 @@ func aPolicyIsCreatedWithPackageAndVersion(ctx context.Context, packageName, pac
 	if err != nil {
 		return ctx, err
 	}
-	agentPolicyID, err := kibana.CreatePolicyForPackage(packageName, packageVersion)
+	agentPolicyID, err := kibana.createPolicyForPackage(packageName, packageVersion)
 	if err != nil {
 		return ctx, err
 	}
@@ -156,7 +156,7 @@ func aPolicyIsCreatedWithPackageInputAndDataset(ctx context.Context, packageName
 	if err != nil {
 		return ctx, err
 	}
-	agentPolicyID, err := kibana.CreatePolicyForPackageInputAndDataset(packageName, packageVersion, templateName, inputName, inputType, dataset)
+	agentPolicyID, err := kibana.createPolicyForPackageInputAndDataset(packageName, packageVersion, templateName, inputName, inputType, dataset)
 	if err != nil {
 		return ctx, err
 	}
@@ -258,7 +258,7 @@ func thereIsAnSloTemplate(templateID string) error {
 	if err != nil {
 		return err
 	}
-	return kibana.MustExistSLOTemplate(templateID)
+	return kibana.mustExistSLOTemplate(templateID)
 }
 
 func thereIsADashboard(dashboardID string) error {
@@ -266,7 +266,7 @@ func thereIsADashboard(dashboardID string) error {
 	if err != nil {
 		return err
 	}
-	err = kibana.MustExistDashboard(dashboardID)
+	err = kibana.mustExistDashboard(dashboardID)
 	if err != nil {
 		return err
 	}
@@ -278,7 +278,7 @@ func thereIsADetectionRule(detectionRuleID string) error {
 	if err != nil {
 		return err
 	}
-	err = kibana.MustExistDetectionRule(detectionRuleID)
+	err = kibana.mustExistDetectionRule(detectionRuleID)
 	if err != nil {
 		return err
 	}
@@ -290,7 +290,7 @@ func prebuiltDetectionRulesAreLoaded() error {
 	if err != nil {
 		return err
 	}
-	err = kibana.LoadPrebuiltDetectionRules()
+	err = kibana.loadPrebuiltDetectionRules()
 	if err != nil {
 		return err
 	}
@@ -302,7 +302,7 @@ func thereIsASecurityAIPrompt(promptID string) error {
 	if err != nil {
 		return err
 	}
-	err = kibana.MustExistSavedObject("security-ai-prompt", promptID)
+	err = kibana.mustExistSavedObject("security-ai-prompt", promptID)
 	if err != nil {
 		return err
 	}
@@ -337,7 +337,7 @@ func theContentPackagesRequireAreInstalled(packageName string) error {
 	}
 
 	for _, dep := range manifest.Requires.Content {
-		if err := kibana.IsPackageInstalled(dep.Package); err != nil {
+		if err := kibana.isPackageInstalled(dep.Package); err != nil {
 			return fmt.Errorf("required content package %q is not installed: %w", dep.Package, err)
 		}
 	}
@@ -356,7 +356,7 @@ func theCompiledPolicyHasDataset(ctx context.Context, expectedDataset, inputType
 		return err
 	}
 
-	policy, err := kibana.GetFullAgentPolicy(agentPolicyID)
+	policy, err := kibana.getFullAgentPolicy(agentPolicyID)
 	if err != nil {
 		return fmt.Errorf("failed to get full agent policy: %w", err)
 	}

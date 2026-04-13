@@ -120,8 +120,8 @@ func NewKibanaClient() (*Kibana, error) {
 	}, nil
 }
 
-// CreatePolicyForPackage creates a new policy for a package.
-func (k *Kibana) CreatePolicyForPackage(name string, version string) (string, error) {
+// createPolicyForPackage creates a new policy for a package.
+func (k *Kibana) createPolicyForPackage(name string, version string) (string, error) {
 	err := k.deletePackagePolicyForPackage(name)
 	if err != nil {
 		return "", fmt.Errorf("failed to delete agent policy: %w", err)
@@ -140,9 +140,8 @@ func (k *Kibana) CreatePolicyForPackage(name string, version string) (string, er
 	return agentPolicy.Item.ID, nil
 }
 
-// CreatePolicyForPackageInputAndDataset creates a policy for a package with a custom dataset.
-// XXX: Pass the path of the manifest and read input name and type from there.
-func (k *Kibana) CreatePolicyForPackageInputAndDataset(name, version, templateName, inputName, inputType, dataset string) (string, error) {
+// createPolicyForPackageInputAndDataset creates a policy for a package with a custom dataset.
+func (k *Kibana) createPolicyForPackageInputAndDataset(name, version, templateName, inputName, inputType, dataset string) (string, error) {
 	err := k.deletePackagePolicyForPackage(name)
 	if err != nil {
 		return "", fmt.Errorf("failed to delete agent policy: %w", err)
@@ -327,10 +326,8 @@ func (k *Kibana) createPackagePolicy(agentPolicyID, name, version, templateName,
 	return nil
 }
 
-// MustExistSLOTemplate checks if an SLO template with the given ID exists.
-// SLO templates are installed by Fleet as kibana assets of type slo_template
-// and are accessible via the observability SLO templates API (internal).
-func (k *Kibana) MustExistSLOTemplate(templateID string) error {
+// mustExistSLOTemplate checks if an SLO template with the given ID exists.
+func (k *Kibana) mustExistSLOTemplate(templateID string) error {
 	apiPath := fmt.Sprintf(apiGetSloTemplatePath, defaultSpace)
 	apiPath, err := url.JoinPath(apiPath, templateID)
 	if err != nil {
@@ -358,8 +355,8 @@ func (k *Kibana) MustExistSLOTemplate(templateID string) error {
 	return nil
 }
 
-// MustExistDashboard checks if a dashboard with the given ID exists.
-func (k *Kibana) MustExistDashboard(dashboardID string) error {
+// mustExistDashboard checks if a dashboard with the given ID exists.
+func (k *Kibana) mustExistDashboard(dashboardID string) error {
 	_, err := k.getDashboard(dashboardID)
 	if err != nil {
 		return err
@@ -398,8 +395,8 @@ func (k *Kibana) getDashboard(dashboardID string) (*dashboardResponse, error) {
 	return &dashboard, nil
 }
 
-// MustExistDetectionRule checks if a detection rule with the given ID exists.
-func (k *Kibana) MustExistDetectionRule(detectionRuleID string) error {
+// mustExistDetectionRule checks if a detection rule with the given ID exists.
+func (k *Kibana) mustExistDetectionRule(detectionRuleID string) error {
 	_, err := k.getDetectionRuleID(detectionRuleID)
 	if err != nil {
 		return err
@@ -407,8 +404,8 @@ func (k *Kibana) MustExistDetectionRule(detectionRuleID string) error {
 	return nil
 }
 
-// LoadPrebuiltDetectionRules retrieves rule statuses and loads Elastic prebuilt detection rules.
-func (k *Kibana) LoadPrebuiltDetectionRules() error {
+// loadPrebuiltDetectionRules retrieves rule statuses and loads Elastic prebuilt detection rules.
+func (k *Kibana) loadPrebuiltDetectionRules() error {
 	req, err := k.newRequest(http.MethodPut, apiLoadPrebuiltDetectionRulesPath, nil)
 	if err != nil {
 		return err
@@ -470,8 +467,8 @@ func (k *Kibana) getDetectionRuleID(detectionRuleID string) (*detectionRuleRespo
 	return &detectionRule, nil
 }
 
-// MustExistSavedObject checks if a saved object with the given type and id exists.
-func (k *Kibana) MustExistSavedObject(soType, id string) error {
+// mustExistSavedObject checks if a saved object with the given type and id exists.
+func (k *Kibana) mustExistSavedObject(soType, id string) error {
 	apiPath, err := url.JoinPath(apiSavedObjects, soType, id)
 	if err != nil {
 		return err
@@ -498,8 +495,8 @@ func (k *Kibana) MustExistSavedObject(soType, id string) error {
 	return nil
 }
 
-// IsPackageInstalled checks if a package with the given name is installed.
-func (k *Kibana) IsPackageInstalled(packageName string) error {
+// isPackageInstalled checks if a package with the given name is installed.
+func (k *Kibana) isPackageInstalled(packageName string) error {
 	apiPath, err := url.JoinPath(apiInstalledPackagesPath, packageName)
 	if err != nil {
 		return err
@@ -530,13 +527,13 @@ func (k *Kibana) IsPackageInstalled(packageName string) error {
 }
 
 type fullAgentPolicy struct {
-	Inputs     []fullAgentPolicyInput               `json:"inputs"`
-	Processors map[string]otelTransformProcessor     `json:"processors"`
+	Inputs     []fullAgentPolicyInput            `json:"inputs"`
+	Processors map[string]otelTransformProcessor `json:"processors"`
 }
 
 type fullAgentPolicyInput struct {
-	DataStream dataStreamRef            `json:"data_stream"`
-	Streams    []fullAgentPolicyStream   `json:"streams"`
+	DataStream dataStreamRef           `json:"data_stream"`
+	Streams    []fullAgentPolicyStream `json:"streams"`
 }
 
 type fullAgentPolicyStream struct {
@@ -559,8 +556,8 @@ type otelStatementGroup struct {
 	Statements []string `json:"statements"`
 }
 
-// GetFullAgentPolicy retrieves the compiled/full agent policy for a given agent policy ID.
-func (k *Kibana) GetFullAgentPolicy(agentPolicyID string) (*fullAgentPolicy, error) {
+// getFullAgentPolicy retrieves the compiled/full agent policy for a given agent policy ID.
+func (k *Kibana) getFullAgentPolicy(agentPolicyID string) (*fullAgentPolicy, error) {
 	apiPath := fmt.Sprintf(apiFullAgentPolicyPath, agentPolicyID)
 	req, err := k.newRequest(http.MethodGet, apiPath, nil)
 	if err != nil {
