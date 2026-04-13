@@ -425,7 +425,7 @@ func checkDatasetInOTelPolicy(fullPolicy map[string]interface{}, expectedDataset
 		if !ok {
 			continue
 		}
-		for _, statementsKey := range []string{"log_statements", "metric_statements"} {
+		for _, statementsKey := range []string{"log_statements", "metric_statements", "trace_statements"} {
 			rawStatements, ok := processor[statementsKey].([]interface{})
 			if !ok {
 				continue
