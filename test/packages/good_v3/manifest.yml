@@ -156,6 +156,20 @@ policy_templates:
             title: S3 Bucket Name
             show_user: true
             required: true
+  - name: otel
+    title: OTel receiver
+    description: Collect metrics and logs via OpenTelemetry receiver
+    inputs:
+      - type: otelcol
+        title: Collect via OTel receiver
+        description: Collecting data via OpenTelemetry receiver
+        dynamic_signal_types: true
+        vars:
+          - name: receivers
+            type: yaml
+            title: OTLP Receivers
+            show_user: true
+            required: true
 owner:
   github: elastic/foobar
   type: elastic

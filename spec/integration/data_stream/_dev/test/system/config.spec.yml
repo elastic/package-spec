@@ -5,6 +5,8 @@ spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
   properties:
+    deployer:
+      $ref: "./../config.spec.yml#/definitions/deployer"
     skip:
       $ref: "./../config.spec.yml#/definitions/skip"
     wait_for_data_timeout:
@@ -167,8 +169,43 @@ spec:
         vars:
           description: Variables used to configure settings defined in the data stream manifest.
           $ref: "./../config.spec.yml#/definitions/vars"
+    policy_api_format:
+      $ref: "./../config.spec.yml#/definitions/policy_api_format"
     requires:
       description: Package dependencies required for this test with exact versions.
       type: array
       items:
         $ref: "./../config.spec.yml#/definitions/package_requirement"
+    samples:
+      description: >
+        List of sample event files to collect from this test. Each entry selects a sample
+        event file by name (the suffix in `sample_event_<name>.json`) and can optionally
+        define a condition to restrict which documents are used.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          name:
+            description: >
+              Name identifying the sample event file to use. Corresponds to the suffix in
+              `sample_event_<name>.json`.
+            type: string
+            example: one
+          condition:
+            description: Condition to filter documents used for the sample event.
+            type: object
+            additionalProperties: false
+            properties:
+              key:
+                description: Field name to check in the document.
+                type: string
+                example: "sql.driver"
+              value:
+                description: Expected value of the field.
+                type: string
+                example: "mysql"
+            required:
+              - key
+        required:
+          - name

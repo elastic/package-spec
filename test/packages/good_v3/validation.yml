@@ -1,3 +1,0 @@
-errors:
-  exclude_checks:
-    - PSR00001 # Allow to use unreleased features in GA package.

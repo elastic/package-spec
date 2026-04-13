@@ -153,5 +153,7 @@ spec:
       $ref: "#/definitions/benchmark_time_period"
     wait_for_data_timeout:
       $ref: "#/definitions/wait_for_data_timeout"
+    deployer:
+      $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/deployer"
     corpora:
       $ref: "#/definitions/corpora"

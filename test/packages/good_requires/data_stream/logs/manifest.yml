@@ -1,0 +1,6 @@
+title: Apache logs
+type: logs
+streams:
+  - package: sql_input
+    title: Apache logs via SQL input
+    description: Collect Apache logs using the SQL input package

@@ -115,6 +115,7 @@ func TestLimitsValidation(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
+			t.Parallel()
 			err := ValidateFromFS("test-package", c.fsys)
 			if c.valid {
 				assert.NoError(t, err)
@@ -175,6 +176,7 @@ func (fs *mockFS) Good() *mockFS {
 		newMockFile("_dev/deploy/docker/docker-compose.yml").WithContent("version: 2.3"),
 		newMockFile("data_stream/foo/manifest.yml").WithContent(datastreamManifestYml),
 		newMockFile("data_stream/foo/fields/base-fields.yml").WithContent(fieldsYml),
+		newMockFile("data_stream/foo/agent/stream/stream.yml.hbs").WithContent("---\n"),
 	)
 }
 
@@ -188,6 +190,7 @@ func (fs *mockFS) WithLink() *mockFS {
 		newMockFile("_dev/deploy/docker/docker-compose.yml").WithContent("version: 2.3"),
 		newMockFile("data_stream/foo/manifest.yml").WithContent(datastreamManifestYml),
 		newMockFile("data_stream/foo/fields/base-fields.yml").WithContent(fieldsYml),
+		newMockFile("data_stream/foo/agent/stream/stream.yml.hbs").WithContent("---\n"),
 		newMockFile("data_stream/foo/fields/some_fields.yml.link").WithContent("../../../../somepkg/_dev/shared/some_fields.yml 9fe744e9d6cbf9c6057a38327936b8b66e48a087479e781e9a344bb2502182a0"),
 	)
 }

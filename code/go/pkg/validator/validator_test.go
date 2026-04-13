@@ -18,7 +18,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
-	"github.com/elastic/package-spec/v3/code/go/internal/validator/common"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -34,13 +33,16 @@ func TestValidateFile(t *testing.T) {
 		"good_v2":                                {},
 		"good_v3":                                {},
 		"good_var_groups":                        {},
+		"good_var_groups_input":                  {},
 		"good_input":                             {},
 		"good_input_otel":                        {},
 		"good_input_dynamic_signal_type":         {},
+		"good_input_profiles":                    {},
 		"good_input_template_paths":              {},
 		"good_integration_template_paths":        {},
 		"good_content":                           {},
 		"good_content_with_dev":                  {},
+		"good_integration_with_dev_tools":        {},
 		"good_lookup_index":                      {},
 		"good_alert_rule_templates":              {},
 		"good_requires":                          {},
@@ -168,6 +170,12 @@ func TestValidateFile(t *testing.T) {
 				"field streams.0.vars.3: Must not be present",
 			},
 		},
+		"bad_policy_api_format": {
+			"data_stream/foo/_dev/test/system/test-default-config.yml",
+			[]string{
+				"field policy_api_format: policy_api_format must be one of the following: \"legacy\", \"simplified\"",
+			},
+		},
 		"bad_skip_ignored_fields": {
 			"data_stream/foo/_dev/test/system/test-default-config.yml",
 			[]string{
@@ -257,7 +265,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_requires": {
 			"manifest.yml",
 			[]string{
-				`field requires.content.0.name: Does not match pattern '^[a-z0-9_]+$'`,
+				`field requires.content.0.package: Does not match pattern '^[a-z0-9_]+$'`,
 				`field requires.input.0: version is required`,
 				`field requires.input.1.version: version "^1.0.0" for package "filelog_otel" must be a valid semantic version, constraints are not allowed`,
 			},
@@ -397,6 +405,12 @@ func TestValidateFile(t *testing.T) {
 				"field policy_templates.0.input: Must not be present",
 			},
 		},
+		"bad_input_profiles_non_otel": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0.input: policy_templates.0.input must be one of the following: \"otelcol\"",
+			},
+		},
 		"bad_input_dynamic_signal_types_non_otel": {
 			"manifest.yml",
 			[]string{
@@ -407,13 +421,30 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				"field policy_templates.0: Additional property dynamic_signal_types is not allowed",
-				"policy template \"sample\": dynamic_signal_types is only allowed for input type packages",
+			},
+		},
+		"bad_integration_dynamic_signal_types_non_otel": {
+			"manifest.yml",
+			[]string{
+				"policy template \"sample\": input type \"logfile\": dynamic_signal_types is only allowed when input is 'otelcol'",
+			},
+		},
+		"bad_integration_otel_old_version": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0.inputs.0.type: Must not be present",
 			},
 		},
 		"bad_input_dynamic_signal_types_old_version": {
 			"manifest.yml",
 			[]string{
 				"field policy_templates.0: Additional property dynamic_signal_types is not allowed",
+			},
+		},
+		"bad_input_dynamic_signal_type_with_type": {
+			"manifest.yml",
+			[]string{
+				"policy template \"otel_logs\": type field must not be set when dynamic_signal_types is true",
 			},
 		},
 		"bad_input_template_path": {
@@ -437,21 +468,21 @@ func TestValidateFile(t *testing.T) {
 			},
 		},
 		"bad_integration_stream_template_path": {
-			"manifest.yml",
+			"data_stream/datasets/manifest.yml",
 			[]string{
-				"policy template \"sample\" references input template_path: error validating input from streams \"logfile\": template file not found",
+				"data stream \"data_stream/datasets\" stream input \"logfile\": template file not found",
 			},
 		},
 		"bad_integration_stream_template_path_default": {
-			"manifest.yml",
+			"data_stream/datasets/manifest.yml",
 			[]string{
-				"policy template \"sample\" references input template_path: error validating input from streams \"logfile\": template file not found",
+				"data stream \"data_stream/datasets\" stream input \"logfile\": template file not found",
 			},
 		},
 		"bad_integration_input_template_path": {
 			"manifest.yml",
 			[]string{
-				"policy template \"sample\" references input template_path: error validating input \"logfile\": template file not found",
+				"policy template \"sample\": failed validation for policy input \"logfile\": template file not found",
 			},
 		},
 		"bad_esql_view_content": {
@@ -476,6 +507,11 @@ func TestValidateFile(t *testing.T) {
 		"deprecated_integration_policy_input": {},
 		"deprecated_integration_policy":       {},
 		"deprecated_integration_stream_var":   {},
+		"good_migrate_from":                   {},
+		"bad_migrate_from": {
+			"manifest.yml",
+			[]string{`field policy_templates.0.inputs.0: Additional property migrate_from is not allowed`},
+		},
 		"bad_deprecation_description": {
 			"manifest.yml",
 			[]string{"field deprecated.description: Invalid type. Expected: string, given: null"},
@@ -488,10 +524,24 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{"all inputs are deprecated but the integration package is not marked as deprecated"},
 		},
+		"good_deployer_system_benchmark": {},
+		"bad_deployer_system_benchmark": {
+			"_dev/benchmark/system/alert-benchmark.yml",
+			[]string{
+				"field deployer: deployer must be one of the following: \"docker\", \"tf\", \"k8s\"",
+			},
+		},
+		"bad_deployer_system_test": {
+			"data_stream/foo/_dev/test/system/test-default-config.yml",
+			[]string{
+				"field deployer: deployer must be one of the following: \"docker\", \"tf\", \"k8s\"",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 			errPrefix := fmt.Sprintf("file \"%s/%s\" is invalid: ", pkgRootPath, test.invalidPkgFilePath)
 
@@ -573,6 +623,7 @@ func TestValidateItemNotAllowed(t *testing.T) {
 
 	for pkgName, invalidItemsPerFolder := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			requireErrorMessage(t, pkgName, invalidItemsPerFolder, "item [%s] is not allowed in folder [%s/%s]")
 		})
 	}
@@ -589,6 +640,7 @@ func TestValidateItemNotExpected(t *testing.T) {
 
 	for pkgName, invalidItemsPerFolder := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			requireErrorMessage(t, pkgName, invalidItemsPerFolder, "item [%s] is not allowed in folder [%s/%s]")
 		})
 	}
@@ -608,6 +660,7 @@ func TestValidateBadKibanaIDs(t *testing.T) {
 
 	for pkgName, invalidItemsPerFolder := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 
 			errs := ValidateFromPath(pkgRootPath)
@@ -648,6 +701,7 @@ func TestValidateBadRuleIDs(t *testing.T) {
 
 	for pkgName, expectedError := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			require.Error(t, errs)
 			vErrs, ok := errs.(specerrors.ValidationErrors)
@@ -681,6 +735,7 @@ func TestValidateMissingRequiredFields(t *testing.T) {
 
 	for pkgName, expectedErrors := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
 			err := ValidateFromPath(pkgRootPath)
 			if len(expectedErrors) == 0 {
@@ -717,6 +772,7 @@ func TestValidateVersionIntegrity(t *testing.T) {
 
 	for pkgName, expectedErrorMessage := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			errs := ValidateFromPath(filepath.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			require.Error(t, errs)
 			vErrs, ok := errs.(specerrors.ValidationErrors)
@@ -747,6 +803,7 @@ func TestValidateDuplicatedFields(t *testing.T) {
 
 	for pkgName, expectedErrorMessages := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			if len(expectedErrorMessages) == 0 {
 				assert.NoError(t, errs)
@@ -795,6 +852,7 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 
 	for pkgName, expectedErrorMessages := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			err := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			if len(expectedErrorMessages) == 0 {
 				assert.NoError(t, err)
@@ -837,15 +895,13 @@ func TestValidateWarnings(t *testing.T) {
 		},
 		"good_readme_structure": {},
 	}
-	if err := common.EnableWarningsAsErrors(); err != nil {
-		require.NoError(t, err)
-	}
-	defer common.DisableWarningsAsErrors()
 
+	warningsAsErrros := true
 	for pkgName, expectedWarnContains := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
-			errs := ValidateFromPath(pkgRootPath)
+			errs := validateFromFS(pkgRootPath, linkedfiles.NewFS(pkgRootPath, os.DirFS(pkgRootPath)), warningsAsErrros)
 			if len(expectedWarnContains) == 0 {
 				require.NoError(t, errs)
 			} else {
@@ -905,6 +961,7 @@ func TestValidateExternalFieldsWithoutDevFolder(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.title, func(t *testing.T) {
+			t.Parallel()
 			tempDir := t.TempDir()
 
 			devFolderPath := filepath.Join(tempDir, "_dev")
@@ -972,6 +1029,7 @@ func TestValidateRoutingRules(t *testing.T) {
 
 	for pkgName, expectedErrorMessages := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			err := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			if len(expectedErrorMessages) == 0 {
 				assert.NoError(t, err)
@@ -1031,6 +1089,7 @@ func TestValidateIngestPipelines(t *testing.T) {
 
 	for pkgName, pipelines := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
 			var allErrorMessages []string
 			for pipeline, expectedErrorMessages := range pipelines {
@@ -1113,6 +1172,7 @@ func TestValidateHandlebarsFiles(t *testing.T) {
 
 	for pkgName, expectedErrorMessage := range tests {
 		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
 			errs := ValidateFromPath(path.Join("..", "..", "..", "..", "test", "packages", pkgName))
 			require.Error(t, errs)
 			vErrs, ok := errs.(specerrors.ValidationErrors)

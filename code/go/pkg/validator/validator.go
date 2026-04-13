@@ -14,6 +14,7 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
 	"github.com/elastic/package-spec/v3/code/go/internal/validator"
+	"github.com/elastic/package-spec/v3/code/go/internal/validator/common"
 )
 
 // ValidateFromPath validates a package located at the given path against the
@@ -51,6 +52,10 @@ func ValidateFromZip(packagePath string) error {
 // ValidateFromFS validates a package against the appropiate specification and returns any errors.
 // Package files are obtained through the given filesystem.
 func ValidateFromFS(location string, fsys fs.FS) error {
+	return validateFromFS(location, fsys, common.IsDefinedWarningsAsErrors())
+}
+
+func validateFromFS(location string, fsys fs.FS, warningsAsErrors bool) error {
 	// If we are not explicitly using the linkedfiles.FS, we wrap fsys with
 	// a linkedfiles.BlockFS to block the use of linked files.
 	if _, ok := fsys.(*linkedfiles.FS); !ok {
@@ -69,6 +74,7 @@ func ValidateFromFS(location string, fsys fs.FS) error {
 	if err != nil {
 		return err
 	}
+	spec.WarningsAsErrors = warningsAsErrors
 
 	if errs := spec.ValidatePackage(*pkg); len(errs) > 0 {
 		return errs

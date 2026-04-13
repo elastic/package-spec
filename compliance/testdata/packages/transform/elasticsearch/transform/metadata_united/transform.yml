@@ -3,7 +3,7 @@ source:
   - metrics-transform.metadata_current_default*
   - ".fleet-agents*"
 dest:
-  index: ".metrics-transform.metadata_united_default"
+  index: "metrics-transform.metadata_united_default"
 frequency: 1s
 sync:
   time:
@@ -26,5 +26,6 @@ pivot:
 description: Merges latest Endpoint and Agent metadata documents
 _meta:
   managed: true
+  run_as_kibana_system: false
 settings:
   unattended: true

@@ -1,0 +1,2 @@
+Elastic package-spec
+Copyright Elasticsearch B.V.

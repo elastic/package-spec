@@ -513,6 +513,7 @@ func TestValidateFields(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
+			t.Parallel()
 			packagePath := createPackageWithFields(t, "testpackage", c.packageTemplate, c.specVersion, c.patches, c.fields)
 			err := ValidateFromPath(packagePath)
 			if len(c.expectedErrors) == 0 {

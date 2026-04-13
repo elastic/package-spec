@@ -69,7 +69,7 @@ spec:
           type:
             description: >
               Data type of variable.
-              
+
               A duration type is a sequence of decimal numbers, each with a unit
               suffix, such as "60s", "1m" or "2h45m".
               Duration values must follow these rules:
@@ -117,7 +117,7 @@ spec:
           secret:
             description: >
               Specifying that a variable is secret means that Kibana will store the value
-              separate from the package policy in a more secure index. 
+              separate from the package policy in a more secure index.
               This is useful for passwords and other sensitive information.
               One caveat is that secrets are write-only, once a user writes a secret var
               they cannot read it again, only overwrite it.
@@ -263,6 +263,12 @@ spec:
               $ref: "#/definitions/index_template_setting_index"
             number_of_shards:
               $ref: "#/definitions/index_template_setting_number_of_shards"
+            auto_expand_replicas:
+              $ref: "#/definitions/index_template_setting_auto_expand_replicas"
+            max_result_window:
+              $ref: "#/definitions/index_template_setting_max_result_window"
+            refresh_interval:
+              $ref: "#/definitions/index_template_setting_refresh_interval"
         mappings:
           description: Mappings section of index template
           type: object
@@ -371,7 +377,7 @@ spec:
               description: >
                 Turn the support for subobjects on or off in the mapping
                 configuration for the data stream.
-                
+
                 By default, it's set to `true`, enabling Elasticsearch to
                 expands fields that contain dots in their names
                 to their corresponding object structure.
@@ -379,7 +385,7 @@ spec:
                 Setting it to `false` restricts objects
                 from holding subobjects, enabling storing documents
                 with dot-contained field names and common prefixes.
-                
+
                 It is still possible to send documents that have
                 objects to a data stream that has set subobjects
                 to `false`.
@@ -389,16 +395,16 @@ spec:
                 PUT my-index-000001
                 {
                   "mappings": {
-                    "subobjects": false 
+                    "subobjects": false
                   }
                 }
 
                 PUT my-index-000001/_doc/metric_1
                 {
-                  "time" : "100ms", 
+                  "time" : "100ms",
                   "time.min" : "10ms",
                   "time.max" : "900ms"
-                }                
+                }
 
                 Before disabling subobjects, consider the following implications:
 
@@ -414,7 +420,7 @@ spec:
 
                 For comprehensive details on subobjects, refer to
                 the Elasticsearch documentation [^2].
-                
+
 
                 [^1]: Auto-flattening limitations are documented at:
                 https://www.elastic.co/guide/en/elasticsearch/reference/master/subobjects.html#_auto_flattening_object_mappings
@@ -512,6 +518,32 @@ spec:
       type: integer
       minimum: 1
       default: 1
+    index_template_setting_auto_expand_replicas:
+      description: |
+        Auto-expand the number of replicas based on the number of data nodes in the cluster.
+        Set to a dash delimited lower and upper bound (e.g. 0-5) or use `all` for the upper bound (e.g. 0-all). Defaults to false (i.e. disabled).
+      type: string
+      examples:
+        - "0-1"
+        - "0-all"
+        - "false"
+    index_template_setting_max_result_window:
+      description: |
+        The maximum value of `from + size` for searches to this index. Defaults to 10000.
+        Search requests take heap memory and time proportional to `from + size` and this limits that memory.
+      type: integer
+      minimum: 1
+      examples:
+        - 50000
+    index_template_setting_refresh_interval:
+      description: |
+        How often to perform a refresh operation, which makes recent changes to the index visible to search. The value defaults to `1s` in Elastic Stack and `5s` in Serverless. In Serverless, `5s` is also the minimum value that can be set.
+        Can be set to `-1` to disable refresh.
+      type: string
+      examples:
+        - "10s"
+        - "1m"
+        - "-1"
   properties:
     dataset:
       description: Name of data set.
@@ -573,8 +605,6 @@ spec:
             - aws/metrics
             - s3
             - file
-            not:
-              const: otelcol
           package:
             $ref: "../../integration/manifest.spec.yml#/definitions/package_reference"
           title:
@@ -606,6 +636,10 @@ spec:
             $ref: "#/definitions/vars"
           var_groups:
             $ref: "../../integration/manifest.spec.yml#/definitions/var_groups"
+          dynamic_signal_types:
+            $ref: "../../integration/manifest.spec.yml#/definitions/dynamic_signal_types"
+          migrate_from:
+            $ref: "../../integration/manifest.spec.yml#/definitions/migrate_from"
           enabled:
             description: Is stream enabled?
             type: boolean
@@ -669,6 +703,13 @@ spec:
 versions:
   - before: 3.6.0
     patch:
+      - op: add
+        path: "/properties/streams/items/properties/input"
+        value:
+          not:
+            const: otelcol
+      - op: remove
+        path: "/properties/streams/items/properties/dynamic_signal_types"
       - op: remove
         path: "/properties/streams/items/properties/package"
       - op: remove
@@ -678,12 +719,15 @@ versions:
         value: input
       - op: remove # removes template_paths field for streams
         path: "/properties/streams/items/properties/template_paths"
-      - op: remove # removes deprecated field for data stream
+      - op: remove
         path: "/properties/deprecated"
       - op: remove
         path: "/definitions/vars/items/properties/deprecated"
       - op: remove
         path: "/properties/streams/items/properties/var_groups"
+      # Input migration.
+      - op: remove
+        path: "/properties/streams/items/properties/migrate_from"
   - before: 3.5.0
     patch:
       # Require >=3.5.0 to use the duration variable type.
