@@ -8,6 +8,7 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    # pending on https://github.com/elastic/kibana/pull/262129
     - description: Add `section_header` as a valid var type for decorative section headings in the Fleet UI.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1133

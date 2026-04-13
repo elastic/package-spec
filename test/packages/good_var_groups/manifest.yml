@@ -1,4 +1,4 @@
-format_version: 3.6.0
+format_version: 3.7.0
 name: good_var_groups
 title: Good Var Groups Package
 description: This package demonstrates valid var_groups usage for conditional variable groups.
