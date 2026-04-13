@@ -30,7 +30,6 @@ type registryCategories struct {
 	} `yaml:"categories"`
 }
 
-
 func fetchRegistryCategoryToParentMap() (map[string]string, error) {
 	client := &http.Client{Timeout: 10 * time.Second}
 	resp, err := client.Get(packageRegistryCategoriesURL)
