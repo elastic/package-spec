@@ -1,0 +1,28 @@
+title: Sample
+type: logs
+streams:
+  - input: otelcol
+    title: Collect via OTel receiver
+    description: Collecting data via OpenTelemetry receiver
+    vars:
+      - name: use_apm
+        type: text
+        title: Enable Elastic APM Enrichment
+        show_user: true
+        required: false
+        default: "false"
+  - input: logfile
+    title: Log files
+    description: Collect log files
+    vars:
+      - name: use_apm
+        type: bool
+        title: Enable Elastic APM Enrichment
+        show_user: true
+        required: false
+        default: false
+      - name: data_stream.dataset
+        type: yaml
+        title: Dataset name
+        show_user: true
+        required: false
