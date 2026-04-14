@@ -257,7 +257,7 @@ func (k *Kibana) createAgentPolicyForPackage(name string) (*agentPolicyResponse,
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode != http.StatusOK {
 		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
@@ -315,7 +315,7 @@ func (k *Kibana) createPackagePolicy(agentPolicyID, name, version, templateName,
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode != http.StatusOK {
 		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
