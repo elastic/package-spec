@@ -21,17 +21,17 @@ icons:
 policy_templates:
   - name: otel_receiver
     title: OTel receiver
-    description: Collect logs via OTel receiver
+    description: OTLP receiver with separate logs, metrics, and traces pipelines (dynamic_signal_types)
     input: otelcol
     template_path: input.yml.hbs
     dynamic_signal_types: true
     vars:
-      - name: paths
+      - name: endpoint
         type: text
-        title: Paths
-        multi: true
-        default:
-          - /var/log/*.log
+        title: OTLP gRPC endpoint
+        description: Host and port for the OTLP gRPC receiver.
+        default: "0.0.0.0:4317"
+        show_user: true
 owner:
   github: elastic/ecosystem
   type: elastic

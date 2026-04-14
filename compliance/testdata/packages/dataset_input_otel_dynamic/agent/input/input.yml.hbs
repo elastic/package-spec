@@ -1,11 +1,15 @@
 receivers:
-  filelog:
-    include:
-{{#each paths}}
-      - {{this}}
-{{/each}}
+  otlp:
+    protocols:
+      grpc:
+        endpoint: {{endpoint}}
+      http: {}
 
 service:
   pipelines:
     logs:
-      receivers: [filelog]
+      receivers: [otlp]
+    metrics:
+      receivers: [otlp]
+    traces:
+      receivers: [otlp]
