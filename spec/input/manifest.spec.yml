@@ -155,6 +155,10 @@ spec:
           $ref: "../integration/data_stream/manifest.spec.yml#/definitions/elasticsearch_index_mode"
         index_template:
           $ref: "../integration/data_stream/manifest.spec.yml#/definitions/elasticsearch_index_template"
+        dynamic_dataset:
+          $ref: "../integration/data_stream/manifest.spec.yml#/definitions/elasticsearch_dynamic_dataset"
+        dynamic_namespace:
+          $ref: "../integration/data_stream/manifest.spec.yml#/definitions/elasticsearch_dynamic_namespace"
     deprecated:
       $ref: "../integration/manifest.spec.yml#/definitions/deprecated"
   required:

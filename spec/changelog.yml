@@ -20,6 +20,9 @@
     - description: Add validation for Fleet-reserved variables (use_apm, data_stream.dataset) to enforce correct types and constraints when explicitly overridden in package manifests.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1134
+    - description: Add "elasticsearch.dynamic_dataset" and "elasticsearch.dynamic_namespace" to input package manifest.
+      type: enhancement
+      link: TBD
 - version: 3.6.0
   changes:
     - description: Add pipeline tag validations.

@@ -247,6 +247,12 @@ spec:
       - "time_series" # Enables time series data streams https://www.elastic.co/guide/en/elasticsearch/reference/master/tsds.html
       examples:
       - "time_series"
+    elasticsearch_dynamic_dataset:
+      description: When set to true, agents running this integration are granted data stream privileges for all datasets of its type
+      type: boolean
+    elasticsearch_dynamic_namespace:
+      description: When set to true, agents running this integration are granted data stream privileges for all namespaces of its type
+      type: boolean
     elasticsearch_index_template:
       description: Index template definition
       type: object
@@ -685,11 +691,9 @@ spec:
           examples:
           - "synthetic"
         dynamic_dataset:
-          description: When set to true, agents running this integration are granted data stream privileges for all datasets of its type
-          type: boolean
+          $ref: "#/definitions/elasticsearch_dynamic_dataset"
         dynamic_namespace:
-          description: When set to true, agents running this integration are granted data stream privileges for all namespaces of its type
-          type: boolean
+          $ref: "#/definitions/elasticsearch_dynamic_namespace"
     categories:
       description: >
         Optional categories that describe the type of data collected by this data stream.
