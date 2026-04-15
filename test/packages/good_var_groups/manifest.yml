@@ -13,34 +13,40 @@ conditions:
     subscription: 'basic'
   agent:
     version: '^9.1.0'
-vars:
+sections:
   - name: auth_section
-    type: section_header
     title: Authentication
+    description: Configure AWS authentication credentials.
+vars:
   - name: access_key_id
     type: text
     title: Access Key ID
     show_user: true
     secret: false
+    section: auth_section
   - name: secret_access_key
     type: password
     title: Secret Access Key
     show_user: true
     secret: true
+    section: auth_section
   - name: session_token
     type: password
     title: Session Token
     show_user: true
     secret: true
+    section: auth_section
   - name: role_arn
     type: text
     title: Role ARN
     show_user: true
+    section: auth_section
   - name: external_id
     type: password
     title: External ID
     show_user: true
     secret: true
+    section: auth_section
 var_groups:
   - name: credential_type
     title: Setup Access

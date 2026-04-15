@@ -82,7 +82,6 @@ spec:
               - email
               - integer
               - password
-              - section_header
               - select
               - text
               - textarea
@@ -142,6 +141,13 @@ spec:
               enum:
                 - default
                 - agentless
+          section:
+            description: >
+              Name of the section this variable belongs to.
+              Must match a section name defined in the `sections` list at the same level.
+            type: string
+            examples:
+              - auth_section
           url_allowed_schemes:
             description: >
               List of allowed URL schemes for the url type. If empty, any scheme is allowed.
@@ -704,9 +710,9 @@ spec:
 versions:
   - before: 3.7.0
     patch:
-      # section_header var type added in 3.7.0.
+      # section property on vars added in 3.7.0.
       - op: remove
-        path: /definitions/vars/items/properties/type/enum/4
+        path: /definitions/vars/items/properties/section
   - before: 3.6.0
     patch:
       - op: add

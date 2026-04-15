@@ -586,6 +586,33 @@ spec:
           type: array
           items:
             $ref: "#/definitions/package_dependency"
+    sections:
+      description: >
+        Defines named sections used to group and visually organize variables in the Fleet UI.
+        Variables reference a section by name using the `section` attribute.
+        Sections are rendered in the order they are defined.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        properties:
+          name:
+            description: Unique identifier for this section.
+            type: string
+            pattern: '^[a-z][a-z0-9_]*$'
+            examples:
+              - auth_section
+          title:
+            description: Display title for this section header in the Fleet UI.
+            type: string
+            examples:
+              - Authentication
+          description:
+            description: Optional help text displayed below the section header.
+            type: string
+        required:
+          - name
+          - title
     var_groups:
       description: >
         Defines mutually exclusive groups of variables. When an option is selected,
@@ -835,6 +862,8 @@ spec:
                   $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
                 var_groups:
                   $ref: "#/definitions/var_groups"
+                sections:
+                  $ref: "#/definitions/sections"
                 show_divider:
                   description: When false, suppresses the automatic horizontal divider rendered after the input-level config section.
                   type: boolean
@@ -869,6 +898,8 @@ spec:
             $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
           var_groups:
             $ref: "#/definitions/var_groups"
+          sections:
+            $ref: "#/definitions/sections"
           deprecated:
             $ref: "#/definitions/deprecated"
         required:
@@ -883,6 +914,8 @@ spec:
       $ref: "./data_stream/manifest.spec.yml#/definitions/vars"
     var_groups:
       $ref: "#/definitions/var_groups"
+    sections:
+      $ref: "#/definitions/sections"
     owner:
       $ref: "#/definitions/owner"
     agent:
@@ -945,6 +978,15 @@ versions:
       # show_divider inside var_group items added in 3.7.0.
       - op: remove
         path: "/definitions/var_groups/items/properties/show_divider"
+      # sections support added in 3.7.0.
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/sections"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/sections"
+      - op: remove
+        path: "/properties/sections"
+      - op: remove
+        path: "/definitions/sections"
   - before: 3.6.0
     patch:
       # Support for otelcol and dynamic_signal_types in integration packages.

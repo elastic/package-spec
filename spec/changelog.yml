@@ -9,7 +9,7 @@
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
     # pending on https://github.com/elastic/kibana/pull/262129
-    - description: Add `section_header` as a valid var type for decorative section headings in the Fleet UI.
+    - description: Add top-level `sections` list for defining named section headers, and `section` attribute on vars for assigning variables to a section in the Fleet UI.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1133
     - description: Add `show_divider` optional boolean to input objects to suppress horizontal dividers in the Fleet UI.
