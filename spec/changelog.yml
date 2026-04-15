@@ -10,6 +10,9 @@
       link: https://github.com/elastic/package-spec/pull/807
 - version: 3.6.1-next
   changes:
+    - description: Add transform settings.num_failure_retries option
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/1124
     - description: Add var_groups support to policy template and input levels in integration packages, and to policy template and package root levels in input packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1120

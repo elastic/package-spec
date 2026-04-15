@@ -183,6 +183,12 @@ spec:
           title: deduce mappings
           type: boolean
           default: true
+        num_failure_retries:
+          "$id": "#root/settings/num_failure_retries"
+          title: num_failure_retries
+          type: integer
+          minimum: -1
+          maximum: 100
         unattended:
           "$id": "#root/settings/unattended"
           title: unattended
