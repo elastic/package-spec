@@ -67,13 +67,15 @@ type sectionsManifest struct {
 	} `yaml:"policy_templates"`
 }
 
+type sectionsDataStreamStream struct {
+	Title    string            `yaml:"title"`
+	Input    string            `yaml:"input"`
+	Sections []manifestSection `yaml:"sections"`
+	Vars     []sectionsVar     `yaml:"vars"`
+}
+
 type sectionsDataStreamManifest struct {
-	Streams []struct {
-		Title    string            `yaml:"title"`
-		Input    string            `yaml:"input"`
-		Sections []manifestSection `yaml:"sections"`
-		Vars     []sectionsVar     `yaml:"vars"`
-	} `yaml:"streams"`
+	Streams []sectionsDataStreamStream `yaml:"streams"`
 }
 
 func validateSectionsManifest(filePath string, manifest sectionsManifest) specerrors.ValidationErrors {

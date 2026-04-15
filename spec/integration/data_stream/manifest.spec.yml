@@ -643,6 +643,8 @@ spec:
             $ref: "#/definitions/vars"
           var_groups:
             $ref: "../../integration/manifest.spec.yml#/definitions/var_groups"
+          sections:
+            $ref: "../../integration/manifest.spec.yml#/definitions/sections"
           dynamic_signal_types:
             $ref: "../../integration/manifest.spec.yml#/definitions/dynamic_signal_types"
           migrate_from:
@@ -713,6 +715,9 @@ versions:
       # section property on vars added in 3.7.0.
       - op: remove
         path: /definitions/vars/items/properties/section
+      # sections on stream items added in 3.7.0.
+      - op: remove
+        path: /properties/streams/items/properties/sections
   - before: 3.6.0
     patch:
       - op: add
