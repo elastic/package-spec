@@ -7,7 +7,7 @@ Feature: Field types
      And a policy is created with "counted_keyword" package
     Then index template "metrics-counted_keyword.foo" has a field "foo.count" with "type:counted_keyword"
 
-  @3.6.1
+  @3.6.0
   Scenario: Package uses the "geo_shape" type
    Given the "good_geo_shape" package is installed
      And a policy is created with "good_geo_shape" package
