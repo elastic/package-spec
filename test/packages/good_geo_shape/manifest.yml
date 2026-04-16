@@ -8,7 +8,7 @@ source:
   license: "Apache-2.0"
 conditions:
   kibana:
-    version: '^8.0.0'
+    version: '^8.0.0 || ^9.0.0'
 policy_templates:
   - name: geo_shape
     title: Geo shape logs

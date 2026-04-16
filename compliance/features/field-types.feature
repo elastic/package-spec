@@ -10,5 +10,5 @@ Feature: Field types
   @3.6.0
   Scenario: Package uses the "geo_shape" type
    Given the "good_geo_shape" package is installed
-     And a policy is created with "good_geo_shape" package
+     And a policy is created with "good_geo_shape" package and "0.0.1" version
     Then index template "logs-good_geo_shape.events" has a field "region" with "type:geo_shape"
