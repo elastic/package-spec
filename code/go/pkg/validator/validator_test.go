@@ -37,6 +37,9 @@ func TestValidateFile(t *testing.T) {
 		"good_geo_shape":                         {},
 		"good_input":                             {},
 		"good_input_otel":                        {},
+		"good_input_qualifier":                   {},
+		"good_input_fleet_reserved_vars":         {},
+		"good_integration_fleet_reserved_vars":   {},
 		"good_input_dynamic_signal_type":         {},
 		"good_input_profiles":                    {},
 		"good_input_template_paths":              {},
@@ -422,6 +425,19 @@ func TestValidateFile(t *testing.T) {
 				"field policy_templates.0.inputs.0.type: Must not be present",
 			},
 		},
+		"bad_input_qualifier_ambiguous": {
+			"manifest.yml",
+			[]string{
+				`policy template "nginx": input with type "otelcol" must have a name when multiple inputs of the same type are present (SVR00010)`,
+			},
+		},
+		"bad_input_qualifier_old_version": {
+			"manifest.yml",
+			[]string{
+				"field policy_templates.0.inputs.0.type: Must not be present",
+				"field policy_templates.0.inputs.0: Additional property name is not allowed",
+			},
+		},
 		"bad_input_dynamic_signal_types_old_version": {
 			"manifest.yml",
 			[]string{
@@ -432,6 +448,24 @@ func TestValidateFile(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				"policy template \"otel_logs\": type field must not be set when dynamic_signal_types is true",
+			},
+		},
+		"bad_input_fleet_reserved_vars": {
+			"manifest.yml",
+			[]string{
+				"package root vars: variable \"data_stream.dataset\" must only be declared at stream level",
+				"policy template \"sample\": variable \"use_apm\" must be type \"bool\", got \"text\"",
+				"policy template \"sample\": variable \"data_stream.dataset\" must be type \"text\", got \"bool\"",
+			},
+		},
+		"bad_integration_fleet_reserved_vars": {
+			"data_stream/sample/manifest.yml",
+			[]string{
+				"stream with input type \"otelcol\": variable \"use_apm\" must be type \"bool\", got \"text\"",
+				"stream with input type \"otelcol\": variable \"use_apm\" must be \"traces\" data stream type or \"dynamic_signal_types: true\", got \"logs\" data stream type",
+				"stream with input type \"logfile\": variable \"use_apm\" must be \"otelcol\" input, got \"logfile\"",
+				"stream with input type \"logfile\": variable \"use_apm\" must be \"traces\" data stream type or \"dynamic_signal_types: true\", got \"logs\" data stream type",
+				"stream with input type \"logfile\": variable \"data_stream.dataset\" must be type \"text\", got \"yaml\"",
 			},
 		},
 		"bad_input_template_path": {

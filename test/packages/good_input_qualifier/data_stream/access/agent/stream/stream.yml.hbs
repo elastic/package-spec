@@ -1,0 +1,15 @@
+receivers:
+  filelog:
+    include:
+{{#each paths}}
+      - {{this}}
+{{/each}}
+exporters:
+  {{#each exporters}}
+  {{this}}
+  {{/each}}
+service:
+  pipelines:
+    {{#each pipelines}}
+    {{this}}
+    {{/each}}

@@ -6,3 +6,9 @@ Feature: Field types
    Given the "counted_keyword" package is installed
      And a policy is created with "counted_keyword" package
     Then index template "metrics-counted_keyword.foo" has a field "foo.count" with "type:counted_keyword"
+
+  @3.6.1
+  Scenario: Package uses the "geo_shape" type
+   Given the "good_geo_shape" package is installed
+     And a policy is created with "good_geo_shape" package
+    Then index template "logs-good_geo_shape.events" has a field "region" with "type:geo_shape"

@@ -1,0 +1,14 @@
+title: Nginx Stub Status Metrics
+type: metrics
+streams:
+  - input: nginx_otel
+    title: Collect Nginx stub status metrics via OTel receiver
+    description: Collecting Nginx stub_status metrics via OpenTelemetry receiver.
+    vars:
+      - name: period
+        type: text
+        title: Collection period
+        multi: false
+        required: true
+        show_user: true
+        default: 10s

@@ -1,0 +1,15 @@
+title: Nginx Access Logs
+type: logs
+streams:
+  - input: filelog_otel
+    title: Collect Nginx access logs via filelog OTel receiver
+    description: Collecting Nginx access logs via filelog OpenTelemetry receiver.
+    vars:
+      - name: paths
+        type: text
+        title: Log file paths
+        multi: true
+        required: true
+        show_user: true
+        default:
+          - /var/log/nginx/access.log

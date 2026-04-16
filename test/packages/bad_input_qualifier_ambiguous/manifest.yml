@@ -1,0 +1,29 @@
+format_version: 3.6.0
+name: bad_input_qualifier_ambiguous
+title: "Bad package with ambiguous inputs"
+version: 0.0.1
+source:
+  license: "Apache-2.0"
+description: "Integration package with multiple inputs of the same type without names."
+type: integration
+categories:
+  - observability
+conditions:
+  kibana:
+    version: "^9.4.0"
+  elastic:
+    subscription: "basic"
+policy_templates:
+  - name: nginx
+    title: Nginx logs and metrics
+    description: Collect logs and metrics from Nginx instances
+    inputs:
+      - type: otelcol
+        title: Collect Nginx access logs via filelog OTel receiver
+        description: Use the filelog OTel receiver to tail Nginx access log files.
+      - type: otelcol
+        title: Collect Nginx stub status metrics via OTel receiver
+        description: Use the nginx OTel receiver to scrape Nginx stub_status metrics.
+owner:
+  github: elastic/foobar
+  type: elastic

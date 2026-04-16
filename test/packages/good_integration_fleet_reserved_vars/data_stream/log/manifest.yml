@@ -1,0 +1,13 @@
+title: Logs
+type: logs
+streams:
+  - input: logfile
+    title: Log files
+    description: Collect log files
+    vars:
+      - name: data_stream.dataset
+        type: text
+        title: Dataset name
+        show_user: true
+        required: false
+        default: generic

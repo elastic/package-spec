@@ -28,6 +28,7 @@ const (
 	apiSavedObjects                   = "/api/saved_objects"
 	apiStatusPath                     = "/api/status"
 	apiInstalledPackagesPath          = "/api/fleet/epm/packages"
+	apiFullAgentPolicyPath            = "/api/fleet/agent_policies/%s/full"
 
 	defaultSpace = "default"
 )
@@ -119,8 +120,8 @@ func NewKibanaClient() (*Kibana, error) {
 	}, nil
 }
 
-// CreatePolicyForPackage creates a new policy for a package.
-func (k *Kibana) CreatePolicyForPackage(name string, version string) (string, error) {
+// createPolicyForPackage creates a new policy for a package.
+func (k *Kibana) createPolicyForPackage(name string, version string) (string, error) {
 	err := k.deletePackagePolicyForPackage(name)
 	if err != nil {
 		return "", fmt.Errorf("failed to delete agent policy: %w", err)
@@ -139,9 +140,8 @@ func (k *Kibana) CreatePolicyForPackage(name string, version string) (string, er
 	return agentPolicy.Item.ID, nil
 }
 
-// CreatePolicyForPackageInputAndDataset creates a policy for a package with a custom dataset.
-// XXX: Pass the path of the manifest and read input name and type from there.
-func (k *Kibana) CreatePolicyForPackageInputAndDataset(name, version, templateName, inputName, inputType, dataset string) (string, error) {
+// createPolicyForPackageInputAndDataset creates a policy for a package with a custom dataset.
+func (k *Kibana) createPolicyForPackageInputAndDataset(name, version, templateName, inputName, inputType, dataset string) (string, error) {
 	err := k.deletePackagePolicyForPackage(name)
 	if err != nil {
 		return "", fmt.Errorf("failed to delete agent policy: %w", err)
@@ -257,7 +257,7 @@ func (k *Kibana) createAgentPolicyForPackage(name string) (*agentPolicyResponse,
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode != http.StatusOK {
 		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
@@ -315,7 +315,7 @@ func (k *Kibana) createPackagePolicy(agentPolicyID, name, version, templateName,
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode != http.StatusOK {
 		respBody, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
@@ -326,10 +326,8 @@ func (k *Kibana) createPackagePolicy(agentPolicyID, name, version, templateName,
 	return nil
 }
 
-// MustExistSLOTemplate checks if an SLO template with the given ID exists.
-// SLO templates are installed by Fleet as kibana assets of type slo_template
-// and are accessible via the observability SLO templates API (internal).
-func (k *Kibana) MustExistSLOTemplate(templateID string) error {
+// mustExistSLOTemplate checks if an SLO template with the given ID exists.
+func (k *Kibana) mustExistSLOTemplate(templateID string) error {
 	apiPath := fmt.Sprintf(apiGetSloTemplatePath, defaultSpace)
 	apiPath, err := url.JoinPath(apiPath, templateID)
 	if err != nil {
@@ -357,8 +355,8 @@ func (k *Kibana) MustExistSLOTemplate(templateID string) error {
 	return nil
 }
 
-// MustExistDashboard checks if a dashboard with the given ID exists.
-func (k *Kibana) MustExistDashboard(dashboardID string) error {
+// mustExistDashboard checks if a dashboard with the given ID exists.
+func (k *Kibana) mustExistDashboard(dashboardID string) error {
 	_, err := k.getDashboard(dashboardID)
 	if err != nil {
 		return err
@@ -397,8 +395,8 @@ func (k *Kibana) getDashboard(dashboardID string) (*dashboardResponse, error) {
 	return &dashboard, nil
 }
 
-// MustExistDetectionRule checks if a detection rule with the given ID exists.
-func (k *Kibana) MustExistDetectionRule(detectionRuleID string) error {
+// mustExistDetectionRule checks if a detection rule with the given ID exists.
+func (k *Kibana) mustExistDetectionRule(detectionRuleID string) error {
 	_, err := k.getDetectionRuleID(detectionRuleID)
 	if err != nil {
 		return err
@@ -406,8 +404,8 @@ func (k *Kibana) MustExistDetectionRule(detectionRuleID string) error {
 	return nil
 }
 
-// LoadPrebuiltDetectionRules retrieves rule statuses and loads Elastic prebuilt detection rules.
-func (k *Kibana) LoadPrebuiltDetectionRules() error {
+// loadPrebuiltDetectionRules retrieves rule statuses and loads Elastic prebuilt detection rules.
+func (k *Kibana) loadPrebuiltDetectionRules() error {
 	req, err := k.newRequest(http.MethodPut, apiLoadPrebuiltDetectionRulesPath, nil)
 	if err != nil {
 		return err
@@ -469,8 +467,8 @@ func (k *Kibana) getDetectionRuleID(detectionRuleID string) (*detectionRuleRespo
 	return &detectionRule, nil
 }
 
-// MustExistSavedObject checks if a saved object with the given type and id exists.
-func (k *Kibana) MustExistSavedObject(soType, id string) error {
+// mustExistSavedObject checks if a saved object with the given type and id exists.
+func (k *Kibana) mustExistSavedObject(soType, id string) error {
 	apiPath, err := url.JoinPath(apiSavedObjects, soType, id)
 	if err != nil {
 		return err
@@ -497,8 +495,8 @@ func (k *Kibana) MustExistSavedObject(soType, id string) error {
 	return nil
 }
 
-// IsPackageInstalled checks if a package with the given name is installed.
-func (k *Kibana) IsPackageInstalled(packageName string) error {
+// isPackageInstalled checks if a package with the given name is installed.
+func (k *Kibana) isPackageInstalled(packageName string) error {
 	apiPath, err := url.JoinPath(apiInstalledPackagesPath, packageName)
 	if err != nil {
 		return err
@@ -526,6 +524,68 @@ func (k *Kibana) IsPackageInstalled(packageName string) error {
 	}
 
 	return nil
+}
+
+type fullAgentPolicy struct {
+	Inputs     []fullAgentPolicyInput            `json:"inputs"`
+	Processors map[string]otelTransformProcessor `json:"processors"`
+}
+
+type fullAgentPolicyInput struct {
+	DataStream dataStreamRef           `json:"data_stream"`
+	Streams    []fullAgentPolicyStream `json:"streams"`
+}
+
+type fullAgentPolicyStream struct {
+	DataStream dataStreamRef `json:"data_stream"`
+}
+
+type dataStreamRef struct {
+	Dataset   string `json:"dataset"`
+	Namespace string `json:"namespace"`
+}
+
+type otelTransformProcessor struct {
+	LogStatements    []otelStatementGroup `json:"log_statements"`
+	MetricStatements []otelStatementGroup `json:"metric_statements"`
+	TraceStatements  []otelStatementGroup `json:"trace_statements"`
+}
+
+type otelStatementGroup struct {
+	Context    string   `json:"context"`
+	Statements []string `json:"statements"`
+}
+
+// getFullAgentPolicy retrieves the compiled/full agent policy for a given agent policy ID.
+func (k *Kibana) getFullAgentPolicy(agentPolicyID string) (*fullAgentPolicy, error) {
+	apiPath := fmt.Sprintf(apiFullAgentPolicyPath, agentPolicyID)
+	req, err := k.newRequest(http.MethodGet, apiPath, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := k.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return nil, fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
+	}
+
+	var response struct {
+		Item fullAgentPolicy `json:"item"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		return nil, fmt.Errorf("failed to decode full agent policy response: %w", err)
+	}
+
+	return &response.Item, nil
 }
 
 func (k *Kibana) newRequest(method string, path string, body io.Reader) (*http.Request, error) {

@@ -1,0 +1,44 @@
+format_version: 3.6.0
+name: dataset_input_otel_dynamic_generic
+title: "Generic OTel Input with dynamic signal types"
+version: 0.0.1
+source:
+  license: "Elastic-2.0"
+description: "Generic input package with OTel, dynamic_signal_types and custom default dataset."
+type: input
+categories:
+  - custom
+conditions:
+  kibana:
+    version: "^9.4.0"
+  elastic:
+    subscription: "basic"
+icons:
+  - src: /img/sample-logo.svg
+    title: Sample logo
+    size: 32x32
+    type: image/svg+xml
+policy_templates:
+  - name: otel_receiver
+    title: OTel receiver
+    description: OTLP receiver with separate logs, metrics, and traces pipelines and custom default dataset (dynamic_signal_types)
+    input: otelcol
+    template_path: input.yml.hbs
+    dynamic_signal_types: true
+    vars:
+      - name: data_stream.dataset
+        type: text
+        title: Dataset name
+        description: Set the name for your dataset.
+        default: generic
+        required: true
+        show_user: true
+      - name: endpoint
+        type: text
+        title: OTLP gRPC endpoint
+        description: Host and port for the OTLP gRPC receiver.
+        default: "0.0.0.0:4317"
+        show_user: true
+owner:
+  github: elastic/ecosystem
+  type: elastic
