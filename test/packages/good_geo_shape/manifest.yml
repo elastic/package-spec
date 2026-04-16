@@ -1,4 +1,4 @@
-format_version: 3.6.1
+format_version: 3.6.0
 name: good_geo_shape
 title: Good Geo Shape Package
 description: This package demonstrates valid geo_shape field type usage.
