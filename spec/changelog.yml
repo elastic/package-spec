@@ -23,6 +23,9 @@
     - description: Add transform settings.num_failure_retries option
       type: enhancement
       link: https://github.com/elastic/package-spec/issues/1124
+    - description: Add geo_shape as a valid field type for integrations.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1132
 - version: 3.6.0
   changes:
     - description: Add pipeline tag validations.
