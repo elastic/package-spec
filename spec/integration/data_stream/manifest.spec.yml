@@ -710,14 +710,6 @@ spec:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
-  - before: 3.7.0
-    patch:
-      # section property on vars added in 3.7.0.
-      - op: remove
-        path: /definitions/vars/items/properties/section
-      # sections on stream items added in 3.7.0.
-      - op: remove
-        path: /properties/streams/items/properties/sections
   - before: 3.6.0
     patch:
       - op: add

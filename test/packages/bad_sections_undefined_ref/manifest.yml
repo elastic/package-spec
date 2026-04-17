@@ -1,4 +1,4 @@
-format_version: 3.7.0
+format_version: 3.6.0
 name: bad_sections_undefined_ref
 title: Bad Sections - Undefined Section Reference
 description: This package has a var referencing a section name that is not defined in the sections list.
