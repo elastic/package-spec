@@ -586,6 +586,9 @@ spec:
           type: array
           items:
             $ref: "#/definitions/package_dependency"
+    show_divider:
+      description: When false, suppresses the automatic horizontal divider rendered after this section.
+      type: boolean
     sections:
       description: >
         Defines named sections used to group and visually organize variables in the Fleet UI.
@@ -655,8 +658,7 @@ spec:
             type: boolean
             default: false
           show_divider:
-            description: When false, suppresses the automatic horizontal divider rendered after this var_group's section.
-            type: boolean
+            $ref: "#/definitions/show_divider"
           options:
             description: Available options. First option is the default.
             type: array
@@ -865,8 +867,7 @@ spec:
                 sections:
                   $ref: "#/definitions/sections"
                 show_divider:
-                  description: When false, suppresses the automatic horizontal divider rendered after the input-level config section.
-                  type: boolean
+                  $ref: "#/definitions/show_divider"
                 dynamic_signal_types:
                   $ref: "#/definitions/dynamic_signal_types"
                 deprecated:
