@@ -1,0 +1,14 @@
+receivers:
+  httpcheck:
+    collection_interval: 1m
+    targets:
+      - method: GET
+        endpoints:
+{{#each endpoints}}
+            - {{this}}
+{{/each}}
+
+service:
+  pipelines:
+    metrics:
+      receivers: [httpcheck]
