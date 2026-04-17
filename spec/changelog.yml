@@ -10,9 +10,6 @@
       link: https://github.com/elastic/package-spec/pull/807
 - version: 3.6.1-next
   changes:
-    - description: Add transform settings.num_failure_retries option
-      type: enhancement
-      link: https://github.com/elastic/package-spec/issues/1124
     - description: Add var_groups support to policy template and input levels in integration packages, and to policy template and package root levels in input packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1120
@@ -23,6 +20,9 @@
     - description: Add validation for Fleet-reserved variables (use_apm, data_stream.dataset) to enforce correct types and constraints when explicitly overridden in package manifests.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1134
+    - description: Add transform settings.num_failure_retries option
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/1124
 - version: 3.6.0
   changes:
     - description: Add pipeline tag validations.
