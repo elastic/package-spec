@@ -20,6 +20,9 @@
     - description: Add validation for Fleet-reserved variables (use_apm, data_stream.dataset) to enforce correct types and constraints when explicitly overridden in package manifests.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1134
+    - description: Add transform settings.num_failure_retries option
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/1124
     - description: Add geo_shape as a valid field type for integrations.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1132
