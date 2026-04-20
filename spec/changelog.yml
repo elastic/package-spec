@@ -26,6 +26,9 @@
     - description: Add geo_shape as a valid field type for integrations.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1132
+    - description: Allow _dev/build/docs folder in content packages to support README auto-generation.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1144
 - version: 3.6.0
   changes:
     - description: Add pipeline tag validations.
