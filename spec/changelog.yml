@@ -15,9 +15,6 @@
     - description: Add `show_divider` optional boolean to input objects to suppress horizontal dividers in the Fleet UI.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1133
-    - description: Add `var_groups` optional array to input, stream, and input-package policy template objects for Fleet UI grouping.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/1133
 - version: 3.6.1-next
   changes:
     - description: Add var_groups support to policy template and input levels in integration packages, and to policy template and package root levels in input packages.
