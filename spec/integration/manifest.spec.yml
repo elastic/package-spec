@@ -589,6 +589,7 @@ spec:
     show_divider:
       description: When false, suppresses the automatic horizontal divider rendered after this section.
       type: boolean
+      default: true
     sections:
       description: >
         Defines named sections used to group and visually organize variables in the Fleet UI.
