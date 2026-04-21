@@ -349,6 +349,18 @@ func TestValidateFile(t *testing.T) {
 				`var "non_existent_var" referenced in var_group "credential_type" option "direct_access_key" is not defined`,
 			},
 		},
+		"bad_sections_undefined_ref": {
+			"manifest.yml",
+			[]string{
+				`var "secret_access_key" references undefined section "nonexistent_section" in package root`,
+			},
+		},
+		"bad_sections_duplicate_name": {
+			"manifest.yml",
+			[]string{
+				`duplicate section name "auth_section" in package root`,
+			},
+		},
 		"bad_var_groups_duplicate_name": {
 			"manifest.yml",
 			[]string{

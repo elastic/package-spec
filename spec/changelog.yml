@@ -8,6 +8,13 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    # pending on https://github.com/elastic/kibana/pull/262129
+    - description: Add top-level `sections` list for defining named section headers, and `section` attribute on vars for assigning variables to a section in the Fleet UI.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1133
+    - description: Add `show_divider` optional boolean to input objects to suppress horizontal dividers in the Fleet UI.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1133
 - version: 3.6.1-next
   changes:
     - description: Add var_groups support to policy template and input levels in integration packages, and to policy template and package root levels in input packages.
