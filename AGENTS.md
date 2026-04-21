@@ -2,6 +2,10 @@
 
 This document contains important information learned while working on the package-spec repository to help future AI agents working on this codebase.
 
+## Releases
+
+Maintainers preparing a versioned release (`prepare-release-X.Y.Z`, changelog finalization, compliance CI, PR to `elastic/main`) should follow **[docs/releasing-package-spec.md](docs/releasing-package-spec.md)**.
+
 ## Repository Structure
 
 ```
