@@ -1,0 +1,51 @@
+---
+description: Author Agent Skills using the agentskills.io open standard (SKILL.md, layout, progressive disclosure).
+globs: .cursor/skills/**/SKILL.md
+alwaysApply: false
+---
+
+# Agent Skills format (agentskills.io)
+
+When creating or editing a skill under `.cursor/skills/`, follow the **[Agent Skills specification](https://agentskills.io/specification.md)** and **[best practices](https://agentskills.io/skill-creation/best-practices.md)**.
+
+## Layout
+
+- Skill root = one directory named like the skill; it **must** contain `SKILL.md`.
+- Optional folders: `scripts/`, `references/`, `assets/` (and other supporting files as needed).
+
+## `SKILL.md` frontmatter (YAML)
+
+Required:
+
+- **`name`**: 1–64 chars; lowercase `a-z`, digits, single hyphens only; no leading/trailing hyphen; no `--`; **must equal the parent directory name**.
+- **`description`**: 1–1024 chars; state **what** the skill does and **when** to use it; include **concrete trigger phrases** so agents match the right tasks.
+
+Optional (use when they add real signal):
+
+- **`license`**, **`compatibility`** (1–500 chars if present), **`metadata`** (string keys → string values), **`allowed-tools`** (experimental; space-separated).
+
+Minimal valid opening:
+
+```markdown
+---
+name: my-skill
+description: Does X and Y. Use when the user asks for Z or mentions A/B keywords.
+---
+
+```
+
+## Body
+
+- Write **procedural, task-shaped** instructions (steps, defaults, validation loops). Omit generic advice the model already knows.
+- Prefer **progressive disclosure**: keep `SKILL.md` **under ~500 lines**; move deep reference to `references/` or `assets/` and tell the agent **when** to read each file.
+- Reference other files with **paths relative to the skill root**, ideally **one level** from `SKILL.md` (e.g. `references/workflow.md`).
+
+## Validation
+
+After substantive edits, validate when possible:
+
+```bash
+skills-ref validate ./path/to/skill-directory
+```
+
+Use the [skills-ref](https://github.com/agentskills/agentskills/tree/main/skills-ref) tool from the agentskills.io project if it is installed locally.
