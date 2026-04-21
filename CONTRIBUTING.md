@@ -80,6 +80,10 @@ Currently, the following custom formats are available:
 * `data-stream-name`: Name of a data stream. The format checker verifies if the data stream exists.
 
 
+## Agent-assisted PR review
+
+Maintainers and contributors can use the in-repository Agent Skill for a structured pre-merge checklist: [.cursor/skills/review-pr/SKILL.md](.cursor/skills/review-pr/SKILL.md). Detailed rules and examples live in [.cursor/skills/review-pr/references/checklist.md](.cursor/skills/review-pr/references/checklist.md).
+
 ## Development
 
 Download the latest main of `package-spec` repository:
