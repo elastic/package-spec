@@ -46,8 +46,6 @@ Feature: Data stream dataset configuration
       And there is an index template "metrics-custom.otel_test" with pattern "metrics-custom.otel_test.otel-*"
 
   @3.6.0
-  @skip
-  # Pending dataset routing fix for dynamic_signal_types: https://github.com/elastic/kibana/pull/262000
   Scenario: Input OTel package with dynamic signal types uses default dataset
     Given the "dataset_input_otel_dynamic" package is installed
       And a policy is created with "dataset_input_otel_dynamic" package, "0.0.1" version, "otel_receiver" template, "otel_receiver" input, "otelcol" input type and dataset ""
@@ -57,8 +55,6 @@ Feature: Data stream dataset configuration
       And there is an index template "traces-otel_receiver" with pattern "traces-otel_receiver.otel-*"
 
   @3.6.0
-  @skip
-  # Pending dataset routing fix for dynamic_signal_types: https://github.com/elastic/kibana/pull/262000
   Scenario: Input OTel package with dynamic signal types dataset can be overridden
     Given the "dataset_input_otel_dynamic" package is installed
       And a policy is created with "dataset_input_otel_dynamic" package, "0.0.1" version, "otel_receiver" template, "otel_receiver" input, "otelcol" input type and dataset "custom.dynamic_test"
@@ -68,8 +64,6 @@ Feature: Data stream dataset configuration
       And there is an index template "traces-custom.dynamic_test" with pattern "traces-custom.dynamic_test.otel-*"
 
   @3.6.0
-  @skip
-  # Pending dataset routing fix for dynamic_signal_types: https://github.com/elastic/kibana/pull/262000
   Scenario: Input OTel package with dynamic signal types and dataset variable uses developer default
     Given the "dataset_input_otel_dynamic_generic" package is installed
       And a policy is created with "dataset_input_otel_dynamic_generic" package, "0.0.1" version, "otel_receiver" template, "otel_receiver" input, "otelcol" input type and dataset ""
