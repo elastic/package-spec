@@ -8,6 +8,11 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+- version: 3.6.2-next
+  changes:
+    - description: Add support for ML modules in content packages.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1149
 - version: 3.6.1
   changes:
     - description: Add var_groups support to policy template and input levels in integration packages, and to policy template and package root levels in input packages.
