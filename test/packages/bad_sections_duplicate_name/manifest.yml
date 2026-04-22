@@ -1,0 +1,55 @@
+format_version: 3.6.0
+name: bad_sections_duplicate_name
+title: Bad Sections - Duplicate Section Name
+description: This package has duplicate section names in the sections list.
+version: 0.0.1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.10.0'
+  elastic:
+    subscription: 'basic'
+  agent:
+    version: '^9.1.0'
+sections:
+  - name: auth_section
+    title: Authentication
+  # Duplicate name - should cause validation error
+  - name: auth_section
+    title: Authentication (duplicate)
+vars:
+  - name: access_key_id
+    type: text
+    title: Access Key ID
+    show_user: true
+    secret: false
+    section: auth_section
+  - name: secret_access_key
+    type: password
+    title: Secret Access Key
+    show_user: true
+    secret: true
+policy_templates:
+  - name: sample
+    title: Sample
+    description: Sample policy template
+    inputs:
+      - type: httpjson
+        title: Collect via API
+        description: Collecting data
+        multi: false
+owner:
+  github: elastic/ecosystem
+  type: elastic
+screenshots:
+  - src: /img/sample-screenshot.png
+    title: Sample screenshot
+    size: 600x600
+    type: image/png
+icons:
+  - src: /img/sample-logo.svg
+    title: Sample logo
+    size: 32x32
+    type: image/svg+xml

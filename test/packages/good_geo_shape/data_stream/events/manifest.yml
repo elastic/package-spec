@@ -1,0 +1,15 @@
+title: Events
+type: logs
+streams:
+  - input: logfile
+    title: Geo shape events
+    description: Collect geo shape event data
+    vars:
+      - name: paths
+        type: text
+        title: Paths
+        multi: true
+        required: true
+        show_user: true
+        default:
+          - /var/log/*.log

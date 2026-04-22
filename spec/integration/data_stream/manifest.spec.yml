@@ -141,6 +141,13 @@ spec:
               enum:
                 - default
                 - agentless
+          section:
+            description: >
+              Name of the section this variable belongs to.
+              Must match a section name defined in the `sections` list at the same level.
+            type: string
+            examples:
+              - auth_section
           url_allowed_schemes:
             description: >
               List of allowed URL schemes for the url type. If empty, any scheme is allowed.
@@ -636,6 +643,8 @@ spec:
             $ref: "#/definitions/vars"
           var_groups:
             $ref: "../../integration/manifest.spec.yml#/definitions/var_groups"
+          sections:
+            $ref: "../../integration/manifest.spec.yml#/definitions/sections"
           dynamic_signal_types:
             $ref: "../../integration/manifest.spec.yml#/definitions/dynamic_signal_types"
           migrate_from:

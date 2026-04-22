@@ -92,6 +92,7 @@ spec:
         - unsigned_long
         - counted_keyword
         - semantic_text
+        - geo_shape
 
       description:
         description: Short description of field

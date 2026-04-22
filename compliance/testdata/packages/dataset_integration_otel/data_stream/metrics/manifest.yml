@@ -1,0 +1,22 @@
+title: OTel metrics
+type: metrics
+streams:
+  - input: otelcol
+    title: OTel metrics
+    description: Collect metrics via OTel receiver
+    vars:
+      - name: data_stream.dataset
+        type: text
+        title: Dataset name
+        description: Set the name for your dataset.
+        default: dataset_integration_otel.metrics
+        required: true
+        show_user: true
+      - name: endpoints
+        type: text
+        title: HTTP endpoints to check
+        multi: true
+        required: true
+        show_user: true
+        default:
+          - https://epr.elastic.co

@@ -8,11 +8,33 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
-- version: 3.6.1-next
+- version: 3.6.1
   changes:
     - description: Add var_groups support to policy template and input levels in integration packages, and to policy template and package root levels in input packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1120
+    # Pending on https://github.com/elastic/kibana/pull/262138
+    - description: Add support for named inputs in policy templates to disambiguate multiple inputs of the same type.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1135
+    - description: Add validation for Fleet-reserved variables (use_apm, data_stream.dataset) to enforce correct types and constraints when explicitly overridden in package manifests.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1134
+    - description: Add transform settings.num_failure_retries option
+      type: enhancement
+      link: https://github.com/elastic/package-spec/issues/1124
+    - description: Add geo_shape as a valid field type for integrations.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1132
+    - description: Allow _dev/build/docs folder in content packages to support README auto-generation.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1144
+    - description: Add top-level `sections` list for defining named section headers, and `section` attribute on vars for assigning variables to a section in the Fleet UI.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1133
+    - description: Add `show_divider` optional boolean to input objects to suppress horizontal dividers in the Fleet UI.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1133
     - description: Add semantic validator to verify data stream manifest categories match policy template categories.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1095

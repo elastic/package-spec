@@ -231,11 +231,11 @@ go run github.com/elastic/elastic-package stack up -d --version 9.4.0-SNAPSHOT
 eval $(go run github.com/elastic/elastic-package stack shellinit)
 cd ..
 
-# Run compliance tests against spec version 3.6.0
-TEST_SPEC_VERSION=3.6.0 make -C compliance test
+# Run compliance tests against spec version 3.6.1
+TEST_SPEC_VERSION=3.6.1 make -C compliance test
 
 # Run only specific feature files (comma-separated, paths relative to compliance/)
-TEST_SPEC_VERSION=3.6.0 TEST_SPEC_FEATURES=features/basic.feature,features/package-dependencies.feature make -C compliance test
+TEST_SPEC_VERSION=3.6.1 TEST_SPEC_FEATURES=features/basic.feature,features/package-dependencies.feature make -C compliance test
 
 # Stop the stack when done
 cd compliance && go run github.com/elastic/elastic-package stack down
@@ -250,7 +250,7 @@ export ELASTICSEARCH_USERNAME=elastic
 export ELASTICSEARCH_PASSWORD=changeme
 export KIBANA_HOST=https://localhost:5601
 export CA_CERT=/path/to/ca.crt  # only if needed
-TEST_SPEC_VERSION=3.6.0 make -C compliance test
+TEST_SPEC_VERSION=3.6.1 make -C compliance test
 ```
 
 CI version combinations (stack version ↔ spec version) are in
@@ -383,12 +383,12 @@ func TestValidateMyRule(t *testing.T) {
 	}{
 		"valid": {
 			manifest: `name: test
-format_version: 3.6.0`,
+format_version: 3.6.1`,
 			expectError: false,
 		},
 		"invalid": {
 			manifest: `name: test
-format_version: 3.6.0
+format_version: 3.6.1
 invalid_field: value`,
 			expectError: true,
 			errorContains: "invalid_field",
@@ -447,7 +447,7 @@ In `code/go/internal/validator/spec.go`:
 {
 	Func:    semantic.ValidateMyRule,
 	Type:    spectypes.Integration,
-	Version: semver.MustParse("3.6.0"),
+	Version: semver.MustParse("3.6.1"),
 }
 ```
 

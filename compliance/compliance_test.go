@@ -130,33 +130,37 @@ func findTestPackage(packageName string) (string, error) {
 	return "", godog.ErrPending
 }
 
-func aPolicyIsCreatedWithPackage(packageName string) error {
+type contextKey string
+
+const agentPolicyIDKey contextKey = "agentPolicyID"
+
+func aPolicyIsCreatedWithPackage(ctx context.Context, packageName string) (context.Context, error) {
 	const version = "1.0.0"
-	return aPolicyIsCreatedWithPackageAndVersion(packageName, version)
+	return aPolicyIsCreatedWithPackageAndVersion(ctx, packageName, version)
 }
 
-func aPolicyIsCreatedWithPackageAndVersion(packageName, packageVersion string) error {
+func aPolicyIsCreatedWithPackageAndVersion(ctx context.Context, packageName, packageVersion string) (context.Context, error) {
 	kibana, err := NewKibanaClient()
 	if err != nil {
-		return err
+		return ctx, err
 	}
-	_, err = kibana.CreatePolicyForPackage(packageName, packageVersion)
+	agentPolicyID, err := kibana.createPolicyForPackage(packageName, packageVersion)
 	if err != nil {
-		return err
+		return ctx, err
 	}
-	return nil
+	return context.WithValue(ctx, agentPolicyIDKey, agentPolicyID), nil
 }
 
-func aPolicyIsCreatedWithPackageInputAndDataset(packageName, packageVersion, templateName, inputName, inputType, dataset string) error {
+func aPolicyIsCreatedWithPackageInputAndDataset(ctx context.Context, packageName, packageVersion, templateName, inputName, inputType, dataset string) (context.Context, error) {
 	kibana, err := NewKibanaClient()
 	if err != nil {
-		return err
+		return ctx, err
 	}
-	_, err = kibana.CreatePolicyForPackageInputAndDataset(packageName, packageVersion, templateName, inputName, inputType, dataset)
+	agentPolicyID, err := kibana.createPolicyForPackageInputAndDataset(packageName, packageVersion, templateName, inputName, inputType, dataset)
 	if err != nil {
-		return err
+		return ctx, err
 	}
-	return nil
+	return context.WithValue(ctx, agentPolicyIDKey, agentPolicyID), nil
 }
 
 func thereIsAnIndexTemplateWithPattern(indexTemplateName, pattern string) error {
@@ -254,7 +258,7 @@ func thereIsAnSloTemplate(templateID string) error {
 	if err != nil {
 		return err
 	}
-	return kibana.MustExistSLOTemplate(templateID)
+	return kibana.mustExistSLOTemplate(templateID)
 }
 
 func thereIsADashboard(dashboardID string) error {
@@ -262,7 +266,7 @@ func thereIsADashboard(dashboardID string) error {
 	if err != nil {
 		return err
 	}
-	err = kibana.MustExistDashboard(dashboardID)
+	err = kibana.mustExistDashboard(dashboardID)
 	if err != nil {
 		return err
 	}
@@ -274,7 +278,7 @@ func thereIsADetectionRule(detectionRuleID string) error {
 	if err != nil {
 		return err
 	}
-	err = kibana.MustExistDetectionRule(detectionRuleID)
+	err = kibana.mustExistDetectionRule(detectionRuleID)
 	if err != nil {
 		return err
 	}
@@ -286,7 +290,7 @@ func prebuiltDetectionRulesAreLoaded() error {
 	if err != nil {
 		return err
 	}
-	err = kibana.LoadPrebuiltDetectionRules()
+	err = kibana.loadPrebuiltDetectionRules()
 	if err != nil {
 		return err
 	}
@@ -298,7 +302,7 @@ func thereIsASecurityAIPrompt(promptID string) error {
 	if err != nil {
 		return err
 	}
-	err = kibana.MustExistSavedObject("security-ai-prompt", promptID)
+	err = kibana.mustExistSavedObject("security-ai-prompt", promptID)
 	if err != nil {
 		return err
 	}
@@ -333,12 +337,84 @@ func theContentPackagesRequireAreInstalled(packageName string) error {
 	}
 
 	for _, dep := range manifest.Requires.Content {
-		if err := kibana.IsPackageInstalled(dep.Package); err != nil {
+		if err := kibana.isPackageInstalled(dep.Package); err != nil {
 			return fmt.Errorf("required content package %q is not installed: %w", dep.Package, err)
 		}
 	}
 
 	return nil
+}
+
+func theCompiledPolicyHasDataset(ctx context.Context, expectedDataset, inputType string) error {
+	agentPolicyID, ok := ctx.Value(agentPolicyIDKey).(string)
+	if !ok || agentPolicyID == "" {
+		return fmt.Errorf("agent policy ID not found in context; ensure a policy creation step ran first")
+	}
+
+	kibana, err := NewKibanaClient()
+	if err != nil {
+		return err
+	}
+
+	policy, err := kibana.getFullAgentPolicy(agentPolicyID)
+	if err != nil {
+		return fmt.Errorf("failed to get full agent policy: %w", err)
+	}
+
+	if inputType == "otelcol" {
+		return checkDatasetInOTelPolicy(policy, expectedDataset)
+	}
+	return checkDatasetInInputs(policy, expectedDataset)
+}
+
+func checkDatasetInInputs(policy *fullAgentPolicy, expectedDataset string) error {
+	for _, input := range policy.Inputs {
+		for _, stream := range input.Streams {
+			if stream.DataStream.Dataset == expectedDataset {
+				return nil
+			}
+		}
+		if input.DataStream.Dataset == expectedDataset {
+			return nil
+		}
+	}
+
+	d, _ := json.MarshalIndent(policy.Inputs, "", "  ")
+	return fmt.Errorf("dataset %q not found in compiled policy inputs:\n%s", expectedDataset, string(d))
+}
+
+func checkDatasetInOTelPolicy(policy *fullAgentPolicy, expectedDataset string) error {
+	expectedStatement := fmt.Sprintf(`set(attributes["data_stream.dataset"], "%s")`, expectedDataset)
+
+	for name, processor := range policy.Processors {
+		if !strings.HasPrefix(name, "transform/") {
+			continue
+		}
+		if transformHasStatement(processor, expectedStatement) {
+			return nil
+		}
+	}
+
+	d, _ := json.MarshalIndent(policy.Processors, "", "  ")
+	return fmt.Errorf("dataset statement %q not found in compiled policy processors:\n%s", expectedStatement, string(d))
+}
+
+func transformHasStatement(processor otelTransformProcessor, expected string) bool {
+	allGroups := [][]otelStatementGroup{
+		processor.LogStatements,
+		processor.MetricStatements,
+		processor.TraceStatements,
+	}
+	for _, groups := range allGroups {
+		for _, group := range groups {
+			for _, stmt := range group.Statements {
+				if stmt == expected {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
 func InitializeScenario(ctx *godog.ScenarioContext) {
@@ -366,4 +442,5 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^prebuilt detection rules are loaded$`, prebuiltDetectionRulesAreLoaded)
 	ctx.Step(`^there is a security AI prompt "([^"]*)"$`, thereIsASecurityAIPrompt)
 	ctx.Step(`^the content packages "([^"]*)" require are installed$`, theContentPackagesRequireAreInstalled)
+	ctx.Step(`^the compiled policy has dataset "([^"]*)" for "([^"]*)" input type$`, theCompiledPolicyHasDataset)
 }

@@ -1,0 +1,38 @@
+format_version: 3.6.1
+name: good_input_fleet_reserved_vars
+title: "Good OTel input with valid Fleet-reserved variable overrides"
+version: 0.0.1
+source:
+  license: "Elastic-2.0"
+description: "Input package that overrides Fleet-reserved variables with correct types."
+type: input
+categories:
+  - custom
+conditions:
+  kibana:
+    version: "^9.2.0"
+  elastic:
+    subscription: "basic"
+policy_templates:
+  - name: sample
+    dynamic_signal_types: true
+    title: Sample OTel metrics
+    description: Collect sample OTel metrics
+    input: otelcol
+    template_path: input.yml.hbs
+    vars:
+      - name: use_apm
+        type: bool
+        title: Enable Elastic APM Enrichment
+        show_user: true
+        required: false
+        default: false
+      - name: data_stream.dataset
+        type: text
+        title: Dataset name
+        show_user: true
+        required: false
+        default: generic
+owner:
+  github: elastic/ecosystem
+  type: elastic
