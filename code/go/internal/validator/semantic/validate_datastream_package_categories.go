@@ -132,7 +132,14 @@ func ValidateDatastreamPackageCategories(fsys fspath.FS) specerrors.ValidationEr
 		for _, dsCat := range dsCats {
 			parent, known := categoryToParent[dsCat]
 			if !known {
-				continue
+				dsManifestPath := path.Join("data_stream", dsName, "manifest.yml")
+				errs = append(errs, specerrors.NewStructuredErrorf(
+					"file \"%s\" is invalid: data stream \"%s\" has unrecognized category \"%s\" (defined in \"%s\")",
+					fsys.Path(manifestPath),
+					dsName,
+					dsCat,
+					fsys.Path(dsManifestPath),
+				))
 			}
 			if seen[parent] {
 				continue
