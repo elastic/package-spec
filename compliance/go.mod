@@ -6,10 +6,10 @@ require (
 	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/cucumber/godog v0.15.1
 	github.com/cucumber/messages/go/v21 v21.0.1
-	github.com/elastic/elastic-package v0.122.0
+	github.com/elastic/elastic-package v0.123.0
 	github.com/elastic/go-elasticsearch/v9 v9.3.2
 	github.com/elastic/go-licenser v0.4.2
-	github.com/elastic/package-spec/v3 v3.6.0
+	github.com/elastic/package-spec/v3 v3.6.2
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
@@ -57,7 +57,7 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dnephin/pflag v1.0.7 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
-	github.com/elastic/elastic-integration-corpus-generator-tool v0.12.0 // indirect
+	github.com/elastic/elastic-integration-corpus-generator-tool v0.12.3 // indirect
 	github.com/elastic/elastic-transport-go/v8 v8.9.0 // indirect
 	github.com/elastic/go-elasticsearch/v7 v7.17.10 // indirect
 	github.com/elastic/go-resource v0.2.0 // indirect
@@ -110,7 +110,7 @@ require (
 	github.com/lithammer/shortuuid/v3 v3.0.7 // indirect
 	github.com/lucasb-eyer/go-colorful v1.3.0 // indirect
 	github.com/lufia/plan9stats v0.0.0-20211012122336-39d0f177ccd0 // indirect
-	github.com/magefile/mage v1.17.0 // indirect
+	github.com/magefile/mage v1.17.1 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
@@ -180,12 +180,12 @@ require (
 	gopkg.in/evanphx/json-patch.v4 v4.13.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	helm.sh/helm/v3 v3.20.1 // indirect
-	k8s.io/api v0.35.3 // indirect
+	helm.sh/helm/v3 v3.20.2 // indirect
+	k8s.io/api v0.35.4 // indirect
 	k8s.io/apiextensions-apiserver v0.35.1 // indirect
-	k8s.io/apimachinery v0.35.3 // indirect
-	k8s.io/cli-runtime v0.35.3 // indirect
-	k8s.io/client-go v0.35.3 // indirect
+	k8s.io/apimachinery v0.35.4 // indirect
+	k8s.io/cli-runtime v0.35.4 // indirect
+	k8s.io/client-go v0.35.4 // indirect
 	k8s.io/component-base v0.35.1 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20250910181357-589584f1c912 // indirect
