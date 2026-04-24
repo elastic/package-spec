@@ -1,0 +1,63 @@
+# CodeRabbit configuration for elastic/package-spec
+#
+# Rules originate from .cursor/skills/review-pr/references/checklist.md — the single source
+# of truth for contribution rules. Update that file first; CodeRabbit picks up the
+# changes automatically on the next PR via knowledge_base.code_guidelines.
+#
+# Prerequisite: the CodeRabbit GitHub App must be installed on this repository.
+
+language: en-US
+
+knowledge_base:
+  code_guidelines:
+    enabled: true
+    filePatterns:
+      - ".cursor/skills/review-pr/references/checklist.md"
+
+reviews:
+  profile: assertive
+  auto_review:
+    enabled: true
+  path_filters:
+    - "!**/vendor/**"
+
+  instructions: |
+    This is the elastic/package-spec repository, which defines the Elastic Package
+    specification and its validation logic.
+    Detailed contribution rules are in the code guidelines file loaded above.
+    Always check: changelog entry in spec/changelog.yml, version patches for any new
+    spec fields, semantic validator registration, test coverage, and Go style.
+    Dependabot dependency-bump PRs are the only exception to the changelog requirement.
+
+  path_instructions:
+    - path: "spec/**/*.spec.yml"
+      instructions: |
+        Apply the "Version Patches" and "Schema Reuse" sections of the guidelines.
+
+    - path: "code/go/internal/validator/semantic/*.go"
+      instructions: |
+        Apply the "Semantic Validators" and "Tests for Semantic Validators" sections
+        of the guidelines.
+
+    - path: "code/go/internal/validator/spec.go"
+      instructions: |
+        Check that any new validator added in semantic/ is registered here with
+        appropriate fn, since, and types fields per the "Semantic Validators" section
+        of the guidelines.
+
+    - path: "test/packages/**"
+      instructions: |
+        Apply the "Test Packages" section of the guidelines.
+
+    - path: "compliance/testdata/packages/**"
+      instructions: |
+        Apply the "Test Packages" section of the guidelines, including the transform
+        package rules.
+
+    - path: "compliance/features/*.feature"
+      instructions: |
+        Apply the "Compliance Feature Files" section of the guidelines.
+
+    - path: "**/*.go"
+      instructions: |
+        Apply the "Go Style" section of the guidelines.
