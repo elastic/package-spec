@@ -22,6 +22,9 @@ policy_templates:
         title: Test HTTP JSON
         description: Test HTTP JSON input
         deployment_modes: ['agentless']
+conditions:
+  kibana:
+    version: '^9.5.0'
 owner:
   github: elastic/ecosystem
   type: elastic

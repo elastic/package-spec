@@ -302,6 +302,7 @@ spec:
                 Only needs to be set to "ga" when the agentless deployment mode has reached general availability.
                 Not set in packages where agentless is the only deployment mode — in that case
                 defer to the package's top-level release.
+                Only evaluated in Kibana 9.5.0 or later.
               type: string
               enum:
                 - beta
