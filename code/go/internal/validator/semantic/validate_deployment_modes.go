@@ -138,8 +138,8 @@ func validateAgentlessReleaseDeployment(manifest deploymentModesManifest) error 
 	}
 	tmpl := manifest.PolicyTemplates[0]
 	// Default.Enabled == nil means default mode is implicitly enabled, so agentless is not the only mode.
-	isSingleDeployment := tmpl.DeploymentModes.Default.Enabled != nil && !*tmpl.DeploymentModes.Default.Enabled
-	if isSingleDeployment && tmpl.DeploymentModes.Agentless.Release != "" {
+	defaultDeploymentDisabled := tmpl.DeploymentModes.Default.Enabled != nil && !*tmpl.DeploymentModes.Default.Enabled
+	if defaultDeploymentDisabled && tmpl.DeploymentModes.Agentless.Release != "" {
 		return fmt.Errorf("policy template \"%s\" sets agentless.release but agentless is the only deployment mode; use the package version to indicate maturity instead", tmpl.Name)
 	}
 	return nil
