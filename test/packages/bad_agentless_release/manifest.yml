@@ -1,0 +1,30 @@
+format_version: 3.6.1
+name: bad_agentless_release
+title: Bad Agentless Release
+description: Test package where agentless.release is set but agentless is the only deployment mode
+version: 0.0.1
+type: integration
+policy_templates:
+  - name: test
+    title: Test
+    description: Test policy template
+    deployment_modes:
+      default:
+        enabled: false
+      agentless:
+        enabled: true
+        release: ga
+        organization: elastic
+        division: observability
+        team: test
+    inputs:
+      - type: httpjson
+        title: Test HTTP JSON
+        description: Test HTTP JSON input
+        deployment_modes: ['agentless']
+conditions:
+  kibana:
+    version: '^9.5.0'
+owner:
+  github: elastic/ecosystem
+  type: elastic
