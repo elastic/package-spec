@@ -3,7 +3,7 @@ module github.com/elastic/package-spec/compliance
 go 1.25.8
 
 require (
-	github.com/Masterminds/semver/v3 v3.4.0
+	github.com/Masterminds/semver/v3 v3.5.0
 	github.com/cucumber/godog v0.15.1
 	github.com/cucumber/messages/go/v21 v21.0.1
 	github.com/elastic/elastic-package v0.123.0
