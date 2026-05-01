@@ -3,7 +3,7 @@ module github.com/elastic/package-spec/v3
 go 1.25.0
 
 require (
-	github.com/Masterminds/semver/v3 v3.4.0
+	github.com/Masterminds/semver/v3 v3.5.0
 	github.com/PaesslerAG/jsonpath v0.1.1
 	github.com/aymerick/raymond v2.0.2+incompatible
 	github.com/boumenot/gocover-cobertura v1.4.0
