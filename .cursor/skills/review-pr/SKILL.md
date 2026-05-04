@@ -141,6 +141,9 @@ Consult the "Semantic validators" section of the reference file.
 
 Consult the "Test packages" section of the reference file.
 
+- Prefer scaffolding with **`elastic-package create package`** or, for new data streams in an
+  existing package, **`elastic-package create data-stream`** (from that package’s directory), over
+  manual copies.
 - Each package under `test/packages/` or `compliance/testdata/packages/` must contain:
   `manifest.yml`, `changelog.yml`, `docs/README.md`.
 - Any data stream must include a valid ingest pipeline: processors need a `tag` field, and

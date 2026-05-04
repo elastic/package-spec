@@ -264,8 +264,9 @@ func TestValidateMyRule(t *testing.T) {
 
 Use when the rule requires a full package structure (multiple data streams, pipelines, etc.).
 
-1. Create the package: `cd test/packages && elastic-package create package`
-2. Modify its `manifest.yml` to exercise the rule.
+1. Scaffold with **`elastic-package create package`** (`cd test/packages` first), or add a data
+   stream with **`elastic-package create data-stream`** from inside the package directory.
+2. Modify `manifest.yml` (and data stream files if applicable) to exercise the rule.
 3. Add entries to `code/go/pkg/validator/validator_test.go`:
 
 ```go
@@ -294,6 +295,11 @@ tests := map[string]struct {
 **Location:** `test/packages/` (general), `compliance/testdata/packages/` (compliance-only)
 
 ### Required files
+
+The layout below is what **`elastic-package`** scaffolds when you create artifacts interactively:
+use **`elastic-package create package`** for a new package (integration, input, or content), or
+**`elastic-package create data-stream`** to add a data stream under an existing package. Prefer those
+commands over copying folders by hand so required files stay consistent.
 
 Every package directory must contain:
 
@@ -356,7 +362,8 @@ _meta:
 - [ ] `manifest.yml`, `changelog.yml`, and `docs/README.md` all present.
 - [ ] Data stream ingest pipelines have `tag` on each processor and a valid `on_failure` block.
 - [ ] Compliance-only transform packages use non-hidden dest index and `run_as_kibana_system: false`.
-- [ ] Package was created using `elastic-package create package` (not manually scaffolded) when possible.
+- [ ] Prefer **`elastic-package create package`** or **`elastic-package create data-stream`** over
+      manual scaffolding when adding a test package or data stream.
 
 ---
 

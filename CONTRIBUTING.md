@@ -142,15 +142,23 @@ test/packages/my_package/
 After creating test packages, remember to add corresponding test cases in
 `code/go/pkg/validator/validator_test.go`.
 
-If the `elastic-package` tool is available, you can use it to scaffold test packages interactively:
+If the `elastic-package` tool is available, use it to scaffold test packages and data streams
+interactively instead of copying directories by hand:
 
 ```bash
 cd test/packages
 elastic-package create package
 ```
 
-The tool will prompt for package details. After creation, you may need to adjust the `format_version`
-or any other content that you need for your test case.
+To add a **data stream** to an existing package, run this from **inside** that package directory:
+
+```bash
+cd test/packages/my_package
+elastic-package create data-stream
+```
+
+The tool will prompt for package or data stream details. After creation, you may need to adjust the
+`format_version` or any other content that you need for your test case.
 
 #### Manifest Requirements
 
