@@ -87,7 +87,7 @@ versions:
 
 | Rule | Detail |
 | --- | --- |
-| Required for all new fields | Every new `properties` entry and `definitions` entry in a `.spec.yml` needs a `versions.before` patch. |
+| When to add `before:` patches | Add `versions.before` remove patches for new `properties` and `definitions` when the file still validates **older** `format_version` values and that schema must **not** apply to them (typical for optional fields in a spec file shared across versions). **Not every change needs a patch:** if the change is **already scoped** to the introducing spec version—e.g. a new **required** field or other **breaking** change with a clear minimum `format_version`—you may rely on that scoping instead of remove patches. |
 | `versions` list order | Add new version entries at the **top** of the `versions` list (newer spec versions first), per [CONTRIBUTING.md](../../../../CONTRIBUTING.md#version-patches). |
 | Remove order | **References before definitions.** Remove `/properties/my_field` before `/definitions/my_field`. Otherwise the patch fails because it tries to remove a definition that is still referenced. |
 | `_dev` exception | Files under `_dev` directories do not need version patches. These are developer tooling files, not part of the distributed spec. |
@@ -116,8 +116,7 @@ versions:
 
 ### Version Patches Checklist
 
-- [ ] Every new `properties` key has a `remove` patch.
-- [ ] Every new `definitions` key has a `remove` patch.
+- [ ] Every new `properties` or `definitions` entry that **older** `format_version` values must not include has a matching `remove` patch (or the change is correctly **scoped to the introducing version** only, e.g. required/breaking at a minimum `format_version`).
 - [ ] Properties are removed before their definitions in the patch list.
 - [ ] `_dev` files are excluded.
 - [ ] Comments follow the path-line convention.

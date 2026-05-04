@@ -71,7 +71,12 @@ properties:
 
 ### Version Patches
 
-Version patches enable backward compatibility by removing features from older spec versions:
+Version patches enable backward compatibility by removing features from older spec versions.
+**Not every** new `properties` or `definitions` entry needs a patch: use remove patches when the
+same file still validates older `format_version` values and new schema must be stripped for them;
+for changes that are **only** defined for the introducing version (e.g. new **required** fields or
+**breaking** changes with a clear minimum `format_version`), **scope** the change to that version
+instead of adding remove patches.
 
 ```yaml
 versions:
@@ -515,7 +520,8 @@ Remove the comment once the blocker is resolved. Also add a corresponding `@skip
 
 ## Common Pitfalls
 
-1. **Forgetting version patches**: New features must be removed for older versions
+1. **Forgetting version patches**: When optional additions in a shared spec file must be absent for
+   older `format_version` values, add remove patches; do not assume every field needs one
 2. **Not using shared definitions**: Define common fields once and reference with `$ref`
 3. **Wrong patch order**: Remove property references before shared definitions
 4. **Missing test package files**: changelog.yml and docs/README.md are required
@@ -541,7 +547,9 @@ Remove the comment once the blocker is resolved. Also add a corresponding `@skip
        # or: $ref: "../integration/manifest.spec.yml#/definitions/my_field"
    ```
 
-3. **Add version patch** (remove references first, then definition):
+3. **Add version patch when needed** (remove references first, then definition)—if older
+   `format_version` values must not see this field; otherwise scope the field to the introducing
+   version only:
    ```yaml
    versions:
      - before: 3.X.0

@@ -175,9 +175,14 @@ owner:
 
 ### Version Patches
 
-When adding new features to the specification, you must ensure backward compatibility by adding
-version patches. Version patches remove new features from older spec versions, allowing packages
-with older `format_version` values to continue validating correctly.
+When changing the specification, keep **backward compatibility** for packages with older
+`format_version` values. **Version patches** remove newer schema from older spec versions so those
+packages keep validating. You do **not** need a remove patch for every new field: if a change
+applies **only** at the introducing spec version (for example a new **required** field or another
+**breaking** change with a clear minimum `format_version`), you can **scope** the change to that
+version instead of adding `versions.before` remove operations. Use remove patches when the same
+`.spec.yml` file still serves older versions and new optional `properties` or `definitions` must be
+absent from the schema they see.
 
 Version patches are defined at the bottom of spec files (e.g., `spec/integration/manifest.spec.yml`):
 
@@ -193,6 +198,8 @@ versions:
 
 Guidelines:
 - Add patches at the top of the versions list (newer versions first).
+- Add remove patches when older spec versions must not include the new schema; skip them when the
+  change is only meaningful at the introducing version.
 - Remove both the property and its definition(s) if they are not used elsewhere.
 - Order matters: remove properties before the definitions they reference.
 - Only remove definitions that are not used by other features.
