@@ -118,8 +118,11 @@ Consult section **0** in the reference file and [CONTRIBUTING.md](../../../CONTR
 
 Consult the "Version patches" and "Schema reuse" sections of the reference file.
 
-- Every new field or definition added to a `.spec.yml` file **must** have a corresponding
-  `versions[].patch` block that removes it for older spec versions.
+- For new `properties` or `definitions` that older `format_version` values must **not** include, add
+  `versions[].patch` remove operations (see the reference file). **Not** every addition needs a
+  patch: if the change is **only** meaningful at the introducing spec version (e.g. a new
+  **required** field or other **breaking** change with a clear minimum `format_version`), rely on
+  **version scoping** instead of remove patches when appropriate.
 - The remove order matters: property `$ref` entries must be removed before the definition
   they reference.
 - Shared fields used in multiple spec files must be defined once in
@@ -141,6 +144,9 @@ Consult the "Semantic validators" section of the reference file.
 
 Consult the "Test packages" section of the reference file.
 
+- Prefer scaffolding with **`elastic-package create package`** or, for new data streams in an
+  existing package, **`elastic-package create data-stream`** (from that package’s directory), over
+  manual copies.
 - Each package under `test/packages/` or `compliance/testdata/packages/` must contain:
   `manifest.yml`, `changelog.yml`, `docs/README.md`.
 - Any data stream must include a valid ingest pipeline: processors need a `tag` field, and

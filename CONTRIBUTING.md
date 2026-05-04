@@ -111,7 +111,7 @@ This command validates:
 - Spec file syntax (manifest.spec.yml, etc.)
 - Changelog format and structure
 - Schema definitions and references
-- JSON patches for version compatibility
+- JSON Patch `versions` entries for backward compatibility (when present in spec files)
 
 This is **different** from package validation tests. The internal tests validate the specification
 itself, while package tests validate that packages conform to the specification.
@@ -142,15 +142,23 @@ test/packages/my_package/
 After creating test packages, remember to add corresponding test cases in
 `code/go/pkg/validator/validator_test.go`.
 
-If the `elastic-package` tool is available, you can use it to scaffold test packages interactively:
+If the `elastic-package` tool is available, use it to scaffold test packages and data streams
+interactively instead of copying directories by hand:
 
 ```bash
 cd test/packages
 elastic-package create package
 ```
 
-The tool will prompt for package details. After creation, you may need to adjust the `format_version`
-or any other content that you need for your test case.
+To add a **data stream** to an existing package, run this from **inside** that package directory:
+
+```bash
+cd test/packages/my_package
+elastic-package create data-stream
+```
+
+The tool will prompt for package or data stream details. After creation, you may need to adjust the
+`format_version` or any other content that you need for your test case.
 
 #### Manifest Requirements
 
@@ -175,14 +183,29 @@ owner:
 
 ### Version Patches
 
-When adding new features to the specification, you must ensure backward compatibility by adding
-version patches. Version patches remove new features from older spec versions, allowing packages
-with older `format_version` values to continue validating correctly.
+When changing the specification, keep **backward compatibility** for packages with older
+`format_version` values. **Version patches** remove newer schema from older spec versions so those
+packages keep validating. You do **not** need a remove patch for every new field: if a change
+applies **only** at the introducing spec version (for example a new **required** field or another
+**breaking** change with a clear minimum `format_version`), you can **scope** the change to that
+version instead of adding `versions.before` remove operations. Use remove patches when the same
+`.spec.yml` file still serves older versions and new optional `properties` or `definitions` must be
+absent from the schema they see.
 
-Version patches are defined at the bottom of spec files (e.g., `spec/integration/manifest.spec.yml`):
+Version patches are defined at the bottom of spec files (e.g., `spec/integration/manifest.spec.yml`).
+Add each new patch block at the **top** of the `versions` list so **newer spec versions come first**
+(higher `before` value above lower). Example:
 
 ```yaml
 versions:
+  # Newer `before` first — when you add a patch for a new release, insert a new list item here,
+  # above existing entries (do not append at the bottom of this list).
+  - before: 3.7.0
+    patch:
+      - op: remove
+        path: "/properties/recent_field"
+      - op: remove
+        path: "/definitions/recent_field"
   - before: 3.6.0
     patch:
       - op: remove
@@ -192,7 +215,9 @@ versions:
 ```
 
 Guidelines:
-- Add patches at the top of the versions list (newer versions first).
+- Add patches at the top of the versions list (newer versions first), as in the example above.
+- Add remove patches when older spec versions must not include the new schema; skip them when the
+  change is only meaningful at the introducing version.
 - Remove both the property and its definition(s) if they are not used elsewhere.
 - Order matters: remove properties before the definitions they reference.
 - Only remove definitions that are not used by other features.

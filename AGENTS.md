@@ -71,7 +71,12 @@ properties:
 
 ### Version Patches
 
-Version patches enable backward compatibility by removing features from older spec versions:
+Version patches enable backward compatibility by removing features from older spec versions.
+**Not every** new `properties` or `definitions` entry needs a patch: use remove patches when the
+same file still validates older `format_version` values and new schema must be stripped for them;
+for changes that are **only** defined for the introducing version (e.g. new **required** fields or
+**breaking** changes with a clear minimum `format_version`), **scope** the change to that version
+instead of adding remove patches.
 
 ```yaml
 versions:
@@ -123,11 +128,20 @@ cd test/packages
 elastic-package create package
 ```
 
-The tool prompts for: package type, name, title, description, license (Apache-2.0), Kibana version (^8.0.0), subscription (basic), owner (elastic/foobar), and categories.
+To scaffold a **new data stream** under an existing test package, run from that package’s root:
+
+```bash
+cd test/packages/my_package
+elastic-package create data-stream
+```
+
+The tool prompts for: package type, name, title, description, license (Apache-2.0), Kibana version (^8.0.0), subscription (basic), owner (elastic/foobar), and categories (for `create package`).
 
 **After creation**: Adjust `format_version` and modify manifest.yml to test specific fields.
 
 ### Required Files
+
+Package roots created by **`elastic-package create package`** include:
 
 ```
 test/packages/my_package/
@@ -424,7 +438,8 @@ invalid_field: value`,
 
 For validators that need complete package structures (multiple data streams, pipelines, kibana objects, etc.):
 
-1. Create test package in `test/packages/` using `elastic-package create package`
+1. Create test package in `test/packages/` using `elastic-package create package`, or add a data
+   stream with `elastic-package create data-stream` from the package directory
 2. Add test case to `code/go/pkg/validator/validator_test.go`:
 
 ```go
@@ -515,13 +530,15 @@ Remove the comment once the blocker is resolved. Also add a corresponding `@skip
 
 ## Common Pitfalls
 
-1. **Forgetting version patches**: New features must be removed for older versions
+1. **Forgetting version patches**: When optional additions in a shared spec file must be absent for
+   older `format_version` values, add remove patches; do not assume every field needs one
 2. **Not using shared definitions**: Define common fields once and reference with `$ref`
 3. **Wrong patch order**: Remove property references before shared definitions
 4. **Missing test package files**: changelog.yml and docs/README.md are required
 5. **Invalid pipelines**: Data streams need proper ingest pipelines with on_failure handlers and processor tags
 6. **Wrong conditions format**: Use `conditions.kibana.version` not `conditions.kibana:version` for spec 3.0+
-7. **Creating test packages manually**: Always use `elastic-package create package`
+7. **Creating test packages manually**: Prefer `elastic-package create package` and
+   `elastic-package create data-stream` over copying folders by hand
 
 ## Example: Adding a New Field
 
@@ -541,7 +558,9 @@ Remove the comment once the blocker is resolved. Also add a corresponding `@skip
        # or: $ref: "../integration/manifest.spec.yml#/definitions/my_field"
    ```
 
-3. **Add version patch** (remove references first, then definition):
+3. **Add version patch when needed** (remove references first, then definition)—if older
+   `format_version` values must not see this field; otherwise scope the field to the introducing
+   version only:
    ```yaml
    versions:
      - before: 3.X.0
@@ -554,7 +573,8 @@ Remove the comment once the blocker is resolved. Also add a corresponding `@skip
 
 4. **Check for custom validation** in `code/go/internal/validator/semantic/`
 
-5. **Create test packages**: `elastic-package create package`, then modify manifest
+5. **Create test packages**: `elastic-package create package` (and `elastic-package create
+   data-stream` when adding streams), then modify manifests as needed
 
 6. **Add test cases** in `validator_test.go`
 

@@ -64,18 +64,32 @@ When a spec feature is complete but blocked on upstream (Kibana, elastic-package
 
 ## 2. Version Patches
 
-**Why they exist:** The spec supports multiple format versions. New fields added in, say, 3.7.0
-must be invisible to packages using 3.6.x or earlier. Version patches achieve this by removing
-the new fields from the schema when validating older packages.
+**Why they exist:** The spec supports multiple format versions. When a single `.spec.yml` still
+validates **older** `format_version` values, **remove patches** drop newer optional
+`properties` and `definitions` from the schema those older versions use. **Not** every change needs
+a remove patch: if the change applies **only** at the introducing version (e.g. a new **required**
+field or **breaking** change with a clear minimum `format_version`), **version scoping** may be
+enough—see the Patch Rules table below.
 
 **Where they live:** In the same `.spec.yml` file that defines the new field, under a `versions`
 key at the top level.
 
 ### Patch Format
 
+Add each new patch block at the **top** of the `versions` list so **newer spec versions come first**
+(higher `before` value above lower). When you add a patch for a new release, **insert** a new list
+item at the top—do not append at the bottom.
+
 ```yaml
 versions:
+  # Newer `before` first — insert new patch blocks here, above existing entries.
   - before: 3.7.0
+    patch:
+      - op: remove
+        path: "/properties/recent_field"
+      - op: remove
+        path: "/definitions/recent_field"
+  - before: 3.6.0
     patch:
       - op: remove
         path: "/properties/my_new_field"
@@ -87,7 +101,7 @@ versions:
 
 | Rule | Detail |
 | --- | --- |
-| Required for all new fields | Every new `properties` entry and `definitions` entry in a `.spec.yml` needs a `versions.before` patch. |
+| When to add `before:` patches | Add `versions.before` remove patches for new `properties` and `definitions` when the file still validates **older** `format_version` values and that schema must **not** apply to them (typical for optional fields in a spec file shared across versions). **Not every change needs a patch:** if the change is **already scoped** to the introducing spec version—e.g. a new **required** field or other **breaking** change with a clear minimum `format_version`—you may rely on that scoping instead of remove patches. |
 | `versions` list order | Add new version entries at the **top** of the `versions` list (newer spec versions first), per [CONTRIBUTING.md](../../../../CONTRIBUTING.md#version-patches). |
 | Remove order | **References before definitions.** Remove `/properties/my_field` before `/definitions/my_field`. Otherwise the patch fails because it tries to remove a definition that is still referenced. |
 | `_dev` exception | Files under `_dev` directories do not need version patches. These are developer tooling files, not part of the distributed spec. |
@@ -116,8 +130,7 @@ versions:
 
 ### Version Patches Checklist
 
-- [ ] Every new `properties` key has a `remove` patch.
-- [ ] Every new `definitions` key has a `remove` patch.
+- [ ] Every new `properties` or `definitions` entry that **older** `format_version` values must not include has a matching `remove` patch (or the change is correctly **scoped to the introducing version** only, e.g. required/breaking at a minimum `format_version`).
 - [ ] Properties are removed before their definitions in the patch list.
 - [ ] `_dev` files are excluded.
 - [ ] Comments follow the path-line convention.
@@ -254,8 +267,9 @@ func TestValidateMyRule(t *testing.T) {
 
 Use when the rule requires a full package structure (multiple data streams, pipelines, etc.).
 
-1. Create the package: `cd test/packages && elastic-package create package`
-2. Modify its `manifest.yml` to exercise the rule.
+1. Scaffold with **`elastic-package create package`** (`cd test/packages` first), or add a data
+   stream with **`elastic-package create data-stream`** from inside the package directory.
+2. Modify `manifest.yml` (and data stream files if applicable) to exercise the rule.
 3. Add entries to `code/go/pkg/validator/validator_test.go`:
 
 ```go
@@ -284,6 +298,11 @@ tests := map[string]struct {
 **Location:** `test/packages/` (general), `compliance/testdata/packages/` (compliance-only)
 
 ### Required files
+
+The layout below is what **`elastic-package`** scaffolds when you create artifacts interactively:
+use **`elastic-package create package`** for a new package (integration, input, or content), or
+**`elastic-package create data-stream`** to add a data stream under an existing package. Prefer those
+commands over copying folders by hand so required files stay consistent.
 
 Every package directory must contain:
 
@@ -346,7 +365,8 @@ _meta:
 - [ ] `manifest.yml`, `changelog.yml`, and `docs/README.md` all present.
 - [ ] Data stream ingest pipelines have `tag` on each processor and a valid `on_failure` block.
 - [ ] Compliance-only transform packages use non-hidden dest index and `run_as_kibana_system: false`.
-- [ ] Package was created using `elastic-package create package` (not manually scaffolded) when possible.
+- [ ] Prefer **`elastic-package create package`** or **`elastic-package create data-stream`** over
+      manual scaffolding when adding a test package or data stream.
 
 ---
 
