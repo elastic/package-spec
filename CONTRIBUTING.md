@@ -184,10 +184,20 @@ version instead of adding `versions.before` remove operations. Use remove patche
 `.spec.yml` file still serves older versions and new optional `properties` or `definitions` must be
 absent from the schema they see.
 
-Version patches are defined at the bottom of spec files (e.g., `spec/integration/manifest.spec.yml`):
+Version patches are defined at the bottom of spec files (e.g., `spec/integration/manifest.spec.yml`).
+Add each new patch block at the **top** of the `versions` list so **newer spec versions come first**
+(higher `before` value above lower). Example:
 
 ```yaml
 versions:
+  # Newer `before` first — when you add a patch for a new release, insert a new list item here,
+  # above existing entries (do not append at the bottom of this list).
+  - before: 3.7.0
+    patch:
+      - op: remove
+        path: "/properties/recent_field"
+      - op: remove
+        path: "/definitions/recent_field"
   - before: 3.6.0
     patch:
       - op: remove
@@ -197,7 +207,7 @@ versions:
 ```
 
 Guidelines:
-- Add patches at the top of the versions list (newer versions first).
+- Add patches at the top of the versions list (newer versions first), as in the example above.
 - Add remove patches when older spec versions must not include the new schema; skip them when the
   change is only meaningful at the introducing version.
 - Remove both the property and its definition(s) if they are not used elsewhere.

@@ -73,9 +73,20 @@ key at the top level.
 
 ### Patch Format
 
+Add each new patch block at the **top** of the `versions` list so **newer spec versions come first**
+(higher `before` value above lower). When you add a patch for a new release, **insert** a new list
+item at the top—do not append at the bottom.
+
 ```yaml
 versions:
+  # Newer `before` first — insert new patch blocks here, above existing entries.
   - before: 3.7.0
+    patch:
+      - op: remove
+        path: "/properties/recent_field"
+      - op: remove
+        path: "/definitions/recent_field"
+  - before: 3.6.0
     patch:
       - op: remove
         path: "/properties/my_new_field"
