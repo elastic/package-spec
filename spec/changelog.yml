@@ -8,6 +8,9 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: Add optional `release` field to agentless deployment mode to explicitly declare its release stage.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1130
 - version: 3.6.2
   changes:
     - description: Add support for ML modules in content packages.

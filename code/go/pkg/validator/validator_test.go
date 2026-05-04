@@ -379,6 +379,12 @@ func TestValidateFile(t *testing.T) {
 				`var "access_key_id" in non-required var_group "credential_type" should not have required: true (var_group is optional)`,
 			},
 		},
+		"bad_agentless_release": {
+			"manifest.yml",
+			[]string{
+				`policy template "test" sets agentless.release but agentless is the only deployment mode; use the package version to indicate maturity instead`,
+			},
+		},
 		"bad_input_deployment_modes": {
 			"manifest.yml",
 			[]string{

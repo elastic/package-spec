@@ -14,6 +14,35 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
+type deploymentModesManifest struct {
+	PolicyTemplates []deploymentModesPolicyTemplate `yaml:"policy_templates"`
+}
+
+type deploymentModesPolicyTemplate struct {
+	Name            string                 `yaml:"name"`
+	DeploymentModes deploymentModesSpec    `yaml:"deployment_modes"`
+	Inputs          []deploymentModesInput `yaml:"inputs"`
+}
+
+type deploymentModesSpec struct {
+	Default   deploymentModesDefault   `yaml:"default"`
+	Agentless deploymentModesAgentless `yaml:"agentless"`
+}
+
+type deploymentModesDefault struct {
+	Enabled *bool `yaml:"enabled"` // pointer to detect if field was set; when unset (nil) semantical meaning is default deployment is enabled
+}
+
+type deploymentModesAgentless struct {
+	Enabled bool   `yaml:"enabled"`
+	Release string `yaml:"release"`
+}
+
+type deploymentModesInput struct {
+	Type            string    `yaml:"type"`
+	DeploymentModes *[]string `yaml:"deployment_modes"` // pointer to detect if field was set
+}
+
 // ValidateDeploymentModes ensures that for each deployment mode enabled in a policy template,
 // there is at least one input that supports that deployment mode.
 func ValidateDeploymentModes(fsys fspath.FS) specerrors.ValidationErrors {
@@ -23,30 +52,18 @@ func ValidateDeploymentModes(fsys fspath.FS) specerrors.ValidationErrors {
 		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(manifestPath), err)}
 	}
 
-	var manifest struct {
-		PolicyTemplates []struct {
-			Name            string `yaml:"name"`
-			DeploymentModes struct {
-				Default struct {
-					Enabled *bool `yaml:"enabled"` // Use pointer to detect if field was set, default is true
-				} `yaml:"default"`
-				Agentless struct {
-					Enabled bool `yaml:"enabled"`
-				} `yaml:"agentless"`
-			} `yaml:"deployment_modes"`
-			Inputs []struct {
-				Type            string    `yaml:"type"`
-				DeploymentModes *[]string `yaml:"deployment_modes"` // Use pointer to detect if field was set
-			} `yaml:"inputs"`
-		} `yaml:"policy_templates"`
-	}
-
+	var manifest deploymentModesManifest
 	err = yaml.Unmarshal(d, &manifest)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to parse manifest: %w", fsys.Path(manifestPath), err)}
 	}
 
 	var errs specerrors.ValidationErrors
+
+	if err := validateAgentlessReleaseDeployment(manifest); err != nil {
+		errs = append(errs, specerrors.NewStructuredError(fmt.Errorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), err), specerrors.UnassignedCode))
+	}
+
 	for _, template := range manifest.PolicyTemplates {
 		// Collect enabled deployment modes for this policy template
 		enabledModes := []string{}
@@ -109,4 +126,21 @@ func ValidateDeploymentModes(fsys fspath.FS) specerrors.ValidationErrors {
 	}
 
 	return errs
+}
+
+// validateAgentlessReleaseDeployment checks that agentless.release is not set in a
+// single-policy-template package where agentless is the only deployment mode. In that
+// case the package version is the authoritative source of maturity and an explicit
+// override would conflict.
+func validateAgentlessReleaseDeployment(manifest deploymentModesManifest) error {
+	if len(manifest.PolicyTemplates) != 1 {
+		return nil
+	}
+	tmpl := manifest.PolicyTemplates[0]
+	// Default.Enabled == nil means default mode is implicitly enabled, so agentless is not the only mode.
+	defaultDeploymentDisabled := tmpl.DeploymentModes.Default.Enabled != nil && !*tmpl.DeploymentModes.Default.Enabled
+	if defaultDeploymentDisabled && tmpl.DeploymentModes.Agentless.Release != "" {
+		return fmt.Errorf("policy template \"%s\" sets agentless.release but agentless is the only deployment mode; use the package version to indicate maturity instead", tmpl.Name)
+	}
+	return nil
 }

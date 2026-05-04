@@ -214,3 +214,104 @@ policy_templates:
 		})
 	}
 }
+
+func boolPtr(b bool) *bool { return &b }
+
+func TestValidateAgentlessReleaseDeployment(t *testing.T) {
+	cases := []struct {
+		title       string
+		manifest    deploymentModesManifest
+		expectedErr string
+	}{
+		{
+			title: "valid - default enabled explicitly, release set",
+			manifest: deploymentModesManifest{
+				PolicyTemplates: []deploymentModesPolicyTemplate{
+					{
+						Name: "test",
+						DeploymentModes: deploymentModesSpec{
+							Default:   deploymentModesDefault{Enabled: boolPtr(true)},
+							Agentless: deploymentModesAgentless{Enabled: true, Release: "ga"},
+						},
+					},
+				},
+			},
+		},
+		{
+			title: "valid - default enabled implicitly (nil), release set",
+			manifest: deploymentModesManifest{
+				PolicyTemplates: []deploymentModesPolicyTemplate{
+					{
+						Name: "test",
+						DeploymentModes: deploymentModesSpec{
+							Default:   deploymentModesDefault{Enabled: nil},
+							Agentless: deploymentModesAgentless{Enabled: true, Release: "ga"},
+						},
+					},
+				},
+			},
+		},
+		{
+			title: "valid - agentless-only single template, no release set",
+			manifest: deploymentModesManifest{
+				PolicyTemplates: []deploymentModesPolicyTemplate{
+					{
+						Name: "test",
+						DeploymentModes: deploymentModesSpec{
+							Default:   deploymentModesDefault{Enabled: boolPtr(false)},
+							Agentless: deploymentModesAgentless{Enabled: true},
+						},
+					},
+				},
+			},
+		},
+		{
+			title: "valid - multiple templates, one agentless-only with release set",
+			manifest: deploymentModesManifest{
+				PolicyTemplates: []deploymentModesPolicyTemplate{
+					{
+						Name: "test1",
+						DeploymentModes: deploymentModesSpec{
+							Default:   deploymentModesDefault{Enabled: boolPtr(true)},
+							Agentless: deploymentModesAgentless{Enabled: true},
+						},
+					},
+					{
+						Name: "test2",
+						DeploymentModes: deploymentModesSpec{
+							Default:   deploymentModesDefault{Enabled: boolPtr(false)},
+							Agentless: deploymentModesAgentless{Enabled: true, Release: "ga"},
+						},
+					},
+				},
+			},
+		},
+		{
+			title: "invalid - agentless-only single template with release set",
+			manifest: deploymentModesManifest{
+				PolicyTemplates: []deploymentModesPolicyTemplate{
+					{
+						Name: "test",
+						DeploymentModes: deploymentModesSpec{
+							Default:   deploymentModesDefault{Enabled: boolPtr(false)},
+							Agentless: deploymentModesAgentless{Enabled: true, Release: "ga"},
+						},
+					},
+				},
+			},
+			expectedErr: `policy template "test" sets agentless.release but agentless is the only deployment mode; use the package version to indicate maturity instead`,
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.title, func(t *testing.T) {
+			err := validateAgentlessReleaseDeployment(c.manifest)
+			if c.expectedErr == "" {
+				assert.NoError(t, err)
+			} else {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), c.expectedErr)
+			}
+		})
+	}
+}
