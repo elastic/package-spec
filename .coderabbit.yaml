@@ -25,8 +25,9 @@ reviews:
     This is the elastic/package-spec repository, which defines the Elastic Package
     specification and its validation logic.
     Detailed contribution rules are in the code guidelines file loaded above.
-    Always check: changelog entry in spec/changelog.yml, version patches for any new
-    spec fields, semantic validator registration, test coverage, and Go style.
+    Always check: changelog entry in spec/changelog.yml; backward-compat handling for spec
+    schema changes (version patches and/or version scoping per the guidelines—not every new field
+    needs a `versions` remove patch); semantic validator registration; test coverage; and Go style.
     Dependabot dependency-bump PRs are the only exception to the changelog requirement.
 
   path_instructions:

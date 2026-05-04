@@ -111,7 +111,7 @@ This command validates:
 - Spec file syntax (manifest.spec.yml, etc.)
 - Changelog format and structure
 - Schema definitions and references
-- JSON patches for version compatibility
+- JSON Patch `versions` entries for backward compatibility (when present in spec files)
 
 This is **different** from package validation tests. The internal tests validate the specification
 itself, while package tests validate that packages conform to the specification.

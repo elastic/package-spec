@@ -64,9 +64,12 @@ When a spec feature is complete but blocked on upstream (Kibana, elastic-package
 
 ## 2. Version Patches
 
-**Why they exist:** The spec supports multiple format versions. New fields added in, say, 3.7.0
-must be invisible to packages using 3.6.x or earlier. Version patches achieve this by removing
-the new fields from the schema when validating older packages.
+**Why they exist:** The spec supports multiple format versions. When a single `.spec.yml` still
+validates **older** `format_version` values, **remove patches** drop newer optional
+`properties` and `definitions` from the schema those older versions use. **Not** every change needs
+a remove patch: if the change applies **only** at the introducing version (e.g. a new **required**
+field or **breaking** change with a clear minimum `format_version`), **version scoping** may be
+enough—see the Patch Rules table below.
 
 **Where they live:** In the same `.spec.yml` file that defines the new field, under a `versions`
 key at the top level.

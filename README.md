@@ -113,9 +113,10 @@ of the changed specification must be determined as follows:
     `Z = z + 1`. This includes any change on validation that doesn't neccesarily
     lead to a change in the behaviour of the installed package.
 
-If the change is in a schema file, add a JSON patch in the `versions` section to
-continue supporting the previous format. See the [Version Patches section in CONTRIBUTING.md](./CONTRIBUTING.md#version-patches)
-for detailed guidelines and examples.
+If the change is in a schema file, preserve backward compatibility for older `format_version`
+values—often with JSON Patch entries under `versions`, or by **scoping** the change to the
+introducing spec version when remove patches are unnecessary. See the [Version Patches section in CONTRIBUTING.md](./CONTRIBUTING.md#version-patches)
+for when to add remove patches versus version-only scoping, plus examples.
 
 If the change is in semantic rules, add a constraint in the rule, so they only
 apply on the indicated version range and package types.

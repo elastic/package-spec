@@ -118,8 +118,11 @@ Consult section **0** in the reference file and [CONTRIBUTING.md](../../../CONTR
 
 Consult the "Version patches" and "Schema reuse" sections of the reference file.
 
-- Every new field or definition added to a `.spec.yml` file **must** have a corresponding
-  `versions[].patch` block that removes it for older spec versions.
+- For new `properties` or `definitions` that older `format_version` values must **not** include, add
+  `versions[].patch` remove operations (see the reference file). **Not** every addition needs a
+  patch: if the change is **only** meaningful at the introducing spec version (e.g. a new
+  **required** field or other **breaking** change with a clear minimum `format_version`), rely on
+  **version scoping** instead of remove patches when appropriate.
 - The remove order matters: property `$ref` entries must be removed before the definition
   they reference.
 - Shared fields used in multiple spec files must be defined once in
