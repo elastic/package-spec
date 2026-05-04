@@ -1,0 +1,61 @@
+---
+description: Author portable Agent Skills (agentskills.io) usable in Claude, Claude Code, Copilot, and Cursor.
+globs: .cursor/skills/**/SKILL.md
+alwaysApply: false
+---
+
+# Agent Skills format (agentskills.io)
+
+When creating or editing a skill under `.cursor/skills/`, follow the **[Agent Skills specification](https://agentskills.io/specification.md)** and **[best practices](https://agentskills.io/skill-creation/best-practices.md)**.
+
+The same skill folder should be **universal**: usable by any Agent Skills–compatible client. Treat **[Claude / Claude Code](https://code.claude.com/docs/en/skills)**, **[GitHub Copilot agent skills](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills)**, and **[Cursor skills](https://cursor.com/docs/context/skills)** as target consumers unless the repo explicitly documents a narrower scope. Do not rely on one vendor’s UI or tool names in the **only** path through the workflow.
+
+## Portable across Claude, Claude Code, Copilot, and Cursor
+
+- **Spec-first:** Valid YAML frontmatter + Markdown body per the [specification](https://agentskills.io/specification.md); optional `scripts/`, `references/`, `assets/` as defined there.
+- **Core flow is product-agnostic:** Steps, checks, and outputs must work without Cursor-only tools (e.g. no mandatory `AskQuestion` / MCP / canvas). Use plain chat prompts, numbered options, or “ask once in natural language” as the default.
+- **Product-specific hints are optional add-ons:** If a client offers a nicer path (e.g. a structured question UI), put it in a short labeled subsection (e.g. “**Cursor:** …”) **after** the universal fallback, or in one line in **`compatibility`** / metadata—never as the only way to complete a step.
+- **Tools and environment:** Prefer standard shell, `git`, and repo files. Use **`compatibility`** for needs like network, `gh`, Docker, or a particular host app so Claude Code / Copilot / Cursor can all interpret constraints the same way.
+- **Naming:** Keep **`name`** aligned with the directory name so the skill validates and ports cleanly across hosts.
+
+## Layout
+
+- Skill root = one directory named like the skill; it **must** contain `SKILL.md`.
+- Optional folders: `scripts/`, `references/`, `assets/` (and other supporting files as needed).
+
+## `SKILL.md` frontmatter (YAML)
+
+Required:
+
+- **`name`**: 1–64 chars; lowercase `a-z`, digits, single hyphens only; no leading/trailing hyphen; no `--`; **must equal the parent directory name**.
+- **`description`**: 1–1024 chars; state **what** the skill does and **when** to use it; include **concrete trigger phrases** so agents match the right tasks.
+
+Optional (use when they add real signal):
+
+- **`license`**, **`compatibility`** (1–500 chars if present), **`metadata`** (string keys → string values), **`allowed-tools`** (experimental; space-separated).
+
+Minimal valid opening:
+
+```markdown
+---
+name: my-skill
+description: Does X and Y. Use when the user asks for Z or mentions A/B keywords.
+---
+
+```
+
+## Body
+
+- Write **procedural, task-shaped** instructions (steps, defaults, validation loops). Omit generic advice the model already knows.
+- Prefer **progressive disclosure**: keep `SKILL.md` **under ~500 lines**; move deep reference to `references/` or `assets/` and tell the agent **when** to read each file.
+- Reference other files with **paths relative to the skill root**, ideally **one level** from `SKILL.md` (e.g. `references/workflow.md`).
+
+## Validation
+
+After substantive edits, validate when possible:
+
+```bash
+skills-ref validate ./path/to/skill-directory
+```
+
+Use the [skills-ref](https://github.com/agentskills/agentskills/tree/main/skills-ref) tool from the agentskills.io project if it is installed locally.
