@@ -6,8 +6,6 @@ package main
 
 import (
 	"context"
-	"crypto/tls"
-	"crypto/x509"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -25,33 +23,22 @@ type Elasticsearch struct {
 
 // NewElasticsearchClient creates a new Elasticsearch client.
 func NewElasticsearchClient() (*Elasticsearch, error) {
-	config := elasticsearch.Config{
-		Addresses: []string{
-			elasticPackageGetEnv("ELASTICSEARCH_HOST"),
-		},
-		Username: elasticPackageGetEnv("ELASTICSEARCH_USERNAME"),
-		Password: elasticPackageGetEnv("ELASTICSEARCH_PASSWORD"),
+	opts := []elasticsearch.Option{
+		elasticsearch.WithAddresses(elasticPackageGetEnv("ELASTICSEARCH_HOST")),
+		elasticsearch.WithBasicAuth(elasticPackageGetEnv("ELASTICSEARCH_USERNAME"), elasticPackageGetEnv("ELASTICSEARCH_PASSWORD")),
 	}
 
 	if caCert := elasticPackageGetEnv("CA_CERT"); caCert != "" {
-		certPool, err := x509.SystemCertPool()
-		if err != nil {
-			return nil, fmt.Errorf("failed to get system certificate pool: %w", err)
-		}
+		// caCert is the path to the CA certificate file
 		pem, err := os.ReadFile(caCert)
 		if err != nil {
 			return nil, fmt.Errorf("failed to read certificate \"%s\": %w", caCert, err)
 		}
-		if ok := certPool.AppendCertsFromPEM(pem); !ok {
-			return nil, fmt.Errorf("no certs were appended from \"%s\"", caCert)
-		}
-		config.Transport = &http.Transport{
-			TLSClientConfig: &tls.Config{
-				RootCAs: certPool,
-			},
-		}
+
+		opts = append(opts, elasticsearch.WithCACert(pem))
 	}
-	client, err := elasticsearch.NewClient(config)
+
+	client, err := elasticsearch.New(opts...)
 	if err != nil {
 		return nil, err
 	}
