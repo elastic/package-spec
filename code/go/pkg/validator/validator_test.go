@@ -546,10 +546,19 @@ func TestValidateFile(t *testing.T) {
 		"deprecated_integration_policy_input": {},
 		"deprecated_integration_policy":       {},
 		"deprecated_integration_stream_var":   {},
-		"good_migrate_from":                   {},
+		"good_migrate_from":     {},
+		"good_var_migrate_from": {},
 		"bad_migrate_from": {
 			"manifest.yml",
 			[]string{`field policy_templates.0.inputs.0: Additional property migrate_from is not allowed`},
+		},
+		"bad_var_migrate_from": {
+			"data_stream/logs/manifest.yml",
+			[]string{`field streams.0.vars.1: Additional property migrate_from is not allowed`},
+		},
+		"bad_var_migrate_from_scope": {
+			"data_stream/logs/manifest.yml",
+			[]string{`field streams.0.vars.1.migrate_from.scope: streams.0.vars.1.migrate_from.scope must be one of the following: "input", "stream"`},
 		},
 		"bad_deprecation_description": {
 			"manifest.yml",
