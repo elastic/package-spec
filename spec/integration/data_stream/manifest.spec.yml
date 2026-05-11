@@ -175,29 +175,42 @@ spec:
             $ref: "../../integration/manifest.spec.yml#/definitions/deprecated"
           migrate_from:
             description: >
-              Declares that this variable was previously defined at a different scope
-              within the same input type. When upgrading a policy, Fleet will carry
-              the old value over to this variable's current scope if the user had
-              configured one. Use when a variable moves between input-level and
-              stream-level without the input type changing.
+              Declares that this variable was previously named differently or
+              defined at a different scope. Fleet carries the old value over
+              when upgrading a policy. At least one of `name` or `scope` must
+              be set. Both may be set together when the variable was both
+              renamed and moved between scopes.
             type: object
             additionalProperties: false
             properties:
+              name:
+                description: >
+                  Previous name of the variable. Use when the variable was
+                  renamed between package versions. Combine with `scope` if
+                  the variable was also moved to a different scope.
+                type: string
               scope:
-                description: The scope where this variable previously lived.
+                description: >
+                  The scope where this variable previously lived. Use when the
+                  variable moved between input-level and stream-level within
+                  the same input type.
                 type: string
                 enum:
                   - input
                   - stream
               stream:
                 description: >
-                  The dataset name of the stream to pull the old value from.
-                  Only relevant when scope is "stream" and multiple streams
-                  may carry different values for this variable. If omitted,
-                  Fleet uses the first non-null value found across streams.
+                  The source stream to pull the old value from. May be written
+                  as the data stream folder name (e.g. `logs`) or the
+                  fully-qualified dataset (e.g. `mypackage.logs`); both forms
+                  are accepted. Required when `scope` is "stream" and the
+                  source input has more than one stream. May be omitted when
+                  the source input has exactly one stream. Has no effect when
+                  `scope` is "input".
                 type: string
-            required:
-              - scope
+            anyOf:
+              - required: [name]
+              - required: [scope]
         allOf:
          - if:
              properties:
