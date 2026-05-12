@@ -146,6 +146,10 @@ policy_templates:
             show_user: true
             default:
               - http://127.0.0.1
+      # deployment_modes on this input is intentionally kept to test the spec feature.
+      # Note: this causes Kibana's simplified package-policy API to reject policy creation
+      # for other templates in this package (https://github.com/elastic/kibana/issues/268930).
+      # The OTel compliance scenario uses good_integration_otel instead of good_v3 for this reason.
       - type: aws/s3
         title: Collect S3 logs (agentless only)
         description: Collecting logs from AWS S3 in agentless mode
