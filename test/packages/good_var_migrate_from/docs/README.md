@@ -17,7 +17,7 @@ This integration facilitates ...
 This integration is compatible with ...
 
 ### How it works
-{{/* Add a high level overview on how this integration works. For example, does it collect data from API calls or recieving data from a network or file.*/}}
+{{/* Add a high level overview on how this integration works. For example, does it collect data from API calls or receiving data from a network or file.*/}}
 
 ## What data does this integration collect?
 {{/* Complete this section with information on what types of data the integration collects, and link to reference documentation if available */}}
@@ -84,7 +84,7 @@ The fields template function will be replaced by a generated list of all fields 
 To include a generated list of fields from the `fields/` directory, uncomment and use:
 {{ fields "data_stream_name" }}
 
-The event template function will be replace by a sample event, taken from `sample_event.json`, when building this integration.
+The event template function will be replaced by a sample event, taken from `sample_event.json`, when building this integration.
 
 To include a sample event from `sample_event.json`, uncomment and use:
 {{ event "data_stream_name" }}
@@ -96,6 +96,6 @@ To include a sample event from `sample_event.json`, uncomment and use:
 {{ inputDocs }}
 
 ### API usage
-{{/* For integrations that use APIs to collect data, document all the APIs that are used, and link to relevent information */}}
+{{/* For integrations that use APIs to collect data, document all the APIs that are used, and link to relevant information */}}
 These APIs are used with this integration:
 * ...
