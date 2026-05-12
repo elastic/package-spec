@@ -1,0 +1,6 @@
+title: OTel metrics
+type: metrics
+streams:
+  - input: otel_metrics
+    title: Collect metrics via OTel receiver
+    description: Collecting metrics via OpenTelemetry receiver

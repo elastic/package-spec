@@ -156,7 +156,19 @@ func aPolicyIsCreatedWithPackageInputAndDataset(ctx context.Context, packageName
 	if err != nil {
 		return ctx, err
 	}
-	agentPolicyID, err := kibana.createPolicyForPackageInputAndDataset(packageName, packageVersion, templateName, inputName, inputType, dataset)
+	agentPolicyID, err := kibana.createPolicyForPackageInputAndDataset(packageName, packageVersion, templateName, inputName, inputType, inputType, dataset)
+	if err != nil {
+		return ctx, err
+	}
+	return context.WithValue(ctx, agentPolicyIDKey, agentPolicyID), nil
+}
+
+func aPolicyIsCreatedWithPackageInputEffectiveNameAndDataset(ctx context.Context, packageName, packageVersion, templateName, inputEffectiveName, inputName, inputType, dataset string) (context.Context, error) {
+	kibana, err := NewKibanaClient()
+	if err != nil {
+		return ctx, err
+	}
+	agentPolicyID, err := kibana.createPolicyForPackageInputAndDataset(packageName, packageVersion, templateName, inputName, inputType, inputEffectiveName, dataset)
 	if err != nil {
 		return ctx, err
 	}
@@ -432,6 +444,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^a policy is created with "([^"]*)" package$`, aPolicyIsCreatedWithPackage)
 	ctx.Step(`^a policy is created with "([^"]*)" package and "([^"]*)" version$`, aPolicyIsCreatedWithPackageAndVersion)
 	ctx.Step(`^a policy is created with "([^"]*)" package, "([^"]*)" version, "([^"]*)" template, "([^"]*)" input, "([^"]*)" input type and dataset "([^"]*)"$`, aPolicyIsCreatedWithPackageInputAndDataset)
+	ctx.Step(`^a policy is created with "([^"]*)" package, "([^"]*)" version, "([^"]*)" template, input effective name "([^"]*)", "([^"]*)" stream, "([^"]*)" input type and dataset "([^"]*)"$`, aPolicyIsCreatedWithPackageInputEffectiveNameAndDataset)
 	ctx.Step(`^there is an index template "([^"]*)" with pattern "([^"]*)"$`, thereIsAnIndexTemplateWithPattern)
 	ctx.Step(`^there is a transform "([^"]*)"$`, thereIsATransform)
 	ctx.Step(`^the transform "([^"]*)" has alias "([^"]*)" configured$`, theTransformHasAliasConfigured)

@@ -21,11 +21,16 @@ icons:
 policy_templates:
   - name: otel
     title: OTel logs
-    description: Collect logs via OTel receiver
+    description: Collect logs and metrics via OTel receiver
     inputs:
-      - type: otelcol
-        title: Collect via OTel receiver
-        description: Collecting data via OpenTelemetry receiver
+      - name: otel_logs
+        type: otelcol
+        title: Collect logs via OTel receiver
+        description: Collecting logs via OpenTelemetry receiver
+      - name: otel_metrics
+        type: otelcol
+        title: Collect metrics via OTel receiver
+        description: Collecting metrics via OpenTelemetry receiver
 owner:
   github: elastic/ecosystem
   type: elastic

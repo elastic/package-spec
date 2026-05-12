@@ -132,7 +132,7 @@ func (k *Kibana) createPolicyForPackage(name string, version string) (string, er
 		return "", fmt.Errorf("failed to create agent policy: %w", err)
 	}
 
-	err = k.createPackagePolicy(agentPolicy.Item.ID, name, version, "", "", "", "")
+	err = k.createPackagePolicy(agentPolicy.Item.ID, name, version, "", "", "", "", "")
 	if err != nil {
 		return "", fmt.Errorf("failed to create package policy: %w", err)
 	}
@@ -141,7 +141,9 @@ func (k *Kibana) createPolicyForPackage(name string, version string) (string, er
 }
 
 // createPolicyForPackageInputAndDataset creates a policy for a package with a custom dataset.
-func (k *Kibana) createPolicyForPackageInputAndDataset(name, version, templateName, inputName, inputType, dataset string) (string, error) {
+// inputEffectiveName is the input's effective name as defined by Fleet (name field when present,
+// otherwise the input type), used to build the simplified policy inputs key.
+func (k *Kibana) createPolicyForPackageInputAndDataset(name, version, templateName, inputName, inputType, inputEffectiveName, dataset string) (string, error) {
 	err := k.deletePackagePolicyForPackage(name)
 	if err != nil {
 		return "", fmt.Errorf("failed to delete agent policy: %w", err)
@@ -152,7 +154,7 @@ func (k *Kibana) createPolicyForPackageInputAndDataset(name, version, templateNa
 		return "", fmt.Errorf("failed to create agent policy: %w", err)
 	}
 
-	err = k.createPackagePolicy(agentPolicy.Item.ID, name, version, templateName, inputName, inputType, dataset)
+	err = k.createPackagePolicy(agentPolicy.Item.ID, name, version, templateName, inputName, inputType, inputEffectiveName, dataset)
 	if err != nil {
 		return "", fmt.Errorf("failed to create package policy: %w", err)
 	}
@@ -274,7 +276,7 @@ func (k *Kibana) createAgentPolicyForPackage(name string) (*agentPolicyResponse,
 	return &agentPolicy, nil
 }
 
-func (k *Kibana) createPackagePolicy(agentPolicyID, name, version, templateName, inputName, inputType, dataset string) error {
+func (k *Kibana) createPackagePolicy(agentPolicyID, name, version, templateName, inputName, inputType, inputEffectiveName, dataset string) error {
 	var packagePolicyRequest createPackagePolicyRequest
 	packagePolicyRequest.Name = name + "-test-1"
 	packagePolicyRequest.PolicyID = agentPolicyID
@@ -282,7 +284,7 @@ func (k *Kibana) createPackagePolicy(agentPolicyID, name, version, templateName,
 	packagePolicyRequest.Package.Version = version
 
 	if templateName != "" && inputName != "" && inputType != "" {
-		policyInputName := templateName + "-" + inputType
+		policyInputName := templateName + "-" + inputEffectiveName
 		policyStreamName := name + "." + inputName
 		vars := make(map[string]any)
 		if dataset != "" {
