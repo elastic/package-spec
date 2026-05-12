@@ -37,7 +37,7 @@ Feature: Basic package types support
 
   @3.6.0
   @skip
-  # Pending Kibana fix for named otelcol inputs not getting .otel index pattern suffix: https://github.com/elastic/kibana/issues/268930
+  # Still not working on 9.4.0, to be investigated.
   Scenario: Integration package with named OTel inputs can be installed
    Given the "good_integration_otel" package is installed
      And a policy is created with "good_integration_otel" package, "0.0.1" version, "otel" template, input effective name "otel_logs", "otel_logs" stream, "otelcol" input type and dataset ""
