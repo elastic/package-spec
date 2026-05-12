@@ -7,6 +7,7 @@ package semantic
 import (
 	"fmt"
 	"path"
+	"slices"
 	"sort"
 
 	"gopkg.in/yaml.v3"
@@ -54,8 +55,9 @@ func readPackageManifestPolicyTemplates(fsys fspath.FS) (string, []policyTemplat
 }
 
 // ValidatePolicyTemplateDatastreamCategories validates that when a policy template
-// entry in the package manifest.yml defines categories, those categories match the
-// categories defined in the manifest.yml of each referenced data stream.
+// entry in the package manifest.yml defines categories, each referenced data stream's
+// manifest.yml categories include all of the policy template's categories. Data streams
+// may declare additional categories beyond what the policy template specifies.
 // Data stream manifests without a categories field are skipped.
 func ValidatePolicyTemplateDatastreamCategories(fsys fspath.FS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
@@ -91,15 +93,16 @@ func ValidatePolicyTemplateDatastreamCategories(fsys fspath.FS) specerrors.Valid
 				continue
 			}
 
-			if !categoriesEqual(pt.Categories, dsCats) {
+			missing := missingCategories(pt.Categories, dsCats)
+			if len(missing) > 0 {
 				dsManifestPath := path.Join("data_stream", dsName, "manifest.yml")
 				errs = append(errs, specerrors.NewStructuredErrorf(
-					"file \"%s\" is invalid: policy template \"%s\" categories %v do not match data stream \"%s\" manifest categories %v (defined in \"%s\")",
+					"file \"%s\" is invalid: data stream \"%s\" manifest categories %v are missing policy template \"%s\" categories %v (defined in \"%s\")",
 					fsys.Path(manifestPath),
-					pt.Name,
-					pt.Categories,
 					dsName,
 					dsCats,
+					pt.Name,
+					missing,
 					fsys.Path(dsManifestPath),
 				))
 			}
@@ -139,22 +142,15 @@ func readDataStreamManifestCategories(fsys fspath.FS) (map[string][]string, erro
 	return result, nil
 }
 
-// categoriesEqual returns true if both slices contain exactly the same set of
-// categories, regardless of order.
-func categoriesEqual(a, b []string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	aCopy := make([]string, len(a))
-	bCopy := make([]string, len(b))
-	copy(aCopy, a)
-	copy(bCopy, b)
-	sort.Strings(aCopy)
-	sort.Strings(bCopy)
-	for i := range aCopy {
-		if aCopy[i] != bCopy[i] {
-			return false
+// missingCategories returns the categories present in want but absent from have.
+// The result is sorted for deterministic error output.
+func missingCategories(want, have []string) []string {
+	var missing []string
+	for _, c := range want {
+		if !slices.Contains(have, c) {
+			missing = append(missing, c)
 		}
 	}
-	return true
+	sort.Strings(missing)
+	return missing
 }

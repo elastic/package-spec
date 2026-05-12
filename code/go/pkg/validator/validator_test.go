@@ -152,7 +152,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_datastream_categories_mismatch": {
 			"manifest.yml",
 			[]string{
-				fmt.Sprintf(`policy template "mytemplate" categories [observability] do not match data stream "mylogs" manifest categories [security] (defined in "%sbad_datastream_categories_mismatch/data_stream/mylogs/manifest.yml")`, osTestBasePath),
+				fmt.Sprintf(`data stream "mylogs" manifest categories [security] are missing policy template "mytemplate" categories [observability] (defined in "%sbad_datastream_categories_mismatch/data_stream/mylogs/manifest.yml")`, osTestBasePath),
 			},
 		},
 		"bad_datastream_package_categories": {

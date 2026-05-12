@@ -127,7 +127,6 @@ func ValidateDatastreamPackageCategories(fsys fspath.FS) specerrors.ValidationEr
 
 	var errs specerrors.ValidationErrors
 	for dsName, dsCats := range dsCategories {
-		seen := make(map[string]bool)
 		var missingCats []string
 		for _, dsCat := range dsCats {
 			parent, known := categoryToParent[dsCat]
@@ -140,12 +139,9 @@ func ValidateDatastreamPackageCategories(fsys fspath.FS) specerrors.ValidationEr
 					dsCat,
 					fsys.Path(dsManifestPath),
 				))
-			}
-			if seen[parent] {
 				continue
 			}
-			seen[parent] = true
-			if !slices.Contains(pkgCategories, parent) {
+			if !slices.Contains(pkgCategories, parent) && !slices.Contains(missingCats, parent) {
 				missingCats = append(missingCats, parent)
 			}
 		}

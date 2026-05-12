@@ -58,7 +58,28 @@ categories:
 			},
 		},
 		{
-			title: "categories mismatch",
+			title: "data stream missing policy template category",
+			setup: func(t *testing.T, dir string) {
+				writeManifest(t, dir, `
+type: integration
+policy_templates:
+  - name: mytemplate
+    data_streams:
+      - mylogs
+    categories:
+      - observability
+      - network
+`)
+				writeDataStreamManifest(t, dir, "mylogs", `
+title: My Logs
+categories:
+  - observability
+`)
+			},
+			expectedErrs: []string{`policy template "mytemplate"`, `"mylogs"`, `[network]`},
+		},
+		{
+			title: "data stream has extra categories beyond policy template",
 			setup: func(t *testing.T, dir string) {
 				writeManifest(t, dir, `
 type: integration
@@ -76,7 +97,6 @@ categories:
   - security
 `)
 			},
-			expectedErrs: []string{`policy template "mytemplate"`, `"mylogs"`},
 		},
 		{
 			title: "data stream manifest has no categories field",
