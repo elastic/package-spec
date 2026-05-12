@@ -19,7 +19,7 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
-const packageRegistryCategoriesURL = "https://raw.githubusercontent.com/elastic/package-registry/main/categories/categories.yml"
+const packageRegistryCategoriesURL = "https://raw.githubusercontent.com/elastic/package-registry/v1.38.0/categories/categories.yml"
 
 type registryCategories struct {
 	Categories map[string]struct {
