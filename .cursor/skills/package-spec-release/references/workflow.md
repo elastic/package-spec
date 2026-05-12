@@ -60,7 +60,19 @@ Let `VERSION` = the agreed value (e.g. `3.6.1`).
 
 3. Do **not** change other `compliance_test` rows unless the user explicitly asked to refresh those stack/spec pairs.
 
-## 5. Go toolchain
+## 5. Review pending TODOs
+
+Scan for `# Pending on <url>` comments in both places:
+
+- **`spec/changelog.yml`** — comments above changelog entries waiting on external work.
+- **`compliance/features/*.feature`** — `@skip` tags with `# Pending …` comments on blocked scenarios.
+
+For each pending item, check the status of every linked issue/PR (use `gh pr view` / `gh issue view`):
+
+- **All blockers merged/closed?** Remove the `# Pending on …` comment (and the `@skip` tag if in a feature file). If the same blocker appears in both files, clean up both. Commit resolved items together with a short message describing what was unblocked.
+- **Any blocker still open?** Leave the item as-is; do nothing.
+
+## 6. Go toolchain
 
 1. Read `go.mod` `go` directive (repo minor; line may be `1.MM` or `1.MM.P`) and `.go-version` (full `1.MM.P`, e.g. `1.25.8`).
 2. From **official Go releases**, determine the **latest stable** version (minor + patch).
@@ -72,7 +84,7 @@ Let `VERSION` = the agreed value (e.g. `3.6.1`).
 4. **Patch-only path** (no newer stable minor than `go.mod`, **or** user chose patches only in step 3): resolve the **latest patch** for **`go.mod`’s minor**. If that patch is **greater** than `.go-version`, update **only** `.go-version`. Optionally run `go mod tidy` / `make check`.
 5. Do not churn unrelated `require` blocks; scope edits to the Go version lines unless `tidy` demands otherwise.
 
-## 6. `AGENTS.md`
+## 7. `AGENTS.md`
 
 After changelog and CI edits, scan `AGENTS.md` for:
 
@@ -81,17 +93,18 @@ After changelog and CI edits, scan `AGENTS.md` for:
 
 Update only what is **factually wrong** after the release edit (keep the doc accurate; avoid unrelated rewrites).
 
-## 7. Commits
+## 8. Commits
 
 Create **one commit per topic**, short imperative subject, e.g.:
 
 - `Update changelog for ${VERSION}`
 - `Bump compliance CI spec version to ${VERSION}`
+- `Resolve pending TODOs now that blockers are merged` (if applicable)
 - `Bump Go patch version in .go-version` (if applicable)
 - `Bump Go to 1.MM.P` (if `go.mod` / `.go-version` minor bump)
 - `Update AGENTS.md for ${VERSION} release`
 
-## 8. Push and pull request
+## 9. Push and pull request
 
 1. `git push ${FORK_REMOTE}` (same branch as in step 2; add `--set-upstream` on first push if not already set).
 2. Open a PR **from the fork** → **`elastic/package-spec` `main`** (GitHub UI or `gh pr create --repo elastic/package-spec --base main --head <fork-owner>:prepare-release-${VERSION} --title "Prepare release ${VERSION}"`). Derive `<fork-owner>` from the **`FORK_REMOTE`** URL if needed. If `gh` defaults the head correctly after `push`, `--head` may be omitted.
