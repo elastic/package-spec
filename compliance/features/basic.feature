@@ -37,11 +37,11 @@ Feature: Basic package types support
 
   @3.6.0
   @skip
-  # Pending support for qualified input names: https://github.com/elastic/package-spec/pull/1135 and https://github.com/elastic/kibana/pull/262138
-  Scenario: Integration package with OTel input can be installed
-   Given the "good_v3" package is installed
-     And a policy is created with "good_v3" package, "1.1.0" version, "otel" template, "otel_logs" input, "otelcol" input type and dataset ""
-    Then there is an index template "logs-good_v3.otel_logs" with pattern "logs-good_v3.otel_logs.otel-*"
+  # Still not working on 9.4.0, to be investigated.
+  Scenario: Integration package with named OTel inputs can be installed
+   Given the "good_integration_otel" package is installed
+     And a policy is created with "good_integration_otel" package, "0.0.1" version, "otel" template, input effective name "otel_logs", "otel_logs" stream, "otelcol" input type and dataset ""
+    Then there is an index template "logs-good_integration_otel.otel_logs" with pattern "logs-good_integration_otel.otel_logs.otel-*"
   
   @3.6.0
   Scenario: OTel input package with profiles type can be installed

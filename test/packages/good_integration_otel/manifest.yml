@@ -1,0 +1,36 @@
+format_version: 3.6.0
+name: good_integration_otel
+title: "Good OTel Integration package"
+version: 0.0.1
+source:
+  license: "Elastic-2.0"
+description: "Minimal integration package with an OTel input and an otel_logs data stream, used by basic compliance tests."
+type: integration
+categories:
+  - custom
+conditions:
+  kibana:
+    version: "^9.4.0"
+  elastic:
+    subscription: "basic"
+icons:
+  - src: /img/sample-logo.svg
+    title: Sample logo
+    size: 32x32
+    type: image/svg+xml
+policy_templates:
+  - name: otel
+    title: OTel logs
+    description: Collect logs and metrics via OTel receiver
+    inputs:
+      - name: otel_logs
+        type: otelcol
+        title: Collect logs via OTel receiver
+        description: Collecting logs via OpenTelemetry receiver
+      - name: otel_metrics
+        type: otelcol
+        title: Collect metrics via OTel receiver
+        description: Collecting metrics via OpenTelemetry receiver
+owner:
+  github: elastic/ecosystem
+  type: elastic

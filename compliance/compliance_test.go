@@ -134,33 +134,42 @@ type contextKey string
 
 const agentPolicyIDKey contextKey = "agentPolicyID"
 
+// withAgentPolicyID creates a Kibana client, runs fn, and stores the returned agent policy ID
+// in the context for use by subsequent steps.
+func withAgentPolicyID(ctx context.Context, fn func(*Kibana) (string, error)) (context.Context, error) {
+	kibana, err := NewKibanaClient()
+	if err != nil {
+		return ctx, err
+	}
+	agentPolicyID, err := fn(kibana)
+	if err != nil {
+		return ctx, err
+	}
+	return context.WithValue(ctx, agentPolicyIDKey, agentPolicyID), nil
+}
+
 func aPolicyIsCreatedWithPackage(ctx context.Context, packageName string) (context.Context, error) {
 	const version = "1.0.0"
 	return aPolicyIsCreatedWithPackageAndVersion(ctx, packageName, version)
 }
 
 func aPolicyIsCreatedWithPackageAndVersion(ctx context.Context, packageName, packageVersion string) (context.Context, error) {
-	kibana, err := NewKibanaClient()
-	if err != nil {
-		return ctx, err
-	}
-	agentPolicyID, err := kibana.createPolicyForPackage(packageName, packageVersion)
-	if err != nil {
-		return ctx, err
-	}
-	return context.WithValue(ctx, agentPolicyIDKey, agentPolicyID), nil
+	return withAgentPolicyID(ctx, func(k *Kibana) (string, error) {
+		return k.createPolicyForPackageInputAndDataset(packageName, packageVersion, "", "", "", "", "")
+	})
 }
 
 func aPolicyIsCreatedWithPackageInputAndDataset(ctx context.Context, packageName, packageVersion, templateName, inputName, inputType, dataset string) (context.Context, error) {
-	kibana, err := NewKibanaClient()
-	if err != nil {
-		return ctx, err
-	}
-	agentPolicyID, err := kibana.createPolicyForPackageInputAndDataset(packageName, packageVersion, templateName, inputName, inputType, dataset)
-	if err != nil {
-		return ctx, err
-	}
-	return context.WithValue(ctx, agentPolicyIDKey, agentPolicyID), nil
+	return withAgentPolicyID(ctx, func(k *Kibana) (string, error) {
+		// When no explicit input effective name is given, it equals the input type.
+		return k.createPolicyForPackageInputAndDataset(packageName, packageVersion, templateName, inputName, inputType, inputType, dataset)
+	})
+}
+
+func aPolicyIsCreatedWithPackageInputEffectiveNameAndDataset(ctx context.Context, packageName, packageVersion, templateName, inputEffectiveName, inputName, inputType, dataset string) (context.Context, error) {
+	return withAgentPolicyID(ctx, func(k *Kibana) (string, error) {
+		return k.createPolicyForPackageInputAndDataset(packageName, packageVersion, templateName, inputName, inputType, inputEffectiveName, dataset)
+	})
 }
 
 func thereIsAnIndexTemplateWithPattern(indexTemplateName, pattern string) error {
@@ -432,6 +441,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^a policy is created with "([^"]*)" package$`, aPolicyIsCreatedWithPackage)
 	ctx.Step(`^a policy is created with "([^"]*)" package and "([^"]*)" version$`, aPolicyIsCreatedWithPackageAndVersion)
 	ctx.Step(`^a policy is created with "([^"]*)" package, "([^"]*)" version, "([^"]*)" template, "([^"]*)" input, "([^"]*)" input type and dataset "([^"]*)"$`, aPolicyIsCreatedWithPackageInputAndDataset)
+	ctx.Step(`^a policy is created with "([^"]*)" package, "([^"]*)" version, "([^"]*)" template, input effective name "([^"]*)", "([^"]*)" stream, "([^"]*)" input type and dataset "([^"]*)"$`, aPolicyIsCreatedWithPackageInputEffectiveNameAndDataset)
 	ctx.Step(`^there is an index template "([^"]*)" with pattern "([^"]*)"$`, thereIsAnIndexTemplateWithPattern)
 	ctx.Step(`^there is a transform "([^"]*)"$`, thereIsATransform)
 	ctx.Step(`^the transform "([^"]*)" has alias "([^"]*)" configured$`, theTransformHasAliasConfigured)

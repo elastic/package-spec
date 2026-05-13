@@ -37,6 +37,7 @@ func TestValidateFile(t *testing.T) {
 		"good_geo_shape":                         {},
 		"good_input":                             {},
 		"good_input_otel":                        {},
+		"good_integration_otel":                  {},
 		"good_input_qualifier":                   {},
 		"good_input_fleet_reserved_vars":         {},
 		"good_integration_fleet_reserved_vars":   {},

@@ -8,6 +8,8 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+- version: 3.6.3
+  changes:
     - description: Add optional `release` field to agentless deployment mode to explicitly declare its release stage.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1130
@@ -21,7 +23,6 @@
     - description: Add var_groups support to policy template and input levels in integration packages, and to policy template and package root levels in input packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1120
-    # Pending on https://github.com/elastic/kibana/pull/262138
     - description: Add support for named inputs in policy templates to disambiguate multiple inputs of the same type.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1135
