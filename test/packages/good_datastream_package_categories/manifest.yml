@@ -1,0 +1,26 @@
+format_version: 3.6.0
+name: good_datastream_package_categories
+title: Good package where package manifest includes all datastream parent categories
+description: Package manifest categories include all parent-level categories present in the data stream manifests.
+version: 0.0.1
+type: integration
+categories:
+  - observability
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+policy_templates:
+  - name: mytemplate
+    title: My template
+    description: Collect my logs
+    data_streams:
+      - mylogs
+    inputs:
+      - type: logfile
+        title: Collect my logs
+        description: Collecting logs via log input
+owner:
+  github: elastic/foobar
+  type: community
