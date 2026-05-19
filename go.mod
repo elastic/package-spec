@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.5.0
 	github.com/PaesslerAG/jsonpath v0.1.1
 	github.com/aymerick/raymond v2.0.2+incompatible
-	github.com/boumenot/gocover-cobertura v1.4.0
+	github.com/boumenot/gocover-cobertura v1.5.0
 	github.com/creasty/defaults v1.8.0
 	github.com/elastic/go-licenser v0.4.2
 	github.com/elastic/gojsonschema v1.2.2
