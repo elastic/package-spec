@@ -2,6 +2,7 @@
 # in compliance/ (a separate Go module) may fall out of sync. This workflow
 # runs go mod tidy in compliance/ on every Dependabot go_modules push and
 # commits any resulting changes back to the branch.
+
 name: post-dependabot
 
 on:
