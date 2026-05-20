@@ -13,6 +13,9 @@
     - description: Add optional `release` field to agentless deployment mode to explicitly declare its release stage.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1130
+    - description: Add `migrate_from` object to variable definitions to declare that a variable moved between input-level and stream-level scope within the same input type.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1162
 - version: 3.6.2
   changes:
     - description: Add support for ML modules in content packages.
