@@ -11,8 +11,8 @@ github.com/aymerick/raymond v2.0.2+incompatible h1:VEp3GpgdAnv9B2GFyTvqgcKvY+mfK
 github.com/aymerick/raymond v2.0.2+incompatible/go.mod h1:osfaiScAUVup+UC9Nfq76eWqDhXlp+4UYaA8uhTBO6g=
 github.com/bitfield/gotestdox v0.2.2 h1:x6RcPAbBbErKLnapz1QeAlf3ospg8efBsedU93CDsnE=
 github.com/bitfield/gotestdox v0.2.2/go.mod h1:D+gwtS0urjBrzguAkTM2wodsTQYFHdpx8eqRJ3N+9pY=
-github.com/boumenot/gocover-cobertura v1.4.0 h1:ACJAt5wRi1HU+P9xNDgzWXgLMEVYUWeOgQWZwH+36kU=
-github.com/boumenot/gocover-cobertura v1.4.0/go.mod h1:Vme2O66tGa5gNpw5kwB+qzpULOnWSmnAHA5NYAOWFv8=
+github.com/boumenot/gocover-cobertura v1.5.0 h1:S2eXZ5snlTl+IGLXiM0litlpy9gf8AU8NagMaxX3nZM=
+github.com/boumenot/gocover-cobertura v1.5.0/go.mod h1:iB1/+oDwfRlsDzABskkid0cNdQ1A+u3O91XUJZWqgtg=
 github.com/creasty/defaults v1.8.0 h1:z27FJxCAa0JKt3utc0sCImAEb+spPucmKoOdLHvHYKk=
 github.com/creasty/defaults v1.8.0/go.mod h1:iGzKe6pbEHnpMPtfDXZEr0NVxWnPTjb1bbDy08fPzYM=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
