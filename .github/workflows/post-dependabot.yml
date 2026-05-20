@@ -1,0 +1,53 @@
+# When Dependabot bumps a dependency in the root module, indirect dependencies
+# in compliance/ (a separate Go module) may fall out of sync. This workflow
+# runs go mod tidy in compliance/ on every Dependabot go_modules push and
+# commits any resulting changes back to the branch.
+
+name: post-dependabot
+
+on:
+  push:
+    branches:
+      - 'dependabot/go_modules/**'
+      - '!dependabot/go_modules/compliance/**'
+
+permissions:
+  contents: write
+
+jobs:
+  update-compliance-go-mod:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: .go-version
+
+      - name: set up git user
+        uses: elastic/oblt-actions/git/setup@v1
+        with:
+          username: 'dependabot[bot]'
+          email: 'dependabot[bot]@users.noreply.github.com'
+
+      - name: Run go mod tidy in compliance
+        run: cd compliance && go mod tidy
+
+      - name: Check for compliance go.mod changes
+        id: compliance-check
+        run: |
+          if git diff --quiet HEAD -- compliance/go.mod compliance/go.sum; then
+            echo "modified=false" >> $GITHUB_OUTPUT
+          else
+            echo "modified=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit compliance go.mod changes
+        if: steps.compliance-check.outputs.modified == 'true'
+        run: |
+          git add compliance/go.mod compliance/go.sum
+          git commit -m "Update compliance go.mod"
+
+      - name: Push compliance go.mod changes
+        if: steps.compliance-check.outputs.modified == 'true'
+        run: git push
