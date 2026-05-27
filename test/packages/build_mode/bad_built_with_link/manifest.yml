@@ -1,7 +1,7 @@
 format_version: 3.6.0
-name: good_built
-title: Good Built Package
-description: Canonical minimal built-package fixture for build-mode validation tests (issue #549).
+name: bad_built_with_link
+title: Bad Built Package - Link Files Present
+description: Built-package fixture containing .link files - invalid in build mode (issue #549).
 version: 0.0.1
 type: integration
 source:

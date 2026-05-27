@@ -51,7 +51,7 @@ func TestValidateNoLinkFiles(t *testing.T) {
 		},
 		{
 			name:         "file with .link in the middle of the name is not rejected",
-			files:        []string{"data_stream/foo/fields/base-fields.yml"},
+			files:        []string{"data_stream/foo/fields/base-fields.link.yml"},
 			expectErrors: false,
 		},
 	}
