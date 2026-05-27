@@ -356,6 +356,39 @@ func TestBuildMode_NoLinkFiles(t *testing.T) {
 }
 
 // -----------------------------------------------------------------------
+// TestBuildMode_NoExternalEcs
+//
+// Verifies that ModeBuild:
+//   - Rejects a package containing a field with external: ecs.
+//   - Does NOT raise an external-ecs error in ModeSource (source allows
+//     external: ecs references via the build dependency mechanism).
+// -----------------------------------------------------------------------
+
+func TestBuildMode_NoExternalEcs(t *testing.T) {
+	badBuiltPath := filepath.Join(testPackagesDir, "build_mode", "bad_built_external_ecs")
+	goodV3Path := filepath.Join(testPackagesDir, "good_v3")
+
+	t.Run("bad_built_external_ecs fails ModeBuild", func(t *testing.T) {
+		v, err := NewFromPath(ModeBuild, badBuiltPath)
+		require.NoError(t, err)
+		buildErr := v.Validate()
+		require.Error(t, buildErr, "bad_built_external_ecs should fail build-mode validation")
+		assert.Contains(t, buildErr.Error(), "external: ecs")
+		assert.Contains(t, buildErr.Error(), "ECS fields must be materialized")
+	})
+
+	t.Run("good_v3 with external: ecs passes ModeSource", func(t *testing.T) {
+		v, err := NewFromPath(ModeSource, goodV3Path)
+		require.NoError(t, err)
+		sourceErr := v.Validate()
+		if sourceErr != nil {
+			assert.NotContains(t, sourceErr.Error(), "ECS fields must be materialized",
+				"ValidateNoExternalEcs must not run in source mode")
+		}
+	})
+}
+
+// -----------------------------------------------------------------------
 // TestLegacyPreservation_FromZip (golden test)
 //
 // Zips up test/packages/good, runs both ValidateFromZip and
