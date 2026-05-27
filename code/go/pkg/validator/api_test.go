@@ -324,6 +324,38 @@ func TestBuildMode_NoDevFolder(t *testing.T) {
 }
 
 // -----------------------------------------------------------------------
+// TestBuildMode_NoLinkFiles
+//
+// Verifies that ModeBuild:
+//   - Rejects a package containing a .link file with a clean error.
+//   - Does NOT raise a .link error when validating in ModeSource (source
+//     resolves .link files transparently via linkedfiles.NewFS).
+// -----------------------------------------------------------------------
+
+func TestBuildMode_NoLinkFiles(t *testing.T) {
+	badBuiltPath := filepath.Join(testPackagesDir, "build_mode", "bad_built_with_link")
+	withLinksPath := filepath.Join(testPackagesDir, "with_links")
+
+	t.Run("bad_built_with_link fails ModeBuild", func(t *testing.T) {
+		v, err := NewFromPath(ModeBuild, badBuiltPath)
+		require.NoError(t, err)
+		buildErr := v.Validate()
+		require.Error(t, buildErr, "bad_built_with_link should fail build-mode validation")
+		assert.Contains(t, buildErr.Error(), ".link files are not allowed in built packages")
+	})
+
+	t.Run("with_links passes ModeSource (.link files allowed in source mode)", func(t *testing.T) {
+		v, err := NewFromPath(ModeSource, withLinksPath)
+		require.NoError(t, err)
+		sourceErr := v.Validate()
+		if sourceErr != nil {
+			assert.NotContains(t, sourceErr.Error(), ".link files are not allowed",
+				"ValidateNoLinkFiles must not run in source mode")
+		}
+	})
+}
+
+// -----------------------------------------------------------------------
 // TestLegacyPreservation_FromZip (golden test)
 //
 // Zips up test/packages/good, runs both ValidateFromZip and
