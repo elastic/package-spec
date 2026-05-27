@@ -262,6 +262,8 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateNoDevFolder, modes: []modes.Mode{modes.Build}},
 		{fn: semantic.ValidateNoLinkFiles, modes: []modes.Mode{modes.Build}},
 		{fn: semantic.ValidateNoExternalEcs, modes: []modes.Mode{modes.Build}},
+		{fn: semantic.ValidateStreamInputMaterialized, modes: []modes.Mode{modes.Build},
+			types: []string{"integration"}},
 	}
 
 	var validationRules validationRules

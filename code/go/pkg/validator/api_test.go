@@ -389,6 +389,77 @@ func TestBuildMode_NoExternalEcs(t *testing.T) {
 }
 
 // -----------------------------------------------------------------------
+// TestBuildMode_StreamInputMaterialized
+//
+// Verifies that ModeBuild:
+//   - Rejects a data stream manifest stream that carries a source-only 'package:' field.
+//   - Rejects a data stream manifest stream that is missing the required 'input:' field.
+//   - Rejects a package manifest policy_template input that carries a source-only 'package:' field.
+//   - Does NOT raise these errors in ModeSource (source allows composable-input pattern).
+//   - good_built still passes.
+// -----------------------------------------------------------------------
+
+func TestBuildMode_StreamInputMaterialized(t *testing.T) {
+	goodBuiltPath := filepath.Join(testPackagesDir, "build_mode", "good_built")
+	badStreamPackagePath := filepath.Join(testPackagesDir, "build_mode", "bad_built_stream_package")
+	badMissingInputPath := filepath.Join(testPackagesDir, "build_mode", "bad_built_missing_input")
+	badPolicyTemplatePkgPath := filepath.Join(testPackagesDir, "build_mode", "bad_built_policy_template_package")
+
+	t.Run("good_built passes ModeBuild (stream materialization)", func(t *testing.T) {
+		v, err := NewFromPath(ModeBuild, goodBuiltPath)
+		require.NoError(t, err)
+		assert.NoError(t, v.Validate(), "good_built should pass build-mode validation")
+	})
+
+	t.Run("bad_built_stream_package fails ModeBuild (package: in data stream)", func(t *testing.T) {
+		v, err := NewFromPath(ModeBuild, badStreamPackagePath)
+		require.NoError(t, err)
+		buildErr := v.Validate()
+		require.Error(t, buildErr, "bad_built_stream_package should fail build-mode validation")
+		assert.Contains(t, buildErr.Error(), "'package:'")
+		assert.Contains(t, buildErr.Error(), "source-only")
+	})
+
+	t.Run("bad_built_stream_package passes ModeSource (package: allowed in source)", func(t *testing.T) {
+		v, err := NewFromPath(ModeSource, badStreamPackagePath)
+		require.NoError(t, err)
+		sourceErr := v.Validate()
+		if sourceErr != nil {
+			assert.NotContains(t, sourceErr.Error(), "source-only",
+				"ValidateStreamInputMaterialized must not run in source mode")
+		}
+	})
+
+	t.Run("bad_built_missing_input fails ModeBuild (missing input: in data stream)", func(t *testing.T) {
+		v, err := NewFromPath(ModeBuild, badMissingInputPath)
+		require.NoError(t, err)
+		buildErr := v.Validate()
+		require.Error(t, buildErr, "bad_built_missing_input should fail build-mode validation")
+		assert.Contains(t, buildErr.Error(), "missing required 'input:'")
+	})
+
+	t.Run("bad_built_policy_template_package fails ModeBuild (package: in policy_template input)", func(t *testing.T) {
+		v, err := NewFromPath(ModeBuild, badPolicyTemplatePkgPath)
+		require.NoError(t, err)
+		buildErr := v.Validate()
+		require.Error(t, buildErr, "bad_built_policy_template_package should fail build-mode validation")
+		assert.Contains(t, buildErr.Error(), "'package:'")
+		assert.Contains(t, buildErr.Error(), "source-only")
+		assert.Contains(t, buildErr.Error(), "build packages must use 'type:'")
+	})
+
+	t.Run("bad_built_policy_template_package passes ModeSource (package: allowed in source)", func(t *testing.T) {
+		v, err := NewFromPath(ModeSource, badPolicyTemplatePkgPath)
+		require.NoError(t, err)
+		sourceErr := v.Validate()
+		if sourceErr != nil {
+			assert.NotContains(t, sourceErr.Error(), "build packages must use 'type:'",
+				"ValidateStreamInputMaterialized must not run in source mode")
+		}
+	})
+}
+
+// -----------------------------------------------------------------------
 // TestLegacyPreservation_FromZip (golden test)
 //
 // Zips up test/packages/good, runs both ValidateFromZip and
