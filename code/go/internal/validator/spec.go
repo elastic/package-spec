@@ -17,6 +17,7 @@ import (
 
 	spec "github.com/elastic/package-spec/v3"
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
+	"github.com/elastic/package-spec/v3/code/go/internal/validator/modes"
 	"github.com/elastic/package-spec/v3/code/go/internal/loader"
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
 	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
@@ -32,6 +33,8 @@ type Spec struct {
 	specVersion semver.Version
 	// fs contains the filesystem of the spec.
 	fs fs.FS
+	// mode is the validation mode (legacy, source, build).
+	mode modes.Mode
 
 	// WarningsAsErrors causes validation warnings to be reported as errors when true.
 	WarningsAsErrors bool
@@ -44,8 +47,13 @@ type validationRules []validationRule
 // GASpecCheckVersion represents minimum version to start checking for unreleased version of the spec
 var GASpecCheckVersion = semver.MustParse("3.0.1")
 
-// NewSpec creates a new Spec for the given version
-func NewSpec(version semver.Version) (*Spec, error) {
+// NewSpec creates a new Spec for the given version and validation mode.
+// If mode is empty, it defaults to modes.Legacy.
+func NewSpec(version semver.Version, mode modes.Mode) (*Spec, error) {
+	if mode == "" {
+		mode = modes.Legacy
+	}
+
 	specVersion, err := spec.CheckVersion(version)
 	if err != nil {
 		return nil, fmt.Errorf("could not load specification for version [%s]: %w", version.String(), err)
@@ -62,6 +70,7 @@ func NewSpec(version semver.Version) (*Spec, error) {
 		version:     version,
 		specVersion: *specVersion,
 		fs:          spec.FS(),
+		mode:        mode,
 	}
 
 	return &s, nil
@@ -199,6 +208,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		since *semver.Version
 		until *semver.Version
 		types []string
+		modes []modes.Mode
 	}{
 		{fn: semantic.ValidateVersionIntegrity},
 		{fn: semantic.ValidateChangelogLinks},
@@ -257,6 +267,10 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		}
 
 		if rule.types != nil && !slices.Contains(rule.types, pkgType) {
+			continue
+		}
+
+		if rule.modes != nil && !slices.Contains(rule.modes, s.mode) {
 			continue
 		}
 

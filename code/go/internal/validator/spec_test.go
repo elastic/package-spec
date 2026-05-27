@@ -13,6 +13,7 @@ import (
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
+	"github.com/elastic/package-spec/v3/code/go/internal/validator/modes"
 )
 
 func TestNewSpec(t *testing.T) {
@@ -26,7 +27,7 @@ func TestNewSpec(t *testing.T) {
 	}
 
 	for version, test := range tests {
-		spec, err := NewSpec(*semver.MustParse(version))
+		spec, err := NewSpec(*semver.MustParse(version), modes.Legacy)
 		if test.expectedErrContains == "" {
 			require.NoError(t, err)
 			require.IsType(t, &Spec{}, spec)
