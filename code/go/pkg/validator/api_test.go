@@ -277,9 +277,8 @@ func TestBuildMode_SkipsBuildExcludedRules(t *testing.T) {
 
 	buildErr := buildV.Validate()
 	if buildErr != nil {
-		// The only acceptable errors here are from build-mode rejection rules
-		// (Tasks 04-07, not yet implemented). ValidateExternalFieldsWithDevFolder
-		// must NOT have contributed an error.
+		// The only acceptable errors here are from build-mode rejection rules.
+		// ValidateExternalFieldsWithDevFolder must NOT have contributed an error.
 		assert.NotContains(t, buildErr.Error(), "external key defined",
 			"ValidateExternalFieldsWithDevFolder must not run in build mode")
 	}
@@ -313,6 +312,9 @@ func TestBuildMode_NoDevFolder(t *testing.T) {
 	})
 
 	t.Run("bad_built_with_dev passes ModeSource (source allows _dev/)", func(t *testing.T) {
+		// bad_built_with_dev is not a valid source package (its _dev/build/build.yml
+		// is empty and other source rules fire). We can only assert that the
+		// build-only rule — ValidateNoDevFolder — did not contribute an error.
 		v, err := NewFromPath(ModeSource, badBuiltPath)
 		require.NoError(t, err)
 		sourceErr := v.Validate()
@@ -345,6 +347,9 @@ func TestBuildMode_NoLinkFiles(t *testing.T) {
 	})
 
 	t.Run("with_links passes ModeSource (.link files allowed in source mode)", func(t *testing.T) {
+		// with_links resolves .link files transparently in source mode; other
+		// source rules may still fire on that fixture. We can only assert that
+		// ValidateNoLinkFiles did not contribute an error.
 		v, err := NewFromPath(ModeSource, withLinksPath)
 		require.NoError(t, err)
 		sourceErr := v.Validate()
@@ -378,13 +383,10 @@ func TestBuildMode_NoExternalEcs(t *testing.T) {
 	})
 
 	t.Run("good_v3 with external: ecs passes ModeSource", func(t *testing.T) {
+		// good_v3 is a known-good source fixture; it must pass source-mode cleanly.
 		v, err := NewFromPath(ModeSource, goodV3Path)
 		require.NoError(t, err)
-		sourceErr := v.Validate()
-		if sourceErr != nil {
-			assert.NotContains(t, sourceErr.Error(), "ECS fields must be materialized",
-				"ValidateNoExternalEcs must not run in source mode")
-		}
+		require.NoError(t, v.Validate(), "good_v3 should pass source-mode validation")
 	})
 }
 
@@ -421,6 +423,9 @@ func TestBuildMode_StreamInputMaterialized(t *testing.T) {
 	})
 
 	t.Run("bad_built_stream_package passes ModeSource (package: allowed in source)", func(t *testing.T) {
+		// bad_built_stream_package is not a valid source package (it lacks a
+		// _dev/build/build.yml for its external ECS field, among other issues).
+		// We can only assert that ValidateStreamInputMaterialized did not fire.
 		v, err := NewFromPath(ModeSource, badStreamPackagePath)
 		require.NoError(t, err)
 		sourceErr := v.Validate()
@@ -449,6 +454,9 @@ func TestBuildMode_StreamInputMaterialized(t *testing.T) {
 	})
 
 	t.Run("bad_built_policy_template_package passes ModeSource (package: allowed in source)", func(t *testing.T) {
+		// bad_built_policy_template_package has an unlisted package reference in its
+		// requires section, so other source rules fire. We can only assert that
+		// ValidateStreamInputMaterialized did not fire.
 		v, err := NewFromPath(ModeSource, badPolicyTemplatePkgPath)
 		require.NoError(t, err)
 		sourceErr := v.Validate()
