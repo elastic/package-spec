@@ -955,7 +955,9 @@ func TestValidateWarnings(t *testing.T) {
 		t.Run(pkgName, func(t *testing.T) {
 			t.Parallel()
 			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
-			errs := validateFromFS(pkgRootPath, linkedfiles.NewFS(pkgRootPath, os.DirFS(pkgRootPath)), warningsAsErrros)
+			v, err := NewFromFS(ModeLegacy, pkgRootPath, linkedfiles.NewFS(pkgRootPath, os.DirFS(pkgRootPath)), WithWarningsAsErrors(warningsAsErrros))
+			require.NoError(t, err)
+			errs := v.Validate()
 			if len(expectedWarnContains) == 0 {
 				require.NoError(t, errs)
 			} else {
