@@ -286,6 +286,44 @@ func TestBuildMode_SkipsBuildExcludedRules(t *testing.T) {
 }
 
 // -----------------------------------------------------------------------
+// TestBuildMode_NoDevFolder
+//
+// Verifies that ModeBuild:
+//   - Accepts the canonical good_built fixture (no _dev/ present).
+//   - Rejects a package containing a _dev/ directory with a clear error.
+//   - Does NOT reject _dev/ when validating in ModeSource (source allows _dev/).
+// -----------------------------------------------------------------------
+
+func TestBuildMode_NoDevFolder(t *testing.T) {
+	goodBuiltPath := filepath.Join(testPackagesDir, "build_mode", "good_built")
+	badBuiltPath := filepath.Join(testPackagesDir, "build_mode", "bad_built_with_dev")
+
+	t.Run("good_built passes ModeBuild", func(t *testing.T) {
+		v, err := NewFromPath(ModeBuild, goodBuiltPath)
+		require.NoError(t, err)
+		assert.NoError(t, v.Validate(), "good_built should pass build-mode validation")
+	})
+
+	t.Run("bad_built_with_dev fails ModeBuild", func(t *testing.T) {
+		v, err := NewFromPath(ModeBuild, badBuiltPath)
+		require.NoError(t, err)
+		buildErr := v.Validate()
+		require.Error(t, buildErr, "bad_built_with_dev should fail build-mode validation")
+		assert.Contains(t, buildErr.Error(), "_dev directory is not allowed in built packages")
+	})
+
+	t.Run("bad_built_with_dev passes ModeSource (source allows _dev/)", func(t *testing.T) {
+		v, err := NewFromPath(ModeSource, badBuiltPath)
+		require.NoError(t, err)
+		sourceErr := v.Validate()
+		if sourceErr != nil {
+			assert.NotContains(t, sourceErr.Error(), "_dev directory is not allowed",
+				"ValidateNoDevFolder must not run in source mode")
+		}
+	})
+}
+
+// -----------------------------------------------------------------------
 // TestLegacyPreservation_FromZip (golden test)
 //
 // Zips up test/packages/good, runs both ValidateFromZip and
