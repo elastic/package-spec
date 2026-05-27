@@ -6,3 +6,5 @@ fuzz
 /build/
 .vscode/
 .DS_Store
+
+.scratch/
