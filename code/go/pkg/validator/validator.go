@@ -15,6 +15,7 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
 	"github.com/elastic/package-spec/v3/code/go/internal/validator"
 	"github.com/elastic/package-spec/v3/code/go/internal/validator/common"
+	"github.com/elastic/package-spec/v3/code/go/internal/validator/modes"
 )
 
 // ValidateFromPath validates a package located at the given path against the
@@ -70,7 +71,7 @@ func validateFromFS(location string, fsys fs.FS, warningsAsErrors bool) error {
 		return errors.New("could not determine specification version for package")
 	}
 
-	spec, err := validator.NewSpec(*pkg.SpecVersion)
+	spec, err := validator.NewSpec(*pkg.SpecVersion, modes.Legacy)
 	if err != nil {
 		return err
 	}
