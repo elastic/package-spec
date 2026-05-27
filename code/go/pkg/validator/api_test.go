@@ -6,9 +6,11 @@ package validator
 
 import (
 	"archive/zip"
+	"errors"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -57,6 +59,32 @@ func extractMessages(err error) []string {
 		return msgs
 	}
 	return []string{err.Error()}
+}
+
+// applyPackageFilter applies the validation.yml filter from pkgPath if it exists,
+// returning the filtered error (or the original if no filter is present).
+//
+// This mirrors the filter logic in TestValidateFile so that packages with known
+// excluded error codes (e.g. SVR00006 in good_deployer_system_benchmark) are
+// treated the same way across all integration tests.
+func applyPackageFilter(t *testing.T, pkgPath string, err error) error {
+	t.Helper()
+	if err == nil {
+		return nil
+	}
+	verrs, ok := err.(specerrors.ValidationErrors)
+	if !ok {
+		return err
+	}
+	filterConfig, filterErr := specerrors.LoadConfigFilter(os.DirFS(pkgPath))
+	if errors.Is(filterErr, os.ErrNotExist) {
+		return err // no validation.yml — return original
+	}
+	require.NoError(t, filterErr, "loading validation.yml for %s", pkgPath)
+	filter := specerrors.NewFilter(filterConfig)
+	result, filterRunErr := filter.Run(verrs)
+	require.NoError(t, filterRunErr, "running filter for %s", pkgPath)
+	return result.Processed
 }
 
 // listTestPackages returns the names of every directory under testPackagesDir.
@@ -168,6 +196,92 @@ func TestLegacyPreservation_FromFS(t *testing.T) {
 
 			assertErrorsEqual(t, legacyErr, newErr)
 		})
+	}
+}
+
+// -----------------------------------------------------------------------
+// TestSourceMode_GoodPackages
+//
+// Asserts that every good_* fixture under test/packages/ passes source-mode
+// validation. Source mode runs all the rules that legacy mode runs plus
+// source-only checks (e.g. rejecting _embedded_ecs in dynamic_templates).
+// All packages prefixed "good_" are expected to represent valid source trees.
+// -----------------------------------------------------------------------
+
+func TestSourceMode_GoodPackages(t *testing.T) {
+	for _, pkgName := range listTestPackages(t) {
+		if pkgName != "good" && !strings.HasPrefix(pkgName, "good_") {
+			continue
+		}
+		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
+			pkgPath := filepath.Join(testPackagesDir, pkgName)
+
+			v, err := NewFromPath(ModeSource, pkgPath)
+			require.NoError(t, err)
+			rawErr := v.Validate()
+			filteredErr := applyPackageFilter(t, pkgPath, rawErr)
+			assert.NoError(t, filteredErr, "package %q should be valid in source mode (after applying validation.yml filter)", pkgName)
+		})
+	}
+}
+
+// -----------------------------------------------------------------------
+// TestSourceMode_BadEmbeddedEcs
+//
+// Asserts that a package containing _embedded_ecs keys in dynamic_templates:
+//   - passes legacy validation  (_embedded_ecs is not checked in legacy mode)
+//   - fails source-mode validation with a clear reference to the offending key
+//   - passes build-mode validation  (rule is source-only, not build-only)
+// -----------------------------------------------------------------------
+
+func TestSourceMode_BadEmbeddedEcs(t *testing.T) {
+	packagePath := filepath.Join(testPackagesDir, "bad_embedded_ecs")
+
+	// Legacy mode: ValidateNoEmbeddedEcsInDynamicTemplates does not run → passes.
+	legacyV, err := NewFromPath(ModeLegacy, packagePath)
+	require.NoError(t, err)
+	assert.NoError(t, legacyV.Validate(), "bad_embedded_ecs should pass legacy validation")
+
+	// Source mode: _embedded_ecs is rejected → fails with a clear error.
+	sourceV, err := NewFromPath(ModeSource, packagePath)
+	require.NoError(t, err)
+	sourceErr := sourceV.Validate()
+	require.Error(t, sourceErr, "bad_embedded_ecs should fail source-mode validation")
+	assert.Contains(t, sourceErr.Error(), "_embedded_ecs")
+
+	// Build mode: rule is source-only (modes:[Source]), not build-only → passes.
+	buildV, err := NewFromPath(ModeBuild, packagePath)
+	require.NoError(t, err)
+	assert.NoError(t, buildV.Validate(), "bad_embedded_ecs should pass build-mode validation (_embedded_ecs is a build artifact)")
+}
+
+// -----------------------------------------------------------------------
+// TestBuildMode_SkipsBuildExcludedRules
+//
+// Verifies that rules tagged modes:[Legacy, Source] (i.e. excluded from build
+// mode) do not fire when validating in ModeBuild.
+//
+// ValidateExternalFieldsWithDevFolder is the canary: good_integration_with_dev_tools
+// has external fields and a _dev/build/build.yml; it passes in source mode via
+// that rule — in build mode the rule must be absent (no "external key defined" error).
+// -----------------------------------------------------------------------
+
+func TestBuildMode_SkipsBuildExcludedRules(t *testing.T) {
+	// good_integration_with_dev_tools has external fields + _dev/build/build.yml
+	// and is the canonical fixture for ValidateExternalFieldsWithDevFolder.
+	packagePath := filepath.Join(testPackagesDir, "good_integration_with_dev_tools")
+
+	buildV, err := NewFromPath(ModeBuild, packagePath)
+	require.NoError(t, err)
+
+	buildErr := buildV.Validate()
+	if buildErr != nil {
+		// The only acceptable errors here are from build-mode rejection rules
+		// (Tasks 04-07, not yet implemented). ValidateExternalFieldsWithDevFolder
+		// must NOT have contributed an error.
+		assert.NotContains(t, buildErr.Error(), "external key defined",
+			"ValidateExternalFieldsWithDevFolder must not run in build mode")
 	}
 }
 
