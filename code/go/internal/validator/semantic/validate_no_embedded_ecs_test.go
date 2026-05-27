@@ -170,3 +170,20 @@ elasticsearch:
 		})
 	}
 }
+
+// TestListDataStreamsIgnoresNonDirectories verifies that stray files directly
+// under data_stream/ (e.g. .gitkeep, .DS_Store) are silently skipped and do
+// not cause spurious validation errors.
+func TestListDataStreamsIgnoresNonDirectories(t *testing.T) {
+	tempDir := t.TempDir()
+
+	// Create data_stream/ with only a stray file — no subdirectories.
+	dataStreamDir := filepath.Join(tempDir, "data_stream")
+	require.NoError(t, os.MkdirAll(dataStreamDir, 0755))
+	require.NoError(t, os.WriteFile(filepath.Join(dataStreamDir, ".gitkeep"), []byte(""), 0644))
+	require.NoError(t, os.WriteFile(filepath.Join(dataStreamDir, ".DS_Store"), []byte(""), 0644))
+
+	fsys := fspath.DirFS(tempDir)
+	errs := ValidateNoEmbeddedEcsInDynamicTemplates(fsys)
+	assert.Nil(t, errs, "stray files under data_stream/ should produce no errors, got: %v", errs)
+}
