@@ -254,6 +254,65 @@ streams:
 		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
 		require.Empty(t, errs)
 	})
+
+	t.Run("composable stream with no explicit templates skips validation", func(t *testing.T) {
+		d := t.TempDir()
+		writeMinimalIntegrationManifest(t, d)
+		// No agent/stream directory — templates come entirely from the input package.
+		err := os.MkdirAll(filepath.Join(d, "data_stream", "logs"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "manifest.yml"), []byte(`
+streams:
+  - package: some_input_package
+    title: Composable
+    description: d
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
+		require.Empty(t, errs)
+	})
+
+	t.Run("composable stream with explicit template_paths validates those files", func(t *testing.T) {
+		d := t.TempDir()
+		writeMinimalIntegrationManifest(t, d)
+		err := os.MkdirAll(filepath.Join(d, "data_stream", "logs", "agent", "stream"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "agent", "stream", "overlay.yml.hbs"), []byte(`x`), 0o644)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "manifest.yml"), []byte(`
+streams:
+  - package: some_input_package
+    title: Composable with overlay
+    description: d
+    template_paths:
+      - overlay.yml.hbs
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
+		require.Empty(t, errs)
+	})
+
+	t.Run("composable stream with explicit template_paths fails when file missing", func(t *testing.T) {
+		d := t.TempDir()
+		writeMinimalIntegrationManifest(t, d)
+		err := os.MkdirAll(filepath.Join(d, "data_stream", "logs", "agent", "stream"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "data_stream", "logs", "manifest.yml"), []byte(`
+streams:
+  - package: some_input_package
+    title: Composable with overlay
+    description: d
+    template_paths:
+      - missing.yml.hbs
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
+		require.Len(t, errs, 1)
+		require.Contains(t, errs[0].Error(), "template file not found")
+	})
 }
 func TestValidateIntegrationPolicyTemplates_NonIntegrationType(t *testing.T) {
 	d := t.TempDir()
