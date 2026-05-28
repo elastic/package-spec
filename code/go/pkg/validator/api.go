@@ -54,12 +54,21 @@ func NewFromPath(mode Mode, packageRootPath string, opts ...Option) (*Validator,
 }
 
 // NewFromZip returns a Validator for the package stored in the zip file at zipPath.
-// The zip must contain exactly one top-level directory holding the package tree,
-// which is the format produced by elastic-package build.
+//
+// Zip files always contain built packages — they are the output format produced
+// by elastic-package build and consumed by the package registry and Fleet.
+// Validation always runs in ModeBuild; source-only artifacts (_dev/, .link files,
+// external: ecs references) are therefore rejected.
 //
 // The returned Validator owns the underlying zip reader; calling Validate closes it.
 // Do not call Validate more than once on a Validator created by NewFromZip.
-func NewFromZip(mode Mode, zipPath string, opts ...Option) (_ *Validator, err error) {
+func NewFromZip(zipPath string, opts ...Option) (_ *Validator, err error) {
+	return newFromZip(ModeBuild, zipPath, opts...)
+}
+
+// newFromZip is the internal constructor used by both NewFromZip (ModeBuild) and
+// the deprecated ValidateFromZip wrapper (ModeLegacy).
+func newFromZip(mode Mode, zipPath string, opts ...Option) (_ *Validator, err error) {
 	r, openErr := zip.OpenReader(zipPath)
 	if openErr != nil {
 		return nil, fmt.Errorf("failed to open zip file (%s): %w", zipPath, openErr)
@@ -84,18 +93,24 @@ func NewFromZip(mode Mode, zipPath string, opts ...Option) (_ *Validator, err er
 		return nil, err
 	}
 
-	// Zip archives never contain live symlinks, so always block linked files.
+	// Zip archives contain built packages; linked files are always blocked.
 	fsys := linkedfiles.NewBlockFS(subDir)
 	return buildValidator(mode, zipPath, fsys, r, opts), nil
 }
 
 // NewFromFS returns a Validator for the package accessible through fsys at location.
 //
-// Unless fsys is already a *linkedfiles.FS it is wrapped with a BlockFS that
-// rejects linked files — matching the behaviour of ValidateFromFS.
+// For ModeSource, if fsys is not already a *linkedfiles.FS, it is wrapped with
+// linkedfiles.NewFS so that .link files are resolved transparently (consistent
+// with ModeSource's contract). For ModeLegacy and ModeBuild, a BlockFS is applied
+// instead — matching the behaviour of ValidateFromFS.
 func NewFromFS(mode Mode, location string, fsys fs.FS, opts ...Option) (*Validator, error) {
 	if _, ok := fsys.(*linkedfiles.FS); !ok {
-		fsys = linkedfiles.NewBlockFS(fsys)
+		if mode == ModeSource {
+			fsys = linkedfiles.NewFS(location, fsys)
+		} else {
+			fsys = linkedfiles.NewBlockFS(fsys)
+		}
 	}
 	return buildValidator(mode, location, fsys, nil, opts), nil
 }

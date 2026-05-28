@@ -20,7 +20,6 @@ import (
 
 const (
 	defaultStreamTemplatePath = "stream.yml.hbs"
-	packageTypeIntegration    = "integration"
 )
 
 type policyTemplateInput struct {
@@ -78,7 +77,7 @@ func ValidateIntegrationPolicyTemplates(fsys fspath.FS) specerrors.ValidationErr
 			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), errFailedToParseManifest)}
 	}
 
-	if manifest.Type != packageTypeIntegration {
+	if manifest.Type != integrationPackageType {
 		return nil
 	}
 

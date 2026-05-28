@@ -468,24 +468,17 @@ func TestBuildMode_StreamInputMaterialized(t *testing.T) {
 }
 
 // -----------------------------------------------------------------------
-// TestLegacyPreservation_FromZip (golden test)
+// TestNewFromZip_BuildMode
 //
-// Zips up test/packages/good, runs both ValidateFromZip and
-// NewFromZip(ModeLegacy,...).Validate(), and asserts identical output.
-// This is the first zip-path coverage in this repository.
+// NewFromZip always validates in ModeBuild — zip files are built packages.
+// This test zips the canonical good_built fixture and confirms no errors.
 // -----------------------------------------------------------------------
 
-func TestLegacyPreservation_FromZip(t *testing.T) {
-	packagePath := filepath.Join(testPackagesDir, "good")
-	zipPath := createPackageZip(t, packagePath)
+func TestNewFromZip_BuildMode(t *testing.T) {
+	builtPath := filepath.Join(testPackagesDir, "build_mode", "good_built")
+	zipPath := createPackageZip(t, builtPath)
 
-	legacyErr := ValidateFromZip(zipPath)
-
-	// ValidateFromZip closes the in-memory zip reader, not the file on disk,
-	// so the same path can be reopened for the new-API call.
-	newV, err := NewFromZip(ModeLegacy, zipPath)
+	v, err := NewFromZip(zipPath)
 	require.NoError(t, err)
-	newErr := newV.Validate()
-
-	assertErrorsEqual(t, legacyErr, newErr)
+	assert.NoError(t, v.Validate(), "good_built should pass ModeBuild validation via zip")
 }

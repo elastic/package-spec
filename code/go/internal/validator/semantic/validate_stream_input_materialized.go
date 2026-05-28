@@ -39,8 +39,8 @@ type policyTemplateMaterialization struct {
 }
 
 type packageMaterializationManifest struct {
-	Type            string                           `yaml:"type"`
-	PolicyTemplates []policyTemplateMaterialization  `yaml:"policy_templates"`
+	Type            string                          `yaml:"type"`
+	PolicyTemplates []policyTemplateMaterialization `yaml:"policy_templates"`
 }
 
 // ValidateStreamInputMaterialized errors when build-mode manifests carry
@@ -139,8 +139,7 @@ func validatePolicyTemplateInputsMaterialized(fsys fspath.FS) specerrors.Validat
 		}
 	}
 
-	// Only integration packages have policy_templates with composable inputs.
-	if manifest.Type != packageTypeIntegration {
+	if manifest.Type != integrationPackageType {
 		return nil
 	}
 
