@@ -468,6 +468,39 @@ func TestBuildMode_StreamInputMaterialized(t *testing.T) {
 }
 
 // -----------------------------------------------------------------------
+// TestBuildMode_InputQualifierAmbiguous
+//
+// SVR00010 (ValidateIntegrationInputQualifier) is build-mode only.
+// In source mode, composable inputs use 'package:' so their type is "",
+// and the input name is assigned by elastic-package at build time.
+// Verifies that:
+//   - ModeBuild raises SVR00010 for a package with duplicate-type inputs that lack names.
+//   - ModeSource does NOT raise SVR00010 for the same package.
+// -----------------------------------------------------------------------
+
+func TestBuildMode_InputQualifierAmbiguous(t *testing.T) {
+	ambiguousPath := filepath.Join(testPackagesDir, "bad_input_qualifier_ambiguous")
+
+	t.Run("bad_input_qualifier_ambiguous fails ModeBuild (SVR00010)", func(t *testing.T) {
+		v, err := NewFromPath(ModeBuild, ambiguousPath)
+		require.NoError(t, err)
+		buildErr := v.Validate()
+		require.Error(t, buildErr, "bad_input_qualifier_ambiguous should fail build-mode validation")
+		assert.Contains(t, buildErr.Error(), "must have a name when multiple inputs of the same type are present")
+	})
+
+	t.Run("bad_input_qualifier_ambiguous does not raise SVR00010 in ModeSource", func(t *testing.T) {
+		v, err := NewFromPath(ModeSource, ambiguousPath)
+		require.NoError(t, err)
+		sourceErr := v.Validate()
+		if sourceErr != nil {
+			assert.NotContains(t, sourceErr.Error(), "must have a name when multiple inputs of the same type are present",
+				"ValidateIntegrationInputQualifier must not run in source mode")
+		}
+	})
+}
+
+// -----------------------------------------------------------------------
 // TestNewFromZip_BuildMode
 //
 // NewFromZip always validates in ModeBuild — zip files are built packages.
