@@ -10,7 +10,7 @@
       link: https://github.com/elastic/package-spec/pull/807
     - description: Add `source` and `build` validation modes via a new constructor API; existing functions are deprecated in favour of `NewFromPath/Zip/FS(mode, ...)`.
       type: enhancement
-      link: https://github.com/elastic/package-spec/issues/549
+      link: https://github.com/elastic/package-spec/pull/1175
 - version: 3.6.3
   changes:
     - description: Add optional `release` field to agentless deployment mode to explicitly declare its release stage.
