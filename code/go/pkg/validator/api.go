@@ -43,6 +43,14 @@ func WithWarningsAsErrors(v bool) Option {
 // For ModeLegacy and ModeSource the filesystem honours linked (.link) files;
 // for ModeBuild linked files are blocked (matching a built package artifact).
 func NewFromPath(mode Mode, packageRootPath string, opts ...Option) (*Validator, error) {
+	info, err := os.Stat(packageRootPath)
+	if err != nil {
+		return nil, fmt.Errorf("invalid package path %q: %w", packageRootPath, err)
+	}
+	if !info.IsDir() {
+		return nil, fmt.Errorf("invalid package path %q: not a directory", packageRootPath)
+	}
+
 	var fsys fs.FS
 	if mode == ModeBuild {
 		fsys = linkedfiles.NewBlockFS(os.DirFS(packageRootPath))
@@ -94,6 +102,14 @@ func NewFromZip(mode Mode, zipPath string, opts ...Option) (_ *Validator, err er
 // Unless fsys is already a *linkedfiles.FS it is wrapped with a BlockFS that
 // rejects linked files — matching the behaviour of ValidateFromFS.
 func NewFromFS(mode Mode, location string, fsys fs.FS, opts ...Option) (*Validator, error) {
+	info, err := fs.Stat(fsys, ".")
+	if err != nil {
+		return nil, fmt.Errorf("invalid package filesystem at %q: %w", location, err)
+	}
+	if !info.IsDir() {
+		return nil, fmt.Errorf("invalid package filesystem at %q: root is not a directory", location)
+	}
+
 	if _, ok := fsys.(*linkedfiles.FS); !ok {
 		fsys = linkedfiles.NewBlockFS(fsys)
 	}
