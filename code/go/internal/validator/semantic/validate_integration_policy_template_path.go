@@ -24,6 +24,7 @@ const (
 
 type policyTemplateInput struct {
 	Type          string   `yaml:"type"`
+	Package       string   `yaml:"package"`
 	TemplatePath  string   `yaml:"template_path"`
 	TemplatePaths []string `yaml:"template_paths"`
 }
@@ -110,6 +111,14 @@ func ValidateIntegrationPolicyTemplates(fsys fspath.FS) specerrors.ValidationErr
 // under agent/input when template_paths or template_path is set (Fleet: template_paths first).
 func validateIntegrationPolicyTemplateInputs(fsys fspath.FS, policyTemplate integrationPolicyTemplate) error {
 	for _, input := range policyTemplate.Inputs {
+		// Composable inputs reference an input package via 'package:'. When no
+		// explicit template_path/template_paths is set, all templates come from
+		// the dependency and are only present after build. Skip those.
+		// If the composable input defines its own template_path or template_paths
+		// (overlay templates that live in the source package), those are validated.
+		if input.Package != "" && input.TemplatePath == "" && len(input.TemplatePaths) == 0 {
+			continue
+		}
 		if len(input.TemplatePaths) > 0 {
 			for _, tp := range input.TemplatePaths {
 				if err := validateAgentInputTemplatePath(fsys, tp); err != nil {

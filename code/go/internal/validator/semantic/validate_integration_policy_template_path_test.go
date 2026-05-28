@@ -382,6 +382,70 @@ streams:
 	errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
 	require.Empty(t, errs)
 }
+func TestValidateIntegrationPolicyTemplates_ComposableInputs(t *testing.T) {
+	t.Run("composable input with no templates skips validation", func(t *testing.T) {
+		d := t.TempDir()
+		err := os.WriteFile(filepath.Join(d, "manifest.yml"), []byte(`
+type: integration
+policy_templates:
+  - name: pt
+    inputs:
+      - package: some_input_package
+        title: Composable
+        description: d
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
+		require.Empty(t, errs)
+	})
+
+	t.Run("composable input with explicit template_paths validates those files", func(t *testing.T) {
+		d := t.TempDir()
+		err := os.MkdirAll(filepath.Join(d, "agent", "input"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "agent", "input", "overlay.yml.hbs"), []byte(`x`), 0o644)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "manifest.yml"), []byte(`
+type: integration
+policy_templates:
+  - name: pt
+    inputs:
+      - package: some_input_package
+        title: Composable with overlay
+        description: d
+        template_paths:
+          - overlay.yml.hbs
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
+		require.Empty(t, errs)
+	})
+
+	t.Run("composable input with explicit template_paths fails when file missing", func(t *testing.T) {
+		d := t.TempDir()
+		err := os.MkdirAll(filepath.Join(d, "agent", "input"), 0o755)
+		require.NoError(t, err)
+		err = os.WriteFile(filepath.Join(d, "manifest.yml"), []byte(`
+type: integration
+policy_templates:
+  - name: pt
+    inputs:
+      - package: some_input_package
+        title: Composable with overlay
+        description: d
+        template_paths:
+          - missing.yml.hbs
+`), 0o644)
+		require.NoError(t, err)
+
+		errs := ValidateIntegrationPolicyTemplates(fspath.DirFS(d))
+		require.Len(t, errs, 1)
+		require.Contains(t, errs[0].Error(), "template file not found")
+	})
+}
+
 func TestFindPathAtDirectory(t *testing.T) {
 	d := t.TempDir()
 
