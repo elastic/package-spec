@@ -18,7 +18,7 @@ import (
 
 func TestValidateStreamInputMaterialized(t *testing.T) {
 	tests := []struct {
-		name          string
+		name string
 		// files maps relative path → YAML content written under a temp dir.
 		files         map[string]string
 		expectErrors  bool
