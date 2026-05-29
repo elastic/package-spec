@@ -129,7 +129,7 @@ func validatePolicyTemplateInputsMaterialized(fsys fspath.FS) specerrors.Validat
 			return nil
 		}
 		return specerrors.ValidationErrors{
-			specerrors.NewStructuredErrorf("reading %q: %w", manifestRelPath, err),
+			specerrors.NewStructuredErrorf("reading %q: %w", fsys.Path(manifestRelPath), err),
 		}
 	}
 
