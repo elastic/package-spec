@@ -5,6 +5,7 @@
 package semantic
 
 import (
+	"errors"
 	"io/fs"
 	"path"
 	"slices"
@@ -124,9 +125,12 @@ func validatePolicyTemplateInputsMaterialized(fsys fspath.FS) specerrors.Validat
 	manifestRelPath := "manifest.yml"
 	data, err := fs.ReadFile(fsys, manifestRelPath)
 	if err != nil {
-		// If there is no manifest we have nothing to check; other validators handle
-		// the missing-manifest case.
-		return nil
+		if errors.Is(err, fs.ErrNotExist) {
+			return nil
+		}
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredErrorf("reading %q: %w", manifestRelPath, err),
+		}
 	}
 
 	var manifest packageMaterializationManifest
