@@ -124,11 +124,11 @@ func TestValidateStreamInputMaterialized(t *testing.T) {
 		},
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
+	for _, testCase := range tests {
+		t.Run(testCase.name, func(t *testing.T) {
 			tempDir := t.TempDir()
 
-			for relPath, content := range tc.files {
+			for relPath, content := range testCase.files {
 				fullPath := filepath.Join(tempDir, relPath)
 				require.NoError(t, os.MkdirAll(filepath.Dir(fullPath), 0o755))
 				require.NoError(t, os.WriteFile(fullPath, []byte(content), 0o644))
@@ -137,7 +137,7 @@ func TestValidateStreamInputMaterialized(t *testing.T) {
 			fsys := fspath.DirFS(tempDir)
 			errs := ValidateStreamInputMaterialized(fsys)
 
-			if !tc.expectErrors {
+			if !testCase.expectErrors {
 				assert.Nil(t, errs, "expected no errors but got: %v", errs)
 				return
 			}
@@ -149,7 +149,7 @@ func TestValidateStreamInputMaterialized(t *testing.T) {
 				sb.WriteString("\n")
 			}
 			combined := sb.String()
-			for _, substr := range tc.errorContains {
+			for _, substr := range testCase.errorContains {
 				assert.Contains(t, combined, substr)
 			}
 		})

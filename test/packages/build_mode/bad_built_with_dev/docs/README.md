@@ -1,5 +1,5 @@
-# Good Built Package
+# Bad Built Package - With Dev Directory
 
-This is the canonical minimal built-package fixture used for build-mode validation
-tests (issue #549). It has no `_dev/` directories, no `.link` files, and no
-`external: ecs` field references — making it valid under `ModeBuild`.
+This fixture contains a `_dev/` directory, which is a source-only artifact that
+must be rejected in build mode (issue `#549`). Used to verify that `ModeBuild`
+correctly flags packages containing `_dev/` directories.

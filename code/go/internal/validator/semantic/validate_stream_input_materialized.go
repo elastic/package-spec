@@ -74,8 +74,8 @@ func validateDataStreamStreamsMaterialized(fsys fspath.FS) specerrors.Validation
 	slices.Sort(dataStreams)
 
 	var errs specerrors.ValidationErrors
-	for _, dsName := range dataStreams {
-		manifestRelPath := path.Join(dataStreamDir, dsName, "manifest.yml")
+	for _, dataStreamName := range dataStreams {
+		manifestRelPath := path.Join(dataStreamDir, dataStreamName, "manifest.yml")
 		data, err := fs.ReadFile(fsys, manifestRelPath)
 		if err != nil {
 			errs = append(errs, specerrors.NewStructuredErrorf(
@@ -149,12 +149,12 @@ func validatePolicyTemplateInputsMaterialized(fsys fspath.FS) specerrors.Validat
 
 	fullPath := fsys.Path(manifestRelPath)
 	var errs specerrors.ValidationErrors
-	for _, pt := range manifest.PolicyTemplates {
-		for i, input := range pt.Inputs {
+	for _, policyTemplate := range manifest.PolicyTemplates {
+		for i, input := range policyTemplate.Inputs {
 			if input.Package != "" {
 				errs = append(errs, specerrors.NewStructuredErrorf(
 					"file %q: policy_template %q input[%d] has 'package:' which is source-only; build packages must use 'type:'",
-					fullPath, pt.Name, i,
+					fullPath, policyTemplate.Name, i,
 				))
 			}
 		}

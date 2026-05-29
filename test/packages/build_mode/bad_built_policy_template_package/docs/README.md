@@ -1,5 +1,5 @@
-# Good Built Package
+# Bad Built Package - Policy Template Uses `package:`
 
-This is the canonical minimal built-package fixture used for build-mode validation
-tests (issue #549). It has no `_dev/` directories, no `.link` files, and no
-`external: ecs` field references — making it valid under `ModeBuild`.
+This fixture is intentionally invalid for build-mode validation tests (issue `#549`).
+It models a built package where policy template inputs use `package:` instead of
+the required materialized `type:` field.

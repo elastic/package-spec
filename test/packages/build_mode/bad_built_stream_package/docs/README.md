@@ -1,5 +1,5 @@
-# Good Built Package
+# Bad Built Package - Stream Package Reference
 
-This is the canonical minimal built-package fixture used for build-mode validation
-tests (issue #549). It has no `_dev/` directories, no `.link` files, and no
-`external: ecs` field references — making it valid under `ModeBuild`.
+This fixture is intentionally invalid for build-mode validation tests (issue `#549`).
+It uses source-only `package:` references in stream definitions, which must be
+rejected under `ModeBuild`.

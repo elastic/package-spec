@@ -1,5 +1,5 @@
-# Good Built Package
+# Bad Built Package - Link File Present
 
-This is the canonical minimal built-package fixture used for build-mode validation
-tests (issue #549). It has no `_dev/` directories, no `.link` files, and no
-`external: ecs` field references — making it valid under `ModeBuild`.
+This built-package fixture contains `.link` files and is invalid in build mode
+(issue `#549`). Build mode rejects packages with `.link` files, as they are
+source-only artifacts that must be resolved during the build process.

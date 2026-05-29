@@ -1,5 +1,5 @@
-# Good Built Package
+# Bad Built Package - External ECS
 
-This is the canonical minimal built-package fixture used for build-mode validation
-tests (issue #549). It has no `_dev/` directories, no `.link` files, and no
-`external: ecs` field references — making it valid under `ModeBuild`.
+This test fixture contains `external: ecs` field references that must be rejected
+in build mode (issue `#549`). Built packages must materialize all ECS fields rather
+than reference them via `external: ecs`.

@@ -51,7 +51,8 @@ func assertErrorsEqual(t *testing.T, legacy, newAPI error) {
 // extractMessages unpacks a specerrors.ValidationErrors into individual
 // message strings, or wraps a plain error in a single-element slice.
 func extractMessages(err error) []string {
-	if verrs, ok := err.(specerrors.ValidationErrors); ok {
+	var verrs specerrors.ValidationErrors
+	if errors.As(err, &verrs) {
 		msgs := make([]string, len(verrs))
 		for i, ve := range verrs {
 			msgs[i] = ve.Error()
@@ -113,10 +114,10 @@ func createPackageZip(t *testing.T, packagePath string) string {
 
 	f, err := os.Create(zipPath)
 	require.NoError(t, err)
-	defer f.Close()
+	defer func() { require.NoError(t, f.Close()) }()
 
 	zw := zip.NewWriter(f)
-	defer zw.Close()
+	defer func() { require.NoError(t, zw.Close()) }()
 
 	err = filepath.WalkDir(packagePath, func(path string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
