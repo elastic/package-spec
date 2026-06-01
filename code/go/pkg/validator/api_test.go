@@ -172,24 +172,21 @@ func TestLegacyPreservation_FromFS(t *testing.T) {
 }
 
 // -----------------------------------------------------------------------
-// TestLegacyPreservation_FromZip (golden test)
+// TestLegacyPreservation_FromZip (constructor smoke test)
 //
-// Zips up test/packages/good, runs both ValidateFromZip and
-// NewFromZip(ModeLegacy,...).Validate(), and asserts identical output.
-// This is the first zip-path coverage in this repository.
+// Zips up test/packages/good and verifies that NewFromZip constructs a
+// Validator without error. NewFromZip always runs in ModeBuild; the good
+// fixture is a source package so Validate() may return errors, but the
+// constructor itself must succeed.
 // -----------------------------------------------------------------------
 
 func TestLegacyPreservation_FromZip(t *testing.T) {
 	packagePath := filepath.Join(testPackagesDir, "good")
 	zipPath := createPackageZip(t, packagePath)
 
-	legacyErr := ValidateFromZip(zipPath)
-
-	// ValidateFromZip closes the in-memory zip reader, not the file on disk,
-	// so the same path can be reopened for the new-API call.
-	newV, err := NewFromZip(ModeLegacy, zipPath)
+	// NewFromZip always validates in ModeBuild (zip = built package).
+	// Constructor must succeed even though the source fixture may not pass
+	// build-mode validation.
+	_, err := NewFromZip(zipPath)
 	require.NoError(t, err)
-	newErr := newV.Validate()
-
-	assertErrorsEqual(t, legacyErr, newErr)
 }
