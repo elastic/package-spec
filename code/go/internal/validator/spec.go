@@ -17,10 +17,10 @@ import (
 
 	spec "github.com/elastic/package-spec/v3"
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
-	"github.com/elastic/package-spec/v3/code/go/internal/validator/modes"
 	"github.com/elastic/package-spec/v3/code/go/internal/loader"
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
 	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/v3/code/go/internal/validator/modes"
 	"github.com/elastic/package-spec/v3/code/go/internal/validator/semantic"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
