@@ -352,9 +352,11 @@ func listDataStreams(fsys fspath.FS) ([]string, error) {
 		return nil, fmt.Errorf("can't list data streams directory: %w", err)
 	}
 
-	list := make([]string, len(dataStreams))
-	for i, dataStream := range dataStreams {
-		list[i] = dataStream.Name()
+	var list []string
+	for _, dataStream := range dataStreams {
+		if dataStream.IsDir() {
+			list = append(list, dataStream.Name())
+		}
 	}
 	return list, nil
 }
