@@ -47,7 +47,7 @@ func ValidateIntegrationInputsDeprecation(fsys fspath.FS) specerrors.ValidationE
 			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), err)}
 	}
 	// skip if not an integration package
-	if m.Type != packageTypeIntegration {
+	if m.Type != integrationPackageType {
 		return nil
 	}
 
