@@ -84,7 +84,9 @@ func newFromZip(mode Mode, zipPath string, opts ...Option) (_ *Validator, err er
 	// Close the reader on any error path; on success the Validator takes ownership.
 	defer func() {
 		if err != nil {
-			r.Close()
+			if cerr := r.Close(); cerr != nil {
+				err = errors.Join(err, cerr)
+			}
 		}
 	}()
 
@@ -151,9 +153,13 @@ func buildValidator(mode Mode, location string, fsys fs.FS, closer io.Closer, op
 // If the Validator was created by NewFromZip it owns an open zip reader;
 // Validate closes it on return, so Validate must not be called more than once
 // on such a Validator.
-func (v *Validator) Validate() error {
+func (v *Validator) Validate() (err error) {
 	if v.closer != nil {
-		defer v.closer.Close()
+		defer func() {
+			if cerr := v.closer.Close(); cerr != nil {
+				err = errors.Join(err, cerr)
+			}
+		}()
 	}
 
 	pkg, err := packages.NewPackageFromFS(v.location, v.fsys)

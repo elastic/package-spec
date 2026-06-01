@@ -53,6 +53,9 @@ func NewSpec(version semver.Version, mode modes.Mode) (*Spec, error) {
 	if mode == "" {
 		mode = modes.Legacy
 	}
+	if !mode.Valid() {
+		return nil, fmt.Errorf("invalid validation mode %q", mode)
+	}
 
 	specVersion, err := spec.CheckVersion(version)
 	if err != nil {
