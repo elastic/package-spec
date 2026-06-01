@@ -18,7 +18,11 @@ const (
 	// Linked (.link) files are resolved transparently.
 	ModeSource = modes.Source
 
-	// ModeBuild validates a package as a build artifact (e.g. a directory
-	// produced by elastic-package build). Linked files are blocked.
+	// ModeBuild validates a package as a build artifact. This is the correct
+	// mode for packages produced by elastic-package build, distributed as zip
+	// files, or served by the package registry. NewFromZip always uses this mode
+	// because zip files are by definition built packages.
+	// Linked files (.link) are blocked; source-only artifacts (_dev/, external: ecs
+	// field references) are rejected.
 	ModeBuild = modes.Build
 )

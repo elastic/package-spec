@@ -20,9 +20,9 @@ func ValidateFromPath(packageRootPath string) error {
 
 // ValidateFromZip validates a package in zip format.
 //
-// Deprecated: use NewFromZip(ModeLegacy, packagePath).Validate() instead.
+// Deprecated: use NewFromZip(packagePath).Validate() instead.
 func ValidateFromZip(packagePath string) error {
-	v, err := NewFromZip(ModeLegacy, packagePath)
+	v, err := newFromZip(ModeLegacy, packagePath)
 	if err != nil {
 		return err
 	}
