@@ -22,7 +22,7 @@ func ValidateFromPath(packageRootPath string) error {
 //
 // Deprecated: use NewFromZip(packagePath).Validate() instead.
 func ValidateFromZip(packagePath string) error {
-	v, err := newFromZip(ModeLegacy, packagePath)
+	v, err := NewFromZip(packagePath)
 	if err != nil {
 		return err
 	}

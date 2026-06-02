@@ -6,72 +6,20 @@ package validator
 
 import (
 	"archive/zip"
+	"errors"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // testPackagesDir is the root of the fixture packages used in integration tests.
 const testPackagesDir = "../../../../test/packages"
-
-// -----------------------------------------------------------------------
-// Helpers
-// -----------------------------------------------------------------------
-
-// assertErrorsEqual asserts that legacy and newAPI produce the same set of
-// errors (both nil, or both non-nil with identical error messages).
-//
-// ValidationErrors are compared as unordered sets because the internal
-// validator iterates Go maps whose iteration order is non-deterministic.
-func assertErrorsEqual(t *testing.T, legacy, newAPI error) {
-	t.Helper()
-	switch {
-	case legacy == nil && newAPI == nil:
-		// both happy — pass
-	case legacy == nil:
-		t.Fatalf("legacy returned nil but new API returned: %v", newAPI)
-	case newAPI == nil:
-		t.Fatalf("new API returned nil but legacy returned: %v", legacy)
-	default:
-		assert.ElementsMatch(t,
-			extractMessages(legacy),
-			extractMessages(newAPI),
-			"error sets differ between legacy and new API")
-	}
-}
-
-// extractMessages unpacks a specerrors.ValidationErrors into individual
-// message strings, or wraps a plain error in a single-element slice.
-func extractMessages(err error) []string {
-	if verrs, ok := err.(specerrors.ValidationErrors); ok {
-		msgs := make([]string, len(verrs))
-		for i, ve := range verrs {
-			msgs[i] = ve.Error()
-		}
-		return msgs
-	}
-	return []string{err.Error()}
-}
-
-// listTestPackages returns the names of every directory under testPackagesDir.
-func listTestPackages(t *testing.T) []string {
-	t.Helper()
-	entries, err := os.ReadDir(testPackagesDir)
-	require.NoError(t, err)
-	var names []string
-	for _, e := range entries {
-		if e.IsDir() {
-			names = append(names, e.Name())
-		}
-	}
-	return names
-}
 
 // createPackageZip creates a temporary zip file containing the package at
 // packagePath under a single top-level directory (matching elastic-package
@@ -123,56 +71,32 @@ func createPackageZip(t *testing.T, packagePath string) string {
 }
 
 // -----------------------------------------------------------------------
-// TestLegacyPreservation_FromPath
+// TestNewFromPath_RejectsInvalidMode
 //
-// For every package under test/packages/, asserts that the new
-// NewFromPath(ModeLegacy, ...).Validate() produces byte-for-byte identical
-// output to the existing ValidateFromPath().
+// NewFromPath must validate the mode eagerly and return an error at
+// construction time, not defer the failure to Validate().
 // -----------------------------------------------------------------------
 
-func TestLegacyPreservation_FromPath(t *testing.T) {
-	for _, pkgName := range listTestPackages(t) {
-		t.Run(pkgName, func(t *testing.T) {
-			t.Parallel()
-			path := filepath.Join(testPackagesDir, pkgName)
-
-			legacyErr := ValidateFromPath(path)
-			newV, err := NewFromPath(ModeLegacy, path)
-			require.NoError(t, err)
-			newErr := newV.Validate()
-
-			assertErrorsEqual(t, legacyErr, newErr)
-		})
-	}
+func TestNewFromPath_RejectsInvalidMode(t *testing.T) {
+	v, err := NewFromPath(Mode("invalid"), filepath.Join(testPackagesDir, "good"))
+	require.Nil(t, v)
+	require.ErrorContains(t, err, `invalid validation mode "invalid"`)
 }
 
 // -----------------------------------------------------------------------
-// TestLegacyPreservation_FromFS
+// TestNewFromFS_RejectsInvalidMode
 //
-// Parametrized over the same packages: ValidateFromFS with os.DirFS must
-// match NewFromFS(ModeLegacy, ...) with the same filesystem.
+// Same contract as TestNewFromPath_RejectsInvalidMode for NewFromFS.
 // -----------------------------------------------------------------------
 
-func TestLegacyPreservation_FromFS(t *testing.T) {
-	for _, pkgName := range listTestPackages(t) {
-		t.Run(pkgName, func(t *testing.T) {
-			t.Parallel()
-			path := filepath.Join(testPackagesDir, pkgName)
-
-			// Use a fresh os.DirFS for each call to avoid any shared-state
-			// side-effects (both calls are read-only, but being explicit is cleaner).
-			legacyErr := ValidateFromFS(path, os.DirFS(path))
-			newV, err := NewFromFS(ModeLegacy, path, os.DirFS(path))
-			require.NoError(t, err)
-			newErr := newV.Validate()
-
-			assertErrorsEqual(t, legacyErr, newErr)
-		})
-	}
+func TestNewFromFS_RejectsInvalidMode(t *testing.T) {
+	v, err := NewFromFS(Mode("invalid"), ".", os.DirFS("."))
+	require.Nil(t, v)
+	require.ErrorContains(t, err, `invalid validation mode "invalid"`)
 }
 
 // -----------------------------------------------------------------------
-// TestLegacyPreservation_FromZip (constructor smoke test)
+// TestNewFromZip_ConstructorSucceeds
 //
 // Zips up test/packages/good and verifies that NewFromZip constructs a
 // Validator without error. NewFromZip always runs in ModeBuild; the good
@@ -180,13 +104,68 @@ func TestLegacyPreservation_FromFS(t *testing.T) {
 // constructor itself must succeed.
 // -----------------------------------------------------------------------
 
-func TestLegacyPreservation_FromZip(t *testing.T) {
+func TestNewFromZip_ConstructorSucceeds(t *testing.T) {
 	packagePath := filepath.Join(testPackagesDir, "good")
 	zipPath := createPackageZip(t, packagePath)
 
-	// NewFromZip always validates in ModeBuild (zip = built package).
-	// Constructor must succeed even though the source fixture may not pass
-	// build-mode validation.
 	_, err := NewFromZip(zipPath)
 	require.NoError(t, err)
+}
+
+// -----------------------------------------------------------------------
+// TestNewFromFS_BuildModeBlocksLinksEvenWithPreWrappedLinkedFS
+//
+// ModeBuild must unconditionally block .link files, even when the caller
+// passes a pre-wrapped *linkedfiles.FS that would otherwise resolve them.
+// -----------------------------------------------------------------------
+
+func TestNewFromFS_BuildModeBlocksLinksEvenWithPreWrappedLinkedFS(t *testing.T) {
+	packagePath := filepath.Join(testPackagesDir, "with_links")
+	linkedFS := linkedfiles.NewFS(packagePath, os.DirFS(packagePath))
+
+	v, err := NewFromFS(ModeBuild, packagePath, linkedFS)
+	require.NoError(t, err)
+
+	errs := v.Validate()
+	require.Error(t, errs)
+
+	vErrs, ok := errs.(specerrors.ValidationErrors)
+	require.True(t, ok, "expected ValidationErrors, got %T: %v", errs, errs)
+
+	for _, e := range vErrs {
+		if errors.Is(e, linkedfiles.ErrUnsupportedLinkFile) {
+			return
+		}
+	}
+	t.Fatal("expected at least one ErrUnsupportedLinkFile — ModeBuild must replace *linkedfiles.FS with BlockFS")
+}
+
+// -----------------------------------------------------------------------
+// TestNewFromFS_LegacyAndSourceModePreservePreWrappedLinkedFS
+//
+// For ModeLegacy and ModeSource, a pre-wrapped *linkedfiles.FS must be
+// preserved so .link files are resolved rather than blocked.
+// ModeLegacy matches the old validateFromFS behaviour; ModeSource is the
+// explicit source-tree contract.
+// -----------------------------------------------------------------------
+
+func TestNewFromFS_LegacyAndSourceModePreservePreWrappedLinkedFS(t *testing.T) {
+	packagePath := filepath.Join(testPackagesDir, "with_links")
+
+	for _, mode := range []Mode{ModeLegacy, ModeSource} {
+		t.Run(string(mode), func(t *testing.T) {
+			linkedFS := linkedfiles.NewFS(packagePath, os.DirFS(packagePath))
+			v, err := NewFromFS(mode, packagePath, linkedFS)
+			require.NoError(t, err)
+
+			errs := v.Validate()
+			if vErrs, ok := errs.(specerrors.ValidationErrors); ok {
+				for _, e := range vErrs {
+					if errors.Is(e, linkedfiles.ErrUnsupportedLinkFile) {
+						t.Fatalf("%s with a pre-wrapped *linkedfiles.FS should resolve .link files, not block them", mode)
+					}
+				}
+			}
+		})
+	}
 }
