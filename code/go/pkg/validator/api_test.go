@@ -108,8 +108,11 @@ func TestNewFromZip_ConstructorSucceeds(t *testing.T) {
 	packagePath := filepath.Join(testPackagesDir, "good")
 	zipPath := createPackageZip(t, packagePath)
 
-	_, err := NewFromZip(zipPath)
+	v, err := NewFromZip(zipPath)
 	require.NoError(t, err)
+	// Validate() closes the owned zip reader. Without this, the file handle
+	// stays open and t.TempDir cleanup fails on Windows.
+	_ = v.Validate()
 }
 
 // -----------------------------------------------------------------------
