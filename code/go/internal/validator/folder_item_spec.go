@@ -5,12 +5,10 @@
 package validator
 
 import (
-	"errors"
 	"fmt"
 	"io/fs"
 	"regexp"
 
-	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
 	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
@@ -42,11 +40,6 @@ func matchingFileExists(spec spectypes.ItemSpec, files []fs.DirEntry) (bool, err
 func validateFile(spec spectypes.ItemSpec, fsys fs.FS, itemPath string) specerrors.ValidationErrors {
 	err := validateMaxSize(fsys, itemPath, spec)
 	if err != nil {
-		if errors.Is(err, linkedfiles.ErrUnsupportedLinkFile) {
-			// .link files in build mode: skip syntactic checks here; the semantic
-			// ValidateNoLinkFiles rule emits a clean validation error for them.
-			return nil
-		}
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 	if mediaType := spec.ContentMediaType(); mediaType != nil {
