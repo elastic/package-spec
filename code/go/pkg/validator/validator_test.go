@@ -1227,6 +1227,32 @@ func TestLinksAreBlocked(t *testing.T) {
 	t.Error("links should not be allowed in package")
 }
 
+func TestLinksBehaviorAcrossModes(t *testing.T) {
+	withLinks := path.Join("..", "..", "..", "..", "test", "packages", "with_links")
+	good := path.Join("..", "..", "..", "..", "test", "packages", "good")
+
+	t.Run("build_rejects_link_files", func(t *testing.T) {
+		t.Parallel()
+		err := ValidateFromBuildPath(withLinks)
+		require.Error(t, err)
+		errs, ok := err.(specerrors.ValidationErrors)
+		require.True(t, ok)
+		require.ErrorContains(t, errs, linkedfiles.ErrUnsupportedLinkFile.Error())
+	})
+
+	t.Run("source_accepts_link_files", func(t *testing.T) {
+		t.Parallel()
+		err := ValidateFromSourcePath(withLinks)
+		require.NoError(t, err)
+	})
+
+	t.Run("build_accepts_package_without_links", func(t *testing.T) {
+		t.Parallel()
+		err := ValidateFromBuildPath(good)
+		require.NoError(t, err)
+	})
+}
+
 func TestValidateHandlebarsFiles(t *testing.T) {
 	tests := map[string]string{
 		"bad_input_hbs":              "invalid handlebars template: error validating agent/input/input.yml.hbs: Parse error on line 10:\nExpecting OpenEndBlock, got: 'EOF'",
