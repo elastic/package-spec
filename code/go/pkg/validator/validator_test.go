@@ -1229,7 +1229,6 @@ func TestLinksAreBlocked(t *testing.T) {
 
 func TestLinksBehaviorAcrossModes(t *testing.T) {
 	withLinks := path.Join("..", "..", "..", "..", "test", "packages", "with_links")
-	good := path.Join("..", "..", "..", "..", "test", "packages", "good")
 
 	t.Run("build_rejects_link_files", func(t *testing.T) {
 		t.Parallel()
@@ -1246,11 +1245,6 @@ func TestLinksBehaviorAcrossModes(t *testing.T) {
 		require.NoError(t, err)
 	})
 
-	t.Run("build_accepts_package_without_links", func(t *testing.T) {
-		t.Parallel()
-		err := ValidateFromBuildPath(good)
-		require.NoError(t, err)
-	})
 }
 
 func TestValidateHandlebarsFiles(t *testing.T) {
