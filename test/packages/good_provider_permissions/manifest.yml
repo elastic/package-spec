@@ -1,0 +1,80 @@
+format_version: 3.7.0
+name: good_provider_permissions
+title: Good package with provider permissions
+description: Tests provider_permissions at package, policy_template, input, and data_stream levels, including multiple providers per entry.
+version: 0.0.1
+type: integration
+categories:
+  - aws
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+  elastic:
+    subscription: basic
+# Package-level permissions: always included regardless of which inputs are enabled.
+# Two providers in the same array — each provider gets its own entry.
+provider_permissions:
+  - provider: aws
+    description: Bootstrap checks needed by every AWS integration.
+    permissions:
+      - name: sts:GetCallerIdentity
+        description: Verify the IAM identity on startup.
+      - name: iam:ListAccountAliases
+      - name: ec2:DescribeRegions
+  - provider: azure
+    description: Bootstrap check for Azure integrations.
+    permissions:
+      - name: Microsoft.Resources/subscriptions/read
+policy_templates:
+  - name: aws_observability
+    title: AWS Observability
+    description: Collect metrics and logs from AWS services.
+    # Policy-template-level permissions: included for any enabled input/stream under this template.
+    provider_permissions:
+      - provider: aws
+        description: Tag enrichment shared across all EC2 streams.
+        permissions:
+          - name: tag:GetResources
+    inputs:
+      - type: aws/metrics
+        title: Collect AWS CloudWatch metrics
+        description: Collect CloudWatch metrics from AWS services.
+        # Input-level permissions: multiple providers in one array.
+        provider_permissions:
+          - provider: aws
+            description: CloudWatch access required for all metrics data streams.
+            permissions:
+              - name: cloudwatch:GetMetricData
+              - name: cloudwatch:ListMetrics
+          - provider: kubernetes
+            description: Pod metrics access for EKS-based collection.
+            permissions:
+              - name: get,list pods,nodes
+      - type: logfile
+        title: Collect generic logs
+        description: Collect logs without additional cloud permissions.
+    data_streams:
+      - ec2_metrics
+  - name: aws_security
+    title: AWS Security Findings
+    description: Collect Security Hub findings.
+    inputs:
+      - type: httpjson
+        title: Collect Security Hub findings
+        description: Pull findings via the Security Hub API.
+        provider_permissions:
+          - provider: aws
+            description: Security Hub read access plus SecurityAudit managed policy.
+            roles:
+              - name: SecurityAudit
+                id: arn:aws:iam::aws:policy/SecurityAudit
+                description: Read-only access to AWS services for security auditing.
+            permissions:
+              - name: securityhub:GetFindings
+              - name: securityhub:GetEnabledStandards
+              - name: securityhub:GetInsights
+owner:
+  github: elastic/foobar
+  type: elastic

@@ -1,0 +1,31 @@
+format_version: 3.7.0
+name: bad_provider_permissions
+title: Bad package with invalid provider permissions
+description: Tests that provider_permissions with missing required fields is rejected.
+version: 0.0.1
+type: integration
+categories:
+  - aws
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+  elastic:
+    subscription: basic
+# Invalid: provider_permissions item is missing the required `provider` field.
+provider_permissions:
+  - description: Missing the required provider field.
+    permissions:
+      - name: s3:GetObject
+policy_templates:
+  - name: sample
+    title: Sample logs
+    description: Collect sample logs
+    inputs:
+      - type: logfile
+        title: Collect sample logs from instances
+        description: Collecting sample logs
+owner:
+  github: elastic/foobar
+  type: elastic

@@ -736,6 +736,74 @@ spec:
       type: string
       examples:
         - httpjson
+    provider_permissions:
+      description: >
+        Provider-specific permissions and managed-policy roles required by this unit.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        required:
+          - provider
+        properties:
+          provider:
+            description: Provider name (e.g. "aws" for AWS, "gcp" for Google Cloud Platform, "azure" for Microsoft Azure, "okta" for Okta).
+            type: string
+            examples:
+              - aws
+              - gcp
+              - azure
+              - okta
+          description:
+            description: Human-readable description of why these permissions are needed.
+            type: string
+          roles:
+            description: >
+              Managed-policy roles to attach alongside inline permissions.
+              Rendered as ManagedPolicyArns on the IAM identity; Kibana deduplicates
+              roles that appear at multiple levels.
+            type: array
+            items:
+              type: object
+              additionalProperties: false
+              required:
+                - name
+              properties:
+                name:
+                  description: Short name of the managed policy (e.g. SecurityAudit).
+                  type: string
+                  examples:
+                    - SecurityAudit
+                id:
+                  description: ARN of the managed policy.
+                  type: string
+                  examples:
+                    - arn:aws:iam::aws:policy/SecurityAudit
+                description:
+                  description: Human-readable description of this role.
+                  type: string
+          permissions:
+            description: >
+              Individual IAM actions. Rendered as the Action list in a single
+              Effect: Allow, Resource: "*" statement. Kibana deduplicates actions
+              that appear at multiple levels.
+            type: array
+            items:
+              type: object
+              additionalProperties: false
+              required:
+                - name
+              properties:
+                name:
+                  description: IAM action name (e.g. s3:GetObject, ec2:Describe*).
+                  type: string
+                  examples:
+                    - s3:GetObject
+                    - ec2:Describe*
+                    - cloudwatch:GetMetricData
+                description:
+                  description: Human-readable description of why this action is needed.
+                  type: string
   properties:
     format_version:
       description: The version of the package specification format used by this package.
@@ -766,6 +834,8 @@ spec:
       $ref: "#/definitions/categories"
     conditions:
       $ref: "#/definitions/conditions"
+    provider_permissions:
+      $ref: "#/definitions/provider_permissions"
     # requires a conditional JSON schema to update the value depending
     # on the policy_templates length
     policy_templates_behavior:
@@ -903,6 +973,8 @@ spec:
                       type: string
                   examples:
                     - credential_type: [cloud_connectors]
+                provider_permissions:
+                  $ref: "#/definitions/provider_permissions"
               required:
                 - title
                 - description
@@ -923,6 +995,8 @@ spec:
             $ref: "#/definitions/sections"
           deprecated:
             $ref: "#/definitions/deprecated"
+          provider_permissions:
+            $ref: "#/definitions/provider_permissions"
         required:
           - name
           - title
@@ -991,6 +1065,17 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.7.0
+    patch:
+      # provider_permissions field for provider-specific permission declarations.
+      - op: remove
+        path: "/definitions/provider_permissions"
+      - op: remove
+        path: "/properties/provider_permissions"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/provider_permissions"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/provider_permissions"
   - before: 3.6.0
     patch:
       # Input qualifier (named inputs).

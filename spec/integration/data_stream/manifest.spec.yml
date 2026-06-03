@@ -706,10 +706,17 @@ spec:
       $ref: "../../integration/manifest.spec.yml#/definitions/categories"
     deprecated:
       $ref: "../../integration/manifest.spec.yml#/definitions/deprecated"
+    provider_permissions:
+      $ref: "../../integration/manifest.spec.yml#/definitions/provider_permissions"
   required:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.7.0
+    patch:
+      # provider_permissions field for provider-specific permission declarations.
+      - op: remove
+        path: "/properties/provider_permissions"
   - before: 3.6.0
     patch:
       - op: add

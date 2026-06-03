@@ -1,0 +1,13 @@
+title: EC2 Metrics
+type: metrics
+# Data-stream-level permissions: EC2-specific API calls layered on top of input/template/package permissions.
+provider_permissions:
+  - provider: aws
+    description: EC2 describe calls for instance metrics.
+    permissions:
+      - name: ec2:DescribeInstances
+      - name: ec2:DescribeInstanceStatus
+streams:
+  - input: aws/metrics
+    title: EC2 metrics
+    description: Collect EC2 metrics from CloudWatch.
