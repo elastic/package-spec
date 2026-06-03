@@ -23,7 +23,9 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
-func TestValidateFile(t *testing.T) {
+// Test_ValidateFromPath tests the ValidateFromPath function
+// using the legacy specification.
+func Test_ValidateFromPath(t *testing.T) {
 	// Workaround for error messages that contain OS-dependant base paths.
 	osTestBasePath := filepath.Join("..", "..", "..", "..", "test", "packages") + string(filepath.Separator)
 
@@ -480,9 +482,12 @@ func TestValidateFile(t *testing.T) {
 				"field policy_templates.0.inputs.0.type: Must not be present",
 			},
 		},
-		// bad_input_qualifier_ambiguous is tested in TestBuildMode_InputQualifierAmbiguous:
-		// SVR00010 is a build-mode-only rule — composable source inputs have type ""
-		// (package: instead of type:) and names are assigned by elastic-package at build time.
+		"bad_input_qualifier_ambiguous": {
+			"manifest.yml",
+			[]string{
+				`policy template "nginx": input with type "otelcol" must have a name when multiple inputs of the same type are present (SVR00010)`,
+			},
+		},
 		"bad_input_qualifier_old_version": {
 			"manifest.yml",
 			[]string{
