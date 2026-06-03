@@ -7,7 +7,8 @@ package modes
 // Mode represents the validation mode used when validating a package.
 type Mode string
 
-// Validation modes. The public API re-exports these as validator.Mode* constants.
+// Validation modes for package validation: Legacy preserves existing behavior,
+// Source validates checked-out source trees, and Build validates built artifacts.
 const (
 	Legacy Mode = "legacy"
 	Source Mode = "source"

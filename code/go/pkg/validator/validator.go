@@ -21,9 +21,10 @@ import (
 
 type specFn func(semver.Version) (*validator.Spec, error)
 
-// ValidateFromPath validates a package located at the given path
-// It uses the legacy specification.
-// Deprecated: Use mode specific functions instead.
+// ValidateFromPath validates a package located at the given path using the legacy specification.
+// This function preserves byte-for-byte identical behavior with existing validation workflows.
+// Linked (.link) files are resolved transparently.
+// Deprecated: Use ValidateFromSourcePath or ValidateFromBuildPath depending on the package type.
 func ValidateFromPath(packageRootPath string) error {
 	// We wrap the fs.FS with a linkedfiles.LinksFS to handle linked files.
 	linksFS := linkedfiles.NewFS(packageRootPath, os.DirFS(packageRootPath))
@@ -35,8 +36,10 @@ func ValidateFromPath(packageRootPath string) error {
 	return validateFromFS(packageRootPath, linksFS, legacySpec)
 }
 
-// ValidateFromBuildPath validates a package built bundle located at the given path
-// It uses the build specification.
+// ValidateFromBuildPath validates a built package located at the given path.
+// This function uses the build specification, appropriate for packages produced by
+// elastic-package build, distributed as zip files, or served by the package registry.
+// Linked files (.link) are blocked; source-only artifacts are rejected.
 func ValidateFromBuildPath(packageRootPath string) error {
 	fs := os.DirFS(packageRootPath)
 
@@ -46,8 +49,9 @@ func ValidateFromBuildPath(packageRootPath string) error {
 	return validateFromFS(packageRootPath, fs, buildSpec)
 }
 
-// ValidateFromSourcePath validates a package source tree located at the given path
-// It uses the source specification.
+// ValidateFromSourcePath validates a package source tree located at the given path.
+// This function uses the source specification for checked-out source trees.
+// Linked (.link) files are resolved transparently.
 func ValidateFromSourcePath(packageRootPath string) error {
 	// We wrap the fs.FS with a linkedfiles.LinksFS to handle linked files.
 	linksFS := linkedfiles.NewFS(packageRootPath, os.DirFS(packageRootPath))
@@ -59,8 +63,9 @@ func ValidateFromSourcePath(packageRootPath string) error {
 	return validateFromFS(packageRootPath, linksFS, sourceSpec)
 }
 
-// ValidateFromZip validates a package on its zip format.
-// It uses the build specification.
+// ValidateFromZip validates a package in zip file format.
+// This function uses the build specification since zip files are by definition built packages.
+// Linked files (.link) are blocked; source-only artifacts are rejected.
 func ValidateFromZip(packagePath string) error {
 	r, err := zip.OpenReader(packagePath)
 	if err != nil {
@@ -88,7 +93,7 @@ func ValidateFromZip(packagePath string) error {
 	return validateFromFS(packagePath, subDir, buildSpec)
 }
 
-// ValidateFromFS validates a package against the appropiate specification and returns any errors.
+// validateFromFS validates a package against the appropriate specification and returns any errors.
 // Package files are obtained through the given filesystem.
 func validateFromFS(location string, fsys fs.FS, specFn specFn) error {
 	// If we are not explicitly using the linkedfiles.FS, we wrap fsys with
