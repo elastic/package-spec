@@ -951,12 +951,12 @@ func TestValidateWarnings(t *testing.T) {
 		"good_readme_structure": {},
 	}
 
-	warningsAsErrros := true
+	t.Setenv("PACKAGE_SPEC_WARNINGS_AS_ERRORS", "true")
 	for pkgName, expectedWarnContains := range tests {
 		t.Run(pkgName, func(t *testing.T) {
 			t.Parallel()
 			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
-			v, err := NewFromFS(ModeLegacy, pkgRootPath, linkedfiles.NewFS(pkgRootPath, os.DirFS(pkgRootPath)), WithWarningsAsErrors(warningsAsErrros))
+			v, err := NewFromFS(ModeLegacy, pkgRootPath, linkedfiles.NewFS(pkgRootPath, os.DirFS(pkgRootPath)))
 			require.NoError(t, err)
 			errs := v.Validate()
 			if len(expectedWarnContains) == 0 {
