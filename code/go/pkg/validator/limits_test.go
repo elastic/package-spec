@@ -15,9 +15,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Masterminds/semver/v3"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
+	"github.com/elastic/package-spec/v3/code/go/internal/validator"
 )
 
 func TestLimitsValidation(t *testing.T) {
@@ -116,7 +118,11 @@ func TestLimitsValidation(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
 			t.Parallel()
-			err := ValidateFromFS("test-package", c.fsys)
+
+			specFn := func(version semver.Version) (*validator.Spec, error) {
+				return validator.NewLegacySpec(version)
+			}
+			err := validateFromFS("test-package", c.fsys, specFn)
 			if c.valid {
 				assert.NoError(t, err)
 			} else {

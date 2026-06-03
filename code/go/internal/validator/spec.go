@@ -47,19 +47,14 @@ type validationRules []validationRule
 // GASpecCheckVersion represents minimum version to start checking for unreleased version of the spec
 var GASpecCheckVersion = semver.MustParse("3.0.1")
 
-// NewSpec creates a new Spec for the given version and validation mode.
-// If mode is empty, it defaults to modes.Legacy.
-func NewSpec(version semver.Version, mode modes.Mode) (*Spec, error) {
-	if mode == "" {
-		mode = modes.Legacy
-	}
-	if !mode.Valid() {
-		return nil, fmt.Errorf("invalid validation mode %q", mode)
-	}
-
+// newSpec creates a new Spec for the given version and validation mode.
+func newSpec(version semver.Version, mode modes.Mode) (*Spec, error) {
 	specVersion, err := spec.CheckVersion(version)
 	if err != nil {
 		return nil, fmt.Errorf("could not load specification for version [%s]: %w", version.String(), err)
+	}
+	if !mode.Valid() {
+		return nil, fmt.Errorf("invalid validation mode %q", mode)
 	}
 
 	// With more current versions this is reported as a filterable validation error for GA packages.
@@ -77,6 +72,21 @@ func NewSpec(version semver.Version, mode modes.Mode) (*Spec, error) {
 	}
 
 	return &s, nil
+}
+
+// NewLegacySpec creates a new Spec for the given version using the legacy specification.
+func NewLegacySpec(version semver.Version) (*Spec, error) {
+	return newSpec(version, modes.Legacy)
+}
+
+// NewBuildSpec creates a new Spec for the given version using the build specification.
+func NewBuildSpec(version semver.Version) (*Spec, error) {
+	return newSpec(version, modes.Build)
+}
+
+// NewSourceSpec creates a new Spec for the given version using the source specification.
+func NewSourceSpec(version semver.Version) (*Spec, error) {
+	return newSpec(version, modes.Source)
 }
 
 // ValidatePackage validates the given Package against the Spec

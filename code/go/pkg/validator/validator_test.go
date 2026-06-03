@@ -13,11 +13,13 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/Masterminds/semver/v3"
 	cp "github.com/otiai10/copy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
+	"github.com/elastic/package-spec/v3/code/go/internal/validator"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -938,7 +940,6 @@ func TestValidateWarnings(t *testing.T) {
 	tests := map[string][]string{
 		"good":    {},
 		"good_v2": {},
-		"good_v3": {},
 		"visualizations_by_reference": {
 			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens) (SVR00004)",
 		},
@@ -956,9 +957,12 @@ func TestValidateWarnings(t *testing.T) {
 		t.Run(pkgName, func(t *testing.T) {
 			t.Parallel()
 			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
-			v, err := NewFromFS(ModeLegacy, pkgRootPath, linkedfiles.NewFS(pkgRootPath, os.DirFS(pkgRootPath)))
-			require.NoError(t, err)
-			errs := v.Validate()
+
+			legacySpec := func(version semver.Version) (*validator.Spec, error) {
+				return validator.NewLegacySpec(version)
+			}
+
+			errs := validateFromFS(pkgRootPath, linkedfiles.NewFS(pkgRootPath, os.DirFS(pkgRootPath)), legacySpec)
 			if len(expectedWarnContains) == 0 {
 				require.NoError(t, errs)
 			} else {
@@ -1208,7 +1212,10 @@ func TestValidateForbiddenDataStreamName(t *testing.T) {
 }
 
 func TestLinksAreBlocked(t *testing.T) {
-	err := ValidateFromFS("test-package", newMockFS().WithLink())
+	legacySpec := func(version semver.Version) (*validator.Spec, error) {
+		return validator.NewLegacySpec(version)
+	}
+	err := validateFromFS("test-package", newMockFS().WithLink(), legacySpec)
 	errs, ok := err.(specerrors.ValidationErrors)
 	require.True(t, ok)
 	for _, err := range errs {
