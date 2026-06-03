@@ -1267,6 +1267,9 @@ func TestValidateHandlebarsFiles(t *testing.T) {
 	}
 }
 
+// requireErrorMessage is a helper function to validate the error messages
+// for the given package name and invalid items per folder.
+// It uses the legacy specification.
 func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map[string][]string, expectedErrorMessage string) {
 	pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 
