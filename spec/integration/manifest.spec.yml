@@ -738,7 +738,8 @@ spec:
         - httpjson
     provider_permissions:
       description: >
-        Provider-specific permissions and managed-policy roles required by this unit.
+        Permissions and roles this integration unit requires from the named provider.
+        May be declared at package, policy_template, input, and data_stream levels.
       type: array
       items:
         type: object
@@ -747,21 +748,22 @@ spec:
           - provider
         properties:
           provider:
-            description: Provider name (e.g. "aws" for AWS, "gcp" for Google Cloud Platform, "azure" for Microsoft Azure, "okta" for Okta).
+            description: >
+              Identifier of the provider these permissions apply to
+              (e.g. "aws", "gcp", "azure", "kubernetes", "okta").
             type: string
             examples:
               - aws
               - gcp
               - azure
+              - kubernetes
               - okta
+              - github
           description:
             description: Human-readable description of why these permissions are needed.
             type: string
           roles:
-            description: >
-              Managed-policy roles to attach alongside inline permissions.
-              Rendered as ManagedPolicyArns on the IAM identity; Kibana deduplicates
-              roles that appear at multiple levels.
+            description: Pre-defined roles or managed policies to attach alongside inline permissions.
             type: array
             items:
               type: object
@@ -770,23 +772,25 @@ spec:
                 - name
               properties:
                 name:
-                  description: Short name of the managed policy (e.g. SecurityAudit).
+                  description: Display name of the role or managed policy.
                   type: string
                   examples:
                     - SecurityAudit
+                    - Storage Blob Data Reader
+                    - roles/logging.viewer
+                    - cluster-reader
                 id:
-                  description: ARN of the managed policy.
+                  description: Provider-specific identifier for this role or managed policy.
                   type: string
                   examples:
                     - arn:aws:iam::aws:policy/SecurityAudit
+                    - roles/storage.objectViewer
+                    - 2a2b9908-6ea1-4ae2-8e65-a410df84e7d1
                 description:
                   description: Human-readable description of this role.
                   type: string
           permissions:
-            description: >
-              Individual IAM actions. Rendered as the Action list in a single
-              Effect: Allow, Resource: "*" statement. Kibana deduplicates actions
-              that appear at multiple levels.
+            description: Individual permission grants required by this integration unit.
             type: array
             items:
               type: object
@@ -795,14 +799,21 @@ spec:
                 - name
               properties:
                 name:
-                  description: IAM action name (e.g. s3:GetObject, ec2:Describe*).
+                  description: Provider-specific permission or action name.
                   type: string
                   examples:
                     - s3:GetObject
-                    - ec2:Describe*
-                    - cloudwatch:GetMetricData
+                    - ec2:DescribeInstances
+                    - storage.objects.get
+                    - monitoring.timeSeries.list
+                    - Microsoft.Compute/virtualMachines/read
+                    - Microsoft.Insights/metrics/read
+                    - pods:list
+                    - namespaces:get
+                    - okta.users.read
+                    - contents:read
                 description:
-                  description: Human-readable description of why this action is needed.
+                  description: Human-readable description of why this permission is needed.
                   type: string
   properties:
     format_version:
