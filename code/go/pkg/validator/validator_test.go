@@ -67,6 +67,7 @@ func TestValidateFile(t *testing.T) {
 		"kibana_configuration_links":             {},
 		"with_links":                             {},
 		"good_provider_permissions":              {},
+		"good_provider_permissions_input":        {},
 		"bad_duration_vars": {
 			"manifest.yml",
 			[]string{
