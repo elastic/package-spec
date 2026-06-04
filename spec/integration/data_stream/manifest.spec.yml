@@ -175,6 +175,7 @@ spec:
             $ref: "../../integration/manifest.spec.yml#/definitions/deprecated"
         allOf:
          - if:
+             required: [type]
              properties:
                type:
                  const: select
@@ -217,13 +218,16 @@ spec:
                      properties:
                        name:
                          pattern: "(_file|_url)$"
-               - properties:
-                   type:
-                     const: password
+               - allOf:
+                 - required: [type]
+                 - properties:
+                     type:
+                       const: password
            then:
              required:
                - secret
          - if:
+             required: [type]
              properties:
                type:
                  const: duration
@@ -234,9 +238,11 @@ spec:
                  pattern: '^(\d+[smh]|\d+ms)+$'
          - if:
              not:
-               properties:
-                 type:
-                   const: duration
+               allOf:
+                 - required: [type]
+                 - properties:
+                     type:
+                       const: duration
            then:
              not:
                anyOf:
@@ -348,7 +354,8 @@ spec:
                           $ref: "./fields/fields.spec.yml#/items/properties/index"
                 patternProperties:
                   # Exception for fields imported by elastic-package when import_mappings is used.
-                  # TODO: Allow this only on built packages.
+                  # Source packages: rejected by ValidateNoEmbeddedEcsInDynamicTemplates (issue #549).
+                  # Built packages: permitted (the key is auto-injected at build time).
                   "^_embedded_ecs":
                     type: object
                     additionalProperties: false
@@ -640,7 +647,14 @@ spec:
           required_vars:
             $ref: "#/definitions/required_vars"
           vars:
-            $ref: "#/definitions/vars"
+            # Base schema is permissive: composable streams ('package:') carry
+            # partial var overrides where name and type come from the dependency
+            # and are only present in the built package.
+            # Full validation ($ref: "#/definitions/vars") is applied below via
+            # if/then for non-composable streams ('input:').
+            type: array
+            items:
+              type: object
           var_groups:
             $ref: "../../integration/manifest.spec.yml#/definitions/var_groups"
           sections:
@@ -658,6 +672,12 @@ spec:
         oneOf:
         - required: [input]
         - required: [package]
+        if:
+          required: [input]
+        then:
+          properties:
+            vars:
+              $ref: "#/definitions/vars"
     agent:
       $ref: "../../integration/manifest.spec.yml#/definitions/agent"
     elasticsearch:

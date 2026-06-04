@@ -1,0 +1,31 @@
+# This data stream intentionally contains _embedded_ecs-* dynamic template keys.
+# It serves two purposes:
+#   1. Schema coverage: verifies the spec's patternProperties "^_embedded_ecs" block
+#      accepts these keys (exercised by TestLegacyPreservation_FromPath).
+#   2. Semantic rejection: verifies ValidateNoEmbeddedEcsInDynamicTemplates rejects
+#      them in source mode (exercised by TestSourceMode_BadEmbeddedEcs).
+title: Logs
+type: logs
+streams:
+  - input: logfile
+    title: Sample logs
+    description: Collect sample logs
+    vars:
+      - name: paths
+        type: text
+        title: Paths
+        multi: true
+        default:
+          - /var/log/*.log
+elasticsearch:
+  index_template:
+    mappings:
+      dynamic_templates:
+        - _embedded_ecs-ip_to_ip:
+            mapping:
+              type: ip
+            match: ip
+        - _embedded_ecs-port_to_long:
+            mapping:
+              type: long
+            match: port

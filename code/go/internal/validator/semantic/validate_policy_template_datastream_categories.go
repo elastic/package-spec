@@ -70,7 +70,7 @@ func ValidatePolicyTemplateDatastreamCategories(fsys fspath.FS) specerrors.Valid
 	}
 
 	// only validate integration type packages
-	if pkgType != packageTypeIntegration {
+	if pkgType != integrationPackageType {
 		return nil
 	}
 

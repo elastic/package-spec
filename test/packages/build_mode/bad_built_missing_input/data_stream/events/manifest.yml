@@ -1,0 +1,5 @@
+title: Events
+type: logs
+streams:
+  - title: Events logs
+    description: Collect events log data (missing input — invalid in built packages)

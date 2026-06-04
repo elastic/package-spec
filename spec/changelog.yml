@@ -8,6 +8,12 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: Implement `source` and `build` validation modes via a new constructor API to semantic validation rules.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/TBA
+    - description: Add support for mode-aware constructors and validation APIs.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1177
 - version: 3.6.3
   changes:
     - description: Add optional `release` field to agentless deployment mode to explicitly declare its release stage.

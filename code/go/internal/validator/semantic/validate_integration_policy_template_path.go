@@ -20,11 +20,11 @@ import (
 
 const (
 	defaultStreamTemplatePath = "stream.yml.hbs"
-	packageTypeIntegration    = "integration"
 )
 
 type policyTemplateInput struct {
 	Type          string   `yaml:"type"`
+	Package       string   `yaml:"package"`
 	TemplatePath  string   `yaml:"template_path"`
 	TemplatePaths []string `yaml:"template_paths"`
 }
@@ -41,6 +41,7 @@ type integrationPackageManifest struct { // package manifest
 
 type stream struct {
 	Input         string   `yaml:"input"`
+	Package       string   `yaml:"package"`
 	TemplatePath  string   `yaml:"template_path"`
 	TemplatePaths []string `yaml:"template_paths"`
 }
@@ -78,7 +79,7 @@ func ValidateIntegrationPolicyTemplates(fsys fspath.FS) specerrors.ValidationErr
 			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), errFailedToParseManifest)}
 	}
 
-	if manifest.Type != packageTypeIntegration {
+	if manifest.Type != integrationPackageType {
 		return nil
 	}
 
@@ -110,6 +111,14 @@ func ValidateIntegrationPolicyTemplates(fsys fspath.FS) specerrors.ValidationErr
 // under agent/input when template_paths or template_path is set (Fleet: template_paths first).
 func validateIntegrationPolicyTemplateInputs(fsys fspath.FS, policyTemplate integrationPolicyTemplate) error {
 	for _, input := range policyTemplate.Inputs {
+		// Composable inputs reference an input package via 'package:'. When no
+		// explicit template_path/template_paths is set, all templates come from
+		// the dependency and are only present after build. Skip those.
+		// If the composable input defines its own template_path or template_paths
+		// (overlay templates that live in the source package), those are validated.
+		if input.Package != "" && input.TemplatePath == "" && len(input.TemplatePaths) == 0 {
+			continue
+		}
 		if len(input.TemplatePaths) > 0 {
 			for _, tp := range input.TemplatePaths {
 				if err := validateAgentInputTemplatePath(fsys, tp); err != nil {
@@ -141,6 +150,17 @@ func validateAllDataStreamStreamTemplates(fsys fspath.FS, dsMap map[string]dataS
 		dsManifestPath := path.Join(dsDir, "manifest.yml")
 		manifest := dsMap[dsDir]
 		for _, s := range manifest.Streams {
+			// Composable streams reference an input package via 'package:'. When
+			// no explicit template_path/template_paths is set on the stream, all
+			// templates come from the dependency and are only present after build.
+			// Skip those — ValidateStreamInputMaterialized enforces that 'package:'
+			// is replaced by 'input:' in build mode.
+			// However, if the composable stream defines its own template_path or
+			// template_paths, those files must exist in the source package and are
+			// validated here.
+			if s.Package != "" && s.TemplatePath == "" && len(s.TemplatePaths) == 0 {
+				continue
+			}
 			if err := validateSingleDataStreamStreamTemplates(fsys, dsDir, s); err != nil {
 				errs = append(errs, specerrors.NewStructuredErrorf(
 					"file \"%s\" is invalid: data stream \"%s\" stream input %q: %w",
