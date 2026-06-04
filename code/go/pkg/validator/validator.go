@@ -8,106 +8,158 @@ import (
 	"archive/zip"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 
-	"github.com/Masterminds/semver/v3"
-
 	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
-	"github.com/elastic/package-spec/v3/code/go/internal/validator"
+	internalvalidator "github.com/elastic/package-spec/v3/code/go/internal/validator"
 	"github.com/elastic/package-spec/v3/code/go/internal/validator/common"
 )
 
-type specFn func(semver.Version) (*validator.Spec, error)
-
-// ValidateFromPath validates a package located at the given path using the legacy specification.
-// This function preserves byte-for-byte identical behavior with existing validation workflows.
-// Linked (.link) files are resolved transparently.
-// Deprecated: Use ValidateFromSourcePath or ValidateFromBuildPath depending on the package type.
-func ValidateFromPath(packageRootPath string) error {
-	// We wrap the fs.FS with a linkedfiles.LinksFS to handle linked files.
-	linksFS := linkedfiles.NewFS(packageRootPath, os.DirFS(packageRootPath))
-
-	return validateFromFS(packageRootPath, linksFS, validator.NewLegacySpec)
+// Validator holds the configuration for a package validation run.
+// Create one with NewFromPath, NewFromZip, or NewFromFS, then call Validate.
+type Validator struct {
+	mode             Mode
+	location         string
+	fsys             fs.FS
+	warningsAsErrors bool
+	// closer is non-nil when the Validator owns a resource (e.g. a zip reader)
+	// that must be released after Validate returns.
+	closer io.Closer
 }
 
-// ValidateFromBuildPath validates a built package located at the given path.
-// This function uses the build specification, appropriate for packages produced by
-// elastic-package build, distributed as zip files, or served by the package registry.
-// Linked files (.link) are blocked; source-only artifacts are rejected.
-func ValidateFromBuildPath(packageRootPath string) error {
-	fs := os.DirFS(packageRootPath)
+// Option configures a Validator.
+type Option func(*Validator)
 
-	return validateFromFS(packageRootPath, fs, validator.NewBuildSpec)
+// WithWarningsAsErrors makes validation warnings count as errors when enabled is true.
+// This overrides the PACKAGE_SPEC_WARNINGS_AS_ERRORS environment variable.
+func WithWarningsAsErrors(enabled bool) Option {
+	return func(v *Validator) { v.warningsAsErrors = enabled }
 }
 
-// ValidateFromSourcePath validates a package source tree located at the given path.
-// This function uses the source specification for checked-out source trees.
-// Linked (.link) files are resolved transparently.
-func ValidateFromSourcePath(packageRootPath string) error {
-	// We wrap the fs.FS with a linkedfiles.LinksFS to handle linked files.
-	linksFS := linkedfiles.NewFS(packageRootPath, os.DirFS(packageRootPath))
-
-	return validateFromFS(packageRootPath, linksFS, validator.NewSourceSpec)
-}
-
-// ValidateFromZip validates a package in zip file format.
-// This function uses the build specification since zip files are by definition built packages.
-// Linked files (.link) are blocked; source-only artifacts are rejected.
-func ValidateFromZip(packagePath string) error {
-	r, err := zip.OpenReader(packagePath)
-	if err != nil {
-		return fmt.Errorf("failed to open zip file (%s): %w", packagePath, err)
+// NewFromPath returns a Validator for the package rooted at packageRootPath.
+// The mode determines which validation rules apply and how linked files are handled.
+func NewFromPath(mode Mode, packageRootPath string, opts ...Option) (*Validator, error) {
+	if !mode.internal.Valid() {
+		return nil, fmt.Errorf("invalid validation mode %q", mode.internal)
 	}
-	defer r.Close()
+	fsys := mode.wrapFS(packageRootPath, os.DirFS(packageRootPath))
+	return buildValidator(mode, packageRootPath, fsys, nil, opts), nil
+}
+
+// NewFromZip returns a Validator for the package stored in the zip file at zipPath.
+//
+// Zip files always contain built packages, so the validator always runs in
+// ModeBuild; linked (.link) files are blocked.
+//
+// The returned Validator owns the underlying zip reader; Validate closes it.
+// Do not call Validate more than once on a Validator created by NewFromZip.
+func NewFromZip(zipPath string, opts ...Option) (_ *Validator, err error) {
+	r, openErr := zip.OpenReader(zipPath)
+	if openErr != nil {
+		return nil, fmt.Errorf("failed to open zip file (%s): %w", zipPath, openErr)
+	}
+	defer func() {
+		if err != nil {
+			if cerr := r.Close(); cerr != nil {
+				err = errors.Join(err, cerr)
+			}
+		}
+	}()
 
 	dirs, err := fs.ReadDir(r, ".")
 	if err != nil {
-		return fmt.Errorf("failed to read root directory in zip file (%s): %w", packagePath, err)
+		return nil, fmt.Errorf("failed to read root directory in zip file (%s): %w", zipPath, err)
 	}
 	if len(dirs) != 1 {
-		return fmt.Errorf("a single directory is expected in zip file, %d found", len(dirs))
+		return nil, fmt.Errorf("a single directory is expected in zip file, %d found", len(dirs))
 	}
 
 	subDir, err := fs.Sub(r, dirs[0].Name())
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	buildSpec := func(version semver.Version) (*validator.Spec, error) {
-		return validator.NewBuildSpec(version)
-	}
-
-	return validateFromFS(packagePath, subDir, buildSpec)
+	fsys := linkedfiles.NewBlockFS(subDir)
+	return buildValidator(ModeBuild, zipPath, fsys, r, opts), nil
 }
 
-// validateFromFS validates a package against the appropriate specification and returns any errors.
-// Package files are obtained through the given filesystem.
-func validateFromFS(location string, fsys fs.FS, specFn specFn) error {
-	// If we are not explicitly using the linkedfiles.FS, we wrap fsys with
-	// a linkedfiles.BlockFS to block the use of linked files.
-	if _, ok := fsys.(*linkedfiles.FS); !ok {
-		fsys = linkedfiles.NewBlockFS(fsys)
+// NewFromFS returns a Validator for the package accessible through fsys at location.
+// The mode determines which validation rules apply; fsys is used as-is without any
+// link-file wrapping. Callers are responsible for filesystem semantics.
+func NewFromFS(mode Mode, location string, fsys fs.FS, opts ...Option) (*Validator, error) {
+	if !mode.internal.Valid() {
+		return nil, fmt.Errorf("invalid validation mode %q", mode.internal)
 	}
-	pkg, err := packages.NewPackageFromFS(location, fsys)
+	return buildValidator(mode, location, fsys, nil, opts), nil
+}
+
+func buildValidator(mode Mode, location string, fsys fs.FS, closer io.Closer, opts []Option) *Validator {
+	v := &Validator{
+		mode:             mode,
+		location:         location,
+		fsys:             fsys,
+		warningsAsErrors: common.IsDefinedWarningsAsErrors(),
+		closer:           closer,
+	}
+	for _, opt := range opts {
+		opt(v)
+	}
+	return v
+}
+
+// Validate runs package validation and returns any errors encountered.
+//
+// If the Validator was created by NewFromZip it owns an open zip reader;
+// Validate closes it on return, so Validate must not be called more than once.
+func (v *Validator) Validate() (err error) {
+	if v.closer != nil {
+		defer func() {
+			if cerr := v.closer.Close(); cerr != nil {
+				err = errors.Join(err, cerr)
+			}
+		}()
+	}
+
+	pkg, err := packages.NewPackageFromFS(v.location, v.fsys)
 	if err != nil {
 		return err
 	}
-
 	if pkg.SpecVersion == nil {
 		return errors.New("could not determine specification version for package")
 	}
 
-	spec, err := specFn(*pkg.SpecVersion)
+	spec, err := internalvalidator.NewSpec(*pkg.SpecVersion, v.mode.internal)
 	if err != nil {
 		return err
 	}
-	spec.WarningsAsErrors = common.IsDefinedWarningsAsErrors()
+	spec.WarningsAsErrors = v.warningsAsErrors
 
 	if errs := spec.ValidatePackage(*pkg); len(errs) > 0 {
 		return errs
 	}
-
 	return nil
+}
+
+// ValidateFromPath validates a package located at the given path using the legacy specification.
+// Linked (.link) files are resolved transparently.
+// Deprecated: Use NewFromPath with ModeSource or ModeBuild depending on the package type.
+func ValidateFromPath(packageRootPath string) error {
+	v, err := NewFromPath(ModeLegacy, packageRootPath)
+	if err != nil {
+		return err
+	}
+	return v.Validate()
+}
+
+// ValidateFromZip validates a package in zip file format using the build specification.
+// Linked files (.link) are blocked; zip files are by definition built packages.
+func ValidateFromZip(packagePath string) error {
+	v, err := NewFromZip(packagePath)
+	if err != nil {
+		return err
+	}
+	return v.Validate()
 }

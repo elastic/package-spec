@@ -27,7 +27,7 @@ func TestNewLegacySpec(t *testing.T) {
 	}
 
 	for version, test := range tests {
-		spec, err := NewLegacySpec(*semver.MustParse(version))
+		spec, err := NewSpec(*semver.MustParse(version), modes.Legacy)
 		if test.expectedErrContains == "" {
 			require.NoError(t, err)
 			require.IsType(t, &Spec{}, spec)
