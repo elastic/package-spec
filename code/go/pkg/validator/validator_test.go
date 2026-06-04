@@ -1340,6 +1340,89 @@ func TestNewFromFS_TakesFSAsIsRegardlessOfMode(t *testing.T) {
 	}
 }
 
+func TestBuildModeValidation(t *testing.T) {
+	buildModeBase := filepath.Join("..", "..", "..", "..", "test", "packages", "build_mode")
+
+	tests := []struct {
+		pkg           string
+		expectErrors  bool
+		errorContains []string
+	}{
+		{
+			pkg:          "good_built",
+			expectErrors: false,
+		},
+		{
+			pkg:          "bad_built_with_dev",
+			expectErrors: true,
+			errorContains: []string{
+				"_dev directory is not allowed in built packages",
+			},
+		},
+		{
+			pkg:          "bad_built_with_link",
+			expectErrors: true,
+			errorContains: []string{
+				".link files are not allowed in built packages",
+			},
+		},
+		{
+			pkg:          "bad_built_external_ecs",
+			expectErrors: true,
+			errorContains: []string{
+				"external: ecs",
+				"ECS fields must be materialized before packaging",
+			},
+		},
+		{
+			pkg:          "bad_built_stream_package",
+			expectErrors: true,
+			errorContains: []string{
+				"'package:'",
+				"source-only",
+				"build packages must use 'input:'",
+			},
+		},
+		{
+			pkg:          "bad_built_missing_input",
+			expectErrors: true,
+			errorContains: []string{
+				"missing required 'input:'",
+			},
+		},
+		{
+			pkg:          "bad_built_policy_template_package",
+			expectErrors: true,
+			errorContains: []string{
+				"'package:'",
+				"source-only",
+				"build packages must use 'type:'",
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.pkg, func(t *testing.T) {
+			t.Parallel()
+			pkgPath := filepath.Join(buildModeBase, tc.pkg)
+			v, err := NewFromPath(ModeBuild, pkgPath)
+			require.NoError(t, err)
+
+			valErr := v.Validate()
+			if !tc.expectErrors {
+				require.NoError(t, valErr)
+				return
+			}
+
+			require.Error(t, valErr)
+			combined := valErr.Error()
+			for _, substr := range tc.errorContains {
+				assert.Contains(t, combined, substr)
+			}
+		})
+	}
+}
+
 func TestValidateHandlebarsFiles(t *testing.T) {
 	tests := map[string]string{
 		"bad_input_hbs":              "invalid handlebars template: error validating agent/input/input.yml.hbs: Parse error on line 10:\nExpecting OpenEndBlock, got: 'EOF'",
