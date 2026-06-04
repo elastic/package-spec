@@ -29,11 +29,7 @@ func ValidateFromPath(packageRootPath string) error {
 	// We wrap the fs.FS with a linkedfiles.LinksFS to handle linked files.
 	linksFS := linkedfiles.NewFS(packageRootPath, os.DirFS(packageRootPath))
 
-	legacySpec := func(version semver.Version) (*validator.Spec, error) {
-		return validator.NewLegacySpec(version)
-	}
-
-	return validateFromFS(packageRootPath, linksFS, legacySpec)
+	return validateFromFS(packageRootPath, linksFS, validator.NewLegacySpec)
 }
 
 // ValidateFromBuildPath validates a built package located at the given path.
@@ -43,10 +39,7 @@ func ValidateFromPath(packageRootPath string) error {
 func ValidateFromBuildPath(packageRootPath string) error {
 	fs := os.DirFS(packageRootPath)
 
-	buildSpec := func(version semver.Version) (*validator.Spec, error) {
-		return validator.NewBuildSpec(version)
-	}
-	return validateFromFS(packageRootPath, fs, buildSpec)
+	return validateFromFS(packageRootPath, fs, validator.NewBuildSpec)
 }
 
 // ValidateFromSourcePath validates a package source tree located at the given path.
@@ -56,11 +49,7 @@ func ValidateFromSourcePath(packageRootPath string) error {
 	// We wrap the fs.FS with a linkedfiles.LinksFS to handle linked files.
 	linksFS := linkedfiles.NewFS(packageRootPath, os.DirFS(packageRootPath))
 
-	sourceSpec := func(version semver.Version) (*validator.Spec, error) {
-		return validator.NewSourceSpec(version)
-	}
-
-	return validateFromFS(packageRootPath, linksFS, sourceSpec)
+	return validateFromFS(packageRootPath, linksFS, validator.NewSourceSpec)
 }
 
 // ValidateFromZip validates a package in zip file format.
