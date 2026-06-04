@@ -25,7 +25,8 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
-// Spec represents a package specification
+// Spec represents a versioned package specification and the validation mode
+// used to evaluate packages against it.
 type Spec struct {
 	// version is the version requested, what is included in the package, possibly without prerelease tags.
 	version semver.Version
@@ -48,6 +49,7 @@ type validationRules []validationRule
 var GASpecCheckVersion = semver.MustParse("3.0.1")
 
 // NewSpec creates a new Spec for the given version and validation mode.
+// Returns an error if version is not a known spec version or if mode is invalid.
 func NewSpec(version semver.Version, mode modes.Mode) (*Spec, error) {
 	specVersion, err := spec.CheckVersion(version)
 	if err != nil {
@@ -74,7 +76,9 @@ func NewSpec(version semver.Version, mode modes.Mode) (*Spec, error) {
 	return &s, nil
 }
 
-// ValidatePackage validates the given Package against the Spec
+// ValidatePackage validates the given Package against the Spec, running both
+// syntactic and semantic rules. The mode embedded in the Spec controls which
+// semantic rules are active.
 func (s Spec) ValidatePackage(pkg packages.Package) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 

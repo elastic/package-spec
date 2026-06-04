@@ -33,14 +33,18 @@ type Validator struct {
 // Option configures a Validator.
 type Option func(*Validator)
 
-// WithWarningsAsErrors makes validation warnings count as errors when enabled is true.
-// This overrides the PACKAGE_SPEC_WARNINGS_AS_ERRORS environment variable.
+// WithWarningsAsErrors controls whether validation warnings are promoted to errors.
+// When enabled is true, warnings are reported as errors regardless of the
+// PACKAGE_SPEC_WARNINGS_AS_ERRORS environment variable. When enabled is false,
+// warnings remain warnings even if the environment variable is set.
 func WithWarningsAsErrors(enabled bool) Option {
 	return func(v *Validator) { v.warningsAsErrors = enabled }
 }
 
 // NewFromPath returns a Validator for the package rooted at packageRootPath.
-// The mode determines which validation rules apply and how linked files are handled.
+// The mode determines which validation rules apply and how linked files are
+// handled: ModeBuild blocks linked files, ModeSource and ModeLegacy resolve them.
+// Returns an error if mode is not a recognised value.
 func NewFromPath(mode Mode, packageRootPath string, opts ...Option) (*Validator, error) {
 	if !mode.internal.Valid() {
 		return nil, fmt.Errorf("invalid validation mode %q", mode.internal)
@@ -88,7 +92,9 @@ func NewFromZip(zipPath string, opts ...Option) (_ *Validator, err error) {
 
 // NewFromFS returns a Validator for the package accessible through fsys at location.
 // The mode determines which validation rules apply; fsys is used as-is without any
-// link-file wrapping. Callers are responsible for filesystem semantics.
+// link-file wrapping. Callers are responsible for filesystem semantics: when using
+// ModeBuild, wrap fsys with linkedfiles.NewBlockFS to enforce link-file restrictions.
+// Returns an error if mode is not a recognised value.
 func NewFromFS(mode Mode, location string, fsys fs.FS, opts ...Option) (*Validator, error) {
 	if !mode.internal.Valid() {
 		return nil, fmt.Errorf("invalid validation mode %q", mode.internal)
@@ -111,9 +117,6 @@ func buildValidator(mode Mode, location string, fsys fs.FS, closer io.Closer, op
 }
 
 // Validate runs package validation and returns any errors encountered.
-//
-// If the Validator was created by NewFromZip it owns an open zip reader;
-// Validate closes it on return, so Validate must not be called more than once.
 func (v *Validator) Validate() (err error) {
 	if v.closer != nil {
 		defer func() {
@@ -154,8 +157,8 @@ func ValidateFromPath(packageRootPath string) error {
 	return v.Validate()
 }
 
-// ValidateFromZip validates a package in zip file format using the build specification.
-// Linked files (.link) are blocked; zip files are by definition built packages.
+// ValidateFromZip validates a package in zip file format using ModeBuild.
+// Linked (.link) files are blocked; zip files are by definition built packages.
 func ValidateFromZip(packagePath string) error {
 	v, err := NewFromZip(packagePath)
 	if err != nil {

@@ -4,15 +4,20 @@
 
 package modes
 
-// Mode represents the validation mode used when validating a package.
+// Mode represents the validation context: which semantic rules run and how
+// linked (.link) files are handled during package validation.
 type Mode string
 
-// Validation modes for package validation: Legacy preserves existing behavior,
-// Source validates checked-out source trees, and Build validates built artifacts.
 const (
+	// Legacy preserves the original validation behavior: linked files are
+	// resolved transparently and no rules are mode-gated.
 	Legacy Mode = "legacy"
+	// Source validates a package as a checked-out source tree: linked files
+	// are resolved transparently and source-only rules are enforced.
 	Source Mode = "source"
-	Build  Mode = "build"
+	// Build validates a package as a built artifact: linked files are
+	// unconditionally blocked and build-only rules are enforced.
+	Build Mode = "build"
 )
 
 // Valid reports whether m is a recognised validation mode.
