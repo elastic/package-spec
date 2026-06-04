@@ -1,4 +1,4 @@
-format_version: 3.7.0
+format_version: 3.6.4
 name: bad_provider_permissions_missing_name
 title: Bad package with permissions item missing name
 description: A permissions item is missing the required name field.

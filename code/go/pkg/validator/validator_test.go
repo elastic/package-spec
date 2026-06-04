@@ -254,12 +254,6 @@ func TestValidateFile(t *testing.T) {
 				`field provider_permissions.0: provider is required`,
 			},
 		},
-		"bad_provider_permissions_old_version": {
-			"manifest.yml",
-			[]string{
-				`field (root): Additional property provider_permissions is not allowed`,
-			},
-		},
 		"bad_provider_permissions_missing_name": {
 			"manifest.yml",
 			[]string{

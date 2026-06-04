@@ -176,12 +176,6 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
-  - before: 3.7.0
-    patch:
-      - op: remove
-        path: "/properties/provider_permissions"
-      - op: remove
-        path: "/properties/policy_templates/items/properties/provider_permissions"
   - before: 3.6.0
     patch:
       - op: remove

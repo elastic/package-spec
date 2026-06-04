@@ -1,4 +1,4 @@
-format_version: 3.7.0
+format_version: 3.6.4
 name: good_provider_permissions_input
 title: Good Provider Permissions Input Package
 description: Tests provider_permissions at package and policy_template levels in an input package.

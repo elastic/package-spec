@@ -1,4 +1,4 @@
-format_version: 3.7.0
+format_version: 3.6.4
 name: bad_provider_permissions_extra_field
 title: Bad package with extra field in permissions item
 description: A permissions item contains resources which is a V2+ field not allowed in V1.

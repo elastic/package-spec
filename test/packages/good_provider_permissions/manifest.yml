@@ -1,4 +1,4 @@
-format_version: 3.7.0
+format_version: 3.6.4
 name: good_provider_permissions
 title: Good package with provider permissions
 description: Tests provider_permissions at package, policy_template, input, and data_stream levels, including multiple providers per entry.
