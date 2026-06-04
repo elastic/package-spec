@@ -8,6 +8,9 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: Replace `profiling` data stream type with `profiles` to align with the OTel Profiles signal name.
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/X
 - version: 3.6.3
   changes:
     - description: Add optional `release` field to agentless deployment mode to explicitly declare its release stage.

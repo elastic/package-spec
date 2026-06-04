@@ -1,5 +1,5 @@
 title: "Universal Profiling Symbols"
-type: profiling
+type: profiles
 release: beta
 streams:
   - input: pf-elastic-symbolizer

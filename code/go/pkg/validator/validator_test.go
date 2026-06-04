@@ -190,7 +190,7 @@ func TestValidateFile(t *testing.T) {
 		"bad_profiling_symbolizer": {
 			"data_stream/example/manifest.yml",
 			[]string{
-				"profiling data type cannot be used in GA packages",
+				"profiles data type cannot be used in GA packages",
 			},
 		},
 		"bad_secret_vars": {
