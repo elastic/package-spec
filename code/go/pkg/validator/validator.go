@@ -17,16 +17,20 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/internal/validator/common"
 )
 
+// Mode is the validation context that controls semantic rules and linked-file handling.
 type Mode = internalvalidator.Mode
 
 var (
+	// ModeLegacy preserves the original validation behavior.
 	ModeLegacy Mode = internalvalidator.ModeLegacy
+	// ModeSource validates a checked-out source tree.
 	ModeSource Mode = internalvalidator.ModeSource
-	ModeBuild  Mode = internalvalidator.ModeBuild
+	// ModeBuild validates a built package artifact.
+	ModeBuild Mode = internalvalidator.ModeBuild
 )
 
 // Validator holds the configuration for a package validation run.
-// Create one with NewFromPath, NewFromZip, or NewFromFS, then call Validate.
+// Create one with NewValidator, then call ValidateFromPath, ValidateFromZip, or ValidateFromFS.
 type Validator struct {
 	mode             Mode
 	warningsAsErrors bool
@@ -43,6 +47,7 @@ func WithWarningsAsErrors(enabled bool) Option {
 	return func(v *Validator) { v.warningsAsErrors = enabled }
 }
 
+// NewValidator creates a Validator for the given mode and options.
 func NewValidator(mode Mode, opts ...Option) (*Validator, error) {
 	if !mode.Valid() {
 		return nil, fmt.Errorf("invalid validation mode %q", mode)
@@ -57,7 +62,7 @@ func NewValidator(mode Mode, opts ...Option) (*Validator, error) {
 	return v, nil
 }
 
-// Validate runs package validation and returns any errors encountered.
+// ValidateFromPath validates the package at path on disk.
 func (v *Validator) ValidateFromPath(path string) error {
 	fsys := os.DirFS(path)
 	if v.mode == ModeBuild {
@@ -69,9 +74,11 @@ func (v *Validator) ValidateFromPath(path string) error {
 	return v.validate(path, fsys)
 }
 
+// ValidateFromZip validates the package stored in a zip file.
+// Zip files are supported in ModeLegacy and ModeBuild only.
 func (v *Validator) ValidateFromZip(zipPath string) error {
-	if v.mode != ModeBuild {
-		return errors.New("zip files are only supported in ModeBuild")
+	if v.mode != ModeLegacy && v.mode != ModeBuild {
+		return errors.New("zip files are only supported in ModeLegacy or ModeBuild")
 	}
 
 	r, err := zip.OpenReader(zipPath)
@@ -97,6 +104,7 @@ func (v *Validator) ValidateFromZip(zipPath string) error {
 	return v.validate(zipPath, fsys)
 }
 
+// ValidateFromFS validates the package accessible through fsys at location.
 func (v *Validator) ValidateFromFS(location string, fsys fs.FS) error {
 	if v.mode == ModeLegacy {
 		// If we are not explicitly using the linkedfiles.FS, we wrap fsys with
