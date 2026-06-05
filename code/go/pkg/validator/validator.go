@@ -13,20 +13,20 @@ import (
 
 	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
-	internalvalidator "github.com/elastic/package-spec/v3/code/go/internal/validator"
+	"github.com/elastic/package-spec/v3/code/go/internal/validator"
 	"github.com/elastic/package-spec/v3/code/go/internal/validator/common"
 )
 
 // Mode is the validation context that controls semantic rules and linked-file handling.
-type Mode = internalvalidator.Mode
+type Mode = validator.Mode
 
 var (
-	// ModeLegacy preserves the original validation behavior.
-	ModeLegacy Mode = internalvalidator.ModeLegacy
-	// ModeSource validates a checked-out source tree.
-	ModeSource Mode = internalvalidator.ModeSource
-	// ModeBuild validates a built package artifact.
-	ModeBuild Mode = internalvalidator.ModeBuild
+	// LegacyMode preserves the original validation behavior.
+	LegacyMode Mode = validator.LegacyMode
+	// SourceMode validates a checked-out source tree.
+	SourceMode Mode = validator.SourceMode
+	// BuildMode validates a built package artifact.
+	BuildMode Mode = validator.BuildMode
 )
 
 // Validator holds the configuration for a package validation run.
@@ -65,7 +65,7 @@ func NewValidator(mode Mode, opts ...Option) (*Validator, error) {
 // ValidateFromPath validates the package at path on disk.
 func (v *Validator) ValidateFromPath(path string) error {
 	fsys := os.DirFS(path)
-	if v.mode == ModeBuild {
+	if v.mode == BuildMode {
 		fsys = linkedfiles.NewBlockFS(fsys)
 	} else {
 		fsys = linkedfiles.NewFS(path, fsys)
@@ -75,10 +75,10 @@ func (v *Validator) ValidateFromPath(path string) error {
 }
 
 // ValidateFromZip validates the package stored in a zip file.
-// Zip files are supported in ModeLegacy and ModeBuild only.
+// Zip files are supported in LegacyMode and BuildMode only.
 func (v *Validator) ValidateFromZip(zipPath string) error {
-	if v.mode != ModeLegacy && v.mode != ModeBuild {
-		return errors.New("zip files are only supported in ModeLegacy or ModeBuild")
+	if v.mode != LegacyMode && v.mode != BuildMode {
+		return errors.New("zip files are only supported in LegacyMode or BuildMode")
 	}
 
 	r, err := zip.OpenReader(zipPath)
@@ -106,16 +106,16 @@ func (v *Validator) ValidateFromZip(zipPath string) error {
 
 // ValidateFromFS validates the package accessible through fsys at location.
 func (v *Validator) ValidateFromFS(location string, fsys fs.FS) error {
-	if v.mode == ModeLegacy {
+	if v.mode == LegacyMode {
 		// If we are not explicitly using the linkedfiles.FS, we wrap fsys with
 		// a linkedfiles.BlockFS to block the use of linked files.
 		if _, ok := fsys.(*linkedfiles.FS); !ok {
 			fsys = linkedfiles.NewBlockFS(fsys)
 		}
-	} else if _, ok := fsys.(*linkedfiles.FS); ok && v.mode == ModeBuild {
-		return errors.New("linked files are not supported in ModeBuild")
-	} else if _, ok := fsys.(*linkedfiles.BlockFS); ok && v.mode == ModeSource {
-		return errors.New("block linked files are not supported in ModeSource")
+	} else if _, ok := fsys.(*linkedfiles.FS); ok && v.mode == BuildMode {
+		return errors.New("linked files are not supported in BuildMode")
+	} else if _, ok := fsys.(*linkedfiles.BlockFS); ok && v.mode == SourceMode {
+		return errors.New("block linked files are not supported in SourceMode")
 	}
 
 	return v.validate(location, fsys)
@@ -130,7 +130,7 @@ func (v *Validator) validate(location string, fsys fs.FS) error {
 		return errors.New("could not determine specification version for package")
 	}
 
-	spec, err := internalvalidator.NewSpec(*pkg.SpecVersion, v.mode)
+	spec, err := validator.NewSpec(*pkg.SpecVersion, v.mode)
 	if err != nil {
 		return err
 	}
@@ -142,30 +142,30 @@ func (v *Validator) validate(location string, fsys fs.FS) error {
 	return nil
 }
 
-// ValidateFromPath is a convenience function that creates a new Validator in ModeLegacy and calls ValidateFromPath.
+// ValidateFromPath is a convenience function that creates a new Validator in LegacyMode and calls ValidateFromPath.
 // Deprecated: Use NewValidator and ValidateFromPath instead.
 func ValidateFromPath(path string) error {
-	v, err := NewValidator(ModeLegacy)
+	v, err := NewValidator(LegacyMode)
 	if err != nil {
 		return err
 	}
 	return v.ValidateFromPath(path)
 }
 
-// ValidateFromZip is a convenience function that creates a new Validator in ModeLegacy and calls ValidateFromZip.
+// ValidateFromZip is a convenience function that creates a new Validator in LegacyMode and calls ValidateFromZip.
 // Deprecated: Use NewValidator and ValidateFromZip instead.
 func ValidateFromZip(zipPath string) error {
-	v, err := NewValidator(ModeLegacy)
+	v, err := NewValidator(LegacyMode)
 	if err != nil {
 		return err
 	}
 	return v.ValidateFromZip(zipPath)
 }
 
-// ValidateFromFS is a convenience function that creates a new Validator in ModeLegacy and calls ValidateFromFS.
+// ValidateFromFS is a convenience function that creates a new Validator in LegacyMode and calls ValidateFromFS.
 // Deprecated: Use NewValidator and ValidateFromFS instead.
 func ValidateFromFS(location string, fsys fs.FS) error {
-	v, err := NewValidator(ModeLegacy)
+	v, err := NewValidator(LegacyMode)
 	if err != nil {
 		return err
 	}

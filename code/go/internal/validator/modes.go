@@ -9,21 +9,21 @@ package validator
 type Mode string
 
 const (
-	// ModeLegacy preserves the original validation behavior: linked files are
+	// LegacyMode preserves the original validation behavior: linked files are
 	// resolved transparently and no rules are mode-gated.
-	ModeLegacy Mode = "legacy"
-	// ModeSource validates a package as a checked-out source tree: linked files
+	LegacyMode Mode = "legacy"
+	// SourceMode validates a package as a checked-out source tree: linked files
 	// are resolved transparently and source-only rules are enforced.
-	ModeSource Mode = "source"
-	// ModeBuild validates a package as a built artifact: linked files are
+	SourceMode Mode = "source"
+	// BuildMode validates a package as a built artifact: linked files are
 	// unconditionally blocked and build-only rules are enforced.
-	ModeBuild Mode = "build"
+	BuildMode Mode = "build"
 )
 
 // Valid reports whether m is a recognised validation mode.
 func (m Mode) Valid() bool {
 	switch m {
-	case ModeLegacy, ModeSource, ModeBuild:
+	case LegacyMode, SourceMode, BuildMode:
 		return true
 	}
 	return false

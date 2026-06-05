@@ -1275,7 +1275,7 @@ func TestLinksBehaviorAcrossModes(t *testing.T) {
 	t.Run("build_rejects_link_files", func(t *testing.T) {
 		t.Parallel()
 
-		v, err := NewValidator(ModeBuild)
+		v, err := NewValidator(BuildMode)
 		require.NoError(t, err)
 		err = v.ValidateFromPath(withLinks)
 		require.Error(t, err)
@@ -1286,7 +1286,7 @@ func TestLinksBehaviorAcrossModes(t *testing.T) {
 
 	t.Run("source_accepts_link_files", func(t *testing.T) {
 		t.Parallel()
-		v, err := NewValidator(ModeSource)
+		v, err := NewValidator(SourceMode)
 		require.NoError(t, err)
 		err = v.ValidateFromPath(withLinks)
 		require.NoError(t, err)
@@ -1294,7 +1294,7 @@ func TestLinksBehaviorAcrossModes(t *testing.T) {
 
 	t.Run("legacy_accepts_link_files", func(t *testing.T) {
 		t.Parallel()
-		v, err := NewValidator(ModeLegacy)
+		v, err := NewValidator(LegacyMode)
 		require.NoError(t, err)
 		err = v.ValidateFromPath(withLinks)
 		require.NoError(t, err)
@@ -1313,25 +1313,25 @@ func TestValidateFromFS_rejectsIncompatibleFS(t *testing.T) {
 
 	t.Run("build_with_linked_fs", func(t *testing.T) {
 		t.Parallel()
-		v, err := NewValidator(ModeBuild)
+		v, err := NewValidator(BuildMode)
 		require.NoError(t, err)
 		err = v.ValidateFromFS(withLinks, linkedfiles.NewFS(withLinks, inner))
 		require.Error(t, err)
-		require.ErrorContains(t, err, "linked files are not supported in ModeBuild")
+		require.ErrorContains(t, err, "linked files are not supported in BuildMode")
 	})
 
 	t.Run("source_with_block_fs", func(t *testing.T) {
 		t.Parallel()
-		v, err := NewValidator(ModeSource)
+		v, err := NewValidator(SourceMode)
 		require.NoError(t, err)
 		err = v.ValidateFromFS(withLinks, linkedfiles.NewBlockFS(inner))
 		require.Error(t, err)
-		require.ErrorContains(t, err, "block linked files are not supported in ModeSource")
+		require.ErrorContains(t, err, "block linked files are not supported in SourceMode")
 	})
 
 	t.Run("source_with_linked_fs", func(t *testing.T) {
 		t.Parallel()
-		v, err := NewValidator(ModeSource)
+		v, err := NewValidator(SourceMode)
 		require.NoError(t, err)
 		err = v.ValidateFromFS(withLinks, linkedfiles.NewFS(withLinks, inner))
 		require.NoError(t, err)
@@ -1339,12 +1339,12 @@ func TestValidateFromFS_rejectsIncompatibleFS(t *testing.T) {
 
 	t.Run("build_with_block_fs", func(t *testing.T) {
 		t.Parallel()
-		v, err := NewValidator(ModeBuild)
+		v, err := NewValidator(BuildMode)
 		require.NoError(t, err)
 		err = v.ValidateFromFS("test-package", linkedfiles.NewBlockFS(newMockFS().Good()))
 		if err != nil {
-			require.NotContains(t, err.Error(), "linked files are not supported in ModeBuild")
-			require.NotContains(t, err.Error(), "block linked files are not supported in ModeSource")
+			require.NotContains(t, err.Error(), "linked files are not supported in BuildMode")
+			require.NotContains(t, err.Error(), "block linked files are not supported in SourceMode")
 		}
 	})
 }
@@ -1354,7 +1354,7 @@ func TestValidateFromFS_legacyPlainFSBlocksLinks(t *testing.T) {
 
 	t.Run("legacy_plain_fs_blocks_links", func(t *testing.T) {
 		t.Parallel()
-		v, err := NewValidator(ModeLegacy)
+		v, err := NewValidator(LegacyMode)
 		require.NoError(t, err)
 		err = v.ValidateFromFS("test-package", newMockFS().WithLink())
 		require.Error(t, err)
@@ -1370,7 +1370,7 @@ func TestValidateFromFS_legacyPlainFSBlocksLinks(t *testing.T) {
 
 	t.Run("legacy_linked_fs_accepts_links", func(t *testing.T) {
 		t.Parallel()
-		v, err := NewValidator(ModeLegacy)
+		v, err := NewValidator(LegacyMode)
 		require.NoError(t, err)
 		err = v.ValidateFromFS(withLinks, linkedfiles.NewFS(withLinks, os.DirFS(withLinks)))
 		require.NoError(t, err)
@@ -1443,16 +1443,16 @@ func TestValidateFromZip_modeRestrictions(t *testing.T) {
 
 	t.Run("source_rejected", func(t *testing.T) {
 		t.Parallel()
-		v, err := NewValidator(ModeSource)
+		v, err := NewValidator(SourceMode)
 		require.NoError(t, err)
 		err = v.ValidateFromZip(zipPath)
 		require.Error(t, err)
-		require.ErrorContains(t, err, "zip files are only supported in ModeLegacy or ModeBuild")
+		require.ErrorContains(t, err, "zip files are only supported in LegacyMode or BuildMode")
 	})
 
 	t.Run("legacy_allowed", func(t *testing.T) {
 		t.Parallel()
-		v, err := NewValidator(ModeLegacy)
+		v, err := NewValidator(LegacyMode)
 		require.NoError(t, err)
 		err = v.ValidateFromZip(zipPath)
 		require.NoError(t, err)
@@ -1460,7 +1460,7 @@ func TestValidateFromZip_modeRestrictions(t *testing.T) {
 
 	t.Run("build_allowed", func(t *testing.T) {
 		t.Parallel()
-		v, err := NewValidator(ModeBuild)
+		v, err := NewValidator(BuildMode)
 		require.NoError(t, err)
 		err = v.ValidateFromZip(zipPath)
 		require.NoError(t, err)
@@ -1473,7 +1473,7 @@ func TestValidateFromZip_validatesPackage(t *testing.T) {
 	t.Run("valid_zip", func(t *testing.T) {
 		t.Parallel()
 		zipPath := writePackageZip(t, goodPkg, "good")
-		v, err := NewValidator(ModeLegacy)
+		v, err := NewValidator(LegacyMode)
 		require.NoError(t, err)
 		require.NoError(t, v.ValidateFromZip(zipPath))
 	})
@@ -1481,7 +1481,7 @@ func TestValidateFromZip_validatesPackage(t *testing.T) {
 	t.Run("no_root_directory", func(t *testing.T) {
 		t.Parallel()
 		zipPath := writeMalformedPackageZip(t)
-		v, err := NewValidator(ModeLegacy)
+		v, err := NewValidator(LegacyMode)
 		require.NoError(t, err)
 		err = v.ValidateFromZip(zipPath)
 		require.Error(t, err)
@@ -1491,7 +1491,7 @@ func TestValidateFromZip_validatesPackage(t *testing.T) {
 	t.Run("multiple_root_directories", func(t *testing.T) {
 		t.Parallel()
 		zipPath := writeMalformedPackageZip(t, "pkg-a", "pkg-b")
-		v, err := NewValidator(ModeLegacy)
+		v, err := NewValidator(LegacyMode)
 		require.NoError(t, err)
 		err = v.ValidateFromZip(zipPath)
 		require.Error(t, err)
@@ -1513,7 +1513,7 @@ func TestWithWarningsAsErrors_option(t *testing.T) {
 
 	t.Run("option_overrides_env_false", func(t *testing.T) {
 		t.Setenv("PACKAGE_SPEC_WARNINGS_AS_ERRORS", "false")
-		v, err := NewValidator(ModeLegacy, WithWarningsAsErrors(true))
+		v, err := NewValidator(LegacyMode, WithWarningsAsErrors(true))
 		require.NoError(t, err)
 		err = v.ValidateFromFS(pkgRootPath, fsys)
 		require.Error(t, err)
@@ -1522,7 +1522,7 @@ func TestWithWarningsAsErrors_option(t *testing.T) {
 
 	t.Run("option_overrides_env_true", func(t *testing.T) {
 		t.Setenv("PACKAGE_SPEC_WARNINGS_AS_ERRORS", "true")
-		v, err := NewValidator(ModeLegacy, WithWarningsAsErrors(false))
+		v, err := NewValidator(LegacyMode, WithWarningsAsErrors(false))
 		require.NoError(t, err)
 		err = v.ValidateFromFS(pkgRootPath, fsys)
 		require.NoError(t, err)

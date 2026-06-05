@@ -16,7 +16,7 @@ func TestValid(t *testing.T) {
 		valid bool
 	}{
 		"valid": {
-			mode:  ModeLegacy,
+			mode:  LegacyMode,
 			valid: true,
 		},
 		"invalid": {
@@ -24,11 +24,11 @@ func TestValid(t *testing.T) {
 			valid: false,
 		},
 		"source": {
-			mode:  ModeSource,
+			mode:  SourceMode,
 			valid: true,
 		},
 		"build": {
-			mode:  ModeBuild,
+			mode:  BuildMode,
 			valid: true,
 		},
 		"": {
