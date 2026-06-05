@@ -47,8 +47,8 @@ func WithWarningsAsErrors(enabled bool) Option {
 	return func(v *Validator) { v.warningsAsErrors = enabled }
 }
 
-// NewValidator creates a Validator for the given mode and options.
-func NewValidator(mode Mode, opts ...Option) (*Validator, error) {
+// New creates a Validator for the given mode and options.
+func New(mode Mode, opts ...Option) (*Validator, error) {
 	if !mode.Valid() {
 		return nil, fmt.Errorf("invalid validation mode %q", mode)
 	}
@@ -145,7 +145,7 @@ func (v *Validator) validate(location string, fsys fs.FS) error {
 // ValidateFromPath is a convenience function that creates a new Validator in LegacyMode and calls ValidateFromPath.
 // Deprecated: Use NewValidator and ValidateFromPath instead.
 func ValidateFromPath(path string) error {
-	v, err := NewValidator(LegacyMode)
+	v, err := New(LegacyMode)
 	if err != nil {
 		return err
 	}
@@ -155,7 +155,7 @@ func ValidateFromPath(path string) error {
 // ValidateFromZip is a convenience function that creates a new Validator in LegacyMode and calls ValidateFromZip.
 // Deprecated: Use NewValidator and ValidateFromZip instead.
 func ValidateFromZip(zipPath string) error {
-	v, err := NewValidator(LegacyMode)
+	v, err := New(LegacyMode)
 	if err != nil {
 		return err
 	}
@@ -165,7 +165,7 @@ func ValidateFromZip(zipPath string) error {
 // ValidateFromFS is a convenience function that creates a new Validator in LegacyMode and calls ValidateFromFS.
 // Deprecated: Use NewValidator and ValidateFromFS instead.
 func ValidateFromFS(location string, fsys fs.FS) error {
-	v, err := NewValidator(LegacyMode)
+	v, err := New(LegacyMode)
 	if err != nil {
 		return err
 	}
