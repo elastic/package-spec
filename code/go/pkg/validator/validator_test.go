@@ -13,8 +13,6 @@ import (
 	"strings"
 	"testing"
 
-	"archive/zip"
-
 	cp "github.com/otiai10/copy"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -937,6 +935,8 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 }
 
 func TestValidateWarnings(t *testing.T) {
+	t.Setenv("PACKAGE_SPEC_WARNINGS_AS_ERRORS", "true")
+
 	tests := map[string][]string{
 		"good":    {},
 		"good_v2": {},
@@ -957,9 +957,7 @@ func TestValidateWarnings(t *testing.T) {
 			t.Parallel()
 			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
 
-			v, constructErr := NewFromFS(ModeLegacy, pkgRootPath, linkedfiles.NewFS(pkgRootPath, os.DirFS(pkgRootPath)), WithWarningsAsErrors(true))
-			require.NoError(t, constructErr)
-			errs := v.Validate()
+			errs := ValidateFromFS(pkgRootPath, linkedfiles.NewFS(pkgRootPath, os.DirFS(pkgRootPath)))
 			if len(expectedWarnContains) == 0 {
 				require.NoError(t, errs)
 			} else {
@@ -1209,10 +1207,7 @@ func TestValidateForbiddenDataStreamName(t *testing.T) {
 }
 
 func TestLinksAreBlocked(t *testing.T) {
-	// NewFromFS takes the FS as-is; wrap explicitly with BlockFS to enforce link blocking.
-	v, err := NewFromFS(ModeLegacy, "test-package", linkedfiles.NewBlockFS(newMockFS().WithLink()))
-	require.NoError(t, err)
-	err = v.Validate()
+	err := ValidateFromFS("test-package", newMockFS().WithLink())
 	errs, ok := err.(specerrors.ValidationErrors)
 	require.True(t, ok)
 	for _, err := range errs {
@@ -1222,120 +1217,6 @@ func TestLinksAreBlocked(t *testing.T) {
 		}
 	}
 	t.Error("links should not be allowed in package")
-}
-
-func TestLinksBehaviorAcrossModes(t *testing.T) {
-	withLinks := path.Join("..", "..", "..", "..", "test", "packages", "with_links")
-
-	t.Run("build_rejects_link_files", func(t *testing.T) {
-		t.Parallel()
-		v, err := NewFromPath(ModeBuild, withLinks)
-		require.NoError(t, err)
-		err = v.Validate()
-		require.Error(t, err)
-		errs, ok := err.(specerrors.ValidationErrors)
-		require.True(t, ok)
-		require.ErrorContains(t, errs, linkedfiles.ErrUnsupportedLinkFile.Error())
-	})
-
-	t.Run("source_accepts_link_files", func(t *testing.T) {
-		t.Parallel()
-		v, err := NewFromPath(ModeSource, withLinks)
-		require.NoError(t, err)
-		err = v.Validate()
-		require.NoError(t, err)
-	})
-
-}
-
-// createTestZip creates a temporary zip archive of the package at packagePath,
-// placing all files under a single top-level directory (matching elastic-package
-// build output). Returns the path to the created zip.
-func createTestZip(t *testing.T, packagePath string) string {
-	t.Helper()
-	packageName := filepath.Base(packagePath)
-
-	tmpDir := t.TempDir()
-	zipPath := filepath.Join(tmpDir, packageName+".zip")
-
-	f, err := os.Create(zipPath)
-	require.NoError(t, err)
-	defer f.Close()
-
-	zw := zip.NewWriter(f)
-	defer zw.Close()
-
-	err = filepath.Walk(packagePath, func(walkPath string, info os.FileInfo, walkErr error) error {
-		if walkErr != nil {
-			return walkErr
-		}
-		if info.IsDir() {
-			return nil
-		}
-		rel, err := filepath.Rel(packagePath, walkPath)
-		if err != nil {
-			return err
-		}
-		entryName := filepath.ToSlash(filepath.Join(packageName, rel))
-		w, err := zw.Create(entryName)
-		if err != nil {
-			return err
-		}
-		data, err := os.ReadFile(walkPath)
-		if err != nil {
-			return err
-		}
-		_, err = w.Write(data)
-		return err
-	})
-	require.NoError(t, err)
-	return zipPath
-}
-
-func TestNewFromPath_RejectsInvalidMode(t *testing.T) {
-	v, err := NewFromPath(Mode{}, filepath.Join("..", "..", "..", "..", "test", "packages", "good"))
-	require.Nil(t, v)
-	require.ErrorContains(t, err, "invalid validation mode")
-}
-
-func TestNewFromFS_RejectsInvalidMode(t *testing.T) {
-	v, err := NewFromFS(Mode{}, ".", os.DirFS("."))
-	require.Nil(t, v)
-	require.ErrorContains(t, err, "invalid validation mode")
-}
-
-func TestNewFromZip_ConstructorSucceeds(t *testing.T) {
-	packagePath := filepath.Join("..", "..", "..", "..", "test", "packages", "good")
-	zipPath := createTestZip(t, packagePath)
-
-	v, err := NewFromZip(zipPath)
-	require.NoError(t, err)
-	// Validate closes the owned zip reader; must be called to avoid leaking the handle.
-	_ = v.Validate()
-}
-
-// TestNewFromFS_TakesFSAsIsRegardlessOfMode documents the NewFromFS contract:
-// the provided filesystem is used as-is; the mode controls validation rules only,
-// not link-file handling. Callers are responsible for FS semantics.
-func TestNewFromFS_TakesFSAsIsRegardlessOfMode(t *testing.T) {
-	withLinks := filepath.Join("..", "..", "..", "..", "test", "packages", "with_links")
-
-	for _, mode := range []Mode{ModeLegacy, ModeSource, ModeBuild} {
-		t.Run(string(mode.internal), func(t *testing.T) {
-			// Passing a resolving FS: links are resolved regardless of mode.
-			resolving := linkedfiles.NewFS(withLinks, os.DirFS(withLinks))
-			v, err := NewFromFS(mode, withLinks, resolving)
-			require.NoError(t, err)
-
-			errs := v.Validate()
-			if vErrs, ok := errs.(specerrors.ValidationErrors); ok {
-				for _, e := range vErrs {
-					require.False(t, errors.Is(e, linkedfiles.ErrUnsupportedLinkFile),
-						"NewFromFS must not override caller FS semantics: mode %s should not block links when a resolving FS is provided", mode.internal)
-				}
-			}
-		})
-	}
 }
 
 func TestValidateHandlebarsFiles(t *testing.T) {
@@ -1384,4 +1265,42 @@ func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map
 		}
 	}
 	require.Len(t, errs, c)
+}
+
+func TestLinksBehaviorAcrossModes(t *testing.T) {
+	withLinks := path.Join("..", "..", "..", "..", "test", "packages", "with_links")
+
+	t.Run("build_rejects_link_files", func(t *testing.T) {
+		t.Parallel()
+
+		v, err := NewValidator(ModeBuild)
+		require.NoError(t, err)
+		err = v.ValidateFromPath(withLinks)
+		require.Error(t, err)
+		errs, ok := err.(specerrors.ValidationErrors)
+		require.True(t, ok)
+		require.ErrorContains(t, errs, linkedfiles.ErrUnsupportedLinkFile.Error())
+	})
+
+	t.Run("source_accepts_link_files", func(t *testing.T) {
+		t.Parallel()
+		v, err := NewValidator(ModeSource)
+		require.NoError(t, err)
+		err = v.ValidateFromPath(withLinks)
+		require.NoError(t, err)
+	})
+
+	t.Run("legacy_accepts_link_files", func(t *testing.T) {
+		t.Parallel()
+		v, err := NewValidator(ModeLegacy)
+		require.NoError(t, err)
+		err = v.ValidateFromPath(withLinks)
+		require.NoError(t, err)
+	})
+
+}
+
+func TestNewValidator_RejectsInvalidMode(t *testing.T) {
+	_, err := NewValidator(Mode("invalid"))
+	require.Error(t, err)
 }

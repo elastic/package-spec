@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
 )
@@ -117,11 +118,10 @@ func TestLimitsValidation(t *testing.T) {
 		t.Run(c.title, func(t *testing.T) {
 			t.Parallel()
 
-			v, err := NewFromFS(ModeLegacy, "test-package", c.fsys)
-			if !assert.NoError(t, err) {
-				return
-			}
-			err = v.Validate()
+			v, err := NewValidator(ModeLegacy)
+			require.NoError(t, err)
+
+			err = v.ValidateFromFS("test-package", c.fsys)
 			if c.valid {
 				assert.NoError(t, err)
 			} else {
