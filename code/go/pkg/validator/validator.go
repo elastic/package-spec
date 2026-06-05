@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"log"
 	"os"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
@@ -59,6 +60,7 @@ func New(mode Mode, opts ...Option) (*Validator, error) {
 	for _, opt := range opts {
 		opt(v)
 	}
+
 	return v, nil
 }
 
@@ -135,6 +137,10 @@ func (v *Validator) validate(location string, fsys fs.FS) error {
 		return err
 	}
 	spec.WarningsAsErrors = v.warningsAsErrors
+
+	if v.mode != LegacyMode {
+		log.Printf("Warning: validation mode '%s' is in technical preview", v.mode)
+	}
 
 	if errs := spec.ValidatePackage(*pkg); len(errs) > 0 {
 		return errs
