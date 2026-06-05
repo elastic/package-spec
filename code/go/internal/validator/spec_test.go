@@ -13,7 +13,6 @@ import (
 
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
-	"github.com/elastic/package-spec/v3/code/go/internal/validator/modes"
 )
 
 func TestNewLegacySpec(t *testing.T) {
@@ -27,7 +26,7 @@ func TestNewLegacySpec(t *testing.T) {
 	}
 
 	for version, test := range tests {
-		spec, err := NewSpec(*semver.MustParse(version), modes.Legacy)
+		spec, err := NewSpec(*semver.MustParse(version), ModeLegacy)
 		if test.expectedErrContains == "" {
 			require.NoError(t, err)
 			require.IsType(t, &Spec{}, spec)
@@ -45,7 +44,7 @@ func TestNoBetaFeatures_Package_GA(t *testing.T) {
 		version:     *semver.MustParse("1.0.0"),
 		specVersion: *semver.MustParse("1.0.0"),
 		fs:          fspath.DirFS("testdata/fakespec"),
-		mode:        modes.Legacy,
+		mode:        ModeLegacy,
 	}
 	pkg, err := packages.NewPackage("testdata/packages/features_ga")
 	require.NoError(t, err)
@@ -60,7 +59,7 @@ func TestBetaFeatures_Package_GA(t *testing.T) {
 		version:     *semver.MustParse("1.0.0"),
 		specVersion: *semver.MustParse("1.0.0"),
 		fs:          fspath.DirFS("testdata/fakespec"),
-		mode:        modes.Legacy,
+		mode:        ModeLegacy,
 	}
 	pkg, err := packages.NewPackage("testdata/packages/features_beta")
 	require.NoError(t, err)
@@ -137,7 +136,7 @@ func TestFolderSpecInvalid(t *testing.T) {
 				version:     c.version,
 				specVersion: c.version,
 				fs:          c.spec,
-				mode:        modes.Legacy,
+				mode:        ModeLegacy,
 			}
 			pkg, err := packages.NewPackage(c.pkgPath)
 			require.NoError(t, err)

@@ -20,7 +20,6 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/internal/loader"
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
 	"github.com/elastic/package-spec/v3/code/go/internal/spectypes"
-	"github.com/elastic/package-spec/v3/code/go/internal/validator/modes"
 	"github.com/elastic/package-spec/v3/code/go/internal/validator/semantic"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
@@ -35,7 +34,7 @@ type Spec struct {
 	// fs contains the filesystem of the spec.
 	fs fs.FS
 	// mode is the validation mode (legacy, source, build).
-	mode modes.Mode
+	mode Mode
 
 	// WarningsAsErrors causes validation warnings to be reported as errors when true.
 	WarningsAsErrors bool
@@ -50,7 +49,7 @@ var GASpecCheckVersion = semver.MustParse("3.0.1")
 
 // NewSpec creates a new Spec for the given version and validation mode.
 // Returns an error if version is not a known spec version or if mode is invalid.
-func NewSpec(version semver.Version, mode modes.Mode) (*Spec, error) {
+func NewSpec(version semver.Version, mode Mode) (*Spec, error) {
 	specVersion, err := spec.CheckVersion(version)
 	if err != nil {
 		return nil, fmt.Errorf("could not load specification for version [%s]: %w", version.String(), err)
@@ -210,7 +209,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		since *semver.Version
 		until *semver.Version
 		types []string
-		modes []modes.Mode
+		modes []Mode
 	}{
 		{fn: semantic.ValidateVersionIntegrity},
 		{fn: semantic.ValidateChangelogLinks},

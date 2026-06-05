@@ -8,14 +8,14 @@ import (
 	"io/fs"
 
 	"github.com/elastic/package-spec/v3/code/go/internal/linkedfiles"
-	"github.com/elastic/package-spec/v3/code/go/internal/validator/modes"
+	validatorinternal "github.com/elastic/package-spec/v3/code/go/internal/validator"
 )
 
 // Mode represents the validation context: which rules apply and how linked files
 // are handled when creating a Validator from a path.
 // Use ModeLegacy, ModeSource, or ModeBuild.
 type Mode struct {
-	internal modes.Mode
+	internal validatorinternal.Mode
 	// wrapFS builds the filesystem for path-based validation (NewFromPath).
 	// It is not applied by NewFromFS, which takes the caller's filesystem as-is.
 	wrapFS func(location string, fsys fs.FS) fs.FS
@@ -26,7 +26,7 @@ var (
 	// are resolved transparently and no rules are mode-gated.
 	// Use this mode when backward compatibility with existing callers is required.
 	ModeLegacy = Mode{
-		internal: modes.Legacy,
+		internal: validatorinternal.ModeLegacy,
 		wrapFS: func(location string, fsys fs.FS) fs.FS {
 			return linkedfiles.NewFS(location, fsys)
 		},
@@ -36,7 +36,7 @@ var (
 	// Linked (.link) files are resolved transparently.
 	// Source-only rules (e.g. dev-folder checks) are enforced; build-only rules are skipped.
 	ModeSource = Mode{
-		internal: modes.Source,
+		internal: validatorinternal.ModeSource,
 		wrapFS: func(location string, fsys fs.FS) fs.FS {
 			return linkedfiles.NewFS(location, fsys)
 		},
@@ -47,7 +47,7 @@ var (
 	// Linked (.link) files are unconditionally blocked.
 	// Build-only rules are enforced; source-only rules are skipped.
 	ModeBuild = Mode{
-		internal: modes.Build,
+		internal: validatorinternal.ModeBuild,
 		wrapFS: func(_ string, fsys fs.FS) fs.FS {
 			return linkedfiles.NewBlockFS(fsys)
 		},

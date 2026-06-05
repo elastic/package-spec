@@ -2,7 +2,7 @@
 // or more contributor license agreements. Licensed under the Elastic License;
 // you may not use this file except in compliance with the Elastic License.
 
-package modes
+package validator
 
 import (
 	"testing"
@@ -16,7 +16,7 @@ func TestValid(t *testing.T) {
 		valid bool
 	}{
 		"valid": {
-			mode:  Legacy,
+			mode:  ModeLegacy,
 			valid: true,
 		},
 		"invalid": {
@@ -24,11 +24,11 @@ func TestValid(t *testing.T) {
 			valid: false,
 		},
 		"source": {
-			mode:  Source,
+			mode:  ModeSource,
 			valid: true,
 		},
 		"build": {
-			mode:  Build,
+			mode:  ModeBuild,
 			valid: true,
 		},
 		"": {
