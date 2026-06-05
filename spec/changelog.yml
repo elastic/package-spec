@@ -8,7 +8,7 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
-- version: 3.6.4
+- version: 3.6.4-next
   changes:
     - description: Add provider_permissions field to package, policy_template, input, and data_stream levels for declaring provider-specific permissions.
       type: enhancement
