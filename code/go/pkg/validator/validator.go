@@ -17,6 +17,14 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/internal/validator/common"
 )
 
+type Mode = internalvalidator.Mode
+
+var (
+	ModeLegacy Mode = internalvalidator.ModeLegacy
+	ModeSource Mode = internalvalidator.ModeSource
+	ModeBuild  Mode = internalvalidator.ModeBuild
+)
+
 // Validator holds the configuration for a package validation run.
 // Create one with NewFromPath, NewFromZip, or NewFromFS, then call Validate.
 type Validator struct {
