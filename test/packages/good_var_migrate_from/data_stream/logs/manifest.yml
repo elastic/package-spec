@@ -1,0 +1,22 @@
+title: "Sample Logs"
+type: logs
+streams:
+  - input: filestream
+    title: "Collect logs via filestream"
+    description: "Collect logs using the filestream input"
+    template_path: filestream.yml.hbs
+    vars:
+      - name: paths
+        type: text
+        title: "Paths"
+        multi: true
+        required: true
+        show_user: true
+        default:
+          - /var/log/*.log
+      - name: api_url
+        type: url
+        title: "API URL"
+        description: "URL that previously lived at input-level."
+        migrate_from:
+          scope: input

@@ -173,6 +173,44 @@ spec:
             $ref: "#/definitions/input_variable_value"
           deprecated:
             $ref: "../../integration/manifest.spec.yml#/definitions/deprecated"
+          migrate_from:
+            description: >
+              Declares that this variable was previously named differently or
+              defined at a different scope. Fleet carries the old value over
+              when upgrading a policy. At least one of `name` or `scope` must
+              be set. Both may be set together when the variable was both
+              renamed and moved between scopes.
+            type: object
+            additionalProperties: false
+            properties:
+              name:
+                description: >
+                  Previous name of the variable. Use when the variable was
+                  renamed between package versions. Combine with `scope` if
+                  the variable was also moved to a different scope.
+                type: string
+              scope:
+                description: >
+                  The scope where this variable previously lived. Use when the
+                  variable moved between input-level and stream-level within
+                  the same input type.
+                type: string
+                enum:
+                  - input
+                  - stream
+              stream:
+                description: >
+                  The source stream to pull the old value from. May be written
+                  as the data stream folder name (e.g. `logs`) or the
+                  fully-qualified dataset (e.g. `mypackage.logs`); both forms
+                  are accepted. Required when `scope` is "stream" and the
+                  source input has more than one stream. May be omitted when
+                  the source input has exactly one stream. Has no effect when
+                  `scope` is "input".
+                type: string
+            anyOf:
+              - required: [name]
+              - required: [scope]
         allOf:
          - if:
              properties:
@@ -712,6 +750,11 @@ spec:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.7.0
+    patch:
+      # Variable-level scope migration.
+      - op: remove
+        path: /definitions/vars/items/properties/migrate_from
   - before: 3.6.0
     patch:
       - op: add
