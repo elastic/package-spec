@@ -68,6 +68,8 @@ func TestValidateFile(t *testing.T) {
 		"logs_synthetic_mode":                    {},
 		"kibana_configuration_links":             {},
 		"with_links":                             {},
+		"good_provider_permissions":              {},
+		"good_provider_permissions_input":        {},
 		"bad_duration_vars": {
 			"manifest.yml",
 			[]string{
@@ -246,6 +248,24 @@ func TestValidateFile(t *testing.T) {
 				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Aggs-based tag cloud\" (tagcloud, Aggs-based)",
 				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"\" (heatmap, Aggs-based)",
 				"\"Dashboard with mixed by-value visualizations\" contains legacy visualization: \"Timelion time series\" (timelion, Timelion)",
+			},
+		},
+		"bad_provider_permissions": {
+			"manifest.yml",
+			[]string{
+				`field provider_permissions.0: provider is required`,
+			},
+		},
+		"bad_provider_permissions_missing_name": {
+			"manifest.yml",
+			[]string{
+				`field provider_permissions.0.permissions.0: name is required`,
+			},
+		},
+		"bad_provider_permissions_extra_field": {
+			"manifest.yml",
+			[]string{
+				`field provider_permissions.0.permissions.0: Additional property resources is not allowed`,
 			},
 		},
 		"bad_deployment_mode": {

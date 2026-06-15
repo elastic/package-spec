@@ -1,0 +1,40 @@
+format_version: 3.6.4
+name: good_provider_permissions_input
+title: Good Provider Permissions Input Package
+description: Tests provider_permissions at package and policy_template levels in an input package.
+version: 0.0.1
+type: input
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: "^8.0.0"
+  elastic:
+    subscription: "basic"
+# Package-level permissions apply regardless of which policy template is used.
+provider_permissions:
+  - provider: aws
+    description: Credentials check on startup.
+    permissions:
+      - name: sts:GetCallerIdentity
+  - provider: gcp
+    description: Identity check on startup.
+    permissions:
+      - name: iam.serviceAccounts.get
+policy_templates:
+  - name: s3_logs
+    type: logs
+    title: S3 Logs
+    description: Collect logs from S3 buckets.
+    input: aws-s3
+    template_path: input.yml.hbs
+    # Policy-template-level permissions for this specific input type.
+    provider_permissions:
+      - provider: aws
+        description: Read log objects from S3.
+        permissions:
+          - name: s3:GetObject
+          - name: s3:ListBucket
+owner:
+  github: elastic/foobar
+  type: elastic
