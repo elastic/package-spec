@@ -16,6 +16,7 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/internal/packages"
 	"github.com/elastic/package-spec/v3/code/go/internal/validator"
 	"github.com/elastic/package-spec/v3/code/go/internal/validator/common"
+	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
 // Mode is the validation context that controls semantic rules and linked-file handling.
@@ -138,11 +139,17 @@ func (v *Validator) validate(location string, fsys fs.FS) error {
 	}
 	spec.WarningsAsErrors = v.warningsAsErrors
 
-	if v.mode != LegacyMode {
-		log.Printf("Warning: validation mode '%s' is in technical preview", v.mode)
-	}
+	errs := spec.ValidatePackage(*pkg)
 
-	if errs := spec.ValidatePackage(*pkg); len(errs) > 0 {
+	if v.mode != LegacyMode {
+		err := specerrors.NewStructuredErrorf("validation mode '%s' is in technical preview", v.mode)
+		if v.warningsAsErrors {
+			errs = append(errs, err)
+		} else {
+			log.Printf("Warning: %s", err.Error())
+		}
+	}
+	if len(errs) > 0 {
 		return errs
 	}
 	return nil
