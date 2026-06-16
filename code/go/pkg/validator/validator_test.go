@@ -1559,36 +1559,44 @@ func TestWithWarningsAsErrors_option(t *testing.T) {
 }
 
 func TestBuildModeValidation(t *testing.T) {
-	base := filepath.Join("..", "..", "..", "..", "test", "packages", "build_mode")
-	tests := []struct {
-		pkg              string
-		expectError      bool
-		errorMustContain []string
+	basePath := filepath.Join("..", "..", "..", "..", "test", "packages", "build_mode")
+	tests := map[string]struct {
+		expectedErrContains []string
 	}{
-		{"good_built", false, nil},
-		{"bad_built_external_ecs", true, []string{"has external: ecs reference"}},
-		{"bad_built_missing_input", true, []string{"stream[0] missing required 'input:' field"}},
-		{"bad_built_stream_package", true, []string{"stream[0] has 'package:' which is source-only"}},
-		{"bad_built_policy_template_package", true, []string{"input[0] has 'package:' which is source-only"}},
-		{"bad_built_fs_artifacts", true, []string{
-			"_dev directory is not allowed in built packages",
-			".link files are not allowed in built packages",
-		}},
+		"good_built": {},
+		"bad_built_external_ecs": {
+			expectedErrContains: []string{"has external: ecs reference"},
+		},
+		"bad_built_missing_input": {
+			expectedErrContains: []string{"stream[0] missing required 'input:' field"},
+		},
+		"bad_built_stream_package": {
+			expectedErrContains: []string{"stream[0] has 'package:' which is source-only"},
+		},
+		"bad_built_policy_template_package": {
+			expectedErrContains: []string{"input[0] has 'package:' which is source-only"},
+		},
+		"bad_built_fs_artifacts": {
+			expectedErrContains: []string{
+				"_dev directory is not allowed in built packages",
+				".link files are not allowed in built packages",
+			},
+		},
 	}
 
-	for _, tc := range tests {
-		t.Run(tc.pkg, func(t *testing.T) {
+	for packageName, testCase := range tests {
+		t.Run(packageName, func(t *testing.T) {
 			t.Parallel()
 			v, err := New(BuildMode)
 			require.NoError(t, err)
-			err = v.ValidateFromPath(filepath.Join(base, tc.pkg))
-			if !tc.expectError {
+			err = v.ValidateFromPath(filepath.Join(basePath, packageName))
+			if len(testCase.expectedErrContains) == 0 {
 				require.NoError(t, err)
 				return
 			}
 			require.Error(t, err)
-			for _, want := range tc.errorMustContain {
-				require.ErrorContains(t, err, want)
+			for _, expectedError := range testCase.expectedErrContains {
+				require.ErrorContains(t, err, expectedError)
 			}
 		})
 	}
