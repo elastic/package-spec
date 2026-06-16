@@ -1485,9 +1485,13 @@ func TestValidateFromZip_modeRestrictions(t *testing.T) {
 
 	t.Run("build_allowed", func(t *testing.T) {
 		t.Parallel()
+		// Use the built fixture: source packages have _dev/ and external:ecs which
+		// build mode rejects. good_built is the correct built-package counterpart.
+		builtPkg := filepath.Join("..", "..", "..", "..", "test", "packages", "build_mode", "good_built")
+		builtZipPath := writePackageZip(t, builtPkg, "good_built")
 		v, err := New(BuildMode)
 		require.NoError(t, err)
-		err = v.ValidateFromZip(zipPath)
+		err = v.ValidateFromZip(builtZipPath)
 		require.NoError(t, err)
 	})
 }
@@ -1552,4 +1556,60 @@ func TestWithWarningsAsErrors_option(t *testing.T) {
 		err = v.ValidateFromFS(pkgRootPath, fsys)
 		require.NoError(t, err)
 	})
+}
+
+func TestBuildModeValidation(t *testing.T) {
+	base := filepath.Join("..", "..", "..", "..", "test", "packages", "build_mode")
+	tests := []struct {
+		pkg             string
+		expectError     bool
+		errorMustContain string
+	}{
+		{"good_built", false, ""},
+		{"bad_built_external_ecs", true, "has external: ecs reference"},
+		{"bad_built_missing_input", true, "stream[0] missing required 'input:' field"},
+		{"bad_built_stream_package", true, "stream[0] has 'package:' which is source-only"},
+		{"bad_built_policy_template_package", true, "input[0] has 'package:' which is source-only"},
+		{"bad_built_with_dev", true, "_dev directory is not allowed in built packages"},
+		{"bad_built_with_link", true, ".link files are not allowed in built packages"},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.pkg, func(t *testing.T) {
+			t.Parallel()
+			v, err := New(BuildMode)
+			require.NoError(t, err)
+			err = v.ValidateFromPath(filepath.Join(base, tc.pkg))
+			if !tc.expectError {
+				require.NoError(t, err)
+				return
+			}
+			require.Error(t, err)
+			require.ErrorContains(t, err, tc.errorMustContain)
+		})
+	}
+}
+
+// TestSourceMode_BadEmbeddedEcs verifies that ValidateNoEmbeddedEcsInDynamicTemplates
+// rejects the bad_embedded_ecs fixture when the validator runs in source mode.
+// See test/packages/bad_embedded_ecs/data_stream/logs/manifest.yml for fixture details.
+func TestSourceMode_BadEmbeddedEcs(t *testing.T) {
+	pkgPath := filepath.Join("..", "..", "..", "..", "test", "packages", "bad_embedded_ecs")
+	v, err := New(SourceMode)
+	require.NoError(t, err)
+	err = v.ValidateFromPath(pkgPath)
+	require.Error(t, err)
+	require.ErrorContains(t, err, "_embedded_ecs")
+}
+
+// TestLegacyPreservation_FromPath verifies that the bad_embedded_ecs fixture passes
+// in legacy mode: the spec schema permits _embedded_ecs keys in dynamic_templates for
+// built packages, and legacy mode does not run source-only semantic rules.
+// See test/packages/bad_embedded_ecs/data_stream/logs/manifest.yml for fixture details.
+func TestLegacyPreservation_FromPath(t *testing.T) {
+	pkgPath := filepath.Join("..", "..", "..", "..", "test", "packages", "bad_embedded_ecs")
+	v, err := New(LegacyMode)
+	require.NoError(t, err)
+	err = v.ValidateFromPath(pkgPath)
+	require.NoError(t, err)
 }
