@@ -24,7 +24,8 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
-// Spec represents a package specification
+// Spec represents a versioned package specification and the validation mode
+// used to evaluate packages against it.
 type Spec struct {
 	// version is the version requested, what is included in the package, possibly without prerelease tags.
 	version semver.Version
@@ -32,6 +33,8 @@ type Spec struct {
 	specVersion semver.Version
 	// fs contains the filesystem of the spec.
 	fs fs.FS
+	// mode is the validation mode (legacy, source, build).
+	mode Mode
 
 	// WarningsAsErrors causes validation warnings to be reported as errors when true.
 	WarningsAsErrors bool
@@ -44,11 +47,15 @@ type validationRules []validationRule
 // GASpecCheckVersion represents minimum version to start checking for unreleased version of the spec
 var GASpecCheckVersion = semver.MustParse("3.0.1")
 
-// NewSpec creates a new Spec for the given version
-func NewSpec(version semver.Version) (*Spec, error) {
+// NewSpec creates a new Spec for the given version and validation mode.
+// Returns an error if version is not a known spec version or if mode is invalid.
+func NewSpec(version semver.Version, mode Mode) (*Spec, error) {
 	specVersion, err := spec.CheckVersion(version)
 	if err != nil {
 		return nil, fmt.Errorf("could not load specification for version [%s]: %w", version.String(), err)
+	}
+	if !mode.Valid() {
+		return nil, fmt.Errorf("invalid validation mode %q", mode)
 	}
 
 	// With more current versions this is reported as a filterable validation error for GA packages.
@@ -62,12 +69,15 @@ func NewSpec(version semver.Version) (*Spec, error) {
 		version:     version,
 		specVersion: *specVersion,
 		fs:          spec.FS(),
+		mode:        mode,
 	}
 
 	return &s, nil
 }
 
-// ValidatePackage validates the given Package against the Spec
+// ValidatePackage validates the given Package against the Spec, running both
+// syntactic and semantic rules. The mode embedded in the Spec controls which
+// semantic rules are active.
 func (s Spec) ValidatePackage(pkg packages.Package) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
@@ -199,6 +209,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		since *semver.Version
 		until *semver.Version
 		types []string
+		modes []Mode
 	}{
 		{fn: semantic.ValidateVersionIntegrity},
 		{fn: semantic.ValidateChangelogLinks},
@@ -257,6 +268,10 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		}
 
 		if rule.types != nil && !slices.Contains(rule.types, pkgType) {
+			continue
+		}
+
+		if rule.modes != nil && !slices.Contains(rule.modes, s.mode) {
 			continue
 		}
 

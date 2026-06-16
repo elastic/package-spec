@@ -5,8 +5,10 @@
 package validator
 
 import (
+	"archive/zip"
 	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path"
 	"path/filepath"
@@ -955,6 +957,8 @@ func TestValidateMinimumKibanaVersions(t *testing.T) {
 }
 
 func TestValidateWarnings(t *testing.T) {
+	t.Setenv("PACKAGE_SPEC_WARNINGS_AS_ERRORS", "true")
+
 	tests := map[string][]string{
 		"good":    {},
 		"good_v2": {},
@@ -970,12 +974,12 @@ func TestValidateWarnings(t *testing.T) {
 		"good_readme_structure": {},
 	}
 
-	warningsAsErrros := true
 	for pkgName, expectedWarnContains := range tests {
 		t.Run(pkgName, func(t *testing.T) {
 			t.Parallel()
 			pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", pkgName)
-			errs := validateFromFS(pkgRootPath, linkedfiles.NewFS(pkgRootPath, os.DirFS(pkgRootPath)), warningsAsErrros)
+
+			errs := ValidateFromFS(pkgRootPath, linkedfiles.NewFS(pkgRootPath, os.DirFS(pkgRootPath)))
 			if len(expectedWarnContains) == 0 {
 				require.NoError(t, errs)
 			} else {
@@ -1283,4 +1287,264 @@ func requireErrorMessage(t *testing.T, pkgName string, invalidItemsPerFolder map
 		}
 	}
 	require.Len(t, errs, c)
+}
+
+func TestLinksBehaviorAcrossModes(t *testing.T) {
+	withLinks := path.Join("..", "..", "..", "..", "test", "packages", "with_links")
+
+	t.Run("build_rejects_link_files", func(t *testing.T) {
+		t.Parallel()
+
+		v, err := New(BuildMode)
+		require.NoError(t, err)
+		err = v.ValidateFromPath(withLinks)
+		require.Error(t, err)
+		errs, ok := err.(specerrors.ValidationErrors)
+		require.True(t, ok)
+		require.ErrorContains(t, errs, linkedfiles.ErrUnsupportedLinkFile.Error())
+	})
+
+	t.Run("source_accepts_link_files", func(t *testing.T) {
+		t.Parallel()
+		v, err := New(SourceMode)
+		require.NoError(t, err)
+		err = v.ValidateFromPath(withLinks)
+		require.NoError(t, err)
+	})
+
+	t.Run("legacy_accepts_link_files", func(t *testing.T) {
+		t.Parallel()
+		v, err := New(LegacyMode)
+		require.NoError(t, err)
+		err = v.ValidateFromPath(withLinks)
+		require.NoError(t, err)
+	})
+
+}
+
+func TestNewValidator_RejectsInvalidMode(t *testing.T) {
+	_, err := New(Mode("invalid"))
+	require.Error(t, err)
+}
+
+func TestValidateFromFS_rejectsIncompatibleFS(t *testing.T) {
+	withLinks := filepath.Join("..", "..", "..", "..", "test", "packages", "with_links")
+	inner := os.DirFS(withLinks)
+
+	t.Run("build_with_linked_fs", func(t *testing.T) {
+		t.Parallel()
+		v, err := New(BuildMode)
+		require.NoError(t, err)
+		err = v.ValidateFromFS(withLinks, linkedfiles.NewFS(withLinks, inner))
+		require.Error(t, err)
+		require.ErrorContains(t, err, "linked files are not supported in BuildMode")
+	})
+
+	t.Run("source_with_block_fs", func(t *testing.T) {
+		t.Parallel()
+		v, err := New(SourceMode)
+		require.NoError(t, err)
+		err = v.ValidateFromFS(withLinks, linkedfiles.NewBlockFS(inner))
+		require.Error(t, err)
+		require.ErrorContains(t, err, "block linked files are not supported in SourceMode")
+	})
+
+	t.Run("source_with_linked_fs", func(t *testing.T) {
+		t.Parallel()
+		v, err := New(SourceMode)
+		require.NoError(t, err)
+		err = v.ValidateFromFS(withLinks, linkedfiles.NewFS(withLinks, inner))
+		require.NoError(t, err)
+	})
+
+	t.Run("build_with_block_fs", func(t *testing.T) {
+		t.Parallel()
+		v, err := New(BuildMode)
+		require.NoError(t, err)
+		err = v.ValidateFromFS("test-package", linkedfiles.NewBlockFS(newMockFS().Good()))
+		if err != nil {
+			require.NotContains(t, err.Error(), "linked files are not supported in BuildMode")
+			require.NotContains(t, err.Error(), "block linked files are not supported in SourceMode")
+		}
+	})
+}
+
+func TestValidateFromFS_legacyPlainFSBlocksLinks(t *testing.T) {
+	withLinks := filepath.Join("..", "..", "..", "..", "test", "packages", "with_links")
+
+	t.Run("legacy_plain_fs_blocks_links", func(t *testing.T) {
+		t.Parallel()
+		v, err := New(LegacyMode)
+		require.NoError(t, err)
+		err = v.ValidateFromFS("test-package", newMockFS().WithLink())
+		require.Error(t, err)
+		errs, ok := err.(specerrors.ValidationErrors)
+		require.True(t, ok)
+		for _, e := range errs {
+			if errors.Is(e, linkedfiles.ErrUnsupportedLinkFile) {
+				return
+			}
+		}
+		t.Error("links should not be allowed in package")
+	})
+
+	t.Run("legacy_linked_fs_accepts_links", func(t *testing.T) {
+		t.Parallel()
+		v, err := New(LegacyMode)
+		require.NoError(t, err)
+		err = v.ValidateFromFS(withLinks, linkedfiles.NewFS(withLinks, os.DirFS(withLinks)))
+		require.NoError(t, err)
+	})
+}
+
+func writePackageZip(t *testing.T, pkgDir, rootName string) string {
+	t.Helper()
+
+	zipPath := filepath.Join(t.TempDir(), rootName+".zip")
+	f, err := os.Create(zipPath)
+	require.NoError(t, err)
+
+	zw := zip.NewWriter(f)
+	err = filepath.WalkDir(pkgDir, func(walkPath string, d fs.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		rel, err := filepath.Rel(pkgDir, walkPath)
+		if err != nil {
+			return err
+		}
+		if rel == "." {
+			return nil
+		}
+
+		name := filepath.ToSlash(filepath.Join(rootName, rel))
+		if d.IsDir() {
+			_, err = zw.Create(name + "/")
+			return err
+		}
+
+		w, err := zw.Create(name)
+		if err != nil {
+			return err
+		}
+		content, err := os.ReadFile(walkPath)
+		if err != nil {
+			return err
+		}
+		_, err = w.Write(content)
+		return err
+	})
+	require.NoError(t, err)
+	require.NoError(t, zw.Close())
+	require.NoError(t, f.Close())
+	return zipPath
+}
+
+func writeMalformedPackageZip(t *testing.T, rootNames ...string) string {
+	t.Helper()
+
+	zipPath := filepath.Join(t.TempDir(), "malformed.zip")
+	f, err := os.Create(zipPath)
+	require.NoError(t, err)
+
+	zw := zip.NewWriter(f)
+	for _, rootName := range rootNames {
+		_, err = zw.Create(rootName + "/manifest.yml")
+		require.NoError(t, err)
+	}
+	require.NoError(t, zw.Close())
+	require.NoError(t, f.Close())
+	return zipPath
+}
+
+func TestValidateFromZip_modeRestrictions(t *testing.T) {
+	goodPkg := filepath.Join("..", "..", "..", "..", "test", "packages", "good")
+	zipPath := writePackageZip(t, goodPkg, "good")
+
+	t.Run("source_rejected", func(t *testing.T) {
+		t.Parallel()
+		v, err := New(SourceMode)
+		require.NoError(t, err)
+		err = v.ValidateFromZip(zipPath)
+		require.Error(t, err)
+		require.ErrorContains(t, err, "zip files are only supported in LegacyMode or BuildMode")
+	})
+
+	t.Run("legacy_allowed", func(t *testing.T) {
+		t.Parallel()
+		v, err := New(LegacyMode)
+		require.NoError(t, err)
+		err = v.ValidateFromZip(zipPath)
+		require.NoError(t, err)
+	})
+
+	t.Run("build_allowed", func(t *testing.T) {
+		t.Parallel()
+		v, err := New(BuildMode)
+		require.NoError(t, err)
+		err = v.ValidateFromZip(zipPath)
+		require.NoError(t, err)
+	})
+}
+
+func TestValidateFromZip_validatesPackage(t *testing.T) {
+	goodPkg := filepath.Join("..", "..", "..", "..", "test", "packages", "good")
+
+	t.Run("valid_zip", func(t *testing.T) {
+		t.Parallel()
+		zipPath := writePackageZip(t, goodPkg, "good")
+		v, err := New(LegacyMode)
+		require.NoError(t, err)
+		require.NoError(t, v.ValidateFromZip(zipPath))
+	})
+
+	t.Run("no_root_directory", func(t *testing.T) {
+		t.Parallel()
+		zipPath := writeMalformedPackageZip(t)
+		v, err := New(LegacyMode)
+		require.NoError(t, err)
+		err = v.ValidateFromZip(zipPath)
+		require.Error(t, err)
+		require.ErrorContains(t, err, "a single directory is expected in zip file, 0 found")
+	})
+
+	t.Run("multiple_root_directories", func(t *testing.T) {
+		t.Parallel()
+		zipPath := writeMalformedPackageZip(t, "pkg-a", "pkg-b")
+		v, err := New(LegacyMode)
+		require.NoError(t, err)
+		err = v.ValidateFromZip(zipPath)
+		require.Error(t, err)
+		require.ErrorContains(t, err, "a single directory is expected in zip file, 2 found")
+	})
+}
+
+func TestDeprecatedValidateFromZip(t *testing.T) {
+	goodPkg := filepath.Join("..", "..", "..", "..", "test", "packages", "good")
+	zipPath := writePackageZip(t, goodPkg, "good")
+
+	err := ValidateFromZip(zipPath)
+	require.NoError(t, err)
+}
+
+func TestWithWarningsAsErrors_option(t *testing.T) {
+	pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", "visualizations_by_reference")
+	fsys := linkedfiles.NewFS(pkgRootPath, os.DirFS(pkgRootPath))
+
+	t.Run("option_overrides_env_false", func(t *testing.T) {
+		t.Setenv("PACKAGE_SPEC_WARNINGS_AS_ERRORS", "false")
+		v, err := New(LegacyMode, WithWarningsAsErrors(true))
+		require.NoError(t, err)
+		err = v.ValidateFromFS(pkgRootPath, fsys)
+		require.Error(t, err)
+		require.ErrorContains(t, err, "SVR00004")
+	})
+
+	t.Run("option_overrides_env_true", func(t *testing.T) {
+		t.Setenv("PACKAGE_SPEC_WARNINGS_AS_ERRORS", "true")
+		v, err := New(LegacyMode, WithWarningsAsErrors(false))
+		require.NoError(t, err)
+		err = v.ValidateFromFS(pkgRootPath, fsys)
+		require.NoError(t, err)
+	})
 }
