@@ -1,7 +1,7 @@
 format_version: 3.6.0
-name: bad_built_with_link
-title: Bad Built Package - Link Files Present
-description: Built-package fixture containing .link files - invalid in build mode (issue #549).
+name: bad_built_fs_artifacts
+title: Bad Built Package - Source-only FS Artifacts Present
+description: Built-package fixture containing a _dev folder and a .link file - both source-only artifacts that must be rejected in build mode (issue #549).
 version: 0.0.1
 type: integration
 source:

@@ -1561,17 +1561,19 @@ func TestWithWarningsAsErrors_option(t *testing.T) {
 func TestBuildModeValidation(t *testing.T) {
 	base := filepath.Join("..", "..", "..", "..", "test", "packages", "build_mode")
 	tests := []struct {
-		pkg             string
-		expectError     bool
-		errorMustContain string
+		pkg              string
+		expectError      bool
+		errorMustContain []string
 	}{
-		{"good_built", false, ""},
-		{"bad_built_external_ecs", true, "has external: ecs reference"},
-		{"bad_built_missing_input", true, "stream[0] missing required 'input:' field"},
-		{"bad_built_stream_package", true, "stream[0] has 'package:' which is source-only"},
-		{"bad_built_policy_template_package", true, "input[0] has 'package:' which is source-only"},
-		{"bad_built_with_dev", true, "_dev directory is not allowed in built packages"},
-		{"bad_built_with_link", true, ".link files are not allowed in built packages"},
+		{"good_built", false, nil},
+		{"bad_built_external_ecs", true, []string{"has external: ecs reference"}},
+		{"bad_built_missing_input", true, []string{"stream[0] missing required 'input:' field"}},
+		{"bad_built_stream_package", true, []string{"stream[0] has 'package:' which is source-only"}},
+		{"bad_built_policy_template_package", true, []string{"input[0] has 'package:' which is source-only"}},
+		{"bad_built_fs_artifacts", true, []string{
+			"_dev directory is not allowed in built packages",
+			".link files are not allowed in built packages",
+		}},
 	}
 
 	for _, tc := range tests {
@@ -1585,7 +1587,9 @@ func TestBuildModeValidation(t *testing.T) {
 				return
 			}
 			require.Error(t, err)
-			require.ErrorContains(t, err, tc.errorMustContain)
+			for _, want := range tc.errorMustContain {
+				require.ErrorContains(t, err, want)
+			}
 		})
 	}
 }
