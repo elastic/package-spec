@@ -31,7 +31,7 @@ jobs:
           email: 'dependabot[bot]@users.noreply.github.com'
 
       - name: Run go mod tidy in compliance
-        run: cd compliance && go mod tidy
+        run: cd compliance && GOTOOLCHAIN=auto go mod tidy
 
       - name: Check for compliance go.mod changes
         id: compliance-check
