@@ -1306,7 +1306,7 @@ func TestLinksBehaviorAcrossModes(t *testing.T) {
 		require.Error(t, err)
 		errs, ok := err.(specerrors.ValidationErrors)
 		require.True(t, ok)
-		require.ErrorContains(t, errs, linkedfiles.ErrUnsupportedLinkFile.Error())
+		require.ErrorContains(t, errs, ".link files are not allowed in built packages")
 	})
 
 	t.Run("source_accepts_link_files", func(t *testing.T) {

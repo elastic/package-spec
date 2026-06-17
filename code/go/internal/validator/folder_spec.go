@@ -85,6 +85,15 @@ func (v *validator) Validate() specerrors.ValidationErrors {
 
 	for _, file := range files {
 		fileName := file.Name()
+
+		if isLink, _ := checkLink(fileName); v.mode == BuildMode && isLink {
+			errs = append(errs, specerrors.NewStructuredErrorf(
+				"file %q: .link files are not allowed in built packages",
+				v.pkg.Path(path.Join(v.folderPath, fileName)),
+			))
+			continue
+		}
+
 		itemSpec, err := v.findItemSpec(fileName)
 		if err != nil {
 			errs = append(errs, specerrors.NewStructuredError(err, specerrors.UnassignedCode))
@@ -241,9 +250,6 @@ func (v *validator) findItemSpec(folderItemName string) (spectypes.ItemSpec, err
 // checkLink checks if an item is a link and returns the item name without the
 // ".link" suffix if it is a link.
 func checkLink(itemName string) (bool, string) {
-	const linkExtension = ".link"
-	if strings.HasSuffix(itemName, linkExtension) {
-		return true, strings.TrimSuffix(itemName, linkExtension)
-	}
-	return false, itemName
+	stripped, isLink := strings.CutSuffix(itemName, ".link")
+	return isLink, stripped
 }
