@@ -9,19 +9,19 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
-// ValidateNoExternalEcs errors for any field referencing external: ecs.
+// ValidateNoExternalFields errors for any field with an external field.
 // The build process materializes ECS field references — once built, fields
 // should carry full definitions, not external pointers. A built package must
 // not contain any fields with external: ecs when validated with ModeBuild.
-func ValidateNoExternalEcs(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateNoExternalFields(fsys fspath.FS) specerrors.ValidationErrors {
 	validateFunc := func(metadata fieldFileMetadata, f field) specerrors.ValidationErrors {
-		if f.External != "ecs" {
+		if f.External == "" {
 			return nil
 		}
 		return specerrors.ValidationErrors{
 			specerrors.NewStructuredErrorf(
-				"file \"%s\" is invalid: field %s has external: ecs reference; ECS fields must be materialized before packaging",
-				metadata.fullFilePath, f.Name,
+				"file \"%s\" is invalid: field %s has external: %s reference; external fields must be materialized before packaging",
+				metadata.fullFilePath, f.Name, f.External,
 			),
 		}
 	}

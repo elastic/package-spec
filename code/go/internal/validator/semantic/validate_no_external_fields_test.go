@@ -16,7 +16,7 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 )
 
-func TestValidateNoExternalEcs(t *testing.T) {
+func TestValidateNoExternalFields(t *testing.T) {
 	tests := []struct {
 		name          string
 		files         map[string]string // path → content
@@ -43,7 +43,7 @@ func TestValidateNoExternalEcs(t *testing.T) {
 				"data_stream/foo/fields/ecs.yml": "- name: host.name\n  external: ecs\n",
 			},
 			expectErrors:  true,
-			errorContains: []string{"host.name", "external: ecs", "ECS fields must be materialized"},
+			errorContains: []string{"host.name", "external: ecs", "external fields must be materialized"},
 		},
 		{
 			name: "multiple fields with external: ecs — all rejected",
@@ -51,14 +51,15 @@ func TestValidateNoExternalEcs(t *testing.T) {
 				"data_stream/foo/fields/ecs.yml": "- name: host.name\n  external: ecs\n- name: agent.version\n  external: ecs\n",
 			},
 			expectErrors:  true,
-			errorContains: []string{"external: ecs", "ECS fields must be materialized"},
+			errorContains: []string{"external: ecs", "external fields must be materialized"},
 		},
 		{
-			name: "field with non-ecs external — not rejected by this rule",
+			name: "field with non-ecs external — rejected by this rule",
 			files: map[string]string{
 				"data_stream/foo/fields/custom.yml": "- name: myfield\n  external: custom_dep\n",
 			},
-			expectErrors: false,
+			expectErrors: true,
+			errorContains: []string{"external: custom_dep", "external fields must be materialized"},
 		},
 	}
 
@@ -73,7 +74,7 @@ func TestValidateNoExternalEcs(t *testing.T) {
 			}
 
 			fsys := fspath.DirFS(tempDir)
-			errs := ValidateNoExternalEcs(fsys)
+			errs := ValidateNoExternalFields(fsys)
 
 			if !tc.expectErrors {
 				assert.Nil(t, errs, "expected no errors but got: %v", errs)
