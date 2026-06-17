@@ -61,6 +61,7 @@ spec:
       name: _dev
       required: false
       visibility: private
+      sourceOnly: true
       $ref: "./_dev/spec.yml"
 
 versions:

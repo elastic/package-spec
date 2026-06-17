@@ -57,6 +57,10 @@ type ItemSpec interface {
 	// DevelopmentFolder returns true if the item is inside a development folder.
 	DevelopmentFolder() bool
 
+	// SourceOnly returns true if the item is declared as source-only and must
+	// not appear in built packages.
+	SourceOnly() bool
+
 	// AllowLink returns true if the item allows links.
 	AllowLink() bool
 

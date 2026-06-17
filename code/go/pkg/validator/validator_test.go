@@ -1578,7 +1578,7 @@ func TestBuildModeValidation(t *testing.T) {
 		},
 		"bad_built_fs_artifacts": {
 			expectedErrContains: []string{
-				"_dev directory is not allowed in built packages",
+				"source-only folder is not allowed in built packages",
 				".link files are not allowed in built packages",
 			},
 		},

@@ -60,6 +60,7 @@ spec:
     name: _dev
     required: false
     visibility: private
+    sourceOnly: true
     $ref: "./_dev/spec.yml"
   - description: Folder containing Elasticsearch assets used by the package
     type: folder

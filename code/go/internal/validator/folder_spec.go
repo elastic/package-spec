@@ -23,21 +23,23 @@ type validator struct {
 	pkg              *packages.Package
 	folderPath       string
 	warningsAsErrors bool
+	mode             Mode
 
 	totalSize     spectypes.FileSize
 	totalContents int
 }
 
-func newValidator(spec spectypes.ItemSpec, pkg *packages.Package, warningsAsErrors bool) *validator {
-	return newValidatorForPath(spec, pkg, ".", warningsAsErrors)
+func newValidator(spec spectypes.ItemSpec, pkg *packages.Package, warningsAsErrors bool, mode Mode) *validator {
+	return newValidatorForPath(spec, pkg, ".", warningsAsErrors, mode)
 }
 
-func newValidatorForPath(spec spectypes.ItemSpec, pkg *packages.Package, folderPath string, warningsAsErrors bool) *validator {
+func newValidatorForPath(spec spectypes.ItemSpec, pkg *packages.Package, folderPath string, warningsAsErrors bool, mode Mode) *validator {
 	return &validator{
 		spec:             spec,
 		pkg:              pkg,
 		folderPath:       folderPath,
 		warningsAsErrors: warningsAsErrors,
+		mode:             mode,
 	}
 }
 
@@ -119,8 +121,16 @@ func (v *validator) Validate() specerrors.ValidationErrors {
 				continue
 			}
 
+			if v.mode == BuildMode && itemSpec.SourceOnly() {
+				errs = append(errs, specerrors.NewStructuredErrorf(
+					"file %q: source-only folder is not allowed in built packages",
+					v.pkg.Path(path.Join(v.folderPath, fileName)),
+				))
+				continue
+			}
+
 			subFolderPath := path.Join(v.folderPath, fileName)
-			itemValidator := newValidatorForPath(itemSpec, v.pkg, subFolderPath, v.warningsAsErrors)
+			itemValidator := newValidatorForPath(itemSpec, v.pkg, subFolderPath, v.warningsAsErrors, v.mode)
 			subErrs := itemValidator.Validate()
 			if len(subErrs) > 0 {
 				errs = append(errs, subErrs...)

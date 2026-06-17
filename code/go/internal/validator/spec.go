@@ -97,7 +97,7 @@ func (s Spec) ValidatePackage(pkg packages.Package) specerrors.ValidationErrors 
 	}
 
 	// Syntactic validations
-	validator := newValidator(rootSpec, &pkg, s.WarningsAsErrors)
+	validator := newValidator(rootSpec, &pkg, s.WarningsAsErrors, s.mode)
 	errs = append(errs, validator.Validate()...)
 
 	// Semantic validations
@@ -261,7 +261,6 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 			modes: []Mode{LegacyMode, SourceMode}},
 		{fn: semantic.ValidateNoEmbeddedEcsInDynamicTemplates, types: []string{"integration"},
 			modes: []Mode{SourceMode}},
-		{fn: semantic.ValidateNoDevFolder, modes: []Mode{BuildMode}},
 		{fn: semantic.ValidateNoLinkFiles, modes: []Mode{BuildMode}},
 		{fn: semantic.ValidateNoExternalFields, modes: []Mode{BuildMode}},
 		{fn: semantic.ValidateStreamInputBundled, modes: []Mode{BuildMode},
