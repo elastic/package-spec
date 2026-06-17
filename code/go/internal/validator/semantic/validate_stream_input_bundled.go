@@ -101,17 +101,6 @@ func validateDataStreamStreamsBundled(fsys fspath.FS) specerrors.ValidationError
 					"file %q: stream[%d] has 'package:' which is source-only; build packages must use 'input:' + 'template_paths:'",
 					fullPath, i,
 				))
-				// Skip the 'input:' check for this stream: the root cause is the
-				// presence of 'package:', not a forgotten 'input:'. Emitting both
-				// errors would be misleading — the user intended the composable-input
-				// pattern and needs to materialise it, not simply add 'input:'.
-				continue
-			}
-			if s.Input == "" {
-				errs = append(errs, specerrors.NewStructuredErrorf(
-					"file %q: stream[%d] missing required 'input:' field",
-					fullPath, i,
-				))
 			}
 		}
 	}

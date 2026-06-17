@@ -1568,7 +1568,8 @@ func TestBuildModeValidation(t *testing.T) {
 			expectedErrContains: []string{"has external: ecs reference"},
 		},
 		"bad_built_missing_input": {
-			expectedErrContains: []string{"stream[0] missing required 'input:' field"},
+			// Caught by schema oneOf (input|package), not the semantic layer.
+			expectedErrContains: []string{"streams.0: input is required"},
 		},
 		"bad_built_stream_package": {
 			expectedErrContains: []string{"stream[0] has 'package:' which is source-only"},

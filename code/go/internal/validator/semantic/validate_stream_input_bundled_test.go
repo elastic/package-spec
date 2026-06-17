@@ -65,15 +65,13 @@ func TestValidateStreamInputBundled(t *testing.T) {
 			},
 		},
 		{
-			name: "data stream stream missing input: — rejected",
+			// Schema validation (oneOf: input|package) catches this before the
+			// semantic layer runs; the semantic check only looks for 'package:'.
+			name: "data stream stream missing input: — not caught by semantic layer",
 			files: map[string]string{
 				"data_stream/logs/manifest.yml": "title: Logs\ntype: logs\nstreams:\n  - title: Logs\n    description: Collect logs\n",
 			},
-			expectErrors: true,
-			errorContains: []string{
-				"stream[0]",
-				"missing required 'input:'",
-			},
+			expectErrors: false,
 		},
 		{
 			name: "multiple data streams, one bad — rejected",
