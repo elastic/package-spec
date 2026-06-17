@@ -1,6 +1,0 @@
-title: Events
-type: logs
-streams:
-  - package: filelog_otel
-    title: Events logs
-    description: Collect events log data (source-only package reference — invalid in built packages)

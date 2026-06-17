@@ -1,3 +1,0 @@
-- name: message
-  type: keyword
-  description: Log message.

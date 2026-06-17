@@ -1,5 +1,0 @@
-- name: message
-  type: keyword
-  description: Log message.
-- name: host.name
-  external: ecs
