@@ -1487,7 +1487,7 @@ func TestValidateFromZip_modeRestrictions(t *testing.T) {
 		t.Parallel()
 		// Use the built fixture: source packages have _dev/ and external:ecs which
 		// build mode rejects. good_built is the correct built-package counterpart.
-		builtPkg := filepath.Join("..", "..", "..", "..", "test", "packages", "build_mode", "good_built")
+		builtPkg := filepath.Join("..", "..", "..", "..", "test", "built_packages", "good_built")
 		builtZipPath := writePackageZip(t, builtPkg, "good_built")
 		v, err := New(BuildMode)
 		require.NoError(t, err)
@@ -1559,7 +1559,7 @@ func TestWithWarningsAsErrors_option(t *testing.T) {
 }
 
 func TestBuildModeValidation(t *testing.T) {
-	basePath := filepath.Join("..", "..", "..", "..", "test", "packages", "build_mode")
+	basePath := filepath.Join("..", "..", "..", "..", "test", "built_packages")
 	tests := map[string]struct {
 		expectedErrContains []string
 	}{

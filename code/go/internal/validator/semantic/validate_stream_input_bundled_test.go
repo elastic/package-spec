@@ -16,7 +16,7 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 )
 
-func TestValidateStreamInputMaterialized(t *testing.T) {
+func TestValidateStreamInputBundled(t *testing.T) {
 	tests := []struct {
 		name string
 		// files maps relative path → YAML content written under a temp dir.
@@ -135,7 +135,7 @@ func TestValidateStreamInputMaterialized(t *testing.T) {
 			}
 
 			fsys := fspath.DirFS(tempDir)
-			errs := ValidateStreamInputMaterialized(fsys)
+			errs := ValidateStreamInputBundled(fsys)
 
 			if !testCase.expectErrors {
 				assert.Nil(t, errs, "expected no errors but got: %v", errs)

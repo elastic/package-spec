@@ -44,25 +44,25 @@ type packageMaterializationManifest struct {
 	PolicyTemplates []policyTemplateMaterialization `yaml:"policy_templates"`
 }
 
-// ValidateStreamInputMaterialized errors when build-mode manifests carry
-// source-only 'package:' fields that the build process should have materialized:
+// ValidateStreamInputBundled errors when build-mode manifests carry
+// source-only 'package:' fields that the build process should have bundled:
 //
 //   - data_stream/*/manifest.yml: each stream must have 'input:' set and must NOT
 //     have 'package:' (composable-input pattern, source-only).
 //   - manifest.yml: each policy_template input must have 'type:' set and must NOT
 //     have 'package:' (package-reference pattern, source-only).
-func ValidateStreamInputMaterialized(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateStreamInputBundled(fsys fspath.FS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
-	errs = append(errs, validateDataStreamStreamsMaterialized(fsys)...)
-	errs = append(errs, validatePolicyTemplateInputsMaterialized(fsys)...)
+	errs = append(errs, validateDataStreamStreamsBundled(fsys)...)
+	errs = append(errs, validatePolicyTemplateInputsBundled(fsys)...)
 
 	return errs
 }
 
-// validateDataStreamStreamsMaterialized checks every data_stream/*/manifest.yml for
+// validateDataStreamStreamsBundled checks every data_stream/*/manifest.yml for
 // stream entries that carry a source-only 'package:' field or are missing 'input:'.
-func validateDataStreamStreamsMaterialized(fsys fspath.FS) specerrors.ValidationErrors {
+func validateDataStreamStreamsBundled(fsys fspath.FS) specerrors.ValidationErrors {
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{
@@ -119,9 +119,9 @@ func validateDataStreamStreamsMaterialized(fsys fspath.FS) specerrors.Validation
 	return errs
 }
 
-// validatePolicyTemplateInputsMaterialized checks the package-level manifest.yml for
+// validatePolicyTemplateInputsBundled checks the package-level manifest.yml for
 // policy_template inputs that carry a source-only 'package:' field instead of 'type:'.
-func validatePolicyTemplateInputsMaterialized(fsys fspath.FS) specerrors.ValidationErrors {
+func validatePolicyTemplateInputsBundled(fsys fspath.FS) specerrors.ValidationErrors {
 	manifestRelPath := "manifest.yml"
 	data, err := fs.ReadFile(fsys, manifestRelPath)
 	if err != nil {

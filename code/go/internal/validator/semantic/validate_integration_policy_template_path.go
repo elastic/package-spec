@@ -145,14 +145,8 @@ func validateAllDataStreamStreamTemplates(fsys fspath.FS, dsMap map[string]dataS
 		dsManifestPath := path.Join(dsDir, "manifest.yml")
 		manifest := dsMap[dsDir]
 		for _, s := range manifest.Streams {
-			// Composable streams reference an input package via 'package:'. When
-			// no explicit template_path/template_paths is set on the stream, all
-			// templates come from the dependency and are only present after build.
-			// Skip those — ValidateStreamInputMaterialized enforces that 'package:'
-			// is replaced by 'input:' in build mode.
-			// However, if the composable stream defines its own template_path or
-			// template_paths, those files must exist in the source package and are
-			// validated here.
+			// Don't validate template paths if they use a package as input
+			// and they don't define any template.
 			if s.Package != "" && s.TemplatePath == "" && len(s.TemplatePaths) == 0 {
 				continue
 			}
