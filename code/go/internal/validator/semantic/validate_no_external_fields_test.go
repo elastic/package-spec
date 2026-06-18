@@ -58,7 +58,7 @@ func TestValidateNoExternalFields(t *testing.T) {
 			files: map[string]string{
 				"data_stream/foo/fields/custom.yml": "- name: myfield\n  external: custom_dep\n",
 			},
-			expectErrors: true,
+			expectErrors:  true,
 			errorContains: []string{"external: custom_dep", "external fields must be materialized"},
 		},
 	}
