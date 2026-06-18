@@ -81,10 +81,10 @@ func (s *ItemSpec) DevelopmentFolder() bool {
 	return s.itemSpec.DevelopmentFolder
 }
 
-// SourceOnly returns true if the item must not appear in built packages.
-// The sourceOnly field is the canonical way to declare this.
-func (s *ItemSpec) SourceOnly() bool {
-	return s.itemSpec.SourceOnly
+// ValidationMode returns the mode in which this item is valid: "source",
+// "build", or "" (both modes).
+func (s *ItemSpec) ValidationMode() string {
+	return s.itemSpec.ValidationMode
 }
 
 // AllowLink returns true if the item allows links.
@@ -148,8 +148,9 @@ type folderItemSpec struct {
 	DevelopmentFolder  bool              `json:"developmentFolder" yaml:"developmentFolder"`
 	AllowLink          bool              `json:"allowLink" yaml:"allowLink"`
 
-	// SourceOnly marks items that must not appear in built packages (build mode).
-	SourceOnly bool `json:"sourceOnly" yaml:"sourceOnly"`
+	// ValidationMode restricts the item to a specific validation mode: "source",
+	// "build", or "" (both modes).
+	ValidationMode string `json:"validationMode" yaml:"validationMode"`
 
 	// As it is required to be inline both in yaml and json, this struct must be public embedded field
 	SpecLimits `yaml:",inline"`

@@ -57,9 +57,9 @@ type ItemSpec interface {
 	// DevelopmentFolder returns true if the item is inside a development folder.
 	DevelopmentFolder() bool
 
-	// SourceOnly returns true if the item is declared as source-only and must
-	// not appear in built packages.
-	SourceOnly() bool
+	// ValidationMode returns the mode in which this item is valid: "source",
+	// "build", or "" (both modes).
+	ValidationMode() string
 
 	// AllowLink returns true if the item allows links.
 	AllowLink() bool

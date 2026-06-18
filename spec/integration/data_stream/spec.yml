@@ -84,7 +84,7 @@ spec:
       name: _dev
       required: false
       visibility: private
-      sourceOnly: true
+      validationMode: source
       $ref: "./_dev/spec.yml"
     - description: File containing routing rules definitions (technical preview)
       type: file
