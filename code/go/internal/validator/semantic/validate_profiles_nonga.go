@@ -16,9 +16,9 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
-// ValidateProfilingNonGA validates that the profiling data type is not used in GA packages,
+// ValidateProfilesNonGA validates that the profiles data type is not used in GA packages,
 // as this data type is in technical preview and can be eventually removed.
-func ValidateProfilingNonGA(fsys fspath.FS) specerrors.ValidationErrors {
+func ValidateProfilesNonGA(fsys fspath.FS) specerrors.ValidationErrors {
 	manifestVersion, err := readManifestVersion(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
@@ -40,7 +40,7 @@ func ValidateProfilingNonGA(fsys fspath.FS) specerrors.ValidationErrors {
 
 	var errs specerrors.ValidationErrors
 	for _, dataStream := range dataStreams {
-		err := validateProfilingTypeNotUsed(fsys, dataStream)
+		err := validateProfilesTypeNotUsed(fsys, dataStream)
 		if err != nil {
 			errs = append(errs, specerrors.NewStructuredError(err, specerrors.UnassignedCode))
 		}
@@ -48,7 +48,7 @@ func ValidateProfilingNonGA(fsys fspath.FS) specerrors.ValidationErrors {
 	return errs
 }
 
-func validateProfilingTypeNotUsed(fsys fspath.FS, dataStream string) error {
+func validateProfilesTypeNotUsed(fsys fspath.FS, dataStream string) error {
 	manifestPath := path.Join("data_stream", dataStream, "manifest.yml")
 	d, err := fs.ReadFile(fsys, manifestPath)
 	if err != nil {
@@ -63,8 +63,8 @@ func validateProfilingTypeNotUsed(fsys fspath.FS, dataStream string) error {
 		return fmt.Errorf("failed to parse data stream manifest in \"%s\": %w", fsys.Path(manifestPath), err)
 	}
 
-	if manifest.Type == "profiling" {
-		return fmt.Errorf("file \"%s\" is invalid: profiling data type cannot be used in GA packages", fsys.Path(manifestPath))
+	if manifest.Type == profilesDataStreamType {
+		return fmt.Errorf("file \"%s\" is invalid: %s data type cannot be used in GA packages", fsys.Path(manifestPath), profilesDataStreamType)
 	}
 
 	return nil

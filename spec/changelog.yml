@@ -16,6 +16,9 @@
     - description: Add provider_permissions field to package, policy_template, input, and data_stream levels for declaring provider-specific permissions.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1180
+    - description: Replace `profiling` data stream type with `profiles` to align with the OTel Profiles signal name.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/1189
 - version: 3.6.3
   changes:
     - description: Add optional `release` field to agentless deployment mode to explicitly declare its release stage.

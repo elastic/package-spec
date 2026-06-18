@@ -18,9 +18,8 @@ import (
 )
 
 const (
-	useAPMVarName        = "use_apm"
-	datasetVarName       = "data_stream.dataset"
-	tracesDataStreamType = "traces"
+	useAPMVarName  = "use_apm"
+	datasetVarName = "data_stream.dataset"
 )
 
 // varScope identifies where in a package manifest a variable is declared.

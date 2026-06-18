@@ -226,7 +226,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: warnOn(semantic.ValidateVisualizationsUsedByValue), types: []string{"integration", "content"}, until: semver.MustParse("3.0.0")},
 		{fn: semantic.ValidateVisualizationsUsedByValue, types: []string{"integration", "content"}, since: semver.MustParse("3.0.0")},
 		{fn: semantic.ValidateILMPolicyPresent, since: semver.MustParse("2.0.0"), types: []string{"integration"}},
-		{fn: semantic.ValidateProfilingNonGA, types: []string{"integration"}},
+		{fn: semantic.ValidateProfilesNonGA, types: []string{"integration"}},
 		{fn: semantic.ValidateKibanaObjectIDs, types: []string{"integration", "content"}},
 		{fn: semantic.ValidateRoutingRulesAndDataset, types: []string{"integration"}, since: semver.MustParse("2.9.0")},
 		{fn: semantic.ValidateKibanaNoDanglingObjectIDs, since: semver.MustParse("3.0.0")},
