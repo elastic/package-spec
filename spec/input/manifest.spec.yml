@@ -84,6 +84,8 @@ spec:
             $ref: "../integration/manifest.spec.yml#/definitions/var_groups"
           sections:
             $ref: "../integration/manifest.spec.yml#/definitions/sections"
+          provider_permissions:
+            $ref: "../integration/manifest.spec.yml#/definitions/provider_permissions"
           input:
             type: string
             examples:
@@ -146,6 +148,8 @@ spec:
       $ref: "../integration/manifest.spec.yml#/definitions/var_groups"
     sections:
       $ref: "../integration/manifest.spec.yml#/definitions/sections"
+    provider_permissions:
+      $ref: "../integration/manifest.spec.yml#/definitions/provider_permissions"
     owner:
       $ref: "../integration/manifest.spec.yml#/definitions/owner"
     agent:

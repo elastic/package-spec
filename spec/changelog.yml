@@ -8,14 +8,25 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: Add support for mode-aware constructors and validation APIs.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1177
     - description: Replace `profiling` data stream type with `profiles` to align with the OTel Profiles signal name.
       type: breaking-change
       link: https://github.com/elastic/package-spec/pull/X
+- version: 3.6.4-next
+  changes:
+    - description: Add provider_permissions field to package, policy_template, input, and data_stream levels for declaring provider-specific permissions.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1180
 - version: 3.6.3
   changes:
     - description: Add optional `release` field to agentless deployment mode to explicitly declare its release stage.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1130
+    - description: Add `migrate_from` object to variable definitions to declare that a variable moved between input-level and stream-level scope within the same input type.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1162
 - version: 3.6.2
   changes:
     - description: Add support for ML modules in content packages.
