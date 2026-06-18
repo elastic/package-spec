@@ -63,8 +63,8 @@ func validateProfilesTypeNotUsed(fsys fspath.FS, dataStream string) error {
 		return fmt.Errorf("failed to parse data stream manifest in \"%s\": %w", fsys.Path(manifestPath), err)
 	}
 
-	if manifest.Type == "profiles" {
-		return fmt.Errorf("file \"%s\" is invalid: profiles data type cannot be used in GA packages", fsys.Path(manifestPath))
+	if manifest.Type == profilesDataStreamType {
+		return fmt.Errorf("file \"%s\" is invalid: %s data type cannot be used in GA packages", fsys.Path(manifestPath), profilesDataStreamType)
 	}
 
 	return nil

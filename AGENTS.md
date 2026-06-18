@@ -376,6 +376,7 @@ func validateMyRule(manifest pkgpath.File) specerrors.ValidationErrors {
 5. **Error handling**: Return structured errors with file paths and context
 6. **Use descriptive variable names**: Avoid abbreviations in validators. Use full names like `packageName` (not `pkgName`), `dataStreamManifests` (not `dsManifests`), `templateIndex` (not `ptIdx`) for better readability.
 7. **Use fsys.Path() for error messages**: When creating error messages, use `fsys.Path("relative/path")` to get the full package path, not just the relative path from a file object. This ensures error messages match the test framework's expectations.
+8. **Data stream type constants**: Never use data stream type strings (e.g. `"traces"`, `"profiles"`) as inline literals. Declare them as package-level constants in `code/go/internal/validator/semantic/types.go` alongside the existing `tracesDataStreamType` and `profilesDataStreamType`. The canonical set mirrors the `type` enum in `spec/integration/data_stream/manifest.spec.yml`.
    ```go
    // Good - uses fsys.Path() for full package path
    specerrors.NewStructuredErrorf("file \"%s\" is invalid: %s", fsys.Path("_dev/test/config.yml"), err)

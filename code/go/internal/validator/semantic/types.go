@@ -24,6 +24,9 @@ const (
 
 	inputPackageType       = "input"
 	integrationPackageType = "integration"
+
+	tracesDataStreamType   = "traces"
+	profilesDataStreamType = "profiles"
 )
 
 type fields []field
