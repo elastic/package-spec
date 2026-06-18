@@ -132,7 +132,7 @@ func (v *validator) Validate() specerrors.ValidationErrors {
 
 			if itemForbiddenInMode(itemSpec, v.mode) {
 				errs = append(errs, specerrors.NewStructuredErrorf(
-					"file %q: %s-only folder is not allowed in %q packages",
+					"file %q: %s-only folder is not allowed in %s packages",
 					v.pkg.Path(path.Join(v.folderPath, fileName)),
 					itemSpec.ValidationMode(),
 					string(v.mode),
@@ -157,6 +157,16 @@ func (v *validator) Validate() specerrors.ValidationErrors {
 				errs = append(errs,
 					specerrors.NewStructuredErrorf("[%s] is a file but is expected to be a folder", v.pkg.Path(fileName)),
 				)
+				continue
+			}
+
+			if itemForbiddenInMode(itemSpec, v.mode) {
+				errs = append(errs, specerrors.NewStructuredErrorf(
+					"file %q: %s-only file is not allowed in %s packages",
+					v.pkg.Path(path.Join(v.folderPath, fileName)),
+					itemSpec.ValidationMode(),
+					string(v.mode),
+				))
 				continue
 			}
 

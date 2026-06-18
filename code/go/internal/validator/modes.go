@@ -14,9 +14,11 @@ const (
 	LegacyMode Mode = "legacy"
 	// SourceMode validates a package as a checked-out source tree: linked files
 	// are resolved transparently and source-only rules are enforced.
+	// The string value must match spectypes.ValidationModeSource.
 	SourceMode Mode = "source"
 	// BuildMode validates a package as a built artifact: linked files are
 	// unconditionally blocked and build-only rules are enforced.
+	// The string value must match spectypes.ValidationModeBuild.
 	BuildMode Mode = "build"
 )
 

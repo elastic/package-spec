@@ -97,6 +97,10 @@ func (l *FolderSpecLoader) loadContents(s *folderItemSpec, fs fs.FS, specPath st
 			return fmt.Errorf("item [%s] visibility is expected to be private or public, not [%s]", path.Join(specPath, content.Name), content.Visibility)
 		}
 
+		if vm := content.ValidationMode; vm != "" && vm != spectypes.ValidationModeSource && vm != spectypes.ValidationModeBuild {
+			return fmt.Errorf("item [%s] validationMode is expected to be %q or %q, not [%s]", path.Join(specPath, content.Name), spectypes.ValidationModeSource, spectypes.ValidationModeBuild, vm)
+		}
+
 		// All folders inside a development folder are too.
 		if s.DevelopmentFolder {
 			content.DevelopmentFolder = true
