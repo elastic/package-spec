@@ -1,0 +1,47 @@
+format_version: 3.7.0
+name: good_var_migrate_from
+title: "Good Var Migrate From"
+version: 0.0.1
+source:
+  license: "Elastic-2.0"
+description: "Integration package demonstrating migrate_from at the variable level for same-input-type scope migration."
+type: integration
+categories:
+  - custom
+conditions:
+  kibana:
+    version: "^9.2.3"
+  agent:
+    version: "^8.9.0"
+  elastic:
+    subscription: "basic"
+screenshots:
+  - src: /img/sample-screenshot.png
+    title: Sample screenshot
+    size: 600x600
+    type: image/png
+icons:
+  - src: /img/sample-logo.svg
+    title: Sample logo
+    size: 32x32
+    type: image/svg+xml
+policy_templates:
+  - name: sample
+    title: Sample logs
+    description: Collect sample logs
+    inputs:
+      - type: filestream
+        title: Collect sample logs from instances
+        description: Collecting sample logs via filestream
+        vars:
+          - name: shared_credential
+            type: password
+            title: Shared Credential
+            description: Credential that previously lived at stream-level.
+            secret: true
+            migrate_from:
+              scope: stream
+              stream: logs
+owner:
+  github: elastic/integrations
+  type: elastic
