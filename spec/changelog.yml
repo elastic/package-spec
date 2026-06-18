@@ -19,6 +19,7 @@
     - description: Add provider_permissions field to package, policy_template, input, and data_stream levels for declaring provider-specific permissions.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1180
+    # Pending on https://github.com/elastic/ingest-dev/issues/7797
     - description: Replace `profiling` data stream type with `profiles` to align with the OTel Profiles signal name.
       type: bugfix
       link: https://github.com/elastic/package-spec/pull/1189
