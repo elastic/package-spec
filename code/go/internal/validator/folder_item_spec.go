@@ -13,6 +13,15 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
+// itemForbiddenInMode returns true if the item is forbidden in the given mode.
+// LegacyMode is never restricted.
+func itemForbiddenInMode(spec spectypes.ItemSpec, mode Mode) bool {
+	if mode == LegacyMode {
+		return false
+	}
+	return spec.ValidationMode() != "" && spec.ValidationMode() != string(mode)
+}
+
 func matchingFileExists(spec spectypes.ItemSpec, files []fs.DirEntry) (bool, error) {
 	if spec.Name() != "" {
 		for _, file := range files {

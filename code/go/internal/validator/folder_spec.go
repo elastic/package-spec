@@ -23,21 +23,23 @@ type validator struct {
 	pkg              *packages.Package
 	folderPath       string
 	warningsAsErrors bool
+	mode             Mode
 
 	totalSize     spectypes.FileSize
 	totalContents int
 }
 
-func newValidator(spec spectypes.ItemSpec, pkg *packages.Package, warningsAsErrors bool) *validator {
-	return newValidatorForPath(spec, pkg, ".", warningsAsErrors)
+func newValidator(spec spectypes.ItemSpec, pkg *packages.Package, warningsAsErrors bool, mode Mode) *validator {
+	return newValidatorForPath(spec, pkg, ".", warningsAsErrors, mode)
 }
 
-func newValidatorForPath(spec spectypes.ItemSpec, pkg *packages.Package, folderPath string, warningsAsErrors bool) *validator {
+func newValidatorForPath(spec spectypes.ItemSpec, pkg *packages.Package, folderPath string, warningsAsErrors bool, mode Mode) *validator {
 	return &validator{
 		spec:             spec,
 		pkg:              pkg,
 		folderPath:       folderPath,
 		warningsAsErrors: warningsAsErrors,
+		mode:             mode,
 	}
 }
 
@@ -83,6 +85,15 @@ func (v *validator) Validate() specerrors.ValidationErrors {
 
 	for _, file := range files {
 		fileName := file.Name()
+
+		if isLink, _ := checkLink(fileName); v.mode == BuildMode && isLink {
+			errs = append(errs, specerrors.NewStructuredErrorf(
+				"file %q: .link files are not allowed in built packages",
+				v.pkg.Path(path.Join(v.folderPath, fileName)),
+			))
+			continue
+		}
+
 		itemSpec, err := v.findItemSpec(fileName)
 		if err != nil {
 			errs = append(errs, specerrors.NewStructuredError(err, specerrors.UnassignedCode))
@@ -119,8 +130,18 @@ func (v *validator) Validate() specerrors.ValidationErrors {
 				continue
 			}
 
+			if itemForbiddenInMode(itemSpec, v.mode) {
+				errs = append(errs, specerrors.NewStructuredErrorf(
+					"file %q: %s-only folder is not allowed in %s packages",
+					v.pkg.Path(path.Join(v.folderPath, fileName)),
+					itemSpec.ValidationMode(),
+					string(v.mode),
+				))
+				continue
+			}
+
 			subFolderPath := path.Join(v.folderPath, fileName)
-			itemValidator := newValidatorForPath(itemSpec, v.pkg, subFolderPath, v.warningsAsErrors)
+			itemValidator := newValidatorForPath(itemSpec, v.pkg, subFolderPath, v.warningsAsErrors, v.mode)
 			subErrs := itemValidator.Validate()
 			if len(subErrs) > 0 {
 				errs = append(errs, subErrs...)
@@ -136,6 +157,16 @@ func (v *validator) Validate() specerrors.ValidationErrors {
 				errs = append(errs,
 					specerrors.NewStructuredErrorf("[%s] is a file but is expected to be a folder", v.pkg.Path(fileName)),
 				)
+				continue
+			}
+
+			if itemForbiddenInMode(itemSpec, v.mode) {
+				errs = append(errs, specerrors.NewStructuredErrorf(
+					"file %q: %s-only file is not allowed in %s packages",
+					v.pkg.Path(path.Join(v.folderPath, fileName)),
+					itemSpec.ValidationMode(),
+					string(v.mode),
+				))
 				continue
 			}
 
@@ -231,9 +262,6 @@ func (v *validator) findItemSpec(folderItemName string) (spectypes.ItemSpec, err
 // checkLink checks if an item is a link and returns the item name without the
 // ".link" suffix if it is a link.
 func checkLink(itemName string) (bool, string) {
-	const linkExtension = ".link"
-	if strings.HasSuffix(itemName, linkExtension) {
-		return true, strings.TrimSuffix(itemName, linkExtension)
-	}
-	return false, itemName
+	stripped, isLink := strings.CutSuffix(itemName, ".link")
+	return isLink, stripped
 }
