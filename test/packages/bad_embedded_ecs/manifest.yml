@@ -1,0 +1,24 @@
+format_version: 3.6.0
+name: bad_embedded_ecs
+title: Bad ECS embedded in source
+description: >
+  Integration with _embedded_ecs keys in dynamic_templates.
+  Valid in legacy mode; rejected in source mode by ValidateNoEmbeddedEcsInDynamicTemplates.
+version: 0.0.1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+policy_templates:
+  - name: logs
+    title: Logs
+    description: Collect logs
+    inputs:
+      - type: logfile
+        title: Collect logfile logs
+        description: Collect logs using logfile input
+owner:
+  github: elastic/foobar
+  type: community

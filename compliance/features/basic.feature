@@ -36,8 +36,6 @@ Feature: Basic package types support
      And there is a detection rule "12cea9e9-5766-474d-a9dc-34ef7c7677c6"
 
   @3.6.0
-  @skip
-  # Pending on missing backport https://github.com/elastic/kibana/pull/271135
   Scenario: Integration package with named OTel inputs can be installed
    Given the "good_integration_otel" package is installed
      And a policy is created with "good_integration_otel" package, "0.0.1" version, "otel" template, input effective name "otel_logs", "otel_logs" stream, "otelcol" input type and dataset ""

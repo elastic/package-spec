@@ -97,7 +97,7 @@ func (s Spec) ValidatePackage(pkg packages.Package) specerrors.ValidationErrors 
 	}
 
 	// Syntactic validations
-	validator := newValidator(rootSpec, &pkg, s.WarningsAsErrors)
+	validator := newValidator(rootSpec, &pkg, s.WarningsAsErrors, s.mode)
 	errs = append(errs, validator.Validate()...)
 
 	// Semantic validations
@@ -222,7 +222,8 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateDimensionFields, types: []string{"integration", "input"}},
 		{fn: semantic.ValidateDateFields, types: []string{"integration", "input"}},
 		{fn: semantic.ValidateRequiredFields, types: []string{"integration", "input"}},
-		{fn: semantic.ValidateExternalFieldsWithDevFolder, types: []string{"integration", "input"}},
+		{fn: semantic.ValidateExternalFieldsWithDevFolder, types: []string{"integration", "input"},
+			modes: []Mode{LegacyMode, SourceMode}},
 		{fn: warnOn(semantic.ValidateVisualizationsUsedByValue), types: []string{"integration", "content"}, until: semver.MustParse("3.0.0")},
 		{fn: semantic.ValidateVisualizationsUsedByValue, types: []string{"integration", "content"}, since: semver.MustParse("3.0.0")},
 		{fn: semantic.ValidateILMPolicyPresent, since: semver.MustParse("2.0.0"), types: []string{"integration"}},
@@ -252,10 +253,17 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateKibanaTagDuplicates},
 		{fn: semantic.ValidatePipelineOnFailure, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
 		{fn: semantic.ValidateIntegrationInputsDeprecation, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
-		{fn: semantic.ValidateIntegrationInputQualifier, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateIntegrationInputQualifier, types: []string{"integration"}, since: semver.MustParse("3.6.0"),
+			modes: []Mode{LegacyMode, BuildMode}},
 		{fn: semantic.ValidateDeprecatedReplacedBy, since: semver.MustParse("3.6.0")},
 		{fn: semantic.ValidatePackageReferences, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
-		{fn: semantic.ValidateTestPackageRequirements, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateTestPackageRequirements, types: []string{"integration"}, since: semver.MustParse("3.6.0"),
+			modes: []Mode{LegacyMode, SourceMode}},
+		{fn: semantic.ValidateNoEmbeddedEcsInDynamicTemplates, types: []string{"integration"},
+			modes: []Mode{SourceMode}},
+		{fn: semantic.ValidateNoExternalFields, modes: []Mode{BuildMode}},
+		{fn: semantic.ValidateStreamInputBundled, modes: []Mode{BuildMode},
+			types: []string{"integration"}},
 	}
 
 	var validationRules validationRules

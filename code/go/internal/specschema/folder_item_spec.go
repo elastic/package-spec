@@ -81,6 +81,12 @@ func (s *ItemSpec) DevelopmentFolder() bool {
 	return s.itemSpec.DevelopmentFolder
 }
 
+// ValidationMode returns the mode in which this item is valid: "source",
+// "build", or "" (both modes).
+func (s *ItemSpec) ValidationMode() string {
+	return s.itemSpec.ValidationMode
+}
+
 // AllowLink returns true if the item allows links.
 func (s *ItemSpec) AllowLink() bool {
 	return s.itemSpec.AllowLink
@@ -141,6 +147,10 @@ type folderItemSpec struct {
 	Contents           []*folderItemSpec `json:"contents" yaml:"contents"`
 	DevelopmentFolder  bool              `json:"developmentFolder" yaml:"developmentFolder"`
 	AllowLink          bool              `json:"allowLink" yaml:"allowLink"`
+
+	// ValidationMode restricts the item to a specific validation mode: "source",
+	// "build", or "" (both modes).
+	ValidationMode string `json:"validationMode" yaml:"validationMode"`
 
 	// As it is required to be inline both in yaml and json, this struct must be public embedded field
 	SpecLimits `yaml:",inline"`

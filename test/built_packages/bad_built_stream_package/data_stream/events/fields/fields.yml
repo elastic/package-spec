@@ -1,0 +1,5 @@
+- name: message
+  type: keyword
+  description: Log message.
+- name: host.name
+  type: keyword

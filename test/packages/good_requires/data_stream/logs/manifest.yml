@@ -4,3 +4,7 @@ streams:
   - package: sql_input
     title: Apache logs via SQL input
     description: Collect Apache logs using the SQL input package
+    vars:
+      - name: hosts
+        default: localhost:5432
+      - default: 30s

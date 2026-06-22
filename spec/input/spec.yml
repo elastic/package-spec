@@ -55,6 +55,7 @@ spec:
     name: _dev
     required: false
     visibility: private
+    validationMode: source
     $ref: "./_dev/spec.yml"
   - description: File containing lifecycle configuration (technical preview)
     type: file

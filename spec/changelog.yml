@@ -11,11 +11,15 @@
     - description: Add support for mode-aware constructors and validation APIs.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1177
-- version: 3.6.4-next
+    - description: Implement `source` and `build` validation modes.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1178
+- version: 3.6.4
   changes:
     - description: Add provider_permissions field to package, policy_template, input, and data_stream levels for declaring provider-specific permissions.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1180
+    # Pending on https://github.com/elastic/ingest-dev/issues/7797
     - description: Replace `profiling` data stream type with `profiles` to align with the OTel Profiles signal name.
       type: bugfix
       link: https://github.com/elastic/package-spec/pull/1189
@@ -88,11 +92,9 @@
     - description: Add support for multiple template paths in input packages, integration inputs, and data streams.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1089
-    # Pending on https://github.com/elastic/kibana/issues/252938
     - description: Add support for package dependencies in integration packages via requires field with input and content package types.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1071
-    # Pending on https://github.com/elastic/kibana/issues/252949
     - description: Allow otelcol input type and dynamic_signal_types field in integration packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1091

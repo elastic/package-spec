@@ -16,6 +16,14 @@ const (
 
 	// ItemTypeFolder is the type of an item that represents a folder.
 	ItemTypeFolder = "folder"
+
+	// ValidationModeSource marks an item as valid only in source packages (not in built packages).
+	// The string value must match validator.SourceMode.
+	ValidationModeSource = "source"
+
+	// ValidationModeBuild marks an item as valid only in built packages (not in source packages).
+	// The string value must match validator.BuildMode.
+	ValidationModeBuild = "build"
 )
 
 // LimitsSpec contain the specifications related to limits.
@@ -56,6 +64,10 @@ type ItemSpec interface {
 
 	// DevelopmentFolder returns true if the item is inside a development folder.
 	DevelopmentFolder() bool
+
+	// ValidationMode returns the mode in which this item is valid: "source",
+	// "build", or "" (both modes).
+	ValidationMode() string
 
 	// AllowLink returns true if the item allows links.
 	AllowLink() bool

@@ -105,7 +105,7 @@ func ValidateDatastreamPackageCategories(fsys fspath.FS) specerrors.ValidationEr
 			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), err)}
 	}
 
-	if pkgType != packageTypeIntegration {
+	if pkgType != integrationPackageType {
 		return nil
 	}
 
