@@ -47,7 +47,7 @@ spec:
         - additionalProperties: false
           properties:
             source:
-              description: Relative path to the source of the required package.
+              description: Relative path (from the package root) to the source of the required package.
               type: string
           required:
             - source
