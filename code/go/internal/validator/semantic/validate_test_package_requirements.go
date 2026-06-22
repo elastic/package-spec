@@ -126,7 +126,7 @@ func validateIntegrationTestRequirements(fsys fspath.FS, requiredPackages map[st
 
 						source, _ := reqMap["source"].(string)
 						if source != "" {
-							err := validateTestRequirementSource(fsys.Path("_dev/test/config.yml"), source)
+							err := validateTestRequirementSource(fsys.Path(), fsys.Path("_dev/test/config.yml"), source)
 							if err != nil {
 								errs = append(errs, err)
 							}
@@ -177,7 +177,7 @@ func validateDataStreamTestRequirements(fsys fspath.FS, requiredPackages map[str
 
 						source, _ := reqMap["source"].(string)
 						if source != "" {
-							err := validateTestRequirementSource(fsys.Path(config.Path()), source)
+							err := validateTestRequirementSource(fsys.Path(), fsys.Path(config.Path()), source)
 							if err != nil {
 								errs = append(errs, err)
 							}
@@ -242,17 +242,19 @@ func validateTestRequirementPackageVersion(configPath, testType string, idx int,
 	return nil
 }
 
-// validateTestRequirementSource checks if the relative path exists. This could be done with "format: relative-path" in
-// the spec, but this format checker only works with relative files inside the package. In this case the source package
-// is going to be outside the current package.
-func validateTestRequirementSource(configFile, source string) *specerrors.StructuredError {
+// validateTestRequirementSource checks if the relative path exists. The source is resolved relative to the package
+// root (packageRoot), so a path like "../other_package" reaches a sibling package in the same repository. This could
+// be done with "format: relative-path" in the spec, but that format checker only works with relative files inside the
+// package, and here the source package is going to be outside the current package. configFile is used only to report
+// which file is invalid.
+func validateTestRequirementSource(packageRoot, configFile, source string) *specerrors.StructuredError {
 	cleanSource := filepath.Clean(filepath.FromSlash(source))
 	if filepath.IsAbs(cleanSource) {
 		return specerrors.NewStructuredErrorf(
 			"file \"%s\" is invalid: source path to required package \"%s\" must be relative",
 			configFile, source)
 	}
-	targetPath := filepath.Join(filepath.Dir(configFile), filepath.FromSlash(source))
+	targetPath := filepath.Join(packageRoot, filepath.FromSlash(source))
 	if _, err := os.Stat(targetPath); err != nil {
 		return specerrors.NewStructuredErrorf(
 			"file \"%s\" is invalid: source path to required package \"%s\" does not exist",
