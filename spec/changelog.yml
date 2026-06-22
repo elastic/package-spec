@@ -18,7 +18,7 @@
   changes:
     - description: Resolve test requires `source` paths relative to the package root instead of the test config directory.
       type: bugfix
-      link: https://github.com/elastic/package-spec/pull/1192
+      link: https://github.com/elastic/package-spec/pull/1193
 - version: 3.6.4
   changes:
     - description: Add provider_permissions field to package, policy_template, input, and data_stream levels for declaring provider-specific permissions.
