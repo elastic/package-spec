@@ -149,8 +149,8 @@ format_version: 3.6.0`,
   requires:
     - source: ../my_input_package`,
 			testConfigPath: "_dev/test/config.yml",
-			// source "../my_input_package" is relative to _dev/test/, resolves to _dev/my_input_package
-			sourceDirs:  []string{"_dev/my_input_package"},
+			// source "../my_input_package" is relative to the package root, resolving to a sibling package
+			sourceDirs:  []string{"../my_input_package"},
 			expectError: false,
 		},
 		"invalid_source_path_requirement": {
@@ -169,8 +169,8 @@ format_version: 3.6.0`,
 			testConfig: `requires:
   - source: ../my_content_package`,
 			testConfigPath: "data_stream/example/_dev/test/system/test-default-config.yml",
-			// source "../my_content_package" is relative to .../system/, resolves to .../test/my_content_package
-			sourceDirs:  []string{"data_stream/example/_dev/test/my_content_package"},
+			// source "../my_content_package" is relative to the package root, resolving to a sibling package
+			sourceDirs:  []string{"../my_content_package"},
 			expectError: false,
 		},
 		"invalid_datastream_source_path_requirement": {
@@ -186,13 +186,19 @@ format_version: 3.6.0`,
 
 	for name, tc := range tests {
 		t.Run(name, func(t *testing.T) {
-			pkgRoot := t.TempDir()
+			// Nest the package root under a base dir so that source paths like
+			// "../sibling" resolve to a sibling of the package root, mirroring how
+			// packages live side by side in a repository.
+			base := t.TempDir()
+			pkgRoot := filepath.Join(base, "package")
+			require.NoError(t, os.MkdirAll(pkgRoot, 0755))
 
 			// Create manifest
 			err := os.WriteFile(filepath.Join(pkgRoot, "manifest.yml"), []byte(tc.manifest), 0644)
 			require.NoError(t, err)
 
-			// Create source directories referenced by source entries
+			// Create source directories referenced by source entries. They are
+			// resolved relative to the package root (so "../x" is a sibling).
 			for _, sourceDir := range tc.sourceDirs {
 				err = os.MkdirAll(filepath.Join(pkgRoot, sourceDir), 0755)
 				require.NoError(t, err)
