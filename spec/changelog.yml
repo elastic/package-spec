@@ -14,7 +14,7 @@
     - description: Implement `source` and `build` validation modes.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1178
-- version: 3.6.5-next
+- version: 3.6.5
   changes:
     - description: Resolve test requires `source` paths relative to the package root instead of the test config directory.
       type: bugfix
