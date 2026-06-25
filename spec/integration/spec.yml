@@ -4,7 +4,7 @@
 ## Describes the folders and files that make up a package.
 ##
 spec:
-  additionalContents: true
+  additionalContents: false
   totalContentsLimit: 65535
   totalSizeLimit: 250MB
   sizeLimit: 150MB
