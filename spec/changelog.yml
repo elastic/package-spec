@@ -14,6 +14,9 @@
     - description: Implement `source` and `build` validation modes.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1178
+    - description: Remove the search type from by-reference validation checks.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/1196
 - version: 3.6.5
   changes:
     - description: Resolve test requires `source` paths relative to the package root instead of the test config directory.
