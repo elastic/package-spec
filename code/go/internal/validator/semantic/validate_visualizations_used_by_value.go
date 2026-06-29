@@ -75,7 +75,7 @@ func anyReference(val interface{}) ([]reference, error) {
 	var references []reference
 	for _, reference := range allReferences {
 		switch reference.Type {
-		case "lens", "map", "search", "visualization":
+		case "lens", "map", "visualization":
 			references = append(references, reference)
 		}
 	}
