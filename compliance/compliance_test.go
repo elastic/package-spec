@@ -393,22 +393,36 @@ func checkDatasetInInputs(policy *fullAgentPolicy, expectedDataset string) error
 }
 
 func checkDatasetInOTelPolicy(policy *fullAgentPolicy, expectedDataset string) error {
-	expectedStatement := fmt.Sprintf(`set(attributes["data_stream.dataset"], "%s")`, expectedDataset)
-
 	for name, processor := range policy.Processors {
 		if !strings.HasPrefix(name, "transform/") {
 			continue
 		}
-		if transformHasStatement(processor, expectedStatement) {
+		if transformHasDatasetStatement(processor, expectedDataset) {
 			return nil
 		}
 	}
 
+	expectedStatement := datasetStatement(expectedDataset)
 	d, _ := json.MarshalIndent(policy.Processors, "", "  ")
 	return fmt.Errorf("dataset statement %q not found in compiled policy processors:\n%s", expectedStatement, string(d))
 }
 
-func transformHasStatement(processor otelTransformProcessor, expected string) bool {
+func datasetStatement(dataset string) string {
+	return fmt.Sprintf(`set(attributes["data_stream.dataset"], "%s")`, dataset)
+}
+
+// datasetStatementMatches reports whether stmt sets data_stream.dataset to dataset.
+// Fleet may emit an unconditional set or gate it with "where ... == nil" so upstream
+// routing attributes are preserved (elastic/kibana#274993).
+func datasetStatementMatches(stmt, dataset string) bool {
+	base := datasetStatement(dataset)
+	if stmt == base {
+		return true
+	}
+	return stmt == base+` where attributes["data_stream.dataset"] == nil`
+}
+
+func transformHasDatasetStatement(processor otelTransformProcessor, expectedDataset string) bool {
 	allGroups := [][]otelStatementGroup{
 		processor.LogStatements,
 		processor.MetricStatements,
@@ -417,7 +431,7 @@ func transformHasStatement(processor otelTransformProcessor, expected string) bo
 	for _, groups := range allGroups {
 		for _, group := range groups {
 			for _, stmt := range group.Statements {
-				if stmt == expected {
+				if datasetStatementMatches(stmt, expectedDataset) {
 					return true
 				}
 			}
@@ -453,4 +467,31 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^there is a security AI prompt "([^"]*)"$`, thereIsASecurityAIPrompt)
 	ctx.Step(`^the content packages "([^"]*)" require are installed$`, theContentPackagesRequireAreInstalled)
 	ctx.Step(`^the compiled policy has dataset "([^"]*)" for "([^"]*)" input type$`, theCompiledPolicyHasDataset)
+}
+
+func TestDatasetStatementMatches(t *testing.T) {
+	dataset := "httpcheckreceiver"
+	unconditional := datasetStatement(dataset)
+	conditional := unconditional + ` where attributes["data_stream.dataset"] == nil`
+
+	tests := map[string]struct {
+		statement string
+		want      bool
+	}{
+		"unconditional": {statement: unconditional, want: true},
+		"conditional":   {statement: conditional, want: true},
+		"wrong dataset": {
+			statement: `set(attributes["data_stream.dataset"], "other") where attributes["data_stream.dataset"] == nil`,
+			want:      false,
+		},
+		"partial prefix": {statement: unconditional + " extra", want: false},
+	}
+
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			if got := datasetStatementMatches(tc.statement, dataset); got != tc.want {
+				t.Fatalf("datasetStatementMatches(%q, %q) = %v, want %v", tc.statement, dataset, got, tc.want)
+			}
+		})
+	}
 }
