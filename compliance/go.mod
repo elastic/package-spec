@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.5.0
 	github.com/cucumber/godog v0.15.1
 	github.com/cucumber/messages/go/v21 v21.0.1
-	github.com/elastic/elastic-package v0.125.0
+	github.com/elastic/elastic-package v0.125.1
 	github.com/elastic/go-elasticsearch/v9 v9.4.2
 	github.com/elastic/go-licenser v0.4.2
 	github.com/elastic/package-spec/v3 v3.6.5
@@ -188,9 +188,9 @@ require (
 	golang.org/x/term v0.44.0 // indirect
 	golang.org/x/text v0.38.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
-	google.golang.org/adk v1.4.0 // indirect
+	google.golang.org/adk v1.5.0 // indirect
 	google.golang.org/api v0.279.0 // indirect
-	google.golang.org/genai v1.61.0 // indirect
+	google.golang.org/genai v1.62.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260511170946-3700d4141b60 // indirect
 	google.golang.org/grpc v1.81.0 // indirect
 	google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af // indirect
