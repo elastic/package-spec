@@ -19,7 +19,7 @@
       link: https://github.com/elastic/package-spec/pull/1196
     - description: Add support for saved search assets in content packages.
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/1196
+      link: https://github.com/elastic/package-spec/pull/1210
 - version: 3.6.5
   changes:
     - description: Resolve test requires `source` paths relative to the package root instead of the test config directory.
