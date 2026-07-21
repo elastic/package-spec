@@ -63,7 +63,22 @@ spec:
         type: file
         contentMediaType: "application/json"
         pattern: '^{PACKAGE_NAME}-.+\.json$'
+  - description: Folder containing Kibana saved search assets
+    type: folder
+    name: search
+    required: false
+    contents:
+    - description: A saved search asset file
+      type: file
+      contentMediaType: "application/json"
+      pattern: '^{PACKAGE_NAME}-.+\.json$'
+      forbiddenPatterns:
+        - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
 versions:
+  - before: 3.7.0
+    patch:
+      - op: remove
+        path: "/contents/7" # remove saved search definitions
   - before: 3.5.0
     patch:
       - op: remove
