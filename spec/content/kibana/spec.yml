@@ -75,10 +75,6 @@ spec:
       forbiddenPatterns:
         - '^.+-(ecs|ECS)\.json$' # ECS suffix is forbidden
 versions:
-  - before: 3.7.0
-    patch:
-      - op: remove
-        path: "/contents/7" # remove saved search definitions
   - before: 3.5.0
     patch:
       - op: remove
