@@ -21,6 +21,29 @@ spec:
           type: array
           items:
             $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/package_requirement"
+    policy_config_tests:
+      type: object
+      additionalProperties: false
+      properties:
+        parallel:
+          description: Tests defined can be run in parallel (default true).
+          type: boolean
+          default: false
+        skip:
+          $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/skip"
+        requires:
+          description: Package dependencies required for these tests with exact versions.
+          type: array
+          items:
+            $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/package_requirement"
+        ignore_fields:
+          description: >
+            Stream-level field paths to strip before comparing the actual policy
+            against the expected file. Paths use dot notation scoped to the stream
+            level (e.g. "state.user_agent" strips inputs[].streams[].state.user_agent).
+          type: array
+          items:
+            type: string
   properties:
     system:
       description: Configuration for system tests
@@ -30,7 +53,7 @@ spec:
       $ref: "#/definitions/config_tests"
     policy:
       description: Configuration for policy tests
-      $ref: "#/definitions/config_tests"
+      $ref: "#/definitions/policy_config_tests"
     static:
       description: Configuration for static tests
       $ref: "#/definitions/config_tests"

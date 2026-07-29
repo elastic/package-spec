@@ -11,4 +11,4 @@ spec:
       $ref: "../../../integration/_dev/test/config.spec.yml#/definitions/config_tests"
     policy:
       description: Configuration for policy tests
-      $ref: "../../../integration/_dev/test/config.spec.yml#/definitions/config_tests"
+      $ref: "../../../integration/_dev/test/config.spec.yml#/definitions/policy_config_tests"
