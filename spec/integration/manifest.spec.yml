@@ -549,6 +549,17 @@ spec:
       required:
         - since
         - description
+    group:
+      description: >
+        Opaque identifier declaring membership in a marketplace group. All packages
+        that share the same value are considered members of the same group.
+        Kibana owns tile title/icon/description via a static descriptor keyed by
+        this id; packages only declare membership.
+      type: string
+      pattern: '^[a-z0-9_]+$'
+      examples:
+        - nginx
+        - redis
     package_reference:
       description: >
         Reference to an input package. When specified, configuration is inherited
@@ -824,6 +835,8 @@ spec:
       pattern: '^[a-z0-9_]+$'
       examples:
         - apache
+    group:
+      $ref: "#/definitions/group"
     title:
       $ref: "#/definitions/title"
     description:

@@ -4,6 +4,9 @@
 ##
 - version: 3.7.0-next
   changes:
+    - description: Add optional top-level `group` field to integration, input, and content package manifests for declaring marketplace group membership.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1213
     # Pending on https://github.com/elastic/kibana/issues/220294
     - description: Add support for semantic_text field definition.
       type: enhancement
