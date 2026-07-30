@@ -551,10 +551,10 @@ spec:
         - description
     group:
       description: >
-        Opaque identifier declaring membership in a marketplace group. All packages
-        that share the same value are considered members of the same group.
-        Kibana owns tile title/icon/description via a static descriptor keyed by
-        this id; packages only declare membership.
+        Identifier of a marketplace group. Packages that share the same
+        value belong to the same group. Kibana owns the group's title,
+        icon, and description; this field only declares membership.
+        Values are not validated against Kibana's group list.
       type: string
       pattern: '^[a-z0-9_]+$'
       examples:
