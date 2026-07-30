@@ -17,6 +17,8 @@
     - description: Remove the search type from by-reference validation checks.
       type: bugfix
       link: https://github.com/elastic/package-spec/pull/1196
+- version: 3.6.6-next
+  changes:
     - description: Add optional top-level `group` field to integration, input, and content package manifests for declaring marketplace group membership.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1213
