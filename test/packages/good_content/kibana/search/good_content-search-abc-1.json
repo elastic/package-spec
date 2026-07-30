@@ -1,0 +1,13 @@
+{
+    "id": "good_content-search-abc-1",
+    "type": "search",
+    "typeMigrationVersion": "8.0.0",
+    "attributes": {
+        "title": "Good content search",
+        "columns": [],
+        "sort": [],
+        "kibanaSavedObjectMeta": {
+            "searchSourceJSON": "{\"filter\":[],\"query\":{\"language\":\"kuery\",\"query\":\"\"}}"
+        }
+    }
+}
