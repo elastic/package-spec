@@ -72,6 +72,20 @@ func Test_ValidateFromPath(t *testing.T) {
 		"with_links":                             {},
 		"good_provider_permissions":              {},
 		"good_provider_permissions_input":        {},
+		"good_integration_group":                 {},
+		"good_input_group":                       {},
+		"bad_integration_group": {
+			"manifest.yml",
+			[]string{
+				"field group: Does not match pattern '^[a-z0-9_]+$'",
+			},
+		},
+		"bad_input_group": {
+			"manifest.yml",
+			[]string{
+				"field group: Does not match pattern '^[a-z0-9_]+$'",
+			},
+		},
 		"bad_duration_vars": {
 			"manifest.yml",
 			[]string{

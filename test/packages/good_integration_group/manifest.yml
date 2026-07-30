@@ -1,0 +1,27 @@
+format_version: 3.3.2
+name: good_integration_group
+title: Good Integration with Group
+description: Integration package declaring membership in a marketplace group.
+version: 0.0.1
+type: integration
+group: nginx
+source:
+  license: "Apache-2.0"
+categories:
+  - web
+conditions:
+  kibana:
+    version: "^9.0.0"
+  elastic:
+    subscription: "basic"
+policy_templates:
+  - name: nginx
+    title: Nginx logs and metrics
+    description: Collect logs and metrics from Nginx instances
+    inputs:
+      - type: logfile
+        title: Collect logs from Nginx
+        description: Collecting Nginx access and error logs
+owner:
+  github: elastic/ecosystem
+  type: elastic

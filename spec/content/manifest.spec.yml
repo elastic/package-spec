@@ -47,6 +47,8 @@ spec:
       pattern: '^[a-z0-9_]+$'
       examples:
       - apache
+    group:
+      $ref: "../integration/manifest.spec.yml#/definitions/group"
     title:
       $ref: "../integration/manifest.spec.yml#/definitions/title"
     description:
