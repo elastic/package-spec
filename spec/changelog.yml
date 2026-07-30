@@ -14,6 +14,9 @@
     - description: Add iac_blueprints field at package, policy_template, input, and data_stream levels for IaC composition contributions via RFC 6902 patch files.
       type: enhancement
       link: https://github.com/elastic/security-team/issues/18260
+    - description: Add `blueprint` package type for hosting canonical IaC base blueprints served to the cloud-iac-provisioner renderer.
+      type: enhancement
+      link: https://github.com/elastic/security-team/issues/18260
 - version: 3.6.6
   changes:
     - description: Add support for mode-aware constructors and validation APIs.

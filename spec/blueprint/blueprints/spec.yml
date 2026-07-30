@@ -1,0 +1,29 @@
+##
+## Describes the layout of the blueprints/ payload folder.
+##
+## Files are laid out to mirror the blueprint `id` (<provider>/<trust-model>/<scope>)
+## with the `format` and file extension appended:
+##
+##   blueprints/<provider>/<trust-model>/<scope>.<format>.<ext>
+##
+## e.g. blueprints/aws/federated-identity/account.cloudformation.json
+##
+spec:
+  additionalContents: false
+  contents:
+    - description: Provider directory (e.g. aws, azure, gcp)
+      type: folder
+      pattern: '^[a-z0-9][a-z0-9-]*$'
+      required: true
+      additionalContents: false
+      contents:
+        - description: Trust-model directory (e.g. federated-identity, workload-identity, service-principal)
+          type: folder
+          pattern: '^[a-z0-9][a-z0-9-]*$'
+          required: true
+          additionalContents: false
+          contents:
+            - description: A canonical IaC blueprint file, named <scope>.<format>.<ext>
+              type: file
+              pattern: '^[a-z0-9][a-z0-9_-]*\.[a-z0-9-]+\.[a-z0-9]+$'
+              required: true
