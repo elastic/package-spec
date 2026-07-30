@@ -17,6 +17,8 @@
     - description: Remove the search type from by-reference validation checks.
       type: bugfix
       link: https://github.com/elastic/package-spec/pull/1196
+- version: 3.6.6-next
+  changes:
     - description: Add support for saved search assets in content packages.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1210
