@@ -26,16 +26,11 @@ spec:
       additionalProperties: false
       properties:
         parallel:
-          description: Tests defined can be run in parallel (default true).
-          type: boolean
-          default: false
+          $ref: "#/definitions/config_tests/properties/parallel"
         skip:
-          $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/skip"
+          $ref: "#/definitions/config_tests/properties/skip"
         requires:
-          description: Package dependencies required for these tests with exact versions.
-          type: array
-          items:
-            $ref: "../../data_stream/_dev/test/config.spec.yml#/definitions/package_requirement"
+          $ref: "#/definitions/config_tests/properties/requires"
         ignore_fields:
           description: >
             Stream-level field paths to strip before comparing the actual policy
