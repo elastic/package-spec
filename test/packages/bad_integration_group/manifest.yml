@@ -1,0 +1,25 @@
+format_version: 3.3.2
+name: bad_integration_group
+title: Bad Integration Group
+description: Integration package with an invalid group value (contains uppercase/spaces).
+version: 0.0.1
+type: integration
+group: "Nginx OTel"
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: "^9.0.0"
+  elastic:
+    subscription: "basic"
+policy_templates:
+  - name: nginx
+    title: Nginx logs
+    description: Collect logs from Nginx
+    inputs:
+      - type: logfile
+        title: Collect logs from Nginx
+        description: Collecting Nginx logs
+owner:
+  github: elastic/ecosystem
+  type: elastic

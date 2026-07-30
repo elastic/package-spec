@@ -166,7 +166,7 @@ require (
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/xlab/treeprint v1.2.0 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
-	github.com/yuin/goldmark v1.8.4 // indirect
+	github.com/yuin/goldmark v1.8.5 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.mongodb.org/mongo-driver v1.17.9 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
