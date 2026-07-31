@@ -1,0 +1,6 @@
+system:
+  parallel: true
+  ignore_fields:
+    - state.user_agent
+policy:
+  parallel: false
