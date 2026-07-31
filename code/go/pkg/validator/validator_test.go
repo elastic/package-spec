@@ -346,6 +346,12 @@ func Test_ValidateFromPath(t *testing.T) {
 				`system.requires[0] package "sql_input" version "1.5.0" does not satisfy constraint "2.0.0"`,
 			},
 		},
+		"bad_policy_ignore_fields": {
+			"_dev/test/config.yml",
+			[]string{
+				"field system: Additional property ignore_fields is not allowed",
+			},
+		},
 		"bad_input_dataset_vars": {
 			"_dev/test/policy/test-vars.yml",
 			[]string{

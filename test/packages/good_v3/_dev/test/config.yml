@@ -9,5 +9,7 @@ asset:
   parallel: false
 policy:
   parallel: false
+  ignore_fields:
+    - state.user_agent
 static:
   parallel: false

@@ -25,6 +25,9 @@
     - description: Add optional top-level `group` field to integration, input, and content package manifests for declaring marketplace group membership.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1213
+    - description: Allow policy tests to ignore fields.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1214
 - version: 3.6.5
   changes:
     - description: Resolve test requires `source` paths relative to the package root instead of the test config directory.

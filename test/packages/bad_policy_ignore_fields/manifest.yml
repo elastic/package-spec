@@ -1,0 +1,22 @@
+format_version: 3.6.0
+name: bad_policy_ignore_fields
+title: Bad policy ignore fields
+description: Test package for validating that ignore_fields is not allowed in system test config.
+version: 0.0.1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+policy_templates:
+  - name: example
+    title: Example
+    description: Example policy template
+    inputs:
+      - type: logfile
+        title: Log file input
+        description: Collect logs from files
+owner:
+  github: elastic/ecosystem
+  type: elastic
