@@ -19,7 +19,7 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
-const packageRegistryCategoriesURL = "https://raw.githubusercontent.com/elastic/package-registry/v1.38.0/categories/categories.yml"
+const packageRegistryCategoriesURL = "https://raw.githubusercontent.com/elastic/package-registry/v1.39.0/categories/categories.yml"
 
 type registryCategories struct {
 	Categories map[string]struct {
@@ -102,7 +102,8 @@ func ValidateDatastreamPackageCategories(fsys fspath.FS) specerrors.ValidationEr
 	pkgType, pkgCategories, err := readPackageManifestTypeAndCategories(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{
-			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), err)}
+			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), err),
+		}
 	}
 
 	if pkgType != integrationPackageType {
@@ -112,7 +113,8 @@ func ValidateDatastreamPackageCategories(fsys fspath.FS) specerrors.ValidationEr
 	dsCategories, err := readDataStreamManifestCategories(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{
-			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), err)}
+			specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", fsys.Path(manifestPath), err),
+		}
 	}
 
 	if len(dsCategories) == 0 {
@@ -122,7 +124,8 @@ func ValidateDatastreamPackageCategories(fsys fspath.FS) specerrors.ValidationEr
 	categoryToParent, err := fetchRegistryCategoryToParentMap()
 	if err != nil {
 		return specerrors.ValidationErrors{
-			specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to load registry categories: %w", fsys.Path(manifestPath), err)}
+			specerrors.NewStructuredErrorf("file \"%s\" is invalid: failed to load registry categories: %w", fsys.Path(manifestPath), err),
+		}
 	}
 
 	var errs specerrors.ValidationErrors
