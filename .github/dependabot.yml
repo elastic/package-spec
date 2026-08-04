@@ -10,3 +10,8 @@ updates:
     labels:
       - automation
     open-pull-requests-limit: 10
+    cooldown:
+      default-days: 3
+      exclude:
+        - github.com/elastic/elastic-package
+        - github.com/elastic/package-spec/v3
