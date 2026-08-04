@@ -17,7 +17,7 @@ import (
 	"testing"
 
 	"github.com/cucumber/godog"
-	messages "github.com/cucumber/messages/go/v21"
+	messages "github.com/cucumber/messages/go/v34"
 	"golang.org/x/exp/slices"
 	"gopkg.in/yaml.v3"
 )

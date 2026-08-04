@@ -4,8 +4,8 @@ go 1.26.0
 
 require (
 	github.com/Masterminds/semver/v3 v3.5.0
-	github.com/cucumber/godog v0.15.1
-	github.com/cucumber/messages/go/v21 v21.0.1
+	github.com/cucumber/godog v0.16.0
+	github.com/cucumber/messages/go/v34 v34.2.0
 	github.com/elastic/elastic-package v0.125.1
 	github.com/elastic/go-elasticsearch/v9 v9.4.2
 	github.com/elastic/go-licenser v0.4.2
@@ -56,7 +56,7 @@ require (
 	github.com/cloudflare/circl v1.6.3 // indirect
 	github.com/creack/pty v1.1.21 // indirect
 	github.com/creasty/defaults v1.8.0 // indirect
-	github.com/cucumber/gherkin/go/v26 v26.2.0 // indirect
+	github.com/cucumber/gherkin/go/v42 v42.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/dnephin/pflag v1.0.7 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
@@ -88,7 +88,6 @@ require (
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/goccy/go-yaml v1.19.2 // indirect
-	github.com/gofrs/uuid v4.4.0+incompatible // indirect
 	github.com/gomarkdown/markdown v0.0.0-20260217112301-37c66b85d6ab // indirect
 	github.com/google/btree v1.1.3 // indirect
 	github.com/google/gnostic-models v0.7.0 // indirect
@@ -106,7 +105,7 @@ require (
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
-	github.com/hashicorp/go-memdb v1.3.4 // indirect
+	github.com/hashicorp/go-memdb v1.3.5 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.8 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
