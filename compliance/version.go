@@ -14,7 +14,7 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/cucumber/godog"
-	cucumbermessages "github.com/cucumber/messages/go/v21"
+	cucumbermessages "github.com/cucumber/messages/go/v34"
 	"github.com/stretchr/testify/require"
 
 	spec "github.com/elastic/package-spec/v3"
