@@ -6,10 +6,10 @@ require (
 	github.com/Masterminds/semver/v3 v3.5.0
 	github.com/cucumber/godog v0.16.0
 	github.com/cucumber/messages/go/v34 v34.2.0
-	github.com/elastic/elastic-package v0.125.1
+	github.com/elastic/elastic-package v0.126.0
 	github.com/elastic/go-elasticsearch/v9 v9.4.2
 	github.com/elastic/go-licenser v0.4.2
-	github.com/elastic/package-spec/v3 v3.6.5
+	github.com/elastic/package-spec/v3 v3.6.6
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/exp v0.0.0-20251219203646-944ab1f22d93
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
@@ -42,6 +42,7 @@ require (
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/brianvoe/gofakeit/v7 v7.1.2 // indirect
 	github.com/cbroglie/mustache v1.4.0 // indirect
+	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chai2010/gettext-go v1.0.2 // indirect
 	github.com/charmbracelet/bubbles v1.0.0 // indirect
@@ -88,7 +89,7 @@ require (
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/goccy/go-yaml v1.19.2 // indirect
-	github.com/gomarkdown/markdown v0.0.0-20260217112301-37c66b85d6ab // indirect
+	github.com/gomarkdown/markdown v0.0.0-20260614204949-e08cff860f76 // indirect
 	github.com/google/btree v1.1.3 // indirect
 	github.com/google/gnostic-models v0.7.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
@@ -102,6 +103,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.3.15 // indirect
 	github.com/googleapis/gax-go/v2 v2.22.0 // indirect
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674 // indirect
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.29.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
@@ -171,9 +173,13 @@ require (
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.68.0 // indirect
 	go.opentelemetry.io/otel v1.44.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.44.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.44.0 // indirect
 	go.opentelemetry.io/otel/log v0.19.0 // indirect
 	go.opentelemetry.io/otel/metric v1.44.0 // indirect
+	go.opentelemetry.io/otel/sdk v1.44.0 // indirect
 	go.opentelemetry.io/otel/trace v1.44.0 // indirect
+	go.opentelemetry.io/proto/otlp v1.10.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/crypto v0.54.0 // indirect
@@ -187,21 +193,22 @@ require (
 	golang.org/x/term v0.45.0 // indirect
 	golang.org/x/text v0.40.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
-	google.golang.org/adk v1.5.0 // indirect
+	google.golang.org/adk v1.5.1 // indirect
 	google.golang.org/api v0.279.0 // indirect
-	google.golang.org/genai v1.62.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260511170946-3700d4141b60 // indirect
-	google.golang.org/grpc v1.81.0 // indirect
+	google.golang.org/genai v1.66.0 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20260526163538-3dc84a4a5aaa // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260526163538-3dc84a4a5aaa // indirect
+	google.golang.org/grpc v1.82.1 // indirect
 	google.golang.org/protobuf v1.36.12-0.20260120151049-f2248ac996af // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.13.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	helm.sh/helm/v3 v3.21.2 // indirect
-	k8s.io/api v0.36.2 // indirect
+	helm.sh/helm/v3 v3.21.3 // indirect
+	k8s.io/api v0.36.3 // indirect
 	k8s.io/apiextensions-apiserver v0.36.2 // indirect
-	k8s.io/apimachinery v0.36.2 // indirect
-	k8s.io/cli-runtime v0.36.2 // indirect
-	k8s.io/client-go v0.36.2 // indirect
+	k8s.io/apimachinery v0.36.3 // indirect
+	k8s.io/cli-runtime v0.36.3 // indirect
+	k8s.io/client-go v0.36.3 // indirect
 	k8s.io/component-base v0.36.2 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20260317180543-43fb72c5454a // indirect
@@ -213,7 +220,7 @@ require (
 	sigs.k8s.io/kustomize/api v0.21.1 // indirect
 	sigs.k8s.io/kustomize/kyaml v0.21.1 // indirect
 	sigs.k8s.io/randfill v1.0.0 // indirect
-	sigs.k8s.io/structured-merge-diff/v6 v6.3.2 // indirect
+	sigs.k8s.io/structured-merge-diff/v6 v6.3.3 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
 
