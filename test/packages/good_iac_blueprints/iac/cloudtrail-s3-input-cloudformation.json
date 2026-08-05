@@ -1,0 +1,23 @@
+[
+  {
+    "op": "add",
+    "path": "/Resources/ElasticFederatedRole/Properties/Policies/-",
+    "value": {
+      "PolicyName": "ElasticCloudTrailSQSAccess",
+      "PolicyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "sqs:ReceiveMessage",
+              "sqs:DeleteMessage",
+              "sqs:GetQueueAttributes"
+            ],
+            "Resource": "*"
+          }
+        ]
+      }
+    }
+  }
+]
