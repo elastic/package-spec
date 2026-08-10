@@ -5,7 +5,7 @@ go 1.26.0
 require (
 	github.com/Masterminds/semver/v3 v3.5.0
 	github.com/cucumber/godog v0.16.0
-	github.com/cucumber/messages/go/v34 v34.2.0
+	github.com/cucumber/messages/go/v34 v34.2.1
 	github.com/elastic/elastic-package v0.126.0
 	github.com/elastic/go-elasticsearch/v9 v9.4.2
 	github.com/elastic/go-licenser v0.4.2
