@@ -13,7 +13,7 @@ metadata:
 
 spec:
   type: library
-  owner: group:ingest-fp
+  owner: group:Streams
   system: platform-ingest
   lifecycle: production
 
@@ -31,7 +31,7 @@ metadata:
 
 spec:
   type: buildkite-pipeline
-  owner: group:ingest-fp
+  owner: group:Streams
   system: platform-ingest
   implementation:
     apiVersion: buildkite.elastic.dev/v1
@@ -59,7 +59,7 @@ spec:
       teams:
         ecosystem:
           access_level: MANAGE_BUILD_AND_READ
-        ingest-fp:
+        Streams:
           access_level: MANAGE_BUILD_AND_READ
         everyone:
           access_level: READ_ONLY
@@ -77,7 +77,7 @@ metadata:
 
 spec:
   type: buildkite-pipeline
-  owner: group:ingest-fp
+  owner: group:Streams
   system: platform-ingest
   implementation:
     apiVersion: buildkite.elastic.dev/v1
@@ -105,7 +105,7 @@ spec:
       teams:
         ecosystem:
           access_level: MANAGE_BUILD_AND_READ
-        ingest-fp:
+        Streams:
           access_level: MANAGE_BUILD_AND_READ
         everyone:
           access_level: READ_ONLY
