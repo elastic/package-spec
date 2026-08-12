@@ -10,10 +10,10 @@
       link: https://github.com/elastic/package-spec/pull/807
     - description: Extend provider_permissions.permissions items with resource scoping (resources array) and conditional narrowing (conditions object) fields.
       type: enhancement
-      link: TBD
+      link: https://github.com/elastic/package-spec/pull/1225
     - description: Add iac_blueprints field at package, policy_template, input, and data_stream levels for IaC composition contributions via RFC 6902 patch files.
       type: enhancement
-      link: TBD
+      link: https://github.com/elastic/package-spec/pull/1225
 - version: 3.6.6
   changes:
     - description: Add support for mode-aware constructors and validation APIs.
