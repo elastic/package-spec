@@ -1,0 +1,64 @@
+format_version: 3.7.0
+name: good_iac_blueprints
+title: Good package with IaC blueprints
+description: Tests iac_blueprints at package, policy_template, input, and data_stream levels.
+version: 0.0.1
+type: integration
+categories:
+  - aws
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+  elastic:
+    subscription: basic
+# Package-level IaC contribution: always included for any enabled policy template.
+iac_blueprints:
+  - id: aws/federated-identity/account
+    format: cloudformation
+    patches: iac/aws-cloudformation-account.json
+    title: AWS account-level federated identity role
+provider_permissions:
+  - provider: aws
+    description: Bootstrap checks needed by every AWS integration.
+    permissions:
+      - name: sts:GetCallerIdentity
+        description: Verify the IAM identity on startup.
+policy_templates:
+  - name: cloudtrail
+    title: AWS CloudTrail
+    description: Collect AWS CloudTrail events.
+    # Policy-template-level IaC contribution: included when this template is enabled.
+    iac_blueprints:
+      - id: aws/federated-identity/account
+        format: cloudformation
+        patches: iac/cloudtrail-cloudformation.json
+        title: CloudTrail S3 bucket read access
+    inputs:
+      - type: aws-s3
+        title: Collect CloudTrail logs from S3
+        description: Collect CloudTrail events from an S3 bucket.
+        # Input-level IaC contribution: specific to this collection method.
+        iac_blueprints:
+          - id: aws/federated-identity/account
+            format: cloudformation
+            patches: iac/cloudtrail-s3-input-cloudformation.json
+        provider_permissions:
+          - provider: aws
+            description: S3 read access for CloudTrail log bucket.
+            permissions:
+              - name: s3:GetObject
+                resources:
+                  - "arn:aws:s3:::my-cloudtrail-bucket/*"
+              - name: s3:ListBucket
+                resources:
+                  - "arn:aws:s3:::my-cloudtrail-bucket"
+              - name: sqs:ReceiveMessage
+              - name: sqs:DeleteMessage
+              - name: sqs:GetQueueAttributes
+    data_streams:
+      - cloudtrail_logs
+owner:
+  github: elastic/foobar
+  type: elastic

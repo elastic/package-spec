@@ -1,0 +1,50 @@
+format_version: 3.7.0
+name: good_iac_blueprints_input
+title: Good IaC Blueprints Input Package
+description: Tests iac_blueprints at package and policy_template levels in an input package.
+version: 0.0.1
+type: input
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: "^8.0.0"
+  elastic:
+    subscription: "basic"
+# Package-level IaC contribution: always included for any enabled policy template.
+iac_blueprints:
+  - id: aws/federated-identity/account
+    format: cloudformation
+    patches: iac/aws-account-base.json
+    title: AWS account-level federated identity role
+provider_permissions:
+  - provider: aws
+    description: Credentials check on startup.
+    permissions:
+      - name: sts:GetCallerIdentity
+policy_templates:
+  - name: s3_logs
+    type: logs
+    title: S3 Logs
+    description: Collect logs from S3 buckets.
+    input: aws-s3
+    template_path: input.yml.hbs
+    # Policy-template-level IaC contribution for this specific input type.
+    iac_blueprints:
+      - id: aws/federated-identity/account
+        format: cloudformation
+        patches: iac/s3-read-access.json
+        title: S3 read access for log collection
+    provider_permissions:
+      - provider: aws
+        description: Read log objects from S3.
+        permissions:
+          - name: s3:GetObject
+            resources:
+              - "arn:aws:s3:::my-logs-bucket/*"
+          - name: s3:ListBucket
+            resources:
+              - "arn:aws:s3:::my-logs-bucket"
+owner:
+  github: elastic/foobar
+  type: elastic
