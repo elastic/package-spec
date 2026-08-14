@@ -1,0 +1,26 @@
+format_version: 3.7.0
+name: bad_iac_patches_invalid
+title: Bad package with invalid RFC 6902 op
+description: Tests that iac/ JSON patch files with an unrecognized op are rejected.
+version: 0.0.1
+type: integration
+categories:
+  - aws
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+  elastic:
+    subscription: basic
+policy_templates:
+  - name: sample
+    title: Sample logs
+    description: Collect sample logs
+    inputs:
+      - type: logfile
+        title: Collect sample logs from instances
+        description: Collecting sample logs
+owner:
+  github: elastic/foobar
+  type: elastic

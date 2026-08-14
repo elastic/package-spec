@@ -1,0 +1,33 @@
+format_version: 3.7.0
+name: good_iac_folder_input
+title: Good IaC Folder Input Package
+description: Tests optional iac/ folder and iac_blueprints at package and policy_template levels in an input package.
+version: 0.0.1
+type: input
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: "^8.0.0"
+  elastic:
+    subscription: "basic"
+iac_blueprints:
+  - id: aws/federated-identity/account/v1
+    format: cloudformation
+    patches: iac/aws-federated-identity-account.cloudformation.patches.json
+    title: AWS account-level federated identity role
+policy_templates:
+  - name: s3_logs
+    type: logs
+    title: S3 Logs
+    description: Collect logs from S3 buckets.
+    input: aws-s3
+    template_path: input.yml.hbs
+    iac_blueprints:
+      - id: aws/federated-identity/account/v1
+        format: cloudformation
+        patches: iac/aws-federated-identity-account.cloudformation.patches.json
+        title: S3 read access for log collection
+owner:
+  github: elastic/foobar
+  type: elastic

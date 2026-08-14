@@ -1,0 +1,18 @@
+##
+## Folder containing IaC JSON patches and linked or inlined base templates.
+##
+spec:
+  additionalContents: false
+  contents:
+  - description: RFC 6902 JSON Patch contributions applied on top of a linked base template
+    type: file
+    pattern: '^.+\.patches\.json$'
+    contentMediaType: "application/json"
+    required: false
+    $ref: "./patches.spec.yml"
+  - description: Linked or inlined base IaC template (CloudFormation, ARM, etc.)
+    type: file
+    pattern: '^.+\.(cloudformation|arm)\.json$'
+    contentMediaType: "application/json"
+    required: false
+    allowLink: true
