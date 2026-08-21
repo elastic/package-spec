@@ -825,6 +825,50 @@ spec:
                 description:
                   description: Human-readable description of why this permission is needed.
                   type: string
+    iac_blueprints:
+      description: >
+        IaC composition contributions this integration unit makes to a shared canonical blueprint.
+        Pointers to RFC 6902 patch files the cloud-iac-provisioner renderer applies on top of a
+        canonical blueprint to produce one deployable artifact covering all enabled integrations.
+        May be declared at package, policy_template, input, and data_stream levels;
+        contributions across all applicable levels are merged into a single artifact.
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        required:
+          - id
+          - format
+          - patches
+        properties:
+          id:
+            description: >
+              Versioned blueprint identifier in the form <provider>/<trust-model>/<scope>/v<n>,
+              e.g. aws/federated-identity/account/v1.
+            type: string
+            pattern: '^[a-z0-9]+(/[a-z0-9-]+)+/v[0-9]+$'
+            examples:
+              - aws/federated-identity/account/v1
+              - azure/service-principal/subscription/v1
+              - gcp/workload-identity/project/v1
+          format:
+            description: IaC format this patch targets.
+            type: string
+            enum:
+              - cloudformation
+              - arm
+              - terraform
+              - deployment-manager
+              - helm
+              - kustomize
+              - ansible
+              - bicep
+          patches:
+            description: Relative path inside the package to the RFC 6902 JSON Patch file.
+            type: string
+          title:
+            description: Optional human-readable label for this IaC contribution.
+            type: string
   properties:
     format_version:
       description: The version of the package specification format used by this package.
@@ -859,6 +903,8 @@ spec:
       $ref: "#/definitions/conditions"
     provider_permissions:
       $ref: "#/definitions/provider_permissions"
+    iac_blueprints:
+      $ref: "#/definitions/iac_blueprints"
     # requires a conditional JSON schema to update the value depending
     # on the policy_templates length
     policy_templates_behavior:
@@ -1005,6 +1051,8 @@ spec:
                     - credential_type: [cloud_connectors]
                 provider_permissions:
                   $ref: "#/definitions/provider_permissions"
+                iac_blueprints:
+                  $ref: "#/definitions/iac_blueprints"
               required:
                 - title
                 - description
@@ -1033,6 +1081,8 @@ spec:
             $ref: "#/definitions/deprecated"
           provider_permissions:
             $ref: "#/definitions/provider_permissions"
+          iac_blueprints:
+            $ref: "#/definitions/iac_blueprints"
         required:
           - name
           - title
@@ -1101,6 +1151,16 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.7.0
+    patch:
+      - op: remove
+        path: "/definitions/iac_blueprints"
+      - op: remove
+        path: "/properties/iac_blueprints"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/iac_blueprints"
+      - op: remove
+        path: "/properties/policy_templates/items/properties/inputs/items/properties/iac_blueprints"
   - before: 3.6.0
     patch:
       # Input qualifier (named inputs).

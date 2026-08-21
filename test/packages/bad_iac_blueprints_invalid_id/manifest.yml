@@ -1,0 +1,30 @@
+format_version: 3.7.0
+name: bad_iac_blueprints_invalid_id
+title: Bad package with iac_blueprints invalid id
+description: Tests that iac_blueprints ids without a version suffix are rejected.
+version: 0.0.1
+type: integration
+categories:
+  - aws
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+  elastic:
+    subscription: basic
+iac_blueprints:
+  - id: aws/federated-identity/account
+    format: cloudformation
+    patches: iac/aws-federated-identity-account.cloudformation.patches.json
+policy_templates:
+  - name: sample
+    title: Sample logs
+    description: Collect sample logs
+    inputs:
+      - type: logfile
+        title: Collect sample logs from instances
+        description: Collecting sample logs
+owner:
+  github: elastic/foobar
+  type: elastic
