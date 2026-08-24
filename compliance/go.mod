@@ -16,7 +16,7 @@ require (
 	golang.org/x/tools v0.49.0
 	gopkg.in/yaml.v3 v3.0.1
 	gotest.tools/gotestsum v1.13.0
-	honnef.co/go/tools v0.7.0
+	honnef.co/go/tools v0.8.0
 )
 
 require (
