@@ -17,6 +17,7 @@
 | [SVR00007]          | Kibana tag is duplicate               |
 | [SVR00008]          | Pipeline failure handler must set event.kind    |
 | [SVR00009]          | Pipeline failure handler must set error.message |
+| [SVR00011]          | Grok pattern contains text that is not a token  |
 
 ## JSE00001 - Rename message to event.original
 [JSE00001]: #jse00001---rename-message-to-eventoriginal
@@ -135,3 +136,40 @@ on_failure:
         in pipeline '{{{ _ingest.pipeline }}}'
         failed with message '{{{ _ingest.on_failure_message }}}'
 ```
+
+## SVR00011 - Grok pattern contains text that is not a token
+[SVR00011]: #svr00011---grok-pattern-contains-text-that-is-not-a-token
+
+**Available since [3.7.0](https://github.com/elastic/package-spec/releases/tag/v3.7.0)**
+(reported as a warning for earlier spec versions)
+
+Every `%{` in a grok processor's `patterns` and `pattern_definitions` must start a
+grok token: `%{NAME}`, `%{NAME:field}`, `%{NAME:field:type}` or `%{NAME=definition}`,
+where `NAME` is letters, digits and underscores and `field` may also contain `.`, `-`,
+`@`, `[`, `]` and `:`.
+
+Grok does not report text that fails to parse as a token. It leaves it in the regular
+expression as-is, so the processor compiles and runs, and the capture the author wrote
+simply never exists. Because the line then either never matches or matches without the
+field, and because a catch-all pattern or `ignore_failure: true` is usually nearby, nothing
+downstream reports the problem either.
+
+```yaml
+# Reported: `|` cannot appear in a pattern name, so `%{USERNAME` is literal text and the
+# `|` becomes an alternation of the whole pattern.
+- '^Logout handler : %{DATA}, for user <%{USERNAME|EMAILADDRESS:user.name}>$'
+
+# Reported: the colon between the pattern name and the field is missing.
+- '^Primary authentication %{WORD_tmp.outcome}'
+
+# Reported: the token is never closed, `\]` is not a `}`.
+- '%{GREEDYDATA:log.msg.error\]'
+
+# Accepted.
+- '^Logout handler : %{DATA}, for user <(?:%{EMAILADDRESS:user.name}|%{USERNAME:user.name})>$'
+- '^Primary authentication %{WORD:_tmp.outcome}'
+- '%{GREEDYDATA:log.msg.error}\]'
+```
+
+A pattern that needs to match a literal `%{` in the input can exclude this check in
+`validation.yml`.
