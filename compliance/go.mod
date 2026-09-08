@@ -6,7 +6,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.5.0
 	github.com/cucumber/godog v0.16.0
 	github.com/cucumber/messages/go/v34 v34.2.1
-	github.com/elastic/elastic-package v0.126.3
+	github.com/elastic/elastic-package v0.126.4
 	github.com/elastic/go-elasticsearch/v9 v9.5.2
 	github.com/elastic/go-licenser v0.4.2
 	github.com/elastic/package-spec/v3 v3.6.6
@@ -40,7 +40,7 @@ require (
 	github.com/bitfield/gotestdox v0.2.2 // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
 	github.com/brianvoe/gofakeit/v7 v7.1.2 // indirect
-	github.com/cbroglie/mustache v1.4.1 // indirect
+	github.com/cbroglie/mustache v1.4.2 // indirect
 	github.com/cenkalti/backoff/v5 v5.0.3 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/chai2010/gettext-go v1.0.2 // indirect
