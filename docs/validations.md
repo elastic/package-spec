@@ -17,6 +17,7 @@
 | [SVR00007]          | Kibana tag is duplicate               |
 | [SVR00008]          | Pipeline failure handler must set event.kind    |
 | [SVR00009]          | Pipeline failure handler must set error.message |
+| [SVR00010]          | Inputs of the same type must be named           |
 | [SVR00011]          | Grok pattern contains text that is not a token  |
 
 ## JSE00001 - Rename message to event.original
@@ -135,6 +136,27 @@ on_failure:
         with tag '{{{ _ingest.on_failure_processor_tag }}}'
         in pipeline '{{{ _ingest.pipeline }}}'
         failed with message '{{{ _ingest.on_failure_message }}}'
+```
+
+## SVR00010 - Inputs of the same type must be named
+[SVR00010]: #svr00010---inputs-of-the-same-type-must-be-named
+
+**Available since [3.6.1](https://github.com/elastic/package-spec/releases/tag/v3.6.1)**
+
+When a policy template declares more than one input of the same `type`, every one of
+them must have a `name`. Data streams refer to inputs by type, so without names Fleet
+cannot tell which of the inputs a stream belongs to. This is common with `otelcol`.
+
+```yaml
+policy_templates:
+  - name: nginx
+    inputs:
+      - type: otelcol
+        name: nginx_metrics
+        title: Nginx metrics
+      - type: otelcol
+        name: nginx_logs
+        title: Nginx logs
 ```
 
 ## SVR00011 - Grok pattern contains text that is not a token
