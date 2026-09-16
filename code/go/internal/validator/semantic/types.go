@@ -161,6 +161,9 @@ type field struct {
 	MetricType string `yaml:"metric_type"`
 	Dimension  bool   `yaml:"dimension"`
 	External   string `yaml:"external"`
+	DocValues *bool `yaml:"doc_values"`
+	Enabled   *bool `yaml:"enabled"`
+	Dynamic   any   `yaml:"dynamic"`
 
 	Runtime runtimeField `yaml:"runtime"`
 
