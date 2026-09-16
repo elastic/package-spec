@@ -13,8 +13,8 @@ github.com/bitfield/gotestdox v0.2.2 h1:x6RcPAbBbErKLnapz1QeAlf3ospg8efBsedU93CD
 github.com/bitfield/gotestdox v0.2.2/go.mod h1:D+gwtS0urjBrzguAkTM2wodsTQYFHdpx8eqRJ3N+9pY=
 github.com/boumenot/gocover-cobertura v1.5.0 h1:S2eXZ5snlTl+IGLXiM0litlpy9gf8AU8NagMaxX3nZM=
 github.com/boumenot/gocover-cobertura v1.5.0/go.mod h1:iB1/+oDwfRlsDzABskkid0cNdQ1A+u3O91XUJZWqgtg=
-github.com/creasty/defaults v1.8.0 h1:z27FJxCAa0JKt3utc0sCImAEb+spPucmKoOdLHvHYKk=
-github.com/creasty/defaults v1.8.0/go.mod h1:iGzKe6pbEHnpMPtfDXZEr0NVxWnPTjb1bbDy08fPzYM=
+github.com/creasty/defaults v1.9.0 h1:dTNCTYsrgvPWvT1Lk3ERNEiMEq1U94ocvECpsU2lZS4=
+github.com/creasty/defaults v1.9.0/go.mod h1:pbk1HMs23Fu3DhI1oW9qgcZkWv+IqV9i4j9+UwrUIJk=
 github.com/dnephin/pflag v1.0.7 h1:oxONGlWxhmUct0YzKTgrpQv9AUA1wtPBn7zuSjJqptk=
 github.com/dnephin/pflag v1.0.7/go.mod h1:uxE91IoWURlOiTUIA8Mq5ZZkAv3dPUfZNaT80Zm7OQE=
 github.com/elastic/go-licenser v0.4.2 h1:bPbGm8bUd8rxzSswFOqvQh1dAkKGkgAmrPxbUi+Y9+A=
