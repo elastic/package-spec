@@ -1194,6 +1194,14 @@ func TestValidateIngestPipelines(t *testing.T) {
 				`pipeline on_failure error.message must include "_ingest.pipeline" (SVR00009)`,
 			},
 		},
+		"bad_pipeline_grok": {
+			"example": []string{
+				`grok processor at line 12 has "%{USERNAME|EMAILADDRESS:user.name}" in patterns[0], which is not a grok token and is matched as literal text (SVR00011)`,
+				`grok processor at line 18 has "%{WORD_tmp.outcome}" in patterns[1], which is not a grok token and is matched as literal text (SVR00011)`,
+				`grok processor at line 25 has "%{NONNEGINT:log.syslog.priority>" in pattern_definitions["ECS_SYSLOG_PRI"], which is not a grok token and is matched as literal text (SVR00011)`,
+				`grok processor at line 32 has "%{IP related.ip}" in patterns[0], which is not a grok token and is matched as literal text (SVR00011)`,
+			},
+		},
 	}
 
 	for pkgName, pipelines := range tests {
