@@ -8,6 +8,9 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: Add `blueprint` package type for hosting canonical IaC base blueprints served to the cloud-iac-provisioner renderer.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1224
 - version: 3.6.6
   changes:
     - description: Add support for mode-aware constructors and validation APIs.

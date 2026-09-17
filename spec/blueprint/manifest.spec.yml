@@ -1,0 +1,54 @@
+##
+## Describes the specification for the blueprint package's main manifest.yml file
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  properties:
+    format_version:
+      description: The version of the package specification format used by this package.
+      $ref: "../integration/manifest.spec.yml#/definitions/version"
+    name:
+      description: The name of the package.
+      type: string
+      pattern: '^[a-z0-9_]+$'
+      examples:
+      - elastic_iac_blueprints
+    title:
+      $ref: "../integration/manifest.spec.yml#/definitions/title"
+    description:
+      $ref: "../integration/manifest.spec.yml#/definitions/description"
+    version:
+      description: The version of the package.
+      $ref: "../integration/manifest.spec.yml#/definitions/version"
+    source:
+      $ref: "../integration/manifest.spec.yml#/definitions/source"
+    type:
+      description: The type of package.
+      type: string
+      enum:
+      - blueprint
+      examples:
+      - blueprint
+    conditions:
+      description: Conditions under which this package can be installed.
+      type: object
+      additionalProperties: false
+      properties:
+        elastic:
+          $ref: "../integration/manifest.spec.yml#/definitions/conditions/properties/elastic"
+        kibana:
+          $ref: "../integration/manifest.spec.yml#/definitions/conditions/properties/kibana"
+    owner:
+      $ref: "../integration/manifest.spec.yml#/definitions/owner"
+    deprecated:
+      $ref: "../integration/manifest.spec.yml#/definitions/deprecated"
+  required:
+  - format_version
+  - name
+  - title
+  - description
+  - version
+  - type
+  - owner

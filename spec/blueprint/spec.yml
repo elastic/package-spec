@@ -1,0 +1,53 @@
+##
+## Entrypoint of "blueprint packages" specification.
+##
+## A blueprint package is a versioned bundle of canonical Infrastructure-as-Code (IaC)
+## base templates ("blueprints"). Unlike other package types it is not installed into
+## Kibana, Elasticsearch, or the Elastic Agent — it is fetched by the cloud-iac-provisioner
+## renderer, which applies each enabled integration's RFC 6902 `iac_blueprints` patches on
+## top of the canonical blueprint to produce one deployable artifact.
+##
+## Describes the folders and files that make up a package.
+##
+spec:
+  additionalContents: false
+  totalContentsLimit: 65535
+  totalSizeLimit: 250MB
+  sizeLimit: 150MB
+  configurationSizeLimit: 5MB
+  relativePathSizeLimit: 3MB
+  contents:
+    - description: The main package manifest file
+      type: file
+      contentMediaType: "application/x-yaml"
+      sizeLimit: 5MB
+      name: "manifest.yml"
+      required: true
+      $ref: "./manifest.spec.yml"
+    - description: The package's CHANGELOG file
+      type: file
+      contentMediaType: "application/x-yaml"
+      name: "changelog.yml"
+      required: true
+      $ref: "../integration/changelog.spec.yml"
+    - description: The package's license file
+      type: file
+      contentMediaType: "text/plain"
+      name: "LICENSE.txt"
+      required: false
+    - description: Folder containing documentation for the package
+      type: folder
+      name: docs
+      required: true
+      $ref: "../integration/docs/spec.yml"
+    - description: Folder containing the canonical IaC base blueprints served to the renderer
+      type: folder
+      name: blueprints
+      required: true
+      $ref: "./blueprints/spec.yml"
+    - description: Configuration file to process the results returned from the package validation. This file is just for package validation and it should be ignored when installing or using the package.
+      type: file
+      contentMediaType: "application/x-yaml"
+      name: "validation.yml"
+      required: false
+      $ref: "../integration/validation.spec.yml"
