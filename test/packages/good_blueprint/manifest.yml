@@ -1,0 +1,16 @@
+format_version: 3.7.0
+name: good_blueprint
+title: Good blueprint package
+description: Tests the blueprint package type that hosts canonical IaC base blueprints.
+version: 0.0.1
+type: blueprint
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+  elastic:
+    subscription: basic
+owner:
+  github: elastic/foobar
+  type: elastic

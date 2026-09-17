@@ -1,0 +1,19 @@
+title: AWS CloudTrail Logs
+type: logs
+# Data-stream-level IaC contribution: S3 notification wiring specific to this stream.
+iac_blueprints:
+  - id: aws/federated-identity/account
+    format: cloudformation
+    patches: iac/cloudtrail-logs-ds-cloudformation.json
+    title: CloudTrail S3 event notification
+provider_permissions:
+  - provider: aws
+    description: CloudTrail-specific permissions for this data stream.
+    permissions:
+      - name: cloudtrail:LookupEvents
+        resources:
+          - "*"
+streams:
+  - input: aws-s3
+    title: CloudTrail logs from S3
+    description: Collect CloudTrail events from an S3 bucket.

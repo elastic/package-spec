@@ -88,6 +88,8 @@ spec:
             $ref: "../integration/manifest.spec.yml#/definitions/sections"
           provider_permissions:
             $ref: "../integration/manifest.spec.yml#/definitions/provider_permissions"
+          iac_blueprints:
+            $ref: "../integration/manifest.spec.yml#/definitions/iac_blueprints"
           input:
             type: string
             examples:
@@ -152,6 +154,8 @@ spec:
       $ref: "../integration/manifest.spec.yml#/definitions/sections"
     provider_permissions:
       $ref: "../integration/manifest.spec.yml#/definitions/provider_permissions"
+    iac_blueprints:
+      $ref: "../integration/manifest.spec.yml#/definitions/iac_blueprints"
     owner:
       $ref: "../integration/manifest.spec.yml#/definitions/owner"
     agent:
@@ -178,6 +182,12 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.7.0
+    patch:
+      - op: remove
+        path: "/properties/policy_templates/items/properties/iac_blueprints"
+      - op: remove
+        path: "/properties/iac_blueprints"
   - before: 3.6.0
     patch:
       - op: remove
