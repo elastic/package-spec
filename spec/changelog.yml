@@ -8,6 +8,16 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: >
+        Add logsdb_columnar and columnar as valid elasticsearch.index_mode values for data streams.
+        logsdb_columnar (tech preview) is the logs-profile flavor of columnar storage: doc-values only,
+        no inverted indexes for non-text fields, default sort on host.name / @timestamp.
+        columnar is the general-purpose base mode without the logs-profile defaults.
+        Packages using either columnar mode are validated for known incompatibilities:
+        doc_values: false and mapping-level runtime fields are hard errors;
+        nested types, dynamic: false, and enabled: false on objects are warnings (filterable via SVR00011–SVR00013).
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1250
 - version: 3.6.6
   changes:
     - description: Add support for mode-aware constructors and validation APIs.

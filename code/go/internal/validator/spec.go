@@ -264,6 +264,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateNoExternalFields, modes: []Mode{BuildMode}},
 		{fn: semantic.ValidateStreamInputBundled, modes: []Mode{BuildMode},
 			types: []string{"integration"}},
+		{fn: warnOn(semantic.ValidateColumnarModeConstraints), types: []string{"integration"}, since: semver.MustParse("3.7.0")},
 	}
 
 	var validationRules validationRules

@@ -295,9 +295,12 @@ spec:
         This setting must be installed in the composable index template, not in the package component templates.
       type: string
       enum:
-      - "time_series" # Enables time series data streams https://www.elastic.co/guide/en/elasticsearch/reference/master/tsds.html
+      - "time_series"     # Enables time series data streams (TSDB)
+      - "logsdb_columnar" # Tech preview: logsdb profile + columnar storage (no inverted indexes for non-text fields)
+      - "columnar"        # Tech preview: base columnar mode (no logs-profile defaults)
       examples:
       - "time_series"
+      - "logsdb_columnar"
     elasticsearch_index_template:
       description: Index template definition
       type: object
@@ -772,6 +775,12 @@ spec:
 versions:
   - before: 3.7.0
     patch:
+      # Remove columnar (index 2) and logsdb_columnar (index 1) added in 3.7.0.
+      # Must be removed in reverse order to avoid index shift.
+      - op: remove
+        path: /definitions/elasticsearch_index_mode/enum/2
+      - op: remove
+        path: /definitions/elasticsearch_index_mode/enum/1
       # Variable-level scope migration.
       - op: remove
         path: /definitions/vars/items/properties/migrate_from

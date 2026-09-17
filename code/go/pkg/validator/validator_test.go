@@ -74,6 +74,13 @@ func Test_ValidateFromPath(t *testing.T) {
 		"good_provider_permissions_input":        {},
 		"good_integration_group":                 {},
 		"good_input_group":                       {},
+		"good_columnar_index_mode":               {},
+		"bad_columnar_doc_values": {
+			"data_stream/logs/fields/base-fields.yml",
+			[]string{
+				`field "message" has doc_values set to false, which is rejected by Elasticsearch in columnar index mode`,
+			},
+		},
 		"bad_integration_group": {
 			"manifest.yml",
 			[]string{
