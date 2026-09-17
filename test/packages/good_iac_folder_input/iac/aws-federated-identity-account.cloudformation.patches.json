@@ -1,0 +1,18 @@
+[
+  {
+    "op": "add",
+    "path": "/Resources/ElasticFederatedRole/Properties/AssumeRolePolicyDocument/Statement/-",
+    "value": {
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::{{AccountId}}:oidc-provider/id.elastic.co"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "id.elastic.co:aud": "{{ElasticConnectorAudience}}"
+        }
+      }
+    }
+  }
+]

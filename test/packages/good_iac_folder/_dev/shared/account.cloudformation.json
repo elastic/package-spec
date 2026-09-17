@@ -1,0 +1,12 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": Minimal CloudFormation template used as a linked IaC base.",
+  "Resources": {
+    "ElasticFederatedRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": "elastic-federated-role"
+      }
+    }
+  }
+}

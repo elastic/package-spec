@@ -1,0 +1,41 @@
+format_version: 3.7.0
+name: good_iac_folder
+title: Good package with iac folder
+description: Tests optional iac/ folder JSON patches, linked base templates, and iac_blueprints.
+version: 0.0.1
+type: integration
+categories:
+  - aws
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+  elastic:
+    subscription: basic
+iac_blueprints:
+  - id: aws/federated-identity/account/v1
+    format: cloudformation
+    patches: iac/aws-federated-identity-account.cloudformation.patches.json
+    title: AWS account-level federated identity role
+policy_templates:
+  - name: sample
+    title: Sample logs
+    description: Collect sample logs.
+    iac_blueprints:
+      - id: aws/federated-identity/account/v1
+        format: cloudformation
+        patches: iac/aws-federated-identity-account.cloudformation.patches.json
+    inputs:
+      - type: logfile
+        title: Collect sample logs
+        description: Collecting sample logs.
+        iac_blueprints:
+          - id: aws/federated-identity/account/v1
+            format: cloudformation
+            patches: iac/aws-federated-identity-account.cloudformation.patches.json
+    data_streams:
+      - sample_logs
+owner:
+  github: elastic/foobar
+  type: elastic

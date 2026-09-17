@@ -1,0 +1,10 @@
+title: Sample Logs
+type: logs
+iac_blueprints:
+  - id: aws/federated-identity/account/v1
+    format: cloudformation
+    patches: iac/aws-federated-identity-account.cloudformation.patches.json
+streams:
+  - input: logfile
+    title: Sample logs
+    description: Collect sample logs.

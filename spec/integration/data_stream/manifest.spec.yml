@@ -766,12 +766,16 @@ spec:
       $ref: "../../integration/manifest.spec.yml#/definitions/deprecated"
     provider_permissions:
       $ref: "../../integration/manifest.spec.yml#/definitions/provider_permissions"
+    iac_blueprints:
+      $ref: "../../integration/manifest.spec.yml#/definitions/iac_blueprints"
   required:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
   - before: 3.7.0
     patch:
+      - op: remove
+        path: "/properties/iac_blueprints"
       # Variable-level scope migration.
       - op: remove
         path: /definitions/vars/items/properties/migrate_from

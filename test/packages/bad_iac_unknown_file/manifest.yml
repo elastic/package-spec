@@ -1,0 +1,26 @@
+format_version: 3.7.0
+name: bad_iac_unknown_file
+title: Bad package with unknown iac folder file
+description: Tests that files in iac/ that do not match allowed patterns are rejected.
+version: 0.0.1
+type: integration
+categories:
+  - aws
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+  elastic:
+    subscription: basic
+policy_templates:
+  - name: sample
+    title: Sample logs
+    description: Collect sample logs
+    inputs:
+      - type: logfile
+        title: Collect sample logs from instances
+        description: Collecting sample logs
+owner:
+  github: elastic/foobar
+  type: elastic
