@@ -19,6 +19,11 @@ import (
 // implementation in Elasticsearch. Indexing such a field into a columnar data stream
 // causes ES to reject the index template at PUT time.
 // Source: FieldMapper.calculateSyntheticSourceMode / IndexMode.validateAllFieldsReconstructableFromDocValues.
+//
+// This check is defensive: none of these types are currently allowed by the `type` enum in
+// spec/integration/data_stream/fields/fields.spec.yml, so JSON-schema validation rejects them
+// before this semantic validator runs. It exists to guard against a future enum expansion
+// accidentally admitting a type that columnar mode cannot store.
 var columnarUnsupportedTypes = map[string]bool{
 	"completion":         true,
 	"search_as_you_type": true,

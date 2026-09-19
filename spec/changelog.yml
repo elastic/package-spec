@@ -14,7 +14,8 @@
         no inverted indexes for non-text fields, default sort on host.name / @timestamp.
         columnar is the general-purpose base mode without the logs-profile defaults.
         Packages using either columnar mode are validated for known incompatibilities:
-        doc_values: false and mapping-level runtime fields are hard errors;
+        doc_values: false, mapping-level runtime fields, copy_to, keyword fields with a normalizer,
+        and field types without synthetic-source support are hard errors;
         nested types, dynamic: false, and enabled: false on objects are warnings (filterable via SVR00011–SVR00013).
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1250
