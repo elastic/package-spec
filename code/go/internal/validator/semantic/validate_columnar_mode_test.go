@@ -5,10 +5,14 @@
 package semantic
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
+	"github.com/elastic/package-spec/v3/code/go/internal/fspath"
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
@@ -45,12 +49,21 @@ func TestIsColumnarIndexMode(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.mode, func(t *testing.T) {
-			switch c.mode {
-			case "logsdb_columnar", "columnar":
-				assert.True(t, c.want)
-			default:
-				assert.False(t, c.want)
+			tempDir := t.TempDir()
+			dsDir := filepath.Join(tempDir, "data_stream", "logs")
+			require.NoError(t, os.MkdirAll(dsDir, 0755))
+
+			var manifest []byte
+			if c.mode == "" {
+				manifest = []byte("{}\n")
+			} else {
+				manifest = []byte("elasticsearch:\n  index_mode: " + c.mode + "\n")
 			}
+			require.NoError(t, os.WriteFile(filepath.Join(dsDir, "manifest.yml"), manifest, 0644))
+
+			got, err := isColumnarIndexMode(fspath.DirFS(tempDir), "logs")
+			require.NoError(t, err)
+			assert.Equal(t, c.want, got)
 		})
 	}
 }
@@ -111,6 +124,47 @@ func TestCheckColumnarField(t *testing.T) {
 		{
 			title: "enabled true is fine",
 			f:     field{Name: "obj", Type: "object", Enabled: boolPtr(true)},
+		},
+		{
+			title:    "copy_to is a hard error",
+			f:        field{Name: "source.address", Type: "keyword", CopyTo: "source.ip"},
+			wantErrs: true,
+			wantCode: specerrors.UnassignedCode,
+		},
+		{
+			title:    "copy_to as slice is a hard error",
+			f:        field{Name: "source.address", Type: "keyword", CopyTo: []any{"source.ip", "host.ip"}},
+			wantErrs: true,
+			wantCode: specerrors.UnassignedCode,
+		},
+		{
+			title:    "keyword with normalizer is a hard error",
+			f:        field{Name: "status", Type: "keyword", Normalizer: "lowercase"},
+			wantErrs: true,
+			wantCode: specerrors.UnassignedCode,
+		},
+		{
+			title:    "completion type is a hard error",
+			f:        field{Name: "suggest", Type: "completion"},
+			wantErrs: true,
+			wantCode: specerrors.UnassignedCode,
+		},
+		{
+			title:    "search_as_you_type is a hard error",
+			f:        field{Name: "title", Type: "search_as_you_type"},
+			wantErrs: true,
+			wantCode: specerrors.UnassignedCode,
+		},
+		{
+			title:    "percolator is a hard error",
+			f:        field{Name: "query", Type: "percolator"},
+			wantErrs: true,
+			wantCode: specerrors.UnassignedCode,
+		},
+		{
+			title:    "non-keyword normalizer is ignored",
+			f:        field{Name: "text_field", Type: "text", Normalizer: "something"},
+			wantErrs: false,
 		},
 	}
 

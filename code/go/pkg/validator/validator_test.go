@@ -74,11 +74,24 @@ func Test_ValidateFromPath(t *testing.T) {
 		"good_provider_permissions_input":        {},
 		"good_integration_group":                 {},
 		"good_input_group":                       {},
-		"good_columnar_index_mode":               {},
+		"good_columnar_index_mode": {},
+		"good_columnar_base_mode":  {},
 		"bad_columnar_doc_values": {
 			"data_stream/logs/fields/base-fields.yml",
 			[]string{
 				`field "message" has doc_values set to false, which is rejected by Elasticsearch in columnar index mode`,
+			},
+		},
+		"bad_columnar_copy_to": {
+			"data_stream/logs/fields/base-fields.yml",
+			[]string{
+				`field "short_message" has copy_to set, which prevents synthetic source reconstruction in columnar index mode; use an ingest pipeline to copy the value instead`,
+			},
+		},
+		"bad_columnar_normalizer": {
+			"data_stream/logs/fields/base-fields.yml",
+			[]string{
+				`field "status" is a keyword field with a normalizer, which prevents synthetic source reconstruction in columnar index mode; remove the normalizer or apply the transformation in an ingest pipeline`,
 			},
 		},
 		"bad_integration_group": {

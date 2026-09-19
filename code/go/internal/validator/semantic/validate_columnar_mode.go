@@ -15,10 +15,24 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
+// columnarUnsupportedTypes is the set of field types that have no synthetic-source
+// implementation in Elasticsearch. Indexing such a field into a columnar data stream
+// causes ES to reject the index template at PUT time.
+// Source: FieldMapper.calculateSyntheticSourceMode / IndexMode.validateAllFieldsReconstructableFromDocValues.
+var columnarUnsupportedTypes = map[string]bool{
+	"completion":         true,
+	"search_as_you_type": true,
+	"token_count":        true,
+	"rank_feature":       true,
+	"rank_features":      true,
+	"percolator":         true,
+}
+
 // ValidateColumnarModeConstraints checks data streams using logsdb_columnar or columnar
 // index modes for incompatible field settings. Hard errors (doc_values: false,
-// mapping-level runtime fields) always fail. Warnings (nested types, dynamic/enabled: false)
-// are filterable via their SVR codes and behave as warnings when the caller uses warnOn.
+// mapping-level runtime fields, copy_to, keyword+normalizer, unsupported types) always
+// fail. Warnings (nested types, dynamic/enabled: false) are filterable via their SVR
+// codes and behave as warnings when the caller uses warnOn.
 func ValidateColumnarModeConstraints(fsys fspath.FS) specerrors.ValidationErrors {
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
@@ -133,6 +147,32 @@ func checkColumnarField(meta fieldFileMetadata, f field) specerrors.ValidationEr
 		errs = append(errs, specerrors.NewStructuredErrorf(
 			`file %q is invalid: field %q has doc_values set to false, which is rejected by Elasticsearch in columnar index mode`,
 			meta.fullFilePath, f.Name,
+		))
+	}
+
+	// copy_to prevents synthetic source reconstruction (FieldMapper.calculateSyntheticSourceMode).
+	if f.CopyTo != nil {
+		errs = append(errs, specerrors.NewStructuredErrorf(
+			`file %q is invalid: field %q has copy_to set, which prevents synthetic source reconstruction in columnar index mode; `+
+				`use an ingest pipeline to copy the value instead`,
+			meta.fullFilePath, f.Name,
+		))
+	}
+
+	// keyword with normalizer prevents synthetic source reconstruction (KeywordFieldMapper).
+	if f.Type == "keyword" && f.Normalizer != "" {
+		errs = append(errs, specerrors.NewStructuredErrorf(
+			`file %q is invalid: field %q is a keyword field with a normalizer, which prevents synthetic source reconstruction in columnar index mode; `+
+				`remove the normalizer or apply the transformation in an ingest pipeline`,
+			meta.fullFilePath, f.Name,
+		))
+	}
+
+	// Types with no synthetic-source implementation are rejected by ES at template PUT time.
+	if columnarUnsupportedTypes[f.Type] {
+		errs = append(errs, specerrors.NewStructuredErrorf(
+			`file %q is invalid: field %q is of type %q, which is not supported in columnar index mode`,
+			meta.fullFilePath, f.Name, f.Type,
 		))
 	}
 
