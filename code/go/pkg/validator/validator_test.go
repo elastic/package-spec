@@ -86,6 +86,21 @@ func Test_ValidateFromPath(t *testing.T) {
 				"field group: Does not match pattern '^[a-z0-9_]+$'",
 			},
 		},
+		"good_iac_blueprints":       {},
+		"good_iac_blueprints_input": {},
+		"bad_iac_blueprints_missing_required": {
+			"manifest.yml",
+			[]string{
+				`field iac_blueprints.0: format is required`,
+				`field iac_blueprints.0: patches is required`,
+			},
+		},
+		"bad_iac_blueprints_invalid_format": {
+			"manifest.yml",
+			[]string{
+				`field iac_blueprints.0.format: iac_blueprints.0.format must be one of the following: "cloudformation", "arm", "terraform", "deployment-manager", "helm", "kustomize", "ansible", "bicep"`,
+			},
+		},
 		"bad_duration_vars": {
 			"manifest.yml",
 			[]string{

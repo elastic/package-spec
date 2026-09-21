@@ -6,6 +6,11 @@ provider_permissions:
     description: EC2 describe calls for instance metrics.
     permissions:
       - name: ec2:DescribeInstances
+        resources:
+          - "arn:aws:ec2:*:*:instance/*"
+        conditions:
+          StringEquals:
+            ec2:Region: "us-east-1"
       - name: ec2:DescribeInstanceStatus
 streams:
   - input: aws/metrics
