@@ -7,7 +7,7 @@ require (
 	github.com/PaesslerAG/jsonpath v0.1.1
 	github.com/aymerick/raymond v2.0.2+incompatible
 	github.com/boumenot/gocover-cobertura v1.5.0
-	github.com/creasty/defaults v1.10.0
+	github.com/creasty/defaults v1.11.0
 	github.com/elastic/go-licenser v0.4.2
 	github.com/elastic/gojsonschema v1.2.2
 	github.com/elastic/kbncontent v0.1.4
