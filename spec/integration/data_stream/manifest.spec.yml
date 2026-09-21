@@ -728,6 +728,17 @@ spec:
       properties:
         index_mode:
           $ref: "#/definitions/elasticsearch_index_mode"
+        columnar:
+          description: Columnar index mode readiness for this data stream.
+          type: object
+          additionalProperties: false
+          properties:
+            supported:
+              description: >
+                Declares that this data stream's mappings are compatible with columnar index modes.
+                Fleet uses it to enable the per-data-stream columnar opt-in. The columnar compatibility
+                validator runs when this is true, even if index_mode is not columnar.
+              type: boolean
         index_template:
           $ref: "#/definitions/elasticsearch_index_template"
         privileges:
@@ -775,6 +786,9 @@ spec:
 versions:
   - before: 3.7.0
     patch:
+      # Remove the columnar readiness flag added in 3.7.0.
+      - op: remove
+        path: /properties/elasticsearch/properties/columnar
       # Remove columnar (index 2) and logsdb_columnar (index 1) added in 3.7.0.
       # Must be removed in reverse order to avoid index shift.
       - op: remove

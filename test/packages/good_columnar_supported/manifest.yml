@@ -1,0 +1,24 @@
+format_version: 3.7.0
+name: good_columnar_supported
+title: Good package declaring columnar readiness
+description: Tests elasticsearch.columnar.supported on a data stream that does not set a columnar index_mode.
+version: 1.0.0-beta1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: "^9.5.0"
+  elastic:
+    subscription: basic
+policy_templates:
+  - name: logs
+    title: Logs
+    description: Collect logs
+    inputs:
+      - type: logfile
+        title: Collect logs from files
+        description: Collecting logs from log files
+owner:
+  github: elastic/obs-infraobs-integrations
+  type: elastic

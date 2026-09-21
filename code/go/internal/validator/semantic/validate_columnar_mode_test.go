@@ -36,32 +36,52 @@ func TestDynamicIsFalse(t *testing.T) {
 	}
 }
 
-func TestIsColumnarIndexMode(t *testing.T) {
+func TestIsColumnarEnabled(t *testing.T) {
 	cases := []struct {
-		mode string
-		want bool
+		title    string
+		manifest string
+		want     bool
 	}{
-		{"logsdb_columnar", true},
-		{"columnar", true},
-		{"logsdb", false},
-		{"time_series", false},
-		{"", false},
+		{title: "logsdb_columnar", manifest: "elasticsearch:\n  index_mode: logsdb_columnar\n", want: true},
+		{title: "columnar", manifest: "elasticsearch:\n  index_mode: columnar\n", want: true},
+		{title: "logsdb", manifest: "elasticsearch:\n  index_mode: logsdb\n", want: false},
+		{title: "time_series", manifest: "elasticsearch:\n  index_mode: time_series\n", want: false},
+		{title: "empty manifest", manifest: "{}\n", want: false},
+		{
+			title:    "columnar supported without index mode",
+			manifest: "elasticsearch:\n  columnar:\n    supported: true\n",
+			want:     true,
+		},
+		{
+			title:    "columnar supported false without index mode",
+			manifest: "elasticsearch:\n  columnar:\n    supported: false\n",
+			want:     false,
+		},
+		{
+			title:    "columnar supported false with columnar index mode",
+			manifest: "elasticsearch:\n  index_mode: columnar\n  columnar:\n    supported: false\n",
+			want:     true,
+		},
+		{
+			title:    "columnar supported with unrelated index mode",
+			manifest: "elasticsearch:\n  index_mode: time_series\n  columnar:\n    supported: true\n",
+			want:     true,
+		},
+		{
+			title:    "empty columnar object",
+			manifest: "elasticsearch:\n  columnar: {}\n",
+			want:     false,
+		},
 	}
 	for _, c := range cases {
-		t.Run(c.mode, func(t *testing.T) {
+		t.Run(c.title, func(t *testing.T) {
 			tempDir := t.TempDir()
 			dsDir := filepath.Join(tempDir, "data_stream", "logs")
 			require.NoError(t, os.MkdirAll(dsDir, 0755))
 
-			var manifest []byte
-			if c.mode == "" {
-				manifest = []byte("{}\n")
-			} else {
-				manifest = []byte("elasticsearch:\n  index_mode: " + c.mode + "\n")
-			}
-			require.NoError(t, os.WriteFile(filepath.Join(dsDir, "manifest.yml"), manifest, 0644))
+			require.NoError(t, os.WriteFile(filepath.Join(dsDir, "manifest.yml"), []byte(c.manifest), 0644))
 
-			got, err := isColumnarIndexMode(fspath.DirFS(tempDir), "logs")
+			got, err := isColumnarEnabled(fspath.DirFS(tempDir), "logs")
 			require.NoError(t, err)
 			assert.Equal(t, c.want, got)
 		})
@@ -72,10 +92,11 @@ func TestCheckColumnarField(t *testing.T) {
 	meta := fieldFileMetadata{filePath: "fields.yml", fullFilePath: "/pkg/fields.yml"}
 
 	cases := []struct {
-		title    string
-		f        field
-		wantErrs bool
-		wantCode string
+		title     string
+		f         field
+		wantErrs  bool
+		wantCode  string
+		wantCount int
 	}{
 		{
 			title: "clean field passes",
@@ -171,6 +192,69 @@ func TestCheckColumnarField(t *testing.T) {
 			f:        field{Name: "text_field", Type: "text", Normalizer: "something"},
 			wantErrs: false,
 		},
+		{
+			title: "columnar doc_values override fixes doc_values false",
+			f: field{
+				Name:      "event.original",
+				Type:      "keyword",
+				DocValues: boolPtr(false),
+				Columnar:  &columnarOverrides{DocValues: boolPtr(true)},
+			},
+			wantErrs: false,
+		},
+		{
+			title: "columnar doc_values false is a hard error",
+			f: field{
+				Name:     "event.original",
+				Type:     "keyword",
+				Columnar: &columnarOverrides{DocValues: boolPtr(false)},
+			},
+			wantErrs: true,
+			wantCode: specerrors.UnassignedCode,
+		},
+		{
+			title: "columnar doc_values false reports once when base is also false",
+			f: field{
+				Name:      "event.original",
+				Type:      "keyword",
+				DocValues: boolPtr(false),
+				Columnar:  &columnarOverrides{DocValues: boolPtr(false)},
+			},
+			wantErrs:  true,
+			wantCode:  specerrors.UnassignedCode,
+			wantCount: 1,
+		},
+		{
+			title: "columnar index override is accepted",
+			f: field{
+				Name:     "host.name",
+				Type:     "keyword",
+				Columnar: &columnarOverrides{Index: boolPtr(true)},
+			},
+			wantErrs: false,
+		},
+		{
+			title: "columnar index false is accepted",
+			f: field{
+				Name:     "host.name",
+				Type:     "keyword",
+				Columnar: &columnarOverrides{Index: boolPtr(false)},
+			},
+			wantErrs: false,
+		},
+		{
+			title: "columnar doc_values override does not mask other errors",
+			f: field{
+				Name:      "source.address",
+				Type:      "keyword",
+				DocValues: boolPtr(false),
+				CopyTo:    "source.ip",
+				Columnar:  &columnarOverrides{DocValues: boolPtr(true)},
+			},
+			wantErrs:  true,
+			wantCode:  specerrors.UnassignedCode,
+			wantCount: 1,
+		},
 	}
 
 	for _, c := range cases {
@@ -183,6 +267,9 @@ func TestCheckColumnarField(t *testing.T) {
 			assert.NotEmpty(t, errs)
 			if c.wantCode != "" {
 				assert.Equal(t, c.wantCode, errs[0].Code())
+			}
+			if c.wantCount != 0 {
+				assert.Len(t, errs, c.wantCount)
 			}
 		})
 	}

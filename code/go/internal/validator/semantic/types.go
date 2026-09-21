@@ -164,12 +164,22 @@ type field struct {
 	DocValues  *bool  `yaml:"doc_values"`
 	Enabled    *bool  `yaml:"enabled"`
 	Dynamic    any    `yaml:"dynamic"`
-	CopyTo     any    `yaml:"copy_to"`   // string or []string; non-nil means set
+	CopyTo     any    `yaml:"copy_to"`    // string or []string; non-nil means set
 	Normalizer string `yaml:"normalizer"` // keyword-only; non-empty means set
 
 	Runtime runtimeField `yaml:"runtime"`
 
+	// Columnar holds mapping parameter overrides that apply only when the data stream
+	// uses a columnar index mode (logsdb_columnar or columnar). Ignored otherwise.
+	Columnar *columnarOverrides `yaml:"columnar"`
+
 	Fields fields `yaml:"fields"`
+}
+
+// columnarOverrides are the per-field mapping parameter overrides declared under `columnar`.
+type columnarOverrides struct {
+	DocValues *bool `yaml:"doc_values"`
+	Index     *bool `yaml:"index"`
 }
 
 type fieldFileMetadata struct {

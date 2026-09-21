@@ -74,8 +74,16 @@ func Test_ValidateFromPath(t *testing.T) {
 		"good_provider_permissions_input":        {},
 		"good_integration_group":                 {},
 		"good_input_group":                       {},
-		"good_columnar_index_mode": {},
-		"good_columnar_base_mode":  {},
+		"good_columnar_index_mode":               {},
+		"good_columnar_base_mode":                {},
+		"good_columnar_override":                 {},
+		"good_columnar_supported":                {},
+		"bad_columnar_supported_blocker": {
+			"data_stream/logs/fields/base-fields.yml",
+			[]string{
+				`field "short_message" has copy_to set, which prevents synthetic source reconstruction in columnar index mode; use an ingest pipeline to copy the value instead`,
+			},
+		},
 		"bad_columnar_doc_values": {
 			"data_stream/logs/fields/base-fields.yml",
 			[]string{

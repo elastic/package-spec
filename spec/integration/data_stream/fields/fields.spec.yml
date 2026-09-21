@@ -218,6 +218,25 @@ spec:
         type: boolean
         default: false
 
+      columnar:
+        description: >
+          Mapping parameter overrides applied only when the data stream uses a columnar index mode
+          (logsdb_columnar or columnar). Ignored for every other index mode.
+        type: object
+        additionalProperties: false
+        properties:
+          doc_values:
+            description: >
+              Enable doc values in columnar mode. Only `true` is allowed
+              (columnar modes reject doc_values: false).
+            type: boolean
+            const: true
+          index:
+            description: >
+              Enable an inverted index for this field in columnar mode.
+              Use only when justified by benchmarks.
+            type: boolean
+
       copy_to:
         description: >
           The copy_to parameter allows you to copy the values of multiple fields
@@ -615,6 +634,8 @@ spec:
 versions:
   - before: 3.7.0
     patch:
+      - op: remove
+        path: "/items/properties/columnar" # removing columnar index mode overrides
       - op: remove
         path: "/items/properties/type/enum/35" #remove semantic_text type
       - op: remove

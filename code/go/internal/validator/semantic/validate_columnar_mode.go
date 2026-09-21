@@ -34,20 +34,21 @@ var columnarUnsupportedTypes = map[string]bool{
 }
 
 // ValidateColumnarModeConstraints checks data streams using logsdb_columnar or columnar
-// index modes for incompatible field settings. Hard errors (doc_values: false,
-// mapping-level runtime fields, copy_to, keyword+normalizer, unsupported types) always
-// fail. Warnings (nested types, dynamic/enabled: false) are filterable via their SVR
-// codes and behave as warnings when the caller uses warnOn.
+// index modes, or declaring elasticsearch.columnar.supported, for incompatible field
+// settings. Hard errors (doc_values: false, mapping-level runtime fields, copy_to,
+// keyword+normalizer, unsupported types) always fail. Warnings (nested types,
+// dynamic/enabled: false) are filterable via their SVR codes and behave as warnings
+// when the caller uses warnOn.
 func ValidateColumnarModeConstraints(fsys fspath.FS) specerrors.ValidationErrors {
 	dataStreams, err := listDataStreams(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
-	// Identify which data streams use a columnar index mode.
+	// Identify which data streams require columnar compatibility checks.
 	columnar := make(map[string]bool)
 	for _, ds := range dataStreams {
-		ok, err := isColumnarIndexMode(fsys, ds)
+		ok, err := isColumnarEnabled(fsys, ds)
 		if err != nil {
 			return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 		}
@@ -86,8 +87,12 @@ func ValidateColumnarModeConstraints(fsys fspath.FS) specerrors.ValidationErrors
 	return errs
 }
 
-// isColumnarIndexMode returns true when the data stream manifest declares a columnar-family index mode.
-func isColumnarIndexMode(fsys fspath.FS, dataStream string) (bool, error) {
+// isColumnarEnabled returns true when the data stream manifest declares a columnar-family
+// index mode, or opts in to columnar readiness with elasticsearch.columnar.supported: true.
+// The readiness flag lets a package declare that its mappings are columnar-compatible (so
+// Fleet can offer the per-data-stream opt-in) while keeping its default index mode; the
+// compatibility checks must run in that case too.
+func isColumnarEnabled(fsys fspath.FS, dataStream string) (bool, error) {
 	manifestPath := path.Join("data_stream", dataStream, "manifest.yml")
 	d, err := fs.ReadFile(fsys, manifestPath)
 	if err != nil {
@@ -97,10 +102,17 @@ func isColumnarIndexMode(fsys fspath.FS, dataStream string) (bool, error) {
 	var manifest struct {
 		Elasticsearch struct {
 			IndexMode string `yaml:"index_mode"`
+			Columnar  struct {
+				Supported bool `yaml:"supported"`
+			} `yaml:"columnar"`
 		} `yaml:"elasticsearch"`
 	}
 	if err := yaml.Unmarshal(d, &manifest); err != nil {
 		return false, fmt.Errorf("failed to parse data stream manifest in %q: %w", fsys.Path(manifestPath), err)
+	}
+
+	if manifest.Elasticsearch.Columnar.Supported {
+		return true, nil
 	}
 
 	switch manifest.Elasticsearch.IndexMode {
@@ -148,12 +160,35 @@ func checkColumnarField(meta fieldFileMetadata, f field) specerrors.ValidationEr
 	var errs specerrors.ValidationErrors
 
 	// doc_values: false is a mapping error in columnar mode — ES rejects the index template.
-	if f.DocValues != nil && !*f.DocValues {
+	// A `columnar.doc_values` override replaces the base setting when the index mode is
+	// columnar, so evaluate the effective value rather than the declared one. This is what
+	// lets a package keep an ECS-imported field such as event.original (doc_values: false)
+	// and re-enable doc values for columnar mode only.
+	docValues := f.DocValues
+	var columnarDocValues *bool
+	if f.Columnar != nil {
+		columnarDocValues = f.Columnar.DocValues
+		if columnarDocValues != nil {
+			docValues = columnarDocValues
+		}
+	}
+	switch {
+	case columnarDocValues != nil && !*columnarDocValues:
+		// Belt and braces: the JSON schema only allows `columnar.doc_values: true`, but an
+		// explicit false here would be a no-op override that still breaks the mapping.
+		errs = append(errs, specerrors.NewStructuredErrorf(
+			`file %q is invalid: field %q sets columnar.doc_values to false; columnar index mode requires doc values, only true is allowed`,
+			meta.fullFilePath, f.Name,
+		))
+	case docValues != nil && !*docValues:
 		errs = append(errs, specerrors.NewStructuredErrorf(
 			`file %q is invalid: field %q has doc_values set to false, which is rejected by Elasticsearch in columnar index mode`,
 			meta.fullFilePath, f.Name,
 		))
 	}
+
+	// f.Columnar.Index is intentionally not validated: an inverted index is allowed in
+	// columnar mode (it only costs storage), so both true and false pass without a warning.
 
 	// copy_to prevents synthetic source reconstruction (FieldMapper.calculateSyntheticSourceMode).
 	if f.CopyTo != nil {
