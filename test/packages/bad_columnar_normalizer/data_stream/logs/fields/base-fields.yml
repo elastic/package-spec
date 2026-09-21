@@ -12,5 +12,5 @@
   description: Event timestamp.
 - name: status
   type: keyword
-  normalizer: lowercase
-  description: Status keyword with normalizer — intentionally invalid in columnar mode (normalizer prevents synthetic source reconstruction).
+  normalizer: my_normalizer
+  description: Status keyword with a custom normalizer — intentionally invalid in columnar mode (only the built-in lowercase normalizer is reconstructable for synthetic source).

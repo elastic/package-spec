@@ -138,10 +138,15 @@ func TestCheckColumnarField(t *testing.T) {
 			wantCode: specerrors.UnassignedCode,
 		},
 		{
-			title:    "keyword with normalizer is a hard error",
-			f:        field{Name: "status", Type: "keyword", Normalizer: "lowercase"},
+			title:    "keyword with custom normalizer is a hard error",
+			f:        field{Name: "status", Type: "keyword", Normalizer: "my_normalizer"},
 			wantErrs: true,
 			wantCode: specerrors.UnassignedCode,
+		},
+		{
+			title:    "keyword with lowercase normalizer is accepted",
+			f:        field{Name: "status", Type: "keyword", Normalizer: "lowercase"},
+			wantErrs: false,
 		},
 		{
 			title:    "completion type is a hard error",

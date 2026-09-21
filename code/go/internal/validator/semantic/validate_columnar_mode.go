@@ -165,7 +165,9 @@ func checkColumnarField(meta fieldFileMetadata, f field) specerrors.ValidationEr
 	}
 
 	// keyword with normalizer prevents synthetic source reconstruction (KeywordFieldMapper).
-	if f.Type == "keyword" && f.Normalizer != "" {
+	// The built-in "lowercase" normalizer is accepted: ES defaults normalizer_skip_store_original_value
+	// to true for it, so synthetic source returns the lowercased value instead of failing.
+	if f.Type == "keyword" && f.Normalizer != "" && f.Normalizer != "lowercase" {
 		errs = append(errs, specerrors.NewStructuredErrorf(
 			`file %q is invalid: field %q is a keyword field with a normalizer, which prevents synthetic source reconstruction in columnar index mode; `+
 				`remove the normalizer or apply the transformation in an ingest pipeline`,
