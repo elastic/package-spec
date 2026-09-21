@@ -222,6 +222,10 @@ spec:
         description: >
           Mapping parameter overrides applied only when the data stream uses a columnar index mode
           (logsdb_columnar or columnar). Ignored for every other index mode.
+
+          Only supported on concrete static leaf fields. Fleet does not apply it to fields turned
+          into dynamic templates with `object_type`, to `object`/`group` containers, or to entries
+          under `multi_fields`.
         type: object
         additionalProperties: false
         properties:

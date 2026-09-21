@@ -1,0 +1,24 @@
+format_version: 3.7.0
+name: bad_columnar_manifest_props
+title: Bad package with columnar blockers in index_template mappings
+description: Tests that index_template mapping overrides are checked for columnar blockers.
+version: 1.0.0-beta1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: "^9.5.0"
+  elastic:
+    subscription: basic
+policy_templates:
+  - name: logs
+    title: Logs
+    description: Tests that index_template mapping overrides are checked for columnar blockers.
+    inputs:
+      - type: logfile
+        title: Collect logs from files
+        description: Tests that index_template mapping overrides are checked for columnar blockers.
+owner:
+  github: elastic/obs-infraobs-integrations
+  type: elastic

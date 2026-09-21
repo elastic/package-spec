@@ -7,6 +7,7 @@ package semantic
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -81,7 +82,7 @@ func TestIsColumnarEnabled(t *testing.T) {
 
 			require.NoError(t, os.WriteFile(filepath.Join(dsDir, "manifest.yml"), []byte(c.manifest), 0644))
 
-			got, err := isColumnarEnabled(fspath.DirFS(tempDir), "logs")
+			got, err := isColumnarEnabled(fspath.DirFS(tempDir), "data_stream/logs/manifest.yml")
 			require.NoError(t, err)
 			assert.Equal(t, c.want, got)
 		})
@@ -255,6 +256,97 @@ func TestCheckColumnarField(t *testing.T) {
 			wantCode:  specerrors.UnassignedCode,
 			wantCount: 1,
 		},
+		{
+			title:    "store true is a hard error",
+			f:        field{Name: "message", Type: "keyword", Store: boolPtr(true)},
+			wantErrs: true,
+			wantCode: specerrors.UnassignedCode,
+		},
+		{
+			title:    "store false is fine",
+			f:        field{Name: "message", Type: "keyword", Store: boolPtr(false)},
+			wantErrs: false,
+		},
+		{
+			title: "columnar override on an object_type field is a hard error",
+			f: field{
+				Name:       "labels",
+				Type:       "object",
+				ObjectType: "keyword",
+				Columnar:   &columnarOverrides{DocValues: boolPtr(true)},
+			},
+			wantErrs:  true,
+			wantCode:  specerrors.UnassignedCode,
+			wantCount: 1,
+		},
+		{
+			title: "columnar override on an object container is a hard error",
+			f: field{
+				Name:     "metadata",
+				Type:     "object",
+				Columnar: &columnarOverrides{Index: boolPtr(true)},
+			},
+			wantErrs:  true,
+			wantCode:  specerrors.UnassignedCode,
+			wantCount: 1,
+		},
+		{
+			title: "columnar override on a group is a hard error",
+			f: field{
+				Name:     "aws",
+				Type:     "group",
+				Columnar: &columnarOverrides{Index: boolPtr(true)},
+			},
+			wantErrs:  true,
+			wantCode:  specerrors.UnassignedCode,
+			wantCount: 1,
+		},
+		{
+			title: "object_type field without a columnar override is fine",
+			f: field{
+				Name:       "labels",
+				Type:       "object",
+				ObjectType: "keyword",
+			},
+			wantErrs: false,
+		},
+		{
+			title: "columnar override inside multi_fields is a hard error",
+			f: field{
+				Name: "host.name",
+				Type: "keyword",
+				MultiFields: fields{
+					{Name: "text", Type: "text", Columnar: &columnarOverrides{Index: boolPtr(true)}},
+				},
+			},
+			wantErrs:  true,
+			wantCode:  specerrors.UnassignedCode,
+			wantCount: 1,
+		},
+		{
+			title: "multi_fields without a columnar override is fine",
+			f: field{
+				Name: "host.name",
+				Type: "keyword",
+				MultiFields: fields{
+					{Name: "text", Type: "text"},
+				},
+			},
+			wantErrs: false,
+		},
+		{
+			title: "ignored columnar override does not fix doc_values false",
+			f: field{
+				Name:       "labels",
+				Type:       "object",
+				ObjectType: "keyword",
+				DocValues:  boolPtr(false),
+				Columnar:   &columnarOverrides{DocValues: boolPtr(true)},
+			},
+			wantErrs:  true,
+			wantCode:  specerrors.UnassignedCode,
+			wantCount: 2,
+		},
 	}
 
 	for _, c := range cases {
@@ -271,6 +363,165 @@ func TestCheckColumnarField(t *testing.T) {
 			if c.wantCount != 0 {
 				assert.Len(t, errs, c.wantCount)
 			}
+		})
+	}
+}
+
+func TestCheckColumnarManifestProperties(t *testing.T) {
+	cases := []struct {
+		title    string
+		manifest string
+		want     []string
+	}{
+		{
+			title:    "no index template",
+			manifest: "elasticsearch:\n  index_mode: logsdb_columnar\n",
+		},
+		{
+			title: "doc_values false in nested properties",
+			manifest: `
+elasticsearch:
+  index_mode: logsdb_columnar
+  index_template:
+    mappings:
+      properties:
+        event:
+          properties:
+            original:
+              type: keyword
+              doc_values: false
+`,
+			want: []string{
+				"elasticsearch.index_template.mappings.properties.event.properties.original has doc_values set to false, " +
+					"which is rejected by Elasticsearch in columnar index mode",
+			},
+		},
+		{
+			title: "store and copy_to at the top level",
+			manifest: `
+elasticsearch:
+  index_mode: columnar
+  index_template:
+    mappings:
+      properties:
+        message:
+          type: keyword
+          store: true
+        short_message:
+          type: keyword
+          copy_to: message
+`,
+			want: []string{
+				"elasticsearch.index_template.mappings.properties.message has store set to true, " +
+					"which is rejected by Elasticsearch in columnar index mode; " +
+					"remove it (columnar modes reconstruct values from doc values)",
+				"elasticsearch.index_template.mappings.properties.short_message has copy_to set, " +
+					"which prevents synthetic source reconstruction in columnar index mode; " +
+					"use an ingest pipeline to copy the value instead",
+			},
+		},
+		{
+			title: "multi-fields allow doc_values false but not store",
+			manifest: `
+elasticsearch:
+  index_mode: columnar
+  index_template:
+    mappings:
+      properties:
+        host.name:
+          type: keyword
+          fields:
+            text:
+              type: text
+              doc_values: false
+              store: true
+`,
+			want: []string{
+				"elasticsearch.index_template.mappings.properties.host.name.fields.text has store set to true, " +
+					"which is rejected by Elasticsearch in columnar index mode; " +
+					"remove it (columnar modes reconstruct values from doc values)",
+			},
+		},
+		{
+			title: "acceptable overrides",
+			manifest: `
+elasticsearch:
+  index_mode: columnar
+  index_template:
+    mappings:
+      properties:
+        message:
+          type: keyword
+          doc_values: true
+          store: false
+`,
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.title, func(t *testing.T) {
+			tempDir := t.TempDir()
+			dsDir := filepath.Join(tempDir, "data_stream", "logs")
+			require.NoError(t, os.MkdirAll(dsDir, 0755))
+			require.NoError(t, os.WriteFile(filepath.Join(dsDir, "manifest.yml"), []byte(c.manifest), 0644))
+
+			fsys := fspath.DirFS(tempDir)
+			errs := checkColumnarManifest(fsys, "data_stream/logs/manifest.yml")
+
+			var messages []string
+			prefix := `file "` + fsys.Path("data_stream/logs/manifest.yml") + `" is invalid: `
+			for _, err := range errs {
+				messages = append(messages, strings.TrimPrefix(err.Error(), prefix))
+			}
+			assert.Equal(t, c.want, messages)
+		})
+	}
+}
+
+func TestValidateColumnarModeConstraintsInputPackage(t *testing.T) {
+	cases := []struct {
+		title    string
+		manifest string
+		fields   string
+		want     []string
+	}{
+		{
+			title:    "non columnar input package is skipped",
+			manifest: "type: input\nelasticsearch:\n  index_mode: time_series\n",
+			fields:   "- name: short_message\n  type: keyword\n  copy_to: message\n",
+		},
+		{
+			title:    "columnar input package reports root field blockers",
+			manifest: "type: input\nelasticsearch:\n  index_mode: logsdb_columnar\n",
+			fields:   "- name: short_message\n  type: keyword\n  copy_to: message\n",
+			want: []string{
+				`field "short_message" has copy_to set, which prevents synthetic source reconstruction in columnar index mode; ` +
+					`use an ingest pipeline to copy the value instead`,
+			},
+		},
+		{
+			title:    "columnar input package accepts compatible fields",
+			manifest: "type: input\nelasticsearch:\n  index_mode: columnar\n",
+			fields:   "- name: message\n  type: keyword\n",
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.title, func(t *testing.T) {
+			tempDir := t.TempDir()
+			require.NoError(t, os.MkdirAll(filepath.Join(tempDir, "fields"), 0755))
+			require.NoError(t, os.WriteFile(filepath.Join(tempDir, "manifest.yml"), []byte(c.manifest), 0644))
+			require.NoError(t, os.WriteFile(filepath.Join(tempDir, "fields", "base-fields.yml"), []byte(c.fields), 0644))
+
+			fsys := fspath.DirFS(tempDir)
+			errs := ValidateColumnarModeConstraints(fsys)
+
+			var messages []string
+			prefix := `file "` + fsys.Path(filepath.Join("fields", "base-fields.yml")) + `" is invalid: `
+			for _, err := range errs {
+				messages = append(messages, strings.TrimPrefix(err.Error(), prefix))
+			}
+			assert.Equal(t, c.want, messages)
 		})
 	}
 }
