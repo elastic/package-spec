@@ -74,8 +74,17 @@ spec:
     name: img
     required: false
     $ref: "../integration/img/spec.yml"
+  - description: Folder containing IaC JSON patches and linked base templates
+    type: folder
+    name: iac
+    required: false
+    $ref: "../integration/iac/spec.yml"
 
 versions:
+  - before: 3.7.0
+    patch:
+      - op: remove
+        path: "/contents/11" # iac folder
   - before: 3.5.0
     patch:
       - op: replace

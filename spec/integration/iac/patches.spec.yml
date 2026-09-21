@@ -1,0 +1,22 @@
+##
+## RFC 6902 JSON Patch document.
+##
+spec:
+  type: array
+  minItems: 1
+  items:
+    type: object
+    additionalProperties: false
+    required:
+      - op
+      - path
+    properties:
+      op:
+        type: string
+        enum: [add, remove, replace, move, copy, test]
+      path:
+        type: string
+        pattern: '^/'
+      from:
+        type: string
+      value: true

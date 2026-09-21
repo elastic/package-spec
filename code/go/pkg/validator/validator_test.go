@@ -72,6 +72,8 @@ func Test_ValidateFromPath(t *testing.T) {
 		"with_links":                             {},
 		"good_provider_permissions":              {},
 		"good_provider_permissions_input":        {},
+		"good_iac_folder":                       {},
+		"good_iac_folder_input":                  {},
 		"good_integration_group":                 {},
 		"good_input_group":                       {},
 		"bad_integration_group": {
@@ -84,6 +86,31 @@ func Test_ValidateFromPath(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				"field group: Does not match pattern '^[a-z0-9_]+$'",
+			},
+		},
+		"bad_iac_patches_invalid": {
+			"iac/foo.patches.json",
+			[]string{
+				`field 0.op: 0.op must be one of the following: "add", "remove", "replace", "move", "copy", "test"`,
+			},
+		},
+		"bad_iac_patches_missing_required": {
+			"iac/foo.patches.json",
+			[]string{
+				`field 0: op is required`,
+				`field 0: path is required`,
+			},
+		},
+		"bad_iac_blueprints_invalid_id": {
+			"manifest.yml",
+			[]string{
+				"field iac_blueprints.0.id: Does not match pattern '^[a-z0-9]+(/[a-z0-9-]+)+/v[0-9]+$'",
+			},
+		},
+		"bad_iac_blueprints_invalid_format": {
+			"manifest.yml",
+			[]string{
+				`field iac_blueprints.0.format: iac_blueprints.0.format must be one of the following: "cloudformation", "arm", "terraform", "deployment-manager", "helm", "kustomize", "ansible", "bicep"`,
 			},
 		},
 		"bad_duration_vars": {
@@ -724,6 +751,11 @@ func TestValidateItemNotAllowed(t *testing.T) {
 		"bad_content_dev_deploy_variants": {
 			"_dev": []string{
 				"deploy",
+			},
+		},
+		"bad_iac_unknown_file": {
+			"iac": []string{
+				"readme.txt",
 			},
 		},
 	}
