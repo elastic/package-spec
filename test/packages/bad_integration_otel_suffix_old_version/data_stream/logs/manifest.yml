@@ -1,0 +1,3 @@
+title: OTel-style logs
+type: logs
+use_otel_suffix: true

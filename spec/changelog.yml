@@ -8,6 +8,10 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    # Pending on https://github.com/elastic/package-spec/issues/1260
+    - description: Add optional use_otel_suffix on integration data streams so index templates can use the .otel suffix without an otelcol input.
+      type: enhancement
+      link: TBD
 - version: 3.6.6
   changes:
     - description: Add support for mode-aware constructors and validation APIs.
