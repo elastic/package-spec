@@ -86,6 +86,7 @@ func Test_ValidateFromPath(t *testing.T) {
 				"field group: Does not match pattern '^[a-z0-9_]+$'",
 			},
 		},
+		"good_blueprint": {},
 		"bad_duration_vars": {
 			"manifest.yml",
 			[]string{
