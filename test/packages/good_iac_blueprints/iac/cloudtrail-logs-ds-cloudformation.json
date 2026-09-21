@@ -1,0 +1,20 @@
+[
+  {
+    "op": "add",
+    "path": "/Resources/CloudTrailS3BucketNotification",
+    "value": {
+      "Type": "AWS::S3::BucketNotificationConfiguration",
+      "Properties": {
+        "Bucket": {"Ref": "CloudTrailBucket"},
+        "NotificationConfiguration": {
+          "QueueConfigurations": [
+            {
+              "Event": "s3:ObjectCreated:*",
+              "Queue": {"Fn::GetAtt": ["ElasticIngestQueue", "Arn"]}
+            }
+          ]
+        }
+      }
+    }
+  }
+]

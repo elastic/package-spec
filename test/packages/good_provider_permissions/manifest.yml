@@ -1,7 +1,7 @@
-format_version: 3.6.4
+format_version: 3.7.0
 name: good_provider_permissions
 title: Good package with provider permissions
-description: Tests provider_permissions at package, policy_template, input, and data_stream levels, including multiple providers per entry.
+description: Tests provider_permissions at package, policy_template, input, and data_stream levels, including resources/conditions scoping and multiple providers per entry.
 version: 0.0.1
 type: integration
 categories:
@@ -23,6 +23,14 @@ provider_permissions:
         description: Verify the IAM identity on startup.
       - name: iam:ListAccountAliases
       - name: ec2:DescribeRegions
+      - name: s3:GetObject
+        description: Read log objects from the designated S3 bucket.
+        resources:
+          - "arn:aws:s3:::my-logs-bucket/*"
+        conditions:
+          StringEquals:
+            s3:prefix:
+              - "AWSLogs/"
   - provider: azure
     description: Bootstrap check for Azure integrations.
     permissions:

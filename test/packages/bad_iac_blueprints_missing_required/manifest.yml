@@ -1,0 +1,29 @@
+format_version: 3.7.0
+name: bad_iac_blueprints_missing_required
+title: Bad package with iac_blueprints missing required fields
+description: Tests that iac_blueprints items missing required fields (format, patches) are rejected.
+version: 0.0.1
+type: integration
+categories:
+  - aws
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.0.0'
+  elastic:
+    subscription: basic
+# Invalid: iac_blueprints item is missing the required `format` and `patches` fields.
+iac_blueprints:
+  - id: aws/federated-identity/account
+policy_templates:
+  - name: sample
+    title: Sample logs
+    description: Collect sample logs
+    inputs:
+      - type: logfile
+        title: Collect sample logs from instances
+        description: Collecting sample logs
+owner:
+  github: elastic/foobar
+  type: elastic

@@ -1,0 +1,30 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Canonical base blueprint for the aws/federated-identity/account deployment. The cloud-iac-provisioner loads this template and appends RFC 6902 patches from each enabled integration.",
+  "Parameters": {
+    "ElasticResourceId": {
+      "Type": "String",
+      "Description": "Elastic resource ID used to construct the ExternalId trust condition."
+    }
+  },
+  "Resources": {
+    "ElasticFederatedIdentityRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": { "Fn::Sub": "ElasticFederatedIdentity-${AWS::StackName}" },
+        "Path": "/",
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": []
+        },
+        "ManagedPolicyArns": []
+      }
+    }
+  },
+  "Outputs": {
+    "RoleArn": {
+      "Description": "ARN of the Elastic Federated Identity role.",
+      "Value": { "Fn::GetAtt": ["ElasticFederatedIdentityRole", "Arn"] }
+    }
+  }
+}
