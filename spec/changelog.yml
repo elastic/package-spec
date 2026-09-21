@@ -8,6 +8,36 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: >
+        Add logsdb_columnar and columnar as valid elasticsearch.index_mode values for data streams.
+        logsdb_columnar (tech preview) is the logs-profile flavor of columnar storage: doc-values only,
+        no inverted indexes for non-text fields, default sort on host.name / @timestamp.
+        columnar is the general-purpose base mode without the logs-profile defaults.
+        Packages using either columnar mode are validated for known incompatibilities:
+        doc_values: false, store: true, mapping-level runtime fields, copy_to, keyword fields with a normalizer other
+        than lowercase, and field types without synthetic-source support are hard errors;
+        nested types, dynamic: false, and enabled: false on objects are warnings (filterable via SVR00011–SVR00013).
+        The same blockers (doc_values: false, store: true, copy_to) are also reported when declared under
+        elasticsearch.index_template.mappings.properties, which Fleet merges on top of the generated mappings.
+        The checks run for input packages too, using the root manifest index mode and the root fields/ folder.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1250
+    - description: >
+        Add an optional `columnar` block to field definitions, holding mapping parameter overrides
+        (`doc_values`, `index`) that apply only when the data stream uses a columnar index mode and
+        are ignored otherwise. It lets packages re-enable doc values on fields imported with
+        doc_values: false, such as the ECS event.original field. Only `columnar.doc_values: true`
+        is accepted. The block is only honored on concrete static leaf fields: declaring it on an
+        object_type (dynamic template) field, on an object/group container, or inside multi_fields
+        is an error, because Fleet does not apply the override there.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1250
+    - description: >
+        Add `elasticsearch.columnar.supported` to data stream manifests, declaring that the data
+        stream's mappings are compatible with columnar index modes. The columnar compatibility
+        validator runs when this flag is true, even if index_mode is not columnar.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1250
 - version: 3.6.6
   changes:
     - description: Add support for mode-aware constructors and validation APIs.

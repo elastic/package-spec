@@ -1,0 +1,16 @@
+- name: data_stream.type
+  type: constant_keyword
+  description: Data stream type.
+- name: data_stream.dataset
+  type: constant_keyword
+  description: Data stream dataset.
+- name: data_stream.namespace
+  type: constant_keyword
+  description: Data stream namespace.
+- name: '@timestamp'
+  type: date
+  description: Event timestamp.
+- name: status
+  type: keyword
+  normalizer: my_normalizer
+  description: Status keyword with a custom normalizer — intentionally invalid in columnar mode (only the built-in lowercase normalizer is reconstructable for synthetic source).

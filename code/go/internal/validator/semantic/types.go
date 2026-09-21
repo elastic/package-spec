@@ -161,10 +161,34 @@ type field struct {
 	MetricType string `yaml:"metric_type"`
 	Dimension  bool   `yaml:"dimension"`
 	External   string `yaml:"external"`
+	DocValues  *bool  `yaml:"doc_values"`
+	Store      *bool  `yaml:"store"`
+	Enabled    *bool  `yaml:"enabled"`
+	Dynamic    any    `yaml:"dynamic"`
+	CopyTo     any    `yaml:"copy_to"`    // string or []string; non-nil means set
+	Normalizer string `yaml:"normalizer"` // keyword-only; non-empty means set
+
+	// ObjectType and ObjectTypeMappingType turn an object field into a dynamic template.
+	ObjectType            string `yaml:"object_type"`
+	ObjectTypeMappingType string `yaml:"object_type_mapping_type"`
 
 	Runtime runtimeField `yaml:"runtime"`
 
+	// Columnar holds mapping parameter overrides that apply only when the data stream
+	// uses a columnar index mode (logsdb_columnar or columnar). Ignored otherwise.
+	Columnar *columnarOverrides `yaml:"columnar"`
+
+	// MultiFields holds the multi-field definitions of this field. Note that the generic
+	// field walker (validateNestedFields) does not descend into them.
+	MultiFields fields `yaml:"multi_fields"`
+
 	Fields fields `yaml:"fields"`
+}
+
+// columnarOverrides are the per-field mapping parameter overrides declared under `columnar`.
+type columnarOverrides struct {
+	DocValues *bool `yaml:"doc_values"`
+	Index     *bool `yaml:"index"`
 }
 
 type fieldFileMetadata struct {

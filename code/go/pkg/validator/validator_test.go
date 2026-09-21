@@ -74,6 +74,64 @@ func Test_ValidateFromPath(t *testing.T) {
 		"good_provider_permissions_input":        {},
 		"good_integration_group":                 {},
 		"good_input_group":                       {},
+		"good_columnar_index_mode":               {},
+		"good_columnar_base_mode":                {},
+		"good_columnar_override":                 {},
+		"good_columnar_supported":                {},
+		"good_columnar_input":                    {},
+		"bad_columnar_supported_blocker": {
+			"data_stream/logs/fields/base-fields.yml",
+			[]string{
+				`field "short_message" has copy_to set, which prevents synthetic source reconstruction in columnar index mode; use an ingest pipeline to copy the value instead`,
+			},
+		},
+		"bad_columnar_doc_values": {
+			"data_stream/logs/fields/base-fields.yml",
+			[]string{
+				`field "message" has doc_values set to false, which is rejected by Elasticsearch in columnar index mode`,
+			},
+		},
+		"bad_columnar_copy_to": {
+			"data_stream/logs/fields/base-fields.yml",
+			[]string{
+				`field "short_message" has copy_to set, which prevents synthetic source reconstruction in columnar index mode; use an ingest pipeline to copy the value instead`,
+			},
+		},
+		"bad_columnar_normalizer": {
+			"data_stream/logs/fields/base-fields.yml",
+			[]string{
+				`field "status" is a keyword field with a normalizer, which prevents synthetic source reconstruction in columnar index mode; remove the normalizer or apply the transformation in an ingest pipeline`,
+			},
+		},
+		"bad_columnar_store": {
+			"data_stream/logs/fields/base-fields.yml",
+			[]string{
+				`field "message" has store set to true, which is rejected by Elasticsearch in columnar index mode; remove it (columnar modes reconstruct values from doc values)`,
+			},
+		},
+		"bad_columnar_override_dynamic": {
+			"data_stream/logs/fields/base-fields.yml",
+			[]string{
+				`field "labels" sets columnar overrides on a dynamic-template (object_type) field, which Fleet does not apply; move the override to a concrete static field`,
+				`field "host.name.text" sets columnar overrides on a multi-field, which Fleet does not apply; move the override to a concrete static field`,
+			},
+		},
+		// Since spec 3.0.0 the JSON schema also rejects arbitrary `properties` under
+		// elasticsearch.index_template.mappings, so both errors are expected here. The
+		// columnar check stays as a defence in depth for build-mode/relaxed schemas.
+		"bad_columnar_manifest_props": {
+			"data_stream/logs/manifest.yml",
+			[]string{
+				`field elasticsearch.index_template.mappings: Additional property properties is not allowed`,
+				`elasticsearch.index_template.mappings.properties.event.properties.original has doc_values set to false, which is rejected by Elasticsearch in columnar index mode`,
+			},
+		},
+		"bad_columnar_input_copy_to": {
+			"fields/base-fields.yml",
+			[]string{
+				`field "short_message" has copy_to set, which prevents synthetic source reconstruction in columnar index mode; use an ingest pipeline to copy the value instead`,
+			},
+		},
 		"bad_integration_group": {
 			"manifest.yml",
 			[]string{

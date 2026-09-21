@@ -26,4 +26,9 @@ const (
 	CodePipelineOnFailureEventKind          = "SVR00008"
 	CodePipelineOnFailureMessage            = "SVR00009"
 	CodeIntegrationInputQualifierRequired   = "SVR00010"
+
+	// Columnar index mode validation warnings (filterable)
+	CodeColumnarNestedField  = "SVR00011" // nested type has limited support in columnar mode
+	CodeColumnarDynamicFalse = "SVR00012" // dynamic: false causes data loss in columnar mode (no _source)
+	CodeColumnarEnabledFalse = "SVR00013" // enabled: false on object causes data loss in columnar mode (no _source)
 )

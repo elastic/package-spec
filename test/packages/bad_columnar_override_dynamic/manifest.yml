@@ -1,0 +1,24 @@
+format_version: 3.7.0
+name: bad_columnar_override_dynamic
+title: Bad package with misplaced columnar overrides
+description: Tests that columnar overrides are rejected on dynamic-template and multi-field definitions.
+version: 1.0.0-beta1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: "^9.5.0"
+  elastic:
+    subscription: basic
+policy_templates:
+  - name: logs
+    title: Logs
+    description: Tests that columnar overrides are rejected on dynamic-template and multi-field definitions.
+    inputs:
+      - type: logfile
+        title: Collect logs from files
+        description: Tests that columnar overrides are rejected on dynamic-template and multi-field definitions.
+owner:
+  github: elastic/obs-infraobs-integrations
+  type: elastic

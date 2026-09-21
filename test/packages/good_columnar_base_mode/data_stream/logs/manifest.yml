@@ -1,0 +1,15 @@
+title: Logs
+type: logs
+streams:
+  - input: logfile
+    title: Collect logs
+    description: Collect logs from files
+    vars:
+      - name: paths
+        type: text
+        title: Paths
+        multi: true
+        default:
+          - /var/log/*.log
+elasticsearch:
+  index_mode: columnar

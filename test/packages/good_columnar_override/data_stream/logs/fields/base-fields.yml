@@ -1,0 +1,25 @@
+- name: data_stream.type
+  type: constant_keyword
+  description: Data stream type.
+- name: data_stream.dataset
+  type: constant_keyword
+  description: Data stream dataset.
+- name: data_stream.namespace
+  type: constant_keyword
+  description: Data stream namespace.
+- name: '@timestamp'
+  type: date
+  description: Event timestamp.
+- name: event.original
+  type: keyword
+  doc_values: false
+  description: >
+    Raw event, shipped by ECS with doc_values disabled. The columnar override re-enables
+    doc values for columnar index modes only.
+  columnar:
+    doc_values: true
+- name: host.name
+  type: keyword
+  description: Host name, with an inverted index kept in columnar mode.
+  columnar:
+    index: true
