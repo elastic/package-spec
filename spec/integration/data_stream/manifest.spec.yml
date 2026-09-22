@@ -632,8 +632,11 @@ spec:
         When true, Fleet installs index templates for this data stream with a
         `.otel` suffix in the index pattern (for example `logs-package.dataset.otel-*`),
         matching the OTel-native naming used for otelcol inputs.
-        Use this for integration data streams that ship field mappings and ingest
-        pipelines without an otelcol input.
+        Use this only for integration data streams that ship field mappings and
+        ingest pipelines and do not define any inputs. If a stream input is
+        required, use the otelcol input type instead, which already applies the
+        `.otel` suffix. Setting this field to true on a data stream that defines
+        an input is rejected.
       type: boolean
       default: false
       examples:

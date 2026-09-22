@@ -9,7 +9,7 @@
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
     # Pending on https://github.com/elastic/package-spec/issues/1260
-    - description: Add optional use_otel_suffix on integration data streams so index templates can use the .otel suffix without an otelcol input.
+    - description: Add optional use_otel_suffix on integration data streams so index templates can use the .otel suffix without an input, and reject the flag when the data stream defines an input.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1261
 - version: 3.6.6
