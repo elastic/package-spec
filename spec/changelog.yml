@@ -8,7 +8,7 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
-    # Pending on https://github.com/elastic/package-spec/issues/1260
+    # Pending on https://github.com/elastic/kibana/pull/292589
     - description: Add optional use_otel_suffix on integration data streams so index templates can use the .otel suffix without an input, and reject the flag when the data stream defines an input.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1261
