@@ -224,7 +224,12 @@ spec:
           properties:
             version:
               type: string
-              description: Elastic Agent versions compatible with this package.
+              deprecated: true # See https://github.com/elastic/ingest-dev/issues/9431
+              description: >
+                Elastic Agent versions compatible with this package (deprecated, will be disallowed
+                in a future spec version). A policy manages agents on multiple versions at once, so
+                gate agent-version-specific configuration inside input templates with a working
+                fallback instead of excluding older agents at the package level.
               examples:
                 - "^9.5.0"
     description:
