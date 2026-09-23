@@ -8,6 +8,11 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+- version: 3.6.7-next
+  changes:
+    - description: Warn when a package declares a package-level `conditions.agent.version`.
+      type: deprecation
+      link: https://github.com/elastic/package-spec/pull/1265
 - version: 3.6.6
   changes:
     - description: Add support for mode-aware constructors and validation APIs.

@@ -17,6 +17,8 @@
 | [SVR00007]          | Kibana tag is duplicate               |
 | [SVR00008]          | Pipeline failure handler must set event.kind    |
 | [SVR00009]          | Pipeline failure handler must set error.message |
+| [SVR00010]          | Integration input qualifier required            |
+| [SVR00011]          | Package-level agent.version condition           |
 
 ## JSE00001 - Rename message to event.original
 [JSE00001]: #jse00001---rename-message-to-eventoriginal
@@ -134,4 +136,69 @@ on_failure:
         with tag '{{{ _ingest.on_failure_processor_tag }}}'
         in pipeline '{{{ _ingest.pipeline }}}'
         failed with message '{{{ _ingest.on_failure_message }}}'
+```
+
+## SVR00010 - Inputs of the same type must be named
+
+**Available since [3.6.1](https://github.com/elastic/package-spec/releases/tag/v3.6.1)**
+
+When a policy template declares more than one input of the same `type`, every one of
+them must have a `name`. Data streams refer to inputs by type, so without names Fleet
+cannot tell which of the inputs a stream belongs to. This is common with `otelcol`.
+
+```yaml
+policy_templates:
+  - name: nginx
+    inputs:
+      - type: otelcol
+        name: nginx_metrics
+        title: Nginx metrics
+      - type: otelcol
+        name: nginx_logs
+        title: Nginx logs
+```
+
+## SVR00011 - Package-level agent.version condition
+[SVR00011]: #svr00011---package-level-agentversion-condition
+
+**Available since 3.6.7** (warning; will become a hard error in a future spec release)
+
+A package declared `conditions.agent.version` at the package level. This field is deprecated.
+
+Unlike `conditions.kibana.version`, which gates stack installation, `conditions.agent.version`
+feeds Fleet's version-specific policies. Agents below the specified constraint receive a rendered
+policy with the integration configuration omitted, which silently breaks rolling upgrades and
+rollbacks where a single policy must work across multiple agent versions simultaneously.
+
+Instead, keep a single package version that is compatible with all supported agent versions. When a
+feature requires a minimum agent version, gate it inside the input template with a fallback path for
+older agents:
+
+```yaml
+# Before: exclude old agents at the package level
+conditions:
+  agent:
+    version: "^9.5.0"
+```
+
+```yaml
+# After: gate version-specific config inside the template with a fallback
+{{#if (semverSatisfies agentVersion "^9.5.0")}}
+use_cloud_connectors: true
+{{else}}
+# fallback configuration compatible with older agents
+access_key_id: {{access_key_id}}
+secret_access_key: {{secret_access_key}}
+{{/if}}
+```
+
+Add policy tests that render valid runnable configuration for both the minimum supported and the
+current agent version to confirm the fallback path is correct.
+
+To suppress this check during the migration window, add to the package's `validation.yml`:
+
+```yaml
+errors:
+  exclude_checks:
+    - SVR00011
 ```

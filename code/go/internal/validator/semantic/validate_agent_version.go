@@ -17,9 +17,10 @@ import (
 var (
 	errInvalidAgentVersionCondition = fmt.Errorf("invalid agent.version condition")
 	errAgentVersionIncorrectType    = fmt.Errorf("manifest agent version is not a string")
+	errAgentVersionDeprecated       = fmt.Errorf("package-level conditions.agent.version is deprecated, and will be disallowed in a future spec version")
 )
 
-// ValidateMinimumAgentVersion checks that the package manifest includes the agent.version condition.
+// ValidateMinimumAgentVersion checks that the agent.version condition in the package manifest, if present, is a valid semver constraint.
 func ValidateMinimumAgentVersion(fsys fspath.FS) specerrors.ValidationErrors {
 	manifest, err := readManifest(fsys)
 	if err != nil {
@@ -34,6 +35,9 @@ func ValidateMinimumAgentVersion(fsys fspath.FS) specerrors.ValidationErrors {
 	if agentVersionCondition != "" {
 		if _, err := semver.NewConstraint(agentVersionCondition); err != nil {
 			return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w: %w", fsys.Path(manifest.Name()), errInvalidAgentVersionCondition, err)}
+		}
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredError(errAgentVersionDeprecated, specerrors.CodeAgentVersionCondition),
 		}
 	}
 

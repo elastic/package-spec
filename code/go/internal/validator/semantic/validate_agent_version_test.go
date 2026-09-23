@@ -29,7 +29,7 @@ conditions:
   agent:
     version: "^8.0.0"
 `,
-			expectedErr: nil,
+			expectedErr: errAgentVersionDeprecated,
 		},
 		{
 			title: "invalid - agent.version condition is missing",

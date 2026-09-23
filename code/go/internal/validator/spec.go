@@ -244,7 +244,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateInputPackagesPolicyTemplates, types: []string{"input"}},
 		{fn: semantic.ValidateInputDynamicSignalTypes, since: semver.MustParse("3.6.0")},
 		{fn: semantic.ValidateFleetReservedVars, types: []string{"integration", "input"}, since: semver.MustParse("3.6.1")},
-		{fn: semantic.ValidateMinimumAgentVersion},
+		{fn: warnOn(semantic.ValidateMinimumAgentVersion)},
 		{fn: semantic.ValidateIntegrationPolicyTemplates, types: []string{"integration"}},
 		{fn: semantic.ValidatePolicyTemplateDatastreamCategories, types: []string{"integration"}},
 		{fn: semantic.ValidateDatastreamPackageCategories, types: []string{"integration"}},
