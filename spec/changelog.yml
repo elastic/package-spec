@@ -11,7 +11,7 @@
 - version: 3.6.7-next
   changes:
     - description: Warn when a package declares a package-level `conditions.agent.version`.
-      type: enhancement
+      type: deprecation
       link: https://github.com/elastic/package-spec/pull/TBD
 - version: 3.6.6
   changes:
