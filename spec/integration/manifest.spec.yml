@@ -224,7 +224,7 @@ spec:
           properties:
             version:
               type: string
-              deprecated: true # See https://github.com/elastic/ingest-dev/issues/9431
+              deprecated: true # See https://github.com/elastic/package-spec/pull/1265
               description: >
                 Elastic Agent versions compatible with this package (deprecated, will be disallowed
                 in a future spec version). A policy manages agents on multiple versions at once, so
