@@ -138,10 +138,25 @@ on_failure:
         failed with message '{{{ _ingest.on_failure_message }}}'
 ```
 
-## SVR00010 - Integration input qualifier required
-[SVR00010]: #svr00010---integration-input-qualifier-required
+## SVR00010 - Inputs of the same type must be named
 
-**Available since [3.6.0](https://github.com/elastic/package-spec/releases/tag/v3.6.0)**
+**Available since [3.6.1](https://github.com/elastic/package-spec/releases/tag/v3.6.1)**
+
+When a policy template declares more than one input of the same `type`, every one of
+them must have a `name`. Data streams refer to inputs by type, so without names Fleet
+cannot tell which of the inputs a stream belongs to. This is common with `otelcol`.
+
+```yaml
+policy_templates:
+  - name: nginx
+    inputs:
+      - type: otelcol
+        name: nginx_metrics
+        title: Nginx metrics
+      - type: otelcol
+        name: nginx_logs
+        title: Nginx logs
+```
 
 ## SVR00011 - Package-level agent.version condition
 [SVR00011]: #svr00011---package-level-agentversion-condition
