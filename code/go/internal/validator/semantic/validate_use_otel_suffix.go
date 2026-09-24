@@ -41,14 +41,14 @@ func ValidateUseOtelSuffix(fsys fspath.FS) specerrors.ValidationErrors {
 		data, err := fs.ReadFile(fsys, manifestPath)
 		if err != nil {
 			errs = append(errs, specerrors.NewStructuredErrorf(
-				"file %q is invalid: failed to read manifest: %w", fsys.Path(manifestPath), err))
+				"file \"%s\" is invalid: failed to read manifest: %w", fsys.Path(manifestPath), err))
 			continue
 		}
 
 		var manifest useOtelSuffixManifest
 		if err := yaml.Unmarshal(data, &manifest); err != nil {
 			errs = append(errs, specerrors.NewStructuredErrorf(
-				"file %q is invalid: failed to parse manifest: %w", fsys.Path(manifestPath), err))
+				"file \"%s\" is invalid: failed to parse manifest: %w", fsys.Path(manifestPath), err))
 			continue
 		}
 
@@ -68,7 +68,7 @@ func ValidateUseOtelSuffix(fsys fspath.FS) specerrors.ValidationErrors {
 		}
 
 		errs = append(errs, specerrors.NewStructuredError(fmt.Errorf(
-			"file %q is invalid: use_otel_suffix is only allowed on data streams without inputs (inputs defined: %s). If this data stream needs an input, use the otelcol input type instead, which already applies the .otel index pattern suffix",
+			"file \"%s\" is invalid: use_otel_suffix is only allowed on data streams without inputs (inputs defined: %s). If this data stream needs an input, use the otelcol input type instead, which already applies the .otel index pattern suffix",
 			fsys.Path(manifestPath), strings.Join(inputs, ", ")), specerrors.CodeUseOtelSuffixWithInput))
 	}
 
