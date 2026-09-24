@@ -17,6 +17,7 @@
 | [SVR00007]          | Kibana tag is duplicate               |
 | [SVR00008]          | Pipeline failure handler must set event.kind    |
 | [SVR00009]          | Pipeline failure handler must set error.message |
+| [SVR00011]          | use_otel_suffix with an input defined |
 
 ## JSE00001 - Rename message to event.original
 [JSE00001]: #jse00001---rename-message-to-eventoriginal
@@ -135,3 +136,12 @@ on_failure:
         in pipeline '{{{ _ingest.pipeline }}}'
         failed with message '{{{ _ingest.on_failure_message }}}'
 ```
+
+## SVR00011 - use_otel_suffix with an input defined
+[SVR00011]: #svr00011---use_otel_suffix-with-an-input-defined
+
+**Available since 3.7.0.** This check is not limited to `format_version` 3.7.0.
+
+`use_otel_suffix` may be set to true only on a data stream that does not define
+stream inputs. Data streams that need an agent input should use the `otelcol`
+input type, which already applies the `.otel` index pattern suffix.

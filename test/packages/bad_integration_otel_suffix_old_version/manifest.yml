@@ -1,0 +1,23 @@
+format_version: 3.6.6
+name: bad_integration_otel_suffix_old_version
+title: "Bad Integration with use_otel_suffix and an input"
+version: 0.0.1
+source:
+  license: "Elastic-2.0"
+description: "Integration package that sets use_otel_suffix on a data stream that also defines an input."
+type: integration
+categories:
+  - custom
+conditions:
+  kibana:
+    version: "^9.4.0"
+  elastic:
+    subscription: "basic"
+icons:
+  - src: /img/sample-logo.svg
+    title: Sample logo
+    size: 32x32
+    type: image/svg+xml
+owner:
+  github: elastic/ecosystem
+  type: elastic

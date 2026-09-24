@@ -42,6 +42,7 @@ func Test_ValidateFromPath(t *testing.T) {
 		"good_input":                             {},
 		"good_input_otel":                        {},
 		"good_integration_otel":                  {},
+		"good_integration_otel_suffix":           {},
 		"good_input_qualifier":                   {},
 		"good_input_fleet_reserved_vars":         {},
 		"good_integration_fleet_reserved_vars":   {},
@@ -500,6 +501,12 @@ func Test_ValidateFromPath(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				"field policy_templates.0.inputs.0.type: Must not be present",
+			},
+		},
+		"bad_integration_otel_suffix_old_version": {
+			"data_stream/logs/manifest.yml",
+			[]string{
+				`use_otel_suffix is only allowed on data streams without inputs (inputs defined: "logfile"). If this data stream needs an input, use the otelcol input type instead, which already applies the .otel index pattern suffix (SVR00011)`,
 			},
 		},
 		"bad_input_qualifier_ambiguous": {

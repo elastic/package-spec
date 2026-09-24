@@ -40,6 +40,13 @@ Feature: Basic package types support
    Given the "good_integration_otel" package is installed
      And a policy is created with "good_integration_otel" package, "0.0.1" version, "otel" template, input effective name "otel_logs", "otel_logs" stream, "otelcol" input type and dataset ""
     Then there is an index template "logs-good_integration_otel.otel_logs" with pattern "logs-good_integration_otel.otel_logs.otel-*"
+
+  @3.7.0
+  @skip
+  # Pending on https://github.com/elastic/package-spec/issues/1260
+  Scenario: Integration package with use_otel_suffix installs .otel index pattern
+   Given the "good_integration_otel_suffix" package is installed
+    Then there is an index template "logs-good_integration_otel_suffix.logs" with pattern "logs-good_integration_otel_suffix.logs.otel-*"
   
   @3.6.0
   @skip

@@ -627,6 +627,20 @@ spec:
       description: if true, the index pattern in the ES template will contain the dataset as a prefix only
       type: boolean
       default: false
+    use_otel_suffix:
+      description: >
+        When true, Fleet installs index templates for this data stream with a
+        `.otel` suffix in the index pattern (for example `logs-package.dataset.otel-*`),
+        matching the OTel-native naming used for otelcol inputs.
+        Use this only for integration data streams that ship field mappings and
+        ingest pipelines and do not define any inputs. If a stream input is
+        required, use the otelcol input type instead, which already applies the
+        `.otel` suffix. Setting this field to true on a data stream that defines
+        an input is rejected.
+      type: boolean
+      default: false
+      examples:
+        - true
     type:
       description: Type of data stream
       type: string

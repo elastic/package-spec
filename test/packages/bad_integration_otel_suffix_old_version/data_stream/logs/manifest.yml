@@ -1,0 +1,7 @@
+title: OTel-style logs
+type: logs
+use_otel_suffix: true
+streams:
+  - input: logfile
+    title: Collect logs
+    description: Collect sample logs
