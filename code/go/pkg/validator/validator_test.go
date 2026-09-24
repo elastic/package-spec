@@ -506,7 +506,7 @@ func Test_ValidateFromPath(t *testing.T) {
 		"bad_integration_otel_suffix_old_version": {
 			"data_stream/logs/manifest.yml",
 			[]string{
-				"field (root): Additional property use_otel_suffix is not allowed",
+				`use_otel_suffix is only allowed on data streams without inputs (inputs defined: "logfile"). If this data stream needs an input, use the otelcol input type instead, which already applies the .otel index pattern suffix (SVR00011)`,
 			},
 		},
 		"bad_input_qualifier_ambiguous": {

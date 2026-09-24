@@ -140,7 +140,7 @@ on_failure:
 ## SVR00011 - use_otel_suffix with an input defined
 [SVR00011]: #svr00011---use_otel_suffix-with-an-input-defined
 
-**Available since 3.7.0**
+**Available since 3.7.0.** This check is not limited to `format_version` 3.7.0.
 
 `use_otel_suffix` may be set to true only on a data stream that does not define
 stream inputs. Data streams that need an agent input should use the `otelcol`

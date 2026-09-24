@@ -1,1 +1,1 @@
-# Bad integration because of use_otel_suffix before 3.7.0
+# Bad integration because use_otel_suffix is set on a data stream that defines an input

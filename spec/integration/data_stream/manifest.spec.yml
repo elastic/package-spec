@@ -786,8 +786,6 @@ spec:
 versions:
   - before: 3.7.0
     patch:
-      - op: remove
-        path: /properties/use_otel_suffix
       # Variable-level scope migration.
       - op: remove
         path: /definitions/vars/items/properties/migrate_from

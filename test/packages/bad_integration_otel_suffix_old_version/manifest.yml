@@ -1,10 +1,10 @@
 format_version: 3.6.6
 name: bad_integration_otel_suffix_old_version
-title: "Bad Integration with use_otel_suffix on old version"
+title: "Bad Integration with use_otel_suffix and an input"
 version: 0.0.1
 source:
   license: "Elastic-2.0"
-description: "Integration package using use_otel_suffix with format_version before 3.7.0."
+description: "Integration package that sets use_otel_suffix on a data stream that also defines an input."
 type: integration
 categories:
   - custom
