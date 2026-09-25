@@ -47,7 +47,7 @@ spec:
         - description: ES|QL view definition in YAML
           type: file
           sizeLimit: 3MB
-          pattern: '^.+\.yml$'
+          pattern: '^{PACKAGE_NAME}-.+\.yml$'
           contentMediaType: "application/x-yaml"
           required: false
           $ref: "./view.spec.yml"

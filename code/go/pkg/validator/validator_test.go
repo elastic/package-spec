@@ -584,11 +584,11 @@ func Test_ValidateFromPath(t *testing.T) {
 			},
 		},
 		"bad_esql_view_content": {
-			"elasticsearch/esql_view/view.yml",
+			"elasticsearch/esql_view/bad_esql_view_content-view.yml",
 			[]string{"field query: Invalid type. Expected: string, given: null"},
 		},
 		"bad_esql_view_integration": {
-			"elasticsearch/esql_view/view.yml",
+			"elasticsearch/esql_view/bad_esql_view_integration-view.yml",
 			[]string{"field query: Invalid type. Expected: string, given: null"},
 		},
 		"bad_content_duplicate_tags": {

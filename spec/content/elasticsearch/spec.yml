@@ -9,7 +9,7 @@ spec:
       contents:
         - description: ES|QL view definition in YAML
           type: file
-          pattern: '^.+\.yml$'
+          pattern: '^{PACKAGE_NAME}-.+\.yml$'
           contentMediaType: "application/x-yaml"
           required: false
           $ref: "../../integration/elasticsearch/view.spec.yml"
