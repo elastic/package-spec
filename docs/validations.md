@@ -17,6 +17,7 @@
 | [SVR00007]          | Kibana tag is duplicate               |
 | [SVR00008]          | Pipeline failure handler must set event.kind    |
 | [SVR00009]          | Pipeline failure handler must set error.message |
+| [SVR00011]          | ES\|QL view definition is invalid               |
 
 ## JSE00001 - Rename message to event.original
 [JSE00001]: #jse00001---rename-message-to-eventoriginal
@@ -135,3 +136,36 @@ on_failure:
         in pipeline '{{{ _ingest.pipeline }}}'
         failed with message '{{{ _ingest.on_failure_message }}}'
 ```
+
+## SVR00011 - ES|QL view definition is invalid
+
+[SVR00011]: #svr00011---esql-view-definition-is-invalid
+
+ES|QL views are cluster-state objects installed into Elasticsearch. The following
+semantic rules are enforced for every file in the `elasticsearch/esql_view/` folder:
+
+**`name` must equal the filename stem**
+
+The `name` field in the YAML must exactly match the filename without the `.yml`
+extension. For example, `my_package-my_view.yml` must declare `name: my_package-my_view`.
+This rule, combined with the `{PACKAGE_NAME}-` filename pattern, guarantees that
+the view name is scoped to the package and cannot collide with views from other packages.
+
+**No duplicate `name` values within a package**
+
+Two files in the same `esql_view/` folder cannot declare the same `name`. At install
+time Fleet performs an unconditional `PUT /_query/view/<name>`, so a duplicate would
+silently overwrite the first view.
+
+**`name` cannot be `.` or `..`**
+
+Elasticsearch rejects index-like names that are `.` or `..`.
+
+**`name` must be at most 255 bytes**
+
+Elasticsearch enforces a 255-byte limit on index-like names.
+
+**`query` must be non-empty after trimming whitespace**
+
+A query consisting only of whitespace characters passes `minLength: 1` in the JSON
+Schema but is rejected by Elasticsearch (`Strings.hasText()` check in `PutViewAction`).
