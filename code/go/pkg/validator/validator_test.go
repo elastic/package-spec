@@ -585,11 +585,17 @@ func Test_ValidateFromPath(t *testing.T) {
 		},
 		"bad_esql_view_content": {
 			"elasticsearch/esql_view/bad_esql_view_content-view.yml",
-			[]string{"field query: Invalid type. Expected: string, given: null"},
+			[]string{
+				"field query: Invalid type. Expected: string, given: null",
+				"query must not be empty or whitespace-only (SVR00011)",
+			},
 		},
 		"bad_esql_view_integration": {
 			"elasticsearch/esql_view/bad_esql_view_integration-view.yml",
-			[]string{"field query: Invalid type. Expected: string, given: null"},
+			[]string{
+				"field query: Invalid type. Expected: string, given: null",
+				"query must not be empty or whitespace-only (SVR00011)",
+			},
 		},
 		"bad_content_duplicate_tags": {
 			"kibana/tags.yml",
