@@ -1,0 +1,5 @@
+name: good_content-my_view
+query: |
+  FROM logs-*
+  | WHERE event.kind == "event"
+  | STATS count = COUNT() BY source.ip
