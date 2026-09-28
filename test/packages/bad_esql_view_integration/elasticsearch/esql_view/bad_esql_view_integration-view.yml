@@ -1,2 +1,3 @@
 name: bad_esql_view_integration-view
 query:
+extra_field: not_allowed

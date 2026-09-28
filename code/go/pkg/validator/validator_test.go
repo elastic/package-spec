@@ -587,6 +587,7 @@ func Test_ValidateFromPath(t *testing.T) {
 			"elasticsearch/esql_view/bad_esql_view_content-view.yml",
 			[]string{
 				"field query: Invalid type. Expected: string, given: null",
+				"field (root): Additional property extra_field is not allowed",
 				"query must not be empty or whitespace-only (SVR00011)",
 			},
 		},
@@ -594,6 +595,7 @@ func Test_ValidateFromPath(t *testing.T) {
 			"elasticsearch/esql_view/bad_esql_view_integration-view.yml",
 			[]string{
 				"field query: Invalid type. Expected: string, given: null",
+				"field (root): Additional property extra_field is not allowed",
 				"query must not be empty or whitespace-only (SVR00011)",
 			},
 		},
