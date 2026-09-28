@@ -752,6 +752,11 @@ func TestValidateItemNotAllowed(t *testing.T) {
 				"wrongname.yml",
 			},
 		},
+		"bad_esql_view_old_format_integration": {
+			"elasticsearch": []string{
+				"esql_view",
+			},
+		},
 	}
 
 	for pkgName, invalidItemsPerFolder := range tests {

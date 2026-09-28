@@ -1,0 +1,24 @@
+format_version: 3.5.0
+name: bad_esql_view_old_format_integration
+title: Bad ES|QL View Old Format Integration
+description: Integration package with an esql_view folder that predates format_version 3.6.0.
+version: 0.0.1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: "^9.0.0"
+  elastic:
+    subscription: "basic"
+policy_templates:
+  - name: sample
+    title: Sample logs
+    description: Collect sample logs
+    inputs:
+      - type: logfile
+        title: Collect sample logs
+        description: Collecting sample logs
+owner:
+  github: elastic/integrations
+  type: elastic
