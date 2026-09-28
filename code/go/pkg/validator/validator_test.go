@@ -583,6 +583,19 @@ func Test_ValidateFromPath(t *testing.T) {
 				"policy template \"sample\": failed validation for policy input \"logfile\": template file not found",
 			},
 		},
+		"bad_esql_view_uppercase_name_integration": {
+			"elasticsearch/esql_view/bad_esql_view_uppercase_name_integration-view.yml",
+			[]string{
+				"field name: Does not match pattern '^[a-z][a-z0-9_\\-]*$'",
+				`name field "BadView" must equal the filename stem "bad_esql_view_uppercase_name_integration-view" (SVR00011)`,
+			},
+		},
+		"bad_esql_view_name_mismatch_integration": {
+			"elasticsearch/esql_view/bad_esql_view_name_mismatch_integration-view.yml",
+			[]string{
+				`name field "bad_esql_view_name_mismatch_integration-other" must equal the filename stem "bad_esql_view_name_mismatch_integration-view" (SVR00011)`,
+			},
+		},
 		"bad_esql_view_content": {
 			"elasticsearch/esql_view/bad_esql_view_content-view.yml",
 			[]string{
@@ -732,6 +745,11 @@ func TestValidateItemNotAllowed(t *testing.T) {
 		"bad_content_dev_deploy_variants": {
 			"_dev": []string{
 				"deploy",
+			},
+		},
+		"bad_esql_view_bad_filename_integration": {
+			"elasticsearch/esql_view": []string{
+				"wrongname.yml",
 			},
 		},
 	}

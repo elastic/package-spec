@@ -1,0 +1,2 @@
+name: bad_esql_view_name_mismatch_integration-other
+query: FROM logs-*
