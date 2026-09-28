@@ -38,7 +38,12 @@ spec:
       name: transform
       required: false
       $ref: "./transform/spec.yml"
-    - description: Folder containing Elasticsearch ES|QL views
+    - description: >-
+        Folder containing Elasticsearch ES|QL view definitions. ES|QL views are
+        cluster-state objects installed into the global Elasticsearch index
+        namespace via PUT /_query/view/<name> (not scoped to a data stream).
+        They are installed after index templates and require Elasticsearch 9.4+
+        or Elastic Serverless.
       type: folder
       name: esql_view
       required: false
