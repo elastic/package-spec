@@ -21,7 +21,7 @@ func TestValidateMinimumAgentVersion(t *testing.T) {
 		expectedErr  error
 	}{
 		{
-			title: "valid - agent.version condition is present",
+			title: "deprecated - agent.version condition is present",
 			manifestYAML: `
 name: test-package
 version: 1.0.0

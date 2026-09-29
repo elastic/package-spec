@@ -11,8 +11,6 @@ categories:
 conditions:
   kibana:
     version: "^9.2.3"
-  agent:
-    version: "^8.9.0"
   elastic:
     subscription: "basic"
 screenshots:

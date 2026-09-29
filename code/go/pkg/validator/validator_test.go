@@ -994,7 +994,10 @@ func TestValidateWarnings(t *testing.T) {
 		"good":    {},
 		"good_v2": {},
 		"good_v3": {
-			"package-level conditions.agent.version is deprecated, and will be disallowed in a future spec version (SVR00011)",
+			"package-level conditions.agent.version is deprecated and disallowed since spec 3.7.0 (SVR00011)",
+		},
+		"bad_conditions_agent_version_v3_7": {
+			"package-level conditions.agent.version is deprecated and disallowed since spec 3.7.0 (SVR00011)",
 		},
 		"visualizations_by_reference": {
 			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens) (SVR00004)",

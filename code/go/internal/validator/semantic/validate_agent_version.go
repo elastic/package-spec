@@ -17,7 +17,7 @@ import (
 var (
 	errInvalidAgentVersionCondition = fmt.Errorf("invalid agent.version condition")
 	errAgentVersionIncorrectType    = fmt.Errorf("manifest agent version is not a string")
-	errAgentVersionDeprecated       = fmt.Errorf("package-level conditions.agent.version is deprecated, and will be disallowed in a future spec version")
+	errAgentVersionDeprecated       = fmt.Errorf("package-level conditions.agent.version is deprecated and disallowed since spec 3.7.0")
 )
 
 // ValidateMinimumAgentVersion checks that the agent.version condition in the package manifest, if present, is a valid semver constraint.

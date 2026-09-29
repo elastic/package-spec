@@ -1,0 +1,16 @@
+format_version: 3.7.0
+name: bad_conditions_agent_version_v3_7
+title: Bad Conditions Agent Version V3 7
+description: Test package with conditions.agent.version set, which is disallowed from spec 3.7.0 onwards.
+version: 0.0.1
+type: integration
+conditions:
+  kibana:
+    version: '^9.5.0'
+  elastic:
+    subscription: 'basic'
+  agent:
+    version: '^9.0.0'
+owner:
+  github: elastic/ecosystem
+  type: elastic
