@@ -586,7 +586,7 @@ func Test_ValidateFromPath(t *testing.T) {
 		"bad_esql_view_uppercase_name_integration": {
 			"elasticsearch/esql_view/bad_esql_view_uppercase_name_integration-view.yml",
 			[]string{
-				"field name: Does not match pattern '^[a-z][a-z0-9_\\-]*$'",
+				"field name: Does not match pattern '^[a-z0-9][a-z0-9_\\-]*$'",
 				`name field "BadView" must equal the filename stem "bad_esql_view_uppercase_name_integration-view" (SVR00011)`,
 			},
 		},

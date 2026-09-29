@@ -3,9 +3,9 @@ spec:
   additionalProperties: false
   properties:
     name:
-      description: Name of the ES|QL view. Must be lowercase and match the filename stem.
+      description: Name of the ES|QL view. Must be lowercase alphanumeric (may start with a digit) and match the filename stem.
       type: string
-      pattern: '^[a-z][a-z0-9_\-]*$'
+      pattern: '^[a-z0-9][a-z0-9_\-]*$'
     description:
       description: Human-readable description of the ES|QL view
       type: string
