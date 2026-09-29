@@ -13,7 +13,7 @@
     - description: Correct esql_view name pattern to enforce lowercase-only names and require {PACKAGE_NAME}- filename prefix.
       type: bugfix
       link: https://github.com/elastic/package-spec/issues/1257
-    - description: Add semantic validator (SVR00011) for ES|QL views enforcing name-vs-stem match, uniqueness, reserved names, 255-byte limit, and non-empty query.
+    - description: Add semantic validator (SVR00012) for ES|QL views enforcing name-vs-stem match, uniqueness, reserved names, 255-byte limit, and non-empty query.
       type: enhancement
       link: https://github.com/elastic/package-spec/issues/1257
 - version: 3.6.6

@@ -587,13 +587,13 @@ func Test_ValidateFromPath(t *testing.T) {
 			"elasticsearch/esql_view/bad_esql_view_uppercase_name_integration-view.yml",
 			[]string{
 				"field name: Does not match pattern '^[a-z0-9][a-z0-9_\\-]*$'",
-				`name field "BadView" must equal the filename stem "bad_esql_view_uppercase_name_integration-view" (SVR00011)`,
+				`name field "BadView" must equal the filename stem "bad_esql_view_uppercase_name_integration-view" (SVR00012)`,
 			},
 		},
 		"bad_esql_view_name_mismatch_integration": {
 			"elasticsearch/esql_view/bad_esql_view_name_mismatch_integration-view.yml",
 			[]string{
-				`name field "bad_esql_view_name_mismatch_integration-other" must equal the filename stem "bad_esql_view_name_mismatch_integration-view" (SVR00011)`,
+				`name field "bad_esql_view_name_mismatch_integration-other" must equal the filename stem "bad_esql_view_name_mismatch_integration-view" (SVR00012)`,
 			},
 		},
 		"bad_esql_view_content": {
@@ -601,7 +601,7 @@ func Test_ValidateFromPath(t *testing.T) {
 			[]string{
 				"field query: Invalid type. Expected: string, given: null",
 				"field (root): Additional property extra_field is not allowed",
-				"query must not be empty or whitespace-only (SVR00011)",
+				"query must not be empty or whitespace-only (SVR00012)",
 			},
 		},
 		"bad_esql_view_integration": {
@@ -609,7 +609,7 @@ func Test_ValidateFromPath(t *testing.T) {
 			[]string{
 				"field query: Invalid type. Expected: string, given: null",
 				"field (root): Additional property extra_field is not allowed",
-				"query must not be empty or whitespace-only (SVR00011)",
+				"query must not be empty or whitespace-only (SVR00012)",
 			},
 		},
 		"bad_content_duplicate_tags": {

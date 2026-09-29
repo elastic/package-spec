@@ -17,7 +17,7 @@
 | [SVR00007]          | Kibana tag is duplicate               |
 | [SVR00008]          | Pipeline failure handler must set event.kind    |
 | [SVR00009]          | Pipeline failure handler must set error.message |
-| [SVR00011]          | ES\|QL view definition is invalid               |
+| [SVR00012]          | ES\|QL view definition is invalid               |
 
 ## JSE00001 - Rename message to event.original
 [JSE00001]: #jse00001---rename-message-to-eventoriginal
@@ -137,9 +137,9 @@ on_failure:
         failed with message '{{{ _ingest.on_failure_message }}}'
 ```
 
-## SVR00011 - ES|QL view definition is invalid
+## SVR00012 - ES|QL view definition is invalid
 
-[SVR00011]: #svr00011---esql-view-definition-is-invalid
+[SVR00012]: #svr00011---esql-view-definition-is-invalid
 
 ES|QL views are cluster-state objects installed into Elasticsearch. The following
 semantic rules are enforced for every file in the `elasticsearch/esql_view/` folder:

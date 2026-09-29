@@ -49,7 +49,7 @@ func TestValidateEsqlViews(t *testing.T) {
 		errs := ValidateEsqlViews(fsys)
 		require.Len(t, errs, 1)
 		assert.Contains(t, errs[0].Error(), `name field "other_name" must equal the filename stem "mypkg-access_logs"`)
-		assert.Contains(t, errs[0].Error(), "SVR00011")
+		assert.Contains(t, errs[0].Error(), "SVR00012")
 	})
 
 	t.Run("duplicate name across files", func(t *testing.T) {
@@ -110,7 +110,7 @@ func TestValidateEsqlViews(t *testing.T) {
 		for _, e := range errs {
 			if strings.Contains(e.Error(), "name exceeds 255 bytes") {
 				hasLengthErr = true
-				assert.Contains(t, e.Error(), "SVR00011")
+				assert.Contains(t, e.Error(), "SVR00012")
 			}
 		}
 		assert.True(t, hasLengthErr, "expected a name-too-long error")
@@ -123,7 +123,7 @@ func TestValidateEsqlViews(t *testing.T) {
 		errs := ValidateEsqlViews(fsys)
 		require.Len(t, errs, 1)
 		assert.Contains(t, errs[0].Error(), "query must not be empty or whitespace-only")
-		assert.Contains(t, errs[0].Error(), "SVR00011")
+		assert.Contains(t, errs[0].Error(), "SVR00012")
 	})
 
 	t.Run("empty query", func(t *testing.T) {
