@@ -67,13 +67,6 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 			))
 		}
 
-		if view.Name == "." || view.Name == ".." {
-			errs = append(errs, specerrors.NewStructuredError(
-				fmt.Errorf("file %q is invalid: name %q is not allowed", fullPath, view.Name),
-				specerrors.CodeEsqlViewValidation,
-			))
-		}
-
 		if len([]byte(view.Name)) > 255 {
 			errs = append(errs, specerrors.NewStructuredError(
 				fmt.Errorf("file %q is invalid: name exceeds 255 bytes", fullPath),
