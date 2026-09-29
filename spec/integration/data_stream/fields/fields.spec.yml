@@ -45,8 +45,36 @@ spec:
       name:
         description: >
           Name of field. Names containing dots are automatically split into
-          sub-fields.
-          Names with wildcards generate dynamic mappings.
+          sub-fields. Names with wildcards generate dynamic mappings.
+          Prefer Elastic Common Schema (ECS) field names when a matching field
+          exists (use `external: ecs` or define the ECS field explicitly). For
+          custom fields, follow the same naming conventions used by Beats and
+          ECS:
+
+          - Use lowercase letters and snake_case (underscores) to combine words.
+          - Prefer dots to group related fields into nested field sets (for
+            example `cpu.load`, not `CPULoad`).
+          - Avoid repeating the field-set prefix in the leaf name (use
+            `host.ip`, not `host.host_ip`).
+          - Organise names from general to specific; put unit suffixes last (for
+            example `system.memory.used.bytes`).
+          - Use common unit suffixes when applicable: `count`, `pct`, `day`,
+            `sec`, `ms`, `us`, `ns`, `bytes`, `mb`.
+          - Prefer full words over uncommon abbreviations. Accepted Beats
+            abbreviations include `avg`, `max`, `min`, `request`, `connection`,
+            and `msg`.
+          - Use singular or plural forms that match the field content (for
+            example `requests_per_sec`, not `request_per_sec`).
+          - Do not use a leaf name that collides with a nested object prefix;
+            append `.value` to the scalar field in that case (for example
+            `workers.value` alongside `workers.busy`).
+
+          
+          See also the Beats naming conventions
+          (https://www.elastic.co/docs/extend/beats/event-conventions) and the
+          ECS field-name guidelines
+          (https://www.elastic.co/docs/reference/ecs/ecs-guidelines).
+
         type: string
         pattern: '^[\-*_\/@A-Za-z0-9]+(\.[\-*_\/@A-Za-z0-9]+)*$'
 
