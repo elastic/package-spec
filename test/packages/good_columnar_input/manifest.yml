@@ -1,0 +1,34 @@
+format_version: 3.7.0
+name: good_columnar_input
+title: Good columnar input package
+description: Input package using a columnar index mode with columnar-compatible fields.
+version: 0.0.1
+type: input
+source:
+  license: "Apache-2.0"
+categories:
+  - custom
+conditions:
+  kibana:
+    version: "^9.5.0"
+  elastic:
+    subscription: "basic"
+policy_templates:
+  - name: logs
+    type: logs
+    title: Collect logs
+    description: Collect logs from files.
+    input: logfile
+    template_path: input.yml.hbs
+    vars:
+      - name: paths
+        type: text
+        title: Paths
+        multi: true
+        default:
+          - /var/log/*.log
+elasticsearch:
+  index_mode: logsdb_columnar
+owner:
+  github: elastic/obs-infraobs-integrations
+  type: elastic

@@ -1,0 +1,28 @@
+- name: data_stream.type
+  type: constant_keyword
+  description: Data stream type.
+- name: data_stream.dataset
+  type: constant_keyword
+  description: Data stream dataset.
+- name: data_stream.namespace
+  type: constant_keyword
+  description: Data stream namespace.
+- name: '@timestamp'
+  type: date
+  description: Event timestamp.
+- name: labels
+  type: object
+  object_type: keyword
+  description: >
+    Dynamic template field. The columnar override is not applied by Fleet here, so it is
+    intentionally invalid.
+  columnar:
+    doc_values: true
+- name: host.name
+  type: keyword
+  description: Host name with a multi-field carrying an override Fleet does not apply.
+  multi_fields:
+    - name: text
+      type: text
+      columnar:
+        index: true
