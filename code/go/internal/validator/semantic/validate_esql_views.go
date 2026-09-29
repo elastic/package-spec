@@ -67,6 +67,13 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 			))
 		}
 
+		if view.Name == "." || view.Name == ".." {
+			errs = append(errs, specerrors.NewStructuredError(
+				fmt.Errorf("file %q is invalid: name %q is not allowed", fullPath, view.Name),
+				specerrors.CodeEsqlViewValidation,
+			))
+		}
+
 		// Elasticsearch index names are limited to 255 bytes (MAX_INDEX_NAME_BYTES in
 		// MetadataCreateIndexService); ES|QL views enforce the same limit when
 		// creating a view, since the view name becomes the index name.

@@ -73,18 +73,29 @@ func TestValidateEsqlViews(t *testing.T) {
 		assert.True(t, hasDuplicate, "expected a duplicate name error")
 	})
 
-	t.Run("name is dot", func(t *testing.T) {
-		fsys := makeEsqlViewFS(t, map[string]string{
-			"mypkg-view.yml": "name: .\nquery: FROM logs-*\n",
-		})
-		errs := ValidateEsqlViews(fsys)
-		hasStemMismatch := false
-		for _, e := range errs {
-			if strings.Contains(e.Error(), `name field "." must equal the filename stem`) {
-				hasStemMismatch = true
-			}
+	t.Run("reserved names", func(t *testing.T) {
+		// Use filenames whose stems equal the reserved name so the stem-mismatch
+		// check does not fire — only the reserved-name check should.
+		cases := []struct {
+			file string
+			name string
+		}{
+			{"..yml", "."},
+			{"...yml", ".."},
 		}
-		assert.True(t, hasStemMismatch, "expected a stem-mismatch error for name \".\"")
+		for _, tc := range cases {
+			fsys := makeEsqlViewFS(t, map[string]string{
+				tc.file: "name: " + tc.name + "\nquery: FROM logs-*\n",
+			})
+			errs := ValidateEsqlViews(fsys)
+			hasReserved := false
+			for _, e := range errs {
+				if strings.Contains(e.Error(), "is not allowed") {
+					hasReserved = true
+				}
+			}
+			assert.True(t, hasReserved, "expected a reserved-name error for name %q", tc.name)
+		}
 	})
 
 	t.Run("name exceeds 255 bytes", func(t *testing.T) {
