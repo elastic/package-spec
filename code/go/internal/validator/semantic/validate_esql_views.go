@@ -67,6 +67,11 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 			))
 		}
 
+		// Elasticsearch index names are limited to 255 bytes (MAX_INDEX_NAME_BYTES in
+		// MetadataCreateIndexService); ES|QL views enforce the same limit when
+		// creating a view, since the view name becomes the index name.
+		// https://github.com/elastic/elasticsearch/blob/7fde0983ff2c16322cd24388ae1e3afc6d5ac58b/server/src/main/java/org/elasticsearch/cluster/metadata/MetadataCreateIndexService.java#L353-L355
+		// https://github.com/elastic/elasticsearch/blob/7fde0983ff2c16322cd24388ae1e3afc6d5ac58b/x-pack/plugin/esql/src/main/java/org/elasticsearch/xpack/esql/view/PutViewAction.java#L73-L75
 		if len([]byte(view.Name)) > 255 {
 			errs = append(errs, specerrors.NewStructuredError(
 				fmt.Errorf("file %q is invalid: name exceeds 255 bytes", fullPath),
