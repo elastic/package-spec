@@ -78,13 +78,13 @@ func TestValidateEsqlViews(t *testing.T) {
 			"mypkg-view.yml": "name: .\nquery: FROM logs-*\n",
 		})
 		errs := ValidateEsqlViews(fsys)
-		hasNotAllowed := false
+		hasStemMismatch := false
 		for _, e := range errs {
-			if strings.Contains(e.Error(), `name "." is not allowed`) {
-				hasNotAllowed = true
+			if strings.Contains(e.Error(), `name field "." must equal the filename stem`) {
+				hasStemMismatch = true
 			}
 		}
-		assert.True(t, hasNotAllowed, "expected a not-allowed name error")
+		assert.True(t, hasStemMismatch, "expected a stem-mismatch error for name \".\"")
 	})
 
 	t.Run("name exceeds 255 bytes", func(t *testing.T) {
