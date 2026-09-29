@@ -93,7 +93,7 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 				fmt.Errorf("file %q is invalid: duplicate view name %q", fullPath, view.Name),
 				specerrors.CodeEsqlViewValidation,
 			))
-		} else {
+		} else if view.Name == stem {
 			seenNames = append(seenNames, view.Name)
 		}
 	}
