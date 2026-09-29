@@ -14,6 +14,7 @@ spec:
       contents:
         - description: ES|QL view definition in YAML
           type: file
+          sizeLimit: 3MB
           pattern: '^{PACKAGE_NAME}-.+\.yml$'
           contentMediaType: "application/x-yaml"
           required: false
