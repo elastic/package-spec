@@ -16,7 +16,7 @@
     - description: Add semantic validator (SVR00011) for ES|QL views enforcing name-vs-stem match, uniqueness, reserved names, 255-byte limit, and non-empty query.
       type: enhancement
       link: https://github.com/elastic/package-spec/issues/1257
-    # Pending Fleet/elastic-package support for ES|QL views installation
+    # Pending on https://github.com/elastic/kibana/issues/244655
     - description: Add compliance test asserting ES|QL view is installed when a package containing one is installed.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1266

@@ -9,7 +9,7 @@ Feature: ES|QL
 
   @3.6.7
   @skip
-  # Pending Fleet/elastic-package support for ES|QL views installation
+  # Pending on https://github.com/elastic/kibana/issues/244655
   Scenario: Content package with ES|QL view installs the view
    Given the "good_content" package is installed
     Then there is an ES|QL view "good_content-my_view"
