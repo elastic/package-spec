@@ -62,14 +62,14 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 
 		if view.Name != stem {
 			errs = append(errs, specerrors.NewStructuredError(
-				fmt.Errorf("file %q is invalid: name field %q must equal the filename stem %q", fullPath, view.Name, stem),
+				fmt.Errorf("file \"%s\" is invalid: name field %q must equal the filename stem %q", fullPath, view.Name, stem),
 				specerrors.CodeEsqlViewValidation,
 			))
 		}
 
 		if view.Name == "." || view.Name == ".." {
 			errs = append(errs, specerrors.NewStructuredError(
-				fmt.Errorf("file %q is invalid: name %q is not allowed", fullPath, view.Name),
+				fmt.Errorf("file \"%s\" is invalid: name %q is not allowed", fullPath, view.Name),
 				specerrors.CodeEsqlViewValidation,
 			))
 		}
@@ -81,21 +81,21 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 		// https://github.com/elastic/elasticsearch/blob/7fde0983ff2c16322cd24388ae1e3afc6d5ac58b/x-pack/plugin/esql/src/main/java/org/elasticsearch/xpack/esql/view/PutViewAction.java#L73-L75
 		if len([]byte(view.Name)) > 255 {
 			errs = append(errs, specerrors.NewStructuredError(
-				fmt.Errorf("file %q is invalid: name exceeds 255 bytes", fullPath),
+				fmt.Errorf("file \"%s\" is invalid: name exceeds 255 bytes", fullPath),
 				specerrors.CodeEsqlViewValidation,
 			))
 		}
 
 		if strings.TrimSpace(view.Query) == "" {
 			errs = append(errs, specerrors.NewStructuredError(
-				fmt.Errorf("file %q is invalid: query must not be empty or whitespace-only", fullPath),
+				fmt.Errorf("file \"%s\" is invalid: query must not be empty or whitespace-only", fullPath),
 				specerrors.CodeEsqlViewValidation,
 			))
 		}
 
 		if slices.Contains(seenNames, view.Name) {
 			errs = append(errs, specerrors.NewStructuredError(
-				fmt.Errorf("file %q is invalid: duplicate view name %q", fullPath, view.Name),
+				fmt.Errorf("file \"%s\" is invalid: duplicate view name %q", fullPath, view.Name),
 				specerrors.CodeEsqlViewValidation,
 			))
 		} else if view.Name == stem {
