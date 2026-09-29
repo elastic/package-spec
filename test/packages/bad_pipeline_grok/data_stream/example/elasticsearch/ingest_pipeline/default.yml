@@ -1,0 +1,50 @@
+---
+description: "Pipeline whose grok patterns contain %{ that grok does not read as a token"
+processors:
+  - grok:
+      tag: grok_well_formed
+      field: message
+      patterns:
+        - '%{IP:source.ip} %{WORD:http.request.method} %{NUMBER:http.response.status_code:int}'
+        - '%{SESSION}'
+      pattern_definitions:
+        SESSION: '\(session:%{SPACE}%{NOTSPACE:session.id}\)'
+  - grok:
+      tag: grok_alternation_in_name
+      field: message
+      patterns:
+        - '^Logout handler : %{DATA}, for user <%{USERNAME|EMAILADDRESS:user.name}>$'
+        - '%{DATA}'
+  - grok:
+      tag: grok_missing_colon
+      field: message
+      patterns:
+        - 'Login %{WORD:_tmp.outcome}'
+        - '^Primary authentication %{WORD_tmp.outcome}'
+      ignore_failure: true
+  - grok:
+      tag: grok_missing_brace_in_definition
+      field: message
+      patterns:
+        - '%{ECS_SYSLOG_PRI}%{GREEDYDATA:message}'
+      pattern_definitions:
+        ECS_SYSLOG_PRI: '<%{NONNEGINT:log.syslog.priority>'
+  - foreach:
+      tag: foreach_values
+      field: values
+      processor:
+        grok:
+          field: _ingest._value
+          patterns:
+            - '%{IP related.ip}'
+on_failure:
+  - set:
+      field: event.kind
+      value: pipeline_error
+  - set:
+      field: error.message
+      value: >-
+        Processor '{{{ _ingest.on_failure_processor_type }}}'
+        with tag '{{{ _ingest.on_failure_processor_tag }}}'
+        in pipeline '{{{ _ingest.pipeline }}}'
+        failed with message '{{{ _ingest.on_failure_message }}}'

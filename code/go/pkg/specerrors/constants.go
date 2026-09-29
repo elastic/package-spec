@@ -26,4 +26,5 @@ const (
 	CodePipelineOnFailureEventKind          = "SVR00008"
 	CodePipelineOnFailureMessage            = "SVR00009"
 	CodeIntegrationInputQualifierRequired   = "SVR00010"
+	CodePipelineGrokMalformedToken          = "SVR00011"
 )
