@@ -644,6 +644,12 @@ func Test_ValidateFromPath(t *testing.T) {
 				"field deployer: deployer must be one of the following: \"docker\", \"tf\", \"k8s\"",
 			},
 		},
+		"bad_conditions_agent_version_v3_7": {
+			"manifest.yml",
+			[]string{
+				"package-level conditions.agent.version is deprecated and disallowed since spec 3.7.0 (SVR00011)",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
@@ -995,9 +1001,6 @@ func TestValidateWarnings(t *testing.T) {
 		"good_v2": {},
 		"good_v3": {},
 		"warn_conditions_agent_version": {
-			"package-level conditions.agent.version is deprecated and disallowed since spec 3.7.0 (SVR00011)",
-		},
-		"bad_conditions_agent_version_v3_7": {
 			"package-level conditions.agent.version is deprecated and disallowed since spec 3.7.0 (SVR00011)",
 		},
 		"visualizations_by_reference": {
