@@ -993,7 +993,8 @@ func TestValidateWarnings(t *testing.T) {
 	tests := map[string][]string{
 		"good":    {},
 		"good_v2": {},
-		"good_v3": {
+		"good_v3": {},
+		"warn_conditions_agent_version": {
 			"package-level conditions.agent.version is deprecated and disallowed since spec 3.7.0 (SVR00011)",
 		},
 		"bad_conditions_agent_version_v3_7": {
