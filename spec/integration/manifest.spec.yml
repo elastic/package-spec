@@ -226,10 +226,10 @@ spec:
               type: string
               deprecated: true # See https://github.com/elastic/package-spec/pull/1265
               description: >
-                Elastic Agent versions compatible with this package (deprecated, will be disallowed
-                in a future spec version). A policy manages agents on multiple versions at once, so
-                gate agent-version-specific configuration inside input templates with a working
-                fallback instead of excluding older agents at the package level.
+                Elastic Agent versions compatible with this package (deprecated since 3.6.7, disallowed
+                since 3.7.0). A policy manages agents on multiple versions at once, so gate
+                agent-version-specific configuration inside input templates with a working fallback
+                instead of excluding older agents at the package level.
               examples:
                 - "^9.5.0"
     description:

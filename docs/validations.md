@@ -161,7 +161,8 @@ policy_templates:
 ## SVR00011 - Package-level agent.version condition
 [SVR00011]: #svr00011---package-level-agentversion-condition
 
-**Available since 3.6.7** (warning; will become a hard error in a future spec release)
+**Available since [3.6.7](https://github.com/elastic/package-spec/releases/tag/v3.6.7)** (warning)
+**Promoted to error since [3.7.0](https://github.com/elastic/package-spec/releases/tag/v3.7.0)**
 
 A package declared `conditions.agent.version` at the package level. This field is deprecated.
 
