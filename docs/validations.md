@@ -139,6 +139,7 @@ on_failure:
 ```
 
 ## SVR00010 - Inputs of the same type must be named
+[SVR00010]: #svr00010---inputs-of-the-same-type-must-be-named
 
 **Available since [3.6.1](https://github.com/elastic/package-spec/releases/tag/v3.6.1)**
 
