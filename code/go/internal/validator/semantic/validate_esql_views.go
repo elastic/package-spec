@@ -35,7 +35,6 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 	}
 
 	var errs specerrors.ValidationErrors
-	seenNames := make(map[string]struct{})
 
 	for _, entry := range entries {
 		if entry.IsDir() || path.Ext(entry.Name()) != ".yml" {
@@ -59,11 +58,14 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 
 		stem := strings.TrimSuffix(entry.Name(), ".yml")
 
+		// Enforcing name == stem also prevents duplicate view names: filesystem
+		// filenames are unique, so two files cannot share the same stem.
 		if view.Name != stem {
 			errs = append(errs, specerrors.NewStructuredError(
 				fmt.Errorf("file \"%s\" is invalid: name field %q must equal the filename stem %q", fullPath, view.Name, stem),
 				specerrors.CodeEsqlViewValidation,
 			))
+			continue
 		}
 
 		if view.Name == "." || view.Name == ".." {
@@ -80,14 +82,6 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 			))
 		}
 
-		if _, seen := seenNames[view.Name]; seen {
-			errs = append(errs, specerrors.NewStructuredError(
-				fmt.Errorf("file \"%s\" is invalid: duplicate view name %q", fullPath, view.Name),
-				specerrors.CodeEsqlViewValidation,
-			))
-		} else if view.Name == stem {
-			seenNames[view.Name] = struct{}{}
-		}
 	}
 
 	return errs

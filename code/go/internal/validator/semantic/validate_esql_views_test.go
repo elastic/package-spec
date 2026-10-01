@@ -52,27 +52,6 @@ func TestValidateEsqlViews(t *testing.T) {
 		assert.Contains(t, errs[0].Error(), "SVR00012")
 	})
 
-	t.Run("duplicate name across files", func(t *testing.T) {
-		fsys := makeEsqlViewFS(t, map[string]string{
-			"mypkg-view_a.yml": "name: mypkg-view_a\nquery: FROM logs-*\n",
-			"mypkg-view_b.yml": "name: mypkg-view_a\nquery: FROM metrics-*\n",
-		})
-		errs := ValidateEsqlViews(fsys)
-		// view_b has two errors: name != stem and duplicate
-		require.GreaterOrEqual(t, len(errs), 1)
-		errMessages := make([]string, len(errs))
-		for i, e := range errs {
-			errMessages[i] = e.Error()
-		}
-		hasDuplicate := false
-		for _, msg := range errMessages {
-			if strings.Contains(msg, "duplicate view name") {
-				hasDuplicate = true
-			}
-		}
-		assert.True(t, hasDuplicate, "expected a duplicate name error")
-	})
-
 	t.Run("reserved names", func(t *testing.T) {
 		// Use filenames whose stems equal the reserved name so the stem-mismatch
 		// check does not fire — only the reserved-name check should.
