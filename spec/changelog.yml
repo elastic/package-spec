@@ -11,7 +11,7 @@
     - description: Add optional use_otel_suffix on integration data streams so index templates can use the .otel suffix without an input, and reject the flag when the data stream defines an input.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1261
-    - description: Disallow package-level `conditions.agent.version` (SVR00011). Packages using this field will now produce a validation error instead of a deprecation warning.
+    - description: Disallow package-level `conditions.agent.version` (SVR00012). Packages using this field will now produce a validation error instead of a deprecation warning.
       type: breaking change
       link: https://github.com/elastic/package-spec/pull/1265
 - version: 3.6.7-next
