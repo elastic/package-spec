@@ -7,7 +7,6 @@ package semantic
 import (
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -51,32 +50,6 @@ func TestValidateEsqlViews(t *testing.T) {
 		assert.Contains(t, errs[0].Error(), `name field "other_name" must equal the filename stem "mypkg-access_logs"`)
 		assert.Contains(t, errs[0].Error(), "SVR00012")
 	})
-
-	t.Run("reserved names", func(t *testing.T) {
-		// Use filenames whose stems equal the reserved name so the stem-mismatch
-		// check does not fire — only the reserved-name check should.
-		cases := []struct {
-			file string
-			name string
-		}{
-			{"..yml", "."},
-			{"...yml", ".."},
-		}
-		for _, tc := range cases {
-			fsys := makeEsqlViewFS(t, map[string]string{
-				tc.file: "name: " + tc.name + "\nquery: FROM logs-*\n",
-			})
-			errs := ValidateEsqlViews(fsys)
-			hasReserved := false
-			for _, e := range errs {
-				if strings.Contains(e.Error(), "is not allowed") {
-					hasReserved = true
-				}
-			}
-			assert.True(t, hasReserved, "expected a reserved-name error for name %q", tc.name)
-		}
-	})
-
 
 	t.Run("whitespace-only query", func(t *testing.T) {
 		fsys := makeEsqlViewFS(t, map[string]string{

@@ -68,13 +68,6 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 			continue
 		}
 
-		if view.Name == "." || view.Name == ".." {
-			errs = append(errs, specerrors.NewStructuredError(
-				fmt.Errorf("file \"%s\" is invalid: name %q is not allowed", fullPath, view.Name),
-				specerrors.CodeEsqlViewValidation,
-			))
-		}
-
 		if strings.TrimSpace(view.Query) == "" {
 			errs = append(errs, specerrors.NewStructuredError(
 				fmt.Errorf("file \"%s\" is invalid: query must not be empty or whitespace-only", fullPath),

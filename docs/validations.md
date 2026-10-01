@@ -151,16 +151,6 @@ extension. For example, `my_package-my_view.yml` must declare `name: my_package-
 This rule, combined with the `{PACKAGE_NAME}-` filename pattern, guarantees that
 the view name is scoped to the package and cannot collide with views from other packages.
 
-**No duplicate `name` values within a package**
-
-Two files in the same `esql_view/` folder cannot declare the same `name`. At install
-time Fleet performs an unconditional `PUT /_query/view/<name>`, so a duplicate would
-silently overwrite the first view.
-
-**`name` cannot be `.` or `..`**
-
-Elasticsearch rejects index-like names that are `.` or `..`.
-
 **`name` must be at most 255 bytes**
 
 Elasticsearch enforces a 255-byte limit on index-like names.
