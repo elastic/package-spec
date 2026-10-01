@@ -651,6 +651,12 @@ func Test_ValidateFromPath(t *testing.T) {
 				"field deployer: deployer must be one of the following: \"docker\", \"tf\", \"k8s\"",
 			},
 		},
+		"bad_conditions_agent_version_v3_7": {
+			"manifest.yml",
+			[]string{
+				"package-level conditions.agent.version is deprecated and disallowed since spec 3.7.0 (SVR00012)",
+			},
+		},
 	}
 
 	for pkgName, test := range tests {
@@ -1000,6 +1006,10 @@ func TestValidateWarnings(t *testing.T) {
 	tests := map[string][]string{
 		"good":    {},
 		"good_v2": {},
+		"good_v3": {},
+		"warn_conditions_agent_version": {
+			"package-level conditions.agent.version is deprecated and disallowed since spec 3.7.0 (SVR00012)",
+		},
 		"visualizations_by_reference": {
 			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens) (SVR00004)",
 		},

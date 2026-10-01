@@ -27,4 +27,5 @@ const (
 	CodePipelineOnFailureMessage            = "SVR00009"
 	CodeIntegrationInputQualifierRequired   = "SVR00010"
 	CodeUseOtelSuffixWithInput              = "SVR00011"
+	CodeAgentVersionCondition               = "SVR00012"
 )

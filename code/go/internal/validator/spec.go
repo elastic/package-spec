@@ -151,6 +151,10 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 			matcher: regexp.MustCompile(`(field processors.[0-9]+.remove): (ignore_missing|if) is required`),
 			new:     "%s: rename \"message\" to \"event.original\" processor requires remove \"message\" processor with if: 'ctx.event?.original != null'",
 		},
+		{
+			matcher: regexp.MustCompile(`field conditions: Additional property agent is not allowed`),
+			new:     "package-level conditions.agent.version is deprecated and disallowed since spec 3.7.0",
+		},
 	}
 
 	// Filter out redundant errors
@@ -172,6 +176,10 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 			matcher: regexp.MustCompile(`rename "message" to "event.original" processor`),
 			code:    specerrors.MessageRenameToEventOriginalValidation,
 		},
+		{
+			matcher: regexp.MustCompile(`package-level conditions\.agent\.version is deprecated and disallowed since spec 3\.7\.0`),
+			code:    specerrors.CodeAgentVersionCondition,
+		},
 	}
 
 	for _, e := range errs {
@@ -187,7 +195,7 @@ func processErrors(errs specerrors.ValidationErrors) specerrors.ValidationErrors
 			}
 		}
 		for _, transform := range addErrorCode {
-			if transform.matcher.MatchString(e.Error()) {
+			if e.Code() == specerrors.UnassignedCode && transform.matcher.MatchString(e.Error()) {
 				e = specerrors.NewStructuredError(e, transform.code)
 			}
 		}
@@ -244,7 +252,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateInputPackagesPolicyTemplates, types: []string{"input"}},
 		{fn: semantic.ValidateInputDynamicSignalTypes, since: semver.MustParse("3.6.0")},
 		{fn: semantic.ValidateFleetReservedVars, types: []string{"integration", "input"}, since: semver.MustParse("3.6.1")},
-		{fn: semantic.ValidateMinimumAgentVersion},
+		{fn: warnOn(semantic.ValidateMinimumAgentVersion), until: semver.MustParse("3.7.0")},
 		{fn: semantic.ValidateIntegrationPolicyTemplates, types: []string{"integration"}},
 		{fn: semantic.ValidatePolicyTemplateDatastreamCategories, types: []string{"integration"}},
 		{fn: semantic.ValidateDatastreamPackageCategories, types: []string{"integration"}},

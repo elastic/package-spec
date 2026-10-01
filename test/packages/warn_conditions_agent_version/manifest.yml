@@ -1,16 +1,18 @@
-format_version: 3.7.0
-name: bad_var_migrate_from_scope
-title: "Bad Var Migrate From Scope"
+format_version: 3.6.6
+name: warn_conditions_agent_version
+title: "New Package"
 version: 0.0.1
 source:
   license: "Elastic-2.0"
-description: "Integration package using var-level migrate_from with an invalid scope value."
+description: "This is a new package."
 type: integration
 categories:
   - custom
 conditions:
   kibana:
-    version: "^9.2.3"
+    version: "^9.5.3"
+  agent:
+    version: "^9.1.0"
   elastic:
     subscription: "basic"
 screenshots:
@@ -28,9 +30,9 @@ policy_templates:
     title: Sample logs
     description: Collect sample logs
     inputs:
-      - type: filestream
+      - type: logfile
         title: Collect sample logs from instances
-        description: Collecting sample logs via filestream
+        description: Collecting sample logs
 owner:
   github: elastic/integrations
   type: elastic
