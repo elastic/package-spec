@@ -42,6 +42,7 @@ func Test_ValidateFromPath(t *testing.T) {
 		"good_input":                             {},
 		"good_input_otel":                        {},
 		"good_integration_otel":                  {},
+		"good_integration_otel_suffix":           {},
 		"good_input_qualifier":                   {},
 		"good_input_fleet_reserved_vars":         {},
 		"good_integration_fleet_reserved_vars":   {},
@@ -502,6 +503,12 @@ func Test_ValidateFromPath(t *testing.T) {
 				"field policy_templates.0.inputs.0.type: Must not be present",
 			},
 		},
+		"bad_integration_otel_suffix_with_input": {
+			"data_stream/logs/manifest.yml",
+			[]string{
+				`use_otel_suffix is only allowed on data streams without inputs (inputs defined: "logfile"). If this data stream needs an input, use the otelcol input type instead, which already applies the .otel index pattern suffix (SVR00011)`,
+			},
+		},
 		"bad_input_qualifier_ambiguous": {
 			"manifest.yml",
 			[]string{
@@ -587,13 +594,13 @@ func Test_ValidateFromPath(t *testing.T) {
 			"elasticsearch/esql_view/bad_esql_view_uppercase_name_integration-view.yml",
 			[]string{
 				"field name: Does not match pattern '^[a-z0-9][a-z0-9_\\-]*$'",
-				`name field "BadView" must equal the filename stem "bad_esql_view_uppercase_name_integration-view" (SVR00012)`,
+				`name field "BadView" must equal the filename stem "bad_esql_view_uppercase_name_integration-view" (SVR00013)`,
 			},
 		},
 		"bad_esql_view_name_mismatch_integration": {
 			"elasticsearch/esql_view/bad_esql_view_name_mismatch_integration-view.yml",
 			[]string{
-				`name field "bad_esql_view_name_mismatch_integration-other" must equal the filename stem "bad_esql_view_name_mismatch_integration-view" (SVR00012)`,
+				`name field "bad_esql_view_name_mismatch_integration-other" must equal the filename stem "bad_esql_view_name_mismatch_integration-view" (SVR00013)`,
 			},
 		},
 		"bad_esql_view_content": {
@@ -601,7 +608,7 @@ func Test_ValidateFromPath(t *testing.T) {
 			[]string{
 				"field query: Invalid type. Expected: string, given: null",
 				"field (root): Additional property extra_field is not allowed",
-				"query must not be empty or whitespace-only (SVR00012)",
+				"query must not be empty or whitespace-only (SVR00013)",
 			},
 		},
 		"bad_esql_view_integration": {
@@ -609,7 +616,7 @@ func Test_ValidateFromPath(t *testing.T) {
 			[]string{
 				"field query: Invalid type. Expected: string, given: null",
 				"field (root): Additional property extra_field is not allowed",
-				"query must not be empty or whitespace-only (SVR00012)",
+				"query must not be empty or whitespace-only (SVR00013)",
 			},
 		},
 		"bad_content_duplicate_tags": {
@@ -663,6 +670,12 @@ func Test_ValidateFromPath(t *testing.T) {
 			"data_stream/foo/_dev/test/system/test-default-config.yml",
 			[]string{
 				"field deployer: deployer must be one of the following: \"docker\", \"tf\", \"k8s\"",
+			},
+		},
+		"bad_conditions_agent_version_v3_7": {
+			"manifest.yml",
+			[]string{
+				"package-level conditions.agent.version is deprecated and disallowed since spec 3.7.0 (SVR00012)",
 			},
 		},
 	}
@@ -1024,6 +1037,10 @@ func TestValidateWarnings(t *testing.T) {
 	tests := map[string][]string{
 		"good":    {},
 		"good_v2": {},
+		"good_v3": {},
+		"warn_conditions_agent_version": {
+			"package-level conditions.agent.version is deprecated and disallowed since spec 3.7.0 (SVR00012)",
+		},
 		"visualizations_by_reference": {
 			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens) (SVR00004)",
 		},

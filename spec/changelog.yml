@@ -8,12 +8,21 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: Add optional use_otel_suffix on integration data streams so index templates can use the .otel suffix without an input, and reject the flag when the data stream defines an input.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1261
+    - description: Disallow package-level `conditions.agent.version` (SVR00012). Packages using this field will now produce a validation error instead of a deprecation warning.
+      type: breaking change
+      link: https://github.com/elastic/package-spec/pull/1265
 - version: 3.6.7-next
   changes:
+    - description: Warn when a package declares a package-level `conditions.agent.version`.
+      type: deprecation
+      link: https://github.com/elastic/package-spec/pull/1265
     - description: Correct esql_view name pattern to enforce lowercase-only names and require {PACKAGE_NAME}- filename prefix.
       type: bugfix
       link: https://github.com/elastic/package-spec/pull/1266
-    - description: Add semantic validator (SVR00012) for ES|QL views enforcing name-vs-stem match, uniqueness, reserved names, 255-byte limit, and non-empty query.
+    - description: Add semantic validator (SVR00013) for ES|QL views enforcing name-vs-stem match, 255-byte limit, and non-empty query.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1266
 - version: 3.6.6

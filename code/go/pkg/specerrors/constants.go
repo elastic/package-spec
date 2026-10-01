@@ -26,5 +26,7 @@ const (
 	CodePipelineOnFailureEventKind          = "SVR00008"
 	CodePipelineOnFailureMessage            = "SVR00009"
 	CodeIntegrationInputQualifierRequired   = "SVR00010"
-	CodeEsqlViewValidation                  = "SVR00012"
+	CodeUseOtelSuffixWithInput              = "SVR00011"
+	CodeAgentVersionCondition               = "SVR00012"
+	CodeEsqlViewValidation                  = "SVR00013"
 )

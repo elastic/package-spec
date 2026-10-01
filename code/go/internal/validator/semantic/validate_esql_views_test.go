@@ -48,7 +48,7 @@ func TestValidateEsqlViews(t *testing.T) {
 		errs := ValidateEsqlViews(fsys)
 		require.Len(t, errs, 1)
 		assert.Contains(t, errs[0].Error(), `name field "other_name" must equal the filename stem "mypkg-access_logs"`)
-		assert.Contains(t, errs[0].Error(), "SVR00012")
+		assert.Contains(t, errs[0].Error(), "SVR00013")
 	})
 
 	t.Run("whitespace-only query", func(t *testing.T) {
@@ -58,7 +58,7 @@ func TestValidateEsqlViews(t *testing.T) {
 		errs := ValidateEsqlViews(fsys)
 		require.Len(t, errs, 1)
 		assert.Contains(t, errs[0].Error(), "query must not be empty or whitespace-only")
-		assert.Contains(t, errs[0].Error(), "SVR00012")
+		assert.Contains(t, errs[0].Error(), "SVR00013")
 	})
 
 	t.Run("empty query", func(t *testing.T) {
