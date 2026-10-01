@@ -6,6 +6,12 @@ spec:
       description: Name of the ES|QL view. Must be lowercase alphanumeric (may start with a digit) and match the filename stem.
       type: string
       pattern: '^[a-z0-9][a-z0-9_\-]*$'
+      # Elasticsearch index names are limited to 255 bytes (MAX_INDEX_NAME_BYTES in
+      # MetadataCreateIndexService); since the pattern is ASCII-only, bytes equal
+      # characters and maxLength: 255 enforces the same ceiling.
+      # https://github.com/elastic/elasticsearch/blob/7fde0983ff2c16322cd24388ae1e3afc6d5ac58b/server/src/main/java/org/elasticsearch/cluster/metadata/MetadataCreateIndexService.java#L353-L355
+      # https://github.com/elastic/elasticsearch/blob/7fde0983ff2c16322cd24388ae1e3afc6d5ac58b/x-pack/plugin/esql/src/main/java/org/elasticsearch/xpack/esql/view/PutViewAction.java#L73-L75
+      maxLength: 255
     description:
       description: Human-readable description of the ES|QL view
       type: string

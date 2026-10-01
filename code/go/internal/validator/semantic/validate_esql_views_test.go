@@ -98,23 +98,6 @@ func TestValidateEsqlViews(t *testing.T) {
 		}
 	})
 
-	t.Run("name exceeds 255 bytes", func(t *testing.T) {
-		// filename is short; the name field inside the YAML is > 255 bytes.
-		// This also triggers a name-vs-stem mismatch, so we get 2 errors.
-		longName := strings.Repeat("a", 256)
-		fsys := makeEsqlViewFS(t, map[string]string{
-			"mypkg-view.yml": "name: " + longName + "\nquery: FROM logs-*\n",
-		})
-		errs := ValidateEsqlViews(fsys)
-		hasLengthErr := false
-		for _, e := range errs {
-			if strings.Contains(e.Error(), "name exceeds 255 bytes") {
-				hasLengthErr = true
-				assert.Contains(t, e.Error(), "SVR00012")
-			}
-		}
-		assert.True(t, hasLengthErr, "expected a name-too-long error")
-	})
 
 	t.Run("whitespace-only query", func(t *testing.T) {
 		fsys := makeEsqlViewFS(t, map[string]string{
