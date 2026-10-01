@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io/fs"
 	"path"
-	"slices"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -36,7 +35,7 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 	}
 
 	var errs specerrors.ValidationErrors
-	var seenNames []string
+	seenNames := make(map[string]struct{})
 
 	for _, entry := range entries {
 		if entry.IsDir() || path.Ext(entry.Name()) != ".yml" {
@@ -93,13 +92,13 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 			))
 		}
 
-		if slices.Contains(seenNames, view.Name) {
+		if _, seen := seenNames[view.Name]; seen {
 			errs = append(errs, specerrors.NewStructuredError(
 				fmt.Errorf("file \"%s\" is invalid: duplicate view name %q", fullPath, view.Name),
 				specerrors.CodeEsqlViewValidation,
 			))
 		} else if view.Name == stem {
-			seenNames = append(seenNames, view.Name)
+			seenNames[view.Name] = struct{}{}
 		}
 	}
 
