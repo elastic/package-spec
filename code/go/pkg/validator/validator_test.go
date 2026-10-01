@@ -503,7 +503,7 @@ func Test_ValidateFromPath(t *testing.T) {
 				"field policy_templates.0.inputs.0.type: Must not be present",
 			},
 		},
-		"bad_integration_otel_suffix_old_version": {
+		"bad_integration_otel_suffix_with_input": {
 			"data_stream/logs/manifest.yml",
 			[]string{
 				`use_otel_suffix is only allowed on data streams without inputs (inputs defined: "logfile"). If this data stream needs an input, use the otelcol input type instead, which already applies the .otel index pattern suffix (SVR00011)`,

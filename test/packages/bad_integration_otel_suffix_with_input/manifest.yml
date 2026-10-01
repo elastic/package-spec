@@ -1,5 +1,5 @@
-format_version: 3.6.6
-name: bad_integration_otel_suffix_old_version
+format_version: 3.7.0
+name: bad_integration_otel_suffix_with_input
 title: "Bad Integration with use_otel_suffix and an input"
 version: 0.0.1
 source:
@@ -10,7 +10,7 @@ categories:
   - custom
 conditions:
   kibana:
-    version: "^9.4.0"
+    version: "^9.6.0"
   elastic:
     subscription: "basic"
 icons:
