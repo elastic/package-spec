@@ -139,7 +139,7 @@ on_failure:
 
 ## SVR00012 - ES|QL view definition is invalid
 
-[SVR00012]: #svr00011---esql-view-definition-is-invalid
+[SVR00012]: #svr00012---esql-view-definition-is-invalid
 
 ES|QL views are cluster-state objects installed into Elasticsearch. The following
 semantic rules are enforced for every file in the `elasticsearch/esql_view/` folder:
