@@ -20,6 +20,7 @@
 | [SVR00010]          | Integration input qualifier required            |
 | [SVR00011]          | use_otel_suffix with an input defined |
 | [SVR00012]          | Package-level agent.version condition           |
+| [SVR00013]          | ES\|QL view definition is invalid               |
 
 ## JSE00001 - Rename message to event.original
 
@@ -231,3 +232,26 @@ errors:
   exclude_checks:
     - SVR00011
 ```
+
+## SVR00013 - ES|QL view definition is invalid
+
+[SVR00013]: #svr00013---esql-view-definition-is-invalid
+
+ES|QL views are cluster-state objects installed into Elasticsearch. The following
+semantic rules are enforced for every file in the `elasticsearch/esql_view/` folder:
+
+**`name` must equal the filename stem**
+
+The `name` field in the YAML must exactly match the filename without the `.yml`
+extension. For example, `my_package-my_view.yml` must declare `name: my_package-my_view`.
+This rule, combined with the `{PACKAGE_NAME}-` filename pattern, guarantees that
+the view name is scoped to the package and cannot collide with views from other packages.
+
+**`name` must be at most 255 bytes**
+
+Elasticsearch enforces a 255-byte limit on index-like names.
+
+**`query` must be non-empty after trimming whitespace**
+
+A query consisting only of whitespace characters passes `minLength: 1` in the JSON
+Schema but is rejected by Elasticsearch (`Strings.hasText()` check in `PutViewAction`).

@@ -31,6 +31,7 @@ For a quick overview, these are the assets typically found in an Elastic Package
   * Index Template
   * Transform
   * Index template settings
+  * ES|QL views
 * Kibana
   * Dashboards
   * Visualization
