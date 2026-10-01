@@ -56,6 +56,13 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 			continue
 		}
 
+		if strings.TrimSpace(view.Query) == "" {
+			errs = append(errs, specerrors.NewStructuredError(
+				fmt.Errorf("file \"%s\" is invalid: query must not be empty or whitespace-only", fullPath),
+				specerrors.CodeEsqlViewValidation,
+			))
+		}
+
 		stem := strings.TrimSuffix(entry.Name(), ".yml")
 
 		// Enforcing name == stem also prevents duplicate view names: filesystem
@@ -63,14 +70,6 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 		if view.Name != stem {
 			errs = append(errs, specerrors.NewStructuredError(
 				fmt.Errorf("file \"%s\" is invalid: name field %q must equal the filename stem %q", fullPath, view.Name, stem),
-				specerrors.CodeEsqlViewValidation,
-			))
-			continue
-		}
-
-		if strings.TrimSpace(view.Query) == "" {
-			errs = append(errs, specerrors.NewStructuredError(
-				fmt.Errorf("file \"%s\" is invalid: query must not be empty or whitespace-only", fullPath),
 				specerrors.CodeEsqlViewValidation,
 			))
 		}
