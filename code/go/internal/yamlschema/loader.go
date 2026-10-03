@@ -31,7 +31,10 @@ func NewFileSchemaLoader() *FileSchemaLoader {
 
 func (*FileSchemaLoader) Load(fs fs.FS, schemaPath string, options spectypes.FileSchemaLoadOptions) (spectypes.FileSchema, error) {
 	schemaLoader := NewReferenceLoaderFileSystem("file:///"+schemaPath, fs, options.SpecVersion)
-	schema, err := gojsonschema.NewSchema(schemaLoader)
+	loader := gojsonschema.NewSchemaLoader()
+	loader.Validate = true
+	loader.Draft = gojsonschema.Draft7
+	schema, err := loader.Compile(schemaLoader)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load schema for %q: %v", schemaPath, err)
 	}
