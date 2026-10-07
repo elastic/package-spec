@@ -74,24 +74,10 @@ func Test_ValidateFromPath(t *testing.T) {
 		"good_provider_permissions_input":        {},
 		"good_integration_group":                 {},
 		"good_input_group":                       {},
-		"good_columnar_index_mode":               {},
-		"good_columnar_base_mode":                {},
-		"good_columnar_override":                 {},
-		"good_columnar_supported":                {},
-		"good_columnar_input":                    {},
-		"bad_columnar_supported_blocker": {
-			"data_stream/logs/fields/base-fields.yml",
-			[]string{
-				`field "short_message" has copy_to set, which prevents synthetic source reconstruction in columnar index mode; use an ingest pipeline to copy the value instead`,
-			},
-		},
-		"bad_columnar_doc_values": {
-			"data_stream/logs/fields/base-fields.yml",
-			[]string{
-				`field "message" has doc_values set to false, which is rejected by Elasticsearch in columnar index mode`,
-			},
-		},
-		"bad_columnar_copy_to": {
+		"good_logsdb_columnar_opt_in":            {},
+		"good_logsdb_columnar_stream_override":   {},
+		"good_logsdb_columnar_metrics_ignored":   {},
+		"bad_logsdb_columnar_blocker": {
 			"data_stream/logs/fields/base-fields.yml",
 			[]string{
 				`field "short_message" has copy_to set, which prevents synthetic source reconstruction in columnar index mode; use an ingest pipeline to copy the value instead`,
@@ -103,17 +89,31 @@ func Test_ValidateFromPath(t *testing.T) {
 				`field "status" is a keyword field with a normalizer, which prevents synthetic source reconstruction in columnar index mode; remove the normalizer or apply the transformation in an ingest pipeline`,
 			},
 		},
-		"bad_columnar_store": {
+		"bad_columnar_nested_in_nested": {
 			"data_stream/logs/fields/base-fields.yml",
 			[]string{
-				`field "message" has store set to true, which is rejected by Elasticsearch in columnar index mode; remove it (columnar modes reconstruct values from doc values)`,
+				`field "events.inner" is a nested field inside another nested field ("events"); columnar index modes support only a single level of nesting`,
+				`field "attributes.items" is a nested field inside another nested field ("attributes"); columnar index modes support only a single level of nesting`,
 			},
 		},
-		"bad_columnar_override_dynamic": {
-			"data_stream/logs/fields/base-fields.yml",
+		"bad_columnar_sort": {
+			"data_stream/logs/manifest.yml",
 			[]string{
-				`field "labels" sets columnar overrides on a dynamic-template (object_type) field, which Fleet does not apply; move the override to a concrete static field`,
-				`field "host.name.text" sets columnar overrides on a multi-field, which Fleet does not apply; move the override to a concrete static field`,
+				`index.sort field "message" has no doc values (type "text"), index sorting requires doc values`,
+				`index.sort field "host.name" is not defined in the data stream fields`,
+				`index.sort must include @timestamp`,
+			},
+		},
+		"bad_logsdb_columnar_non_logs": {
+			"data_stream/metrics/manifest.yml",
+			[]string{
+				`elasticsearch.logsdb_columnar is only supported on logs data streams (data stream type is "metrics")`,
+			},
+		},
+		"bad_logsdb_columnar_with_index_mode": {
+			"data_stream/logs/manifest.yml",
+			[]string{
+				`elasticsearch.index_mode and elasticsearch.logsdb_columnar cannot both be set; logsdb_columnar only applies when index_mode is unset`,
 			},
 		},
 		// Since spec 3.0.0 the JSON schema also rejects arbitrary `properties` under
@@ -123,13 +123,7 @@ func Test_ValidateFromPath(t *testing.T) {
 			"data_stream/logs/manifest.yml",
 			[]string{
 				`field elasticsearch.index_template.mappings: Additional property properties is not allowed`,
-				`elasticsearch.index_template.mappings.properties.event.properties.original has doc_values set to false, which is rejected by Elasticsearch in columnar index mode`,
-			},
-		},
-		"bad_columnar_input_copy_to": {
-			"fields/base-fields.yml",
-			[]string{
-				`field "short_message" has copy_to set, which prevents synthetic source reconstruction in columnar index mode; use an ingest pipeline to copy the value instead`,
+				`elasticsearch.index_template.mappings.properties.event.properties.original has copy_to set, which prevents synthetic source reconstruction in columnar index mode; use an ingest pipeline to copy the value instead`,
 			},
 		},
 		"bad_integration_group": {

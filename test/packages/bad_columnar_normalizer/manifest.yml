@@ -19,6 +19,8 @@ policy_templates:
       - type: logfile
         title: Collect logs from files
         description: Tests that a keyword field with a normalizer is a hard error in columnar index mode.
+elasticsearch:
+  logsdb_columnar: opt_in
 owner:
   github: elastic/obs-infraobs-integrations
   type: elastic

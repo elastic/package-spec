@@ -1,0 +1,26 @@
+format_version: 3.7.0
+name: bad_logsdb_columnar_blocker
+title: Bad package declaring logsdb_columnar opt-in with a blocker
+description: Tests that the columnar compatibility checks run on a logs data stream made ready by the package level elasticsearch.logsdb_columnar setting.
+version: 1.0.0-beta1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: "^9.5.0"
+  elastic:
+    subscription: basic
+policy_templates:
+  - name: logs
+    title: Logs
+    description: Tests that copy_to on a field is a hard error in columnar index mode.
+    inputs:
+      - type: logfile
+        title: Collect logs from files
+        description: Tests that copy_to on a field is a hard error in columnar index mode.
+elasticsearch:
+  logsdb_columnar: opt_in
+owner:
+  github: elastic/obs-infraobs-integrations
+  type: elastic

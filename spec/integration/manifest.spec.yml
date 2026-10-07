@@ -1056,6 +1056,38 @@ spec:
       type: object
       additionalProperties: false
       properties:
+        logsdb_columnar:
+          description: >
+            Columnar readiness of the package's logs data streams for the `logsdb_columnar` index mode.
+            Absent means not ready.
+
+            `opt_in`: the package is compatible and Fleet offers the user a per-integration opt-in; the
+            Elasticsearch default (LogsDB) stays in effect until the user opts in.
+            `default`: new installations use `logsdb_columnar` by default; the user can opt out. `default`
+            applies only to new installations — existing data streams keep their current mode, including when
+            a package upgrade changes `opt_in` to `default`.
+
+            A data stream can override this value with `elasticsearch.logsdb_columnar` in its own manifest,
+            where `unsupported` marks a logs data stream that must stay on LogsDB (for example because its
+            mappings use a feature columnar does not support). If a later package version marks a data stream
+            `unsupported`, Fleet moves it back to LogsDB at the next rollover and tells the user why; treat
+            that as a breaking change for the package (major version, `breaking-change` changelog entry).
+
+            Mode changes take effect on the next rollover.
+
+            This setting applies only to `type: logs` data streams; it is ignored for other data stream types.
+            It only applies when `index_mode` is unset.
+
+            A data stream that is ready (`opt_in` or `default`) must avoid the mappings Elasticsearch rejects
+            or cannot reconstruct in columnar index modes: `copy_to`, keyword normalizers other than the
+            built-in `lowercase`, mapping-level runtime fields, a `nested` field inside another `nested` field
+            (columnar index modes support only a single level of nesting), field types with no doc values such
+            as `search_as_you_type`, and a disabled or stored `_source`. `dynamic: false` and `enabled: false`
+            also drop data, because there is no stored `_source` to fall back on.
+          type: string
+          enum:
+            - opt_in
+            - default
         privileges:
           description: Elasticsearch privilege requirements
           type: object
@@ -1101,6 +1133,11 @@ spec:
 
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.7.0
+    patch:
+      # Remove the columnar readiness setting added in 3.7.0.
+      - op: remove
+        path: "/properties/elasticsearch/properties/logsdb_columnar"
   - before: 3.6.0
     patch:
       # Input qualifier (named inputs).

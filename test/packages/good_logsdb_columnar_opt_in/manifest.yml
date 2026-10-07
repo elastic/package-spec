@@ -1,7 +1,7 @@
 format_version: 3.7.0
-name: bad_columnar_manifest_props
-title: Bad package with columnar blockers in index_template mappings
-description: Tests that index_template mapping overrides are checked for columnar blockers.
+name: good_logsdb_columnar_opt_in
+title: Good package declaring logsdb_columnar opt-in
+description: Tests that a package declaring elasticsearch.logsdb_columnar opt_in passes the columnar compatibility checks.
 version: 1.0.0-beta1
 type: integration
 source:
@@ -14,11 +14,11 @@ conditions:
 policy_templates:
   - name: logs
     title: Logs
-    description: Tests that index_template mapping overrides are checked for columnar blockers.
+    description: Collect logs
     inputs:
       - type: logfile
         title: Collect logs from files
-        description: Tests that index_template mapping overrides are checked for columnar blockers.
+        description: Collecting logs from log files
 elasticsearch:
   logsdb_columnar: opt_in
 owner:

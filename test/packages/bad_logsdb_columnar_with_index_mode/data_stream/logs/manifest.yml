@@ -12,11 +12,5 @@ streams:
         default:
           - /var/log/*.log
 elasticsearch:
-  index_template:
-    mappings:
-      properties:
-        event:
-          properties:
-            original:
-              type: keyword
-              copy_to: message
+  index_mode: time_series
+  logsdb_columnar: opt_in

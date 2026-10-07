@@ -13,10 +13,12 @@ streams:
           - /var/log/*.log
 elasticsearch:
   index_template:
-    mappings:
-      properties:
-        event:
-          properties:
-            original:
-              type: keyword
-              copy_to: message
+    settings:
+      index:
+        sort:
+          field:
+            - organization.id
+            - "@timestamp"
+          order:
+            - asc
+            - desc
