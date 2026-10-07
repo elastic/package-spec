@@ -417,6 +417,10 @@ func checkColumnarIndexSort(manifestPath string, sort *columnarIndexSort, stream
 	for _, name := range sort.Field {
 		info, defined := streamFields.defined[name]
 		if !defined {
+			// Fleet always maps @timestamp as a date field, whether or not the package declares it.
+			if name == "@timestamp" {
+				continue
+			}
 			errs = append(errs, specerrors.NewStructuredErrorf(
 				`file "%s" is invalid: index.sort field %q is not defined in the data stream fields`,
 				manifestPath, name,

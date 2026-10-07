@@ -9,7 +9,10 @@
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
     # Pending on https://github.com/elastic/kibana/issues/296252
-    - description: Add `elasticsearch.logsdb_columnar` (`opt_in`, `default`, `unsupported`) to package and data stream manifests to declare readiness for the logsdb_columnar index mode, and validate ready logs data streams for mappings and index sort settings that Elasticsearch rejects in columnar modes.
+    - description: >
+        Add `elasticsearch.logsdb_columnar` (`opt_in`, `default`, `unsupported`) to package and data stream
+        manifests to declare readiness for the logsdb_columnar index mode, and validate ready logs data
+        streams for mappings and index sort settings that Elasticsearch rejects in columnar modes.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1250
 - version: 3.6.6
