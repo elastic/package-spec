@@ -385,6 +385,16 @@ func validateMyRule(manifest pkgpath.File) specerrors.ValidationErrors {
    specerrors.NewStructuredErrorf("file \"%s\" is invalid: %s", config.Path(), err)
    ```
 
+   Also, **never use `%q` for the file path argument**. `%q` adds Go string quoting that double-escapes backslashes (`\` → `\\`), which breaks Windows path matching in test assertions. Always use `\"%s\"` to wrap the path in quotes:
+
+   ```go
+   // Good - backslashes are not double-escaped on Windows
+   fmt.Errorf("file \"%s\" is invalid: name field %q must equal ...", fullPath, view.Name)
+
+   // Bad - %q double-escapes Windows backslashes in fullPath
+   fmt.Errorf("file %q is invalid: name field %q must equal ...", fullPath, view.Name)
+   ```
+
 8. **Data stream type constants**: Never use data stream type strings (e.g. `"traces"`, `"profiles"`) as inline literals. Declare them as package-level constants in `code/go/internal/validator/semantic/types.go` alongside the existing `tracesDataStreamType` and `profilesDataStreamType`. The canonical set mirrors the `type` enum in `spec/integration/data_stream/manifest.spec.yml`.
 
 ### Testing Semantic Validators
@@ -542,6 +552,7 @@ Remove the comment once the blocker is resolved. Also add a corresponding `@skip
 6. **Wrong conditions format**: Use `conditions.kibana.version` not `conditions.kibana:version` for spec 3.0+
 7. **Creating test packages manually**: Prefer `elastic-package create package` and
    `elastic-package create data-stream` over copying folders by hand
+8. **Using `%q` for file paths in error messages**: `%q` double-escapes backslashes (`\` → `\\`) on Windows paths, causing test assertions to fail on Windows CI. Always use `\"%s\"` for the file path argument in error format strings
 
 ## Example: Adding a New Field
 

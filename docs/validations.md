@@ -17,48 +17,61 @@
 | [SVR00007]          | Kibana tag is duplicate               |
 | [SVR00008]          | Pipeline failure handler must set event.kind    |
 | [SVR00009]          | Pipeline failure handler must set error.message |
+| [SVR00010]          | Integration input qualifier required            |
+| [SVR00011]          | use_otel_suffix with an input defined |
+| [SVR00012]          | Package-level agent.version condition           |
+| [SVR00013]          | ES\|QL view definition is invalid               |
 
 ## JSE00001 - Rename message to event.original
+
 [JSE00001]: #jse00001---rename-message-to-eventoriginal
 
 **Available since [3.1.0](https://github.com/elastic/package-spec/releases/tag/v3.1.0)**
 
 ## PSR00001 - Non GA spec used in GA package
+
 [PSR00001]: #psr00001---non-ga-spec-used-in-ga-package
 
 **Available since [3.0.1](https://github.com/elastic/package-spec/releases/tag/v3.0.1)**
 
 ## PSR00002 - Prerelease feature used in GA package
+
 [PSR00002]: #psr00002---prerelease-feature-used-in-ga-package
 
 **Available since [3.0.0](https://github.com/elastic/package-spec/releases/tag/v3.0.0)**
 
 ## SVR00001 - Dashboard with query but no filter
+
 [SVR00001]: #svr00001---dashboard-with-query-but-no-filter
 
 **Available since [2.13.0](https://github.com/elastic/package-spec/releases/tag/v2.13.0)**
 
 ## SVR00002 - Dashboard without filter
+
 [SVR00002]: #svr00002---dashboard-without-filter
 
 **Available since [2.13.0](https://github.com/elastic/package-spec/releases/tag/v2.13.0)**
 
 ## SVR00003 - Dangling object IDs
+
 [SVR00003]: #svr00003---dangling-object-ids
 
 **Available since [2.13.0](https://github.com/elastic/package-spec/releases/tag/v2.13.0)**
 
 ## SVR00004 - Visualization by value
+
 [SVR00004]: #svr00004---visualization-by-value
 
 **Available since [3.0.0](https://github.com/elastic/package-spec/releases/tag/v3.0.0)**
 
 ## SVR00005 - Minimum Kibana version
+
 [SVR00005]: #svr00005---minimum-kibana-version
 
 **Available since [3.0.0](https://github.com/elastic/package-spec/releases/tag/v3.0.0)**
 
 ## SVR00006 - Processor tag is required
+
 [SVR00006]: #svr00006---processor-tag-is-required
 
 **Available since [3.6.0](https://github.com/elastic/package-spec/releases/tag/v3.6.0)**
@@ -75,6 +88,7 @@ set:
 ```
 
 ## SVR00007 - Kibana tag is duplicate
+
 [SVR00007]: #svr00007---kibana-tag-is-duplicate
 
 **Available since [3.5.5](https://github.com/elastic/package-spec/releases/tag/v3.5.5)**
@@ -82,6 +96,7 @@ set:
 Kibana tags declared under `kibana/tags.yml` are duplicated or package tags under `kibana/tag` directory are sharing the same id.
 
 ## SVR00008 - Pipeline failure handler must set event.kind
+
 [SVR00008]: #svr00008---pipeline-failure-handler-must-set-eventkind
 
 **Available since [3.6.0](https://github.com/elastic/package-spec/releases/tag/v3.6.0)**
@@ -89,7 +104,7 @@ Kibana tags declared under `kibana/tags.yml` are duplicated or package tags unde
 The global on_failure handler for an ingest pipeline must set `event.kind` to
 `pipeline_error`. This value indicates that an error occurred during the
 ingestion of this event, and that event data may be missing, inconsistent,
-or incorrect. 
+or incorrect.
 
 ```yaml
 on_failure:
@@ -99,6 +114,7 @@ on_failure:
 ```
 
 ## SVR00009 - Pipeline failure handler must set error.message
+
 [SVR00009]: #svr00009---pipeline-failure-handler-must-set-errormessage
 
 **Available since [3.6.0](https://github.com/elastic/package-spec/releases/tag/v3.6.0)**
@@ -135,3 +151,107 @@ on_failure:
         in pipeline '{{{ _ingest.pipeline }}}'
         failed with message '{{{ _ingest.on_failure_message }}}'
 ```
+
+## SVR00010 - Inputs of the same type must be named
+
+[SVR00010]: #svr00010---inputs-of-the-same-type-must-be-named
+
+**Available since [3.6.1](https://github.com/elastic/package-spec/releases/tag/v3.6.1)**
+
+When a policy template declares more than one input of the same `type`, every one of
+them must have a `name`. Data streams refer to inputs by type, so without names Fleet
+cannot tell which of the inputs a stream belongs to. This is common with `otelcol`.
+
+```yaml
+policy_templates:
+  - name: nginx
+    inputs:
+      - type: otelcol
+        name: nginx_metrics
+        title: Nginx metrics
+      - type: otelcol
+        name: nginx_logs
+        title: Nginx logs
+```
+
+## SVR00011 - use_otel_suffix with an input defined
+
+[SVR00011]: #svr00011---use_otel_suffix-with-an-input-defined
+
+**Available since [3.7.0](https://github.com/elastic/package-spec/releases/tag/v3.7.0)**
+
+This check is not limited to `format_version` 3.7.0.
+
+`use_otel_suffix` may be set to true only on a data stream that does not define
+stream inputs. Data streams that need an agent input should use the `otelcol`
+input type, which already applies the `.otel` index pattern suffix.
+
+## SVR00012 - Package-level agent.version condition
+
+[SVR00012]: #svr00012---pacakge-level-agent.version-condition
+
+**Available since [3.6.7](https://github.com/elastic/package-spec/releases/tag/v3.6.7)** (warning)
+**Promoted to error since [3.7.0](https://github.com/elastic/package-spec/releases/tag/v3.7.0)**
+
+A package declared `conditions.agent.version` at the package level. This field is deprecated.
+
+Unlike `conditions.kibana.version`, which gates stack installation, `conditions.agent.version`
+feeds Fleet's version-specific policies. Agents below the specified constraint receive a rendered
+policy with the integration configuration omitted, which silently breaks rolling upgrades and
+rollbacks where a single policy must work across multiple agent versions simultaneously.
+
+Instead, keep a single package version that is compatible with all supported agent versions. When a
+feature requires a minimum agent version, gate it inside the input template with a fallback path for
+older agents:
+
+```yaml
+# Before: exclude old agents at the package level
+conditions:
+  agent:
+    version: "^9.5.0"
+```
+
+```yaml
+# After: gate version-specific config inside the template with a fallback
+{{#if (semverSatisfies agentVersion "^9.5.0")}}
+use_cloud_connectors: true
+{{else}}
+# fallback configuration compatible with older agents
+access_key_id: {{access_key_id}}
+secret_access_key: {{secret_access_key}}
+{{/if}}
+```
+
+Add policy tests that render valid runnable configuration for both the minimum supported and the
+current agent version to confirm the fallback path is correct.
+
+To suppress this check during the migration window, add to the package's `validation.yml`:
+
+```yaml
+errors:
+  exclude_checks:
+    - SVR00011
+```
+
+## SVR00013 - ES|QL view definition is invalid
+
+[SVR00013]: #svr00013---esql-view-definition-is-invalid
+
+ES|QL views are cluster-state objects installed into Elasticsearch. The following
+semantic rules are enforced for every file in the `elasticsearch/esql_view/` folder:
+
+**`name` must equal the filename stem**
+
+The `name` field in the YAML must exactly match the filename without the `.yml`
+extension. For example, `my_package-my_view.yml` must declare `name: my_package-my_view`.
+This rule, combined with the `{PACKAGE_NAME}-` filename pattern, guarantees that
+the view name is scoped to the package and cannot collide with views from other packages.
+
+**`name` must be at most 255 bytes**
+
+Elasticsearch enforces a 255-byte limit on index-like names.
+
+**`query` must be non-empty after trimming whitespace**
+
+A query consisting only of whitespace characters passes `minLength: 1` in the JSON
+Schema but is rejected by Elasticsearch (`Strings.hasText()` check in `PutViewAction`).

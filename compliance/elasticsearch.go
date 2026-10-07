@@ -152,6 +152,41 @@ func (es *Elasticsearch) TransformHasAlias(transformID, aliasName string) error 
 	return fmt.Errorf("alias %q not found in transform %q configuration", aliasName, transformID)
 }
 
+// EsqlView checks whether an ES|QL view with the given name exists.
+func (es *Elasticsearch) EsqlView(name string) error {
+	resp, err := es.client.EsqlGetView(
+		es.client.EsqlGetView.WithContext(context.TODO()),
+		es.client.EsqlGetView.WithName(name),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to get ES|QL view %q: %w", name, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return fmt.Errorf("ES|QL view %q not found", name)
+	}
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("unexpected HTTP status %d when getting ES|QL view %q", resp.StatusCode, name)
+	}
+
+	var response struct {
+		Views []struct {
+			Name string `json:"name"`
+		} `json:"views"`
+	}
+	if err := newJSONDecoder(resp.Body).Decode(&response); err != nil {
+		return fmt.Errorf("failed to decode ES|QL view response: %w", err)
+	}
+
+	for _, v := range response.Views {
+		if v.Name == name {
+			return nil
+		}
+	}
+	return fmt.Errorf("ES|QL view %q not found in response", name)
+}
+
 func newJSONDecoder(r io.Reader) *json.Decoder {
 	dec := json.NewDecoder(r)
 	dec.UseNumber()

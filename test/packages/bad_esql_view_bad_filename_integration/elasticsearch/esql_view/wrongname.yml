@@ -1,0 +1,2 @@
+name: wrongname
+query: FROM logs-*

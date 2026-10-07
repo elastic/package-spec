@@ -426,7 +426,7 @@ elasticsearch:
 `,
 			want: []string{
 				"elasticsearch.index_template.mappings.dynamic is set to false; " +
-					"columnar index mode has no stored _source, so unmapped fields are permanently lost when dynamic is false (SVR00012)",
+					"columnar index mode has no stored _source, so unmapped fields are permanently lost when dynamic is false (SVR00014)",
 			},
 		},
 		{
