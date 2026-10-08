@@ -417,8 +417,9 @@ func checkColumnarIndexSort(manifestPath string, sort *columnarIndexSort, stream
 	for _, name := range sort.Field {
 		info, defined := streamFields.defined[name]
 		if !defined {
-			// Fleet always maps @timestamp as a date field, whether or not the package declares it.
-			if name == "@timestamp" {
+			// Fleet always maps @timestamp, and the logsdb index modes inject host.name themselves,
+			// so both are sortable whether or not the package declares them.
+			if name == "@timestamp" || name == "host.name" {
 				continue
 			}
 			errs = append(errs, specerrors.NewStructuredErrorf(

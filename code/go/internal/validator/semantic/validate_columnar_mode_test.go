@@ -593,3 +593,13 @@ func TestValidateColumnarModeConstraints(t *testing.T) {
 		})
 	}
 }
+
+func TestCheckColumnarIndexSortImplicitFields(t *testing.T) {
+	// @timestamp is always mapped by Fleet and host.name is injected by the logsdb index modes,
+	// so neither needs a local field definition to be used as a sort field.
+	streamFields := newColumnarStreamFields()
+	sort := &columnarIndexSort{Field: []string{"host.name", "@timestamp"}, Order: []string{"asc", "desc"}}
+
+	errs := checkColumnarIndexSort("ds/manifest.yml", sort, streamFields)
+	assert.Empty(t, errs)
+}
