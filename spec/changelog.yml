@@ -25,6 +25,9 @@
     - description: Add semantic validator (SVR00013) for ES|QL views enforcing name-vs-stem match, 255-byte limit, and non-empty query.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1266
+    - description: "PROTOTYPE: add `schemas` and `requires.integration` for root packages."
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1
 - version: 3.6.6
   changes:
     - description: Add support for mode-aware constructors and validation APIs.

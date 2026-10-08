@@ -266,6 +266,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 			modes: []Mode{LegacyMode, BuildMode}},
 		{fn: semantic.ValidateDeprecatedReplacedBy, since: semver.MustParse("3.6.0")},
 		{fn: semantic.ValidatePackageReferences, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
+		{fn: semantic.ValidateRootPackage, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
 		{fn: semantic.ValidateTestPackageRequirements, types: []string{"integration"}, since: semver.MustParse("3.6.0"),
 			modes: []Mode{LegacyMode, SourceMode}},
 		{fn: semantic.ValidateNoEmbeddedEcsInDynamicTemplates, types: []string{"integration"},
