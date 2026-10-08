@@ -1052,6 +1052,9 @@ func TestValidateWarnings(t *testing.T) {
 		"warn_conditions_agent_version": {
 			"package-level conditions.agent.version is deprecated and disallowed since spec 3.7.0 (SVR00012)",
 		},
+		"warn_workflow_enabled": {
+			"file \"../../../../test/packages/warn_workflow_enabled/kibana/workflow/warn_workflow_enabled-flow.yml\" is invalid: workflow should set enabled: false; package workflows are installed disabled (SVR00014)",
+		},
 		"visualizations_by_reference": {
 			"references found in dashboard kibana/dashboard/visualizations_by_reference-82273ffe-6acc-4f2f-bbee-c1004abba63d.json: visualizations_by_reference-5e1a01ff-6f9a-41c1-b7ad-326472db42b6 (visualization), visualizations_by_reference-8287a5d5-1576-4f3a-83c4-444e9058439b (lens) (SVR00004)",
 		},
