@@ -14,7 +14,7 @@ steps:
     agents:
       image: "${GO_LINUX_AGENT_IMAGE}"
       cpu: "8"
-      memory: "4G"
+      memory: "6G"
   - label: ":linux: Tests on Linux"
     key: test
     command: "make test-ci"
