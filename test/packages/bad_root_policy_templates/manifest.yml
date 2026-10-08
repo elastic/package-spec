@@ -21,10 +21,10 @@ schemas:
   default: otel
   ecs:
     requires:
-      integration: [{ package: nginx, version: "^2.0.0" }]
+      integration: [{ package: nginx, version: "^3.0.0" }]
   otel:
     requires:
-      integration: [{ package: nginx_otel_integ, version: "^1.0.0" }]
+      integration: [{ package: nginx_otel_integ, version: "^0.1.0" }]
 owner:
   github: elastic/ecosystem
   type: elastic
