@@ -619,6 +619,12 @@ func Test_ValidateFromPath(t *testing.T) {
 				"query must not be empty or whitespace-only (SVR00013)",
 			},
 		},
+		"bad_workflow_integration": {
+			"kibana/workflow/bad_workflow_integration-flow.yml",
+			[]string{
+				"field (root): steps is required",
+			},
+		},
 		"bad_content_duplicate_tags": {
 			"kibana/tags.yml",
 			[]string{"duplicate tag name 'Tag One' found (SVR00007)"},
@@ -763,6 +769,11 @@ func TestValidateItemNotAllowed(t *testing.T) {
 		"bad_esql_view_bad_filename_integration": {
 			"elasticsearch/esql_view": []string{
 				"wrongname.yml",
+			},
+		},
+		"bad_workflow_filename_integration": {
+			"kibana/workflow": []string{
+				"Wrong_Name.yml",
 			},
 		},
 		"bad_esql_view_old_format_integration": {

@@ -143,6 +143,18 @@ spec:
         type: file
         contentMediaType: "application/json"
         pattern: '^.+\.json$'
+  - description: Folder containing Elastic Workflow definitions
+    type: folder
+    name: workflow
+    required: false
+    additionalContents: false
+    contents:
+      - description: An Elastic Workflow definition file. Installed disabled by Fleet.
+        type: file
+        sizeLimit: 3MB
+        contentMediaType: "application/x-yaml"
+        pattern: '^{PACKAGE_NAME}-.+\.yml$'
+        $ref: "./workflow.spec.yml"
 versions:
   - before: 3.4.0
     patch:
