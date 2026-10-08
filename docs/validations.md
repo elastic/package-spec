@@ -21,6 +21,7 @@
 | [SVR00011]          | use_otel_suffix with an input defined |
 | [SVR00012]          | Package-level agent.version condition           |
 | [SVR00013]          | ES\|QL view definition is invalid               |
+| [SVR00014]          | Kibana workflow should be disabled              |
 
 ## JSE00001 - Rename message to event.original
 
@@ -255,3 +256,17 @@ Elasticsearch enforces a 255-byte limit on index-like names.
 
 A query consisting only of whitespace characters passes `minLength: 1` in the JSON
 Schema but is rejected by Elasticsearch (`Strings.hasText()` check in `PutViewAction`).
+
+## SVR00014 - Kibana workflow should be disabled
+
+[SVR00014]: #svr00014---kibana-workflow-should-be-disabled
+
+**Warning.** This rule is temporary.
+
+Fleet always installs the workflows in `kibana/workflow/` disabled. A workflow file that
+sets `enabled: true` is therefore misleading, so the validator warns about it. Set
+`enabled: false` (or omit the field) in every package workflow.
+
+Workflows are currently imported into packages by hand. This warning is expected to be
+removed once elastic-package can export workflows and write `enabled: false` itself
+([elastic/elastic-package#3475](https://github.com/elastic/elastic-package/issues/3475)).
