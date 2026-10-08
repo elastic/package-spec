@@ -153,7 +153,7 @@ spec:
         type: file
         sizeLimit: 3MB
         contentMediaType: "application/x-yaml"
-        pattern: '^{PACKAGE_NAME}-.+\.yml$'
+        pattern: '^{PACKAGE_NAME}-[a-z0-9-]+\.yml$'
         $ref: "./workflow.spec.yml"
 versions:
   - before: 3.4.0
