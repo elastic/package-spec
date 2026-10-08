@@ -1,0 +1,9 @@
+name: good_v3-sample-workflow
+enabled: false
+triggers:
+  - type: manual
+steps:
+  - name: hello
+    type: console
+    with:
+      message: hello
