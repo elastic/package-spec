@@ -18,4 +18,4 @@ elasticsearch:
         sort:
           field:
             - message
-            - host.name
+            - missing.field

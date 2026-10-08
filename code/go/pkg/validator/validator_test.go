@@ -101,7 +101,7 @@ func Test_ValidateFromPath(t *testing.T) {
 			"data_stream/logs/manifest.yml",
 			[]string{
 				`index.sort field "message" has no doc values (type "text"), index sorting requires doc values`,
-				`index.sort field "host.name" is not defined in the data stream fields`,
+				`index.sort field "missing.field" is not defined in the data stream fields`,
 				`index.sort must include @timestamp`,
 			},
 		},
