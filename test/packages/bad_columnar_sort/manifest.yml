@@ -1,0 +1,26 @@
+format_version: 3.7.0
+name: bad_columnar_sort
+title: Bad package with an invalid index sort
+description: Tests that index.sort is validated against the field definitions of a columnar ready logs data stream.
+version: 1.0.0-beta1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: "^9.5.0"
+  elastic:
+    subscription: basic
+policy_templates:
+  - name: logs
+    title: Logs
+    description: Tests that index.sort is validated against the field definitions of a columnar ready logs data stream.
+    inputs:
+      - type: logfile
+        title: Collect logs from files
+        description: Tests that index.sort is validated against the field definitions of a columnar ready logs data stream.
+elasticsearch:
+  logsdb_columnar: opt_in
+owner:
+  github: elastic/obs-infraobs-integrations
+  type: elastic
