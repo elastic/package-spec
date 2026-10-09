@@ -1,0 +1,33 @@
+format_version: 3.6.0
+name: bad_group_package_default
+type: integration
+title: Nginx
+version: 0.1.0
+description: Collect logs and metrics from Nginx.
+categories:
+  - web
+  - observability
+conditions:
+  kibana:
+    version: "^9.0.0"
+  elastic:
+    subscription: "basic"
+icons:
+  - src: /img/logo_nginx.svg
+    title: logo nginx
+    size: 32x32
+    type: image/svg+xml
+requires:
+  integration:
+    - package: nginx
+      version: "^3.0.0"
+    - package: nginx_otel_integ
+      version: "^0.1.0"
+schemas:
+  otel:
+    integration: nginx_otel_integ
+  ecs:
+    integration: nginx
+owner:
+  github: elastic/ecosystem
+  type: elastic

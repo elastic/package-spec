@@ -602,8 +602,8 @@ spec:
             $ref: "#/definitions/package_dependency"
         integration:
           description: >
-            List of required integration packages. Only allowed in root packages
-            (packages without policy templates or data streams). PROTOTYPE.
+            List of required integration packages. Only allowed in integration
+            groups (packages without policy templates or data streams). PROTOTYPE.
           type: array
           items:
             $ref: "#/definitions/package_dependency"
@@ -1068,25 +1068,27 @@ spec:
       $ref: "#/definitions/requires"
     schemas:
       description: >
-        PROTOTYPE. Declares this package as a root package grouping per-schema
-        child integration packages (e.g. ECS, OTel). Each key other than
-        `default` is a schema name mapping to its requirements.
+        PROTOTYPE. Declares this package as an integration group: one child
+        integration per schema (e.g. ECS, OTel). Each key is a schema name.
+        Each child must also be listed in `requires.integration`.
       type: object
-      required:
-        - default
-      properties:
-        default:
-          description: Name of the schema selected by default.
-          type: string
-          pattern: '^[a-z0-9_]+$'
-          examples:
-            - otel
+      propertyNames:
+        pattern: '^[a-z0-9_]+$'
       additionalProperties:
         type: object
         additionalProperties: false
+        required:
+          - integration
         properties:
-          requires:
-            $ref: "#/definitions/requires"
+          integration:
+            description: Name of the integration package installed for this schema.
+            type: string
+            pattern: '^[a-z0-9_]+$'
+            examples:
+              - nginx_otel_integ
+          default:
+            description: Whether this schema is selected by default. Exactly one schema must set it.
+            type: boolean
     deprecated:
       $ref: "#/definitions/deprecated"
   required:
@@ -1153,7 +1155,7 @@ versions:
         path: "/properties/policy_templates/items/properties/inputs/items/properties/dynamic_signal_types"
       - op: remove
         path: "/definitions/dynamic_signal_types"
-      # Root packages (prototype).
+      # Integration groups (prototype).
       - op: remove
         path: "/properties/schemas"
       # Package dependencies.

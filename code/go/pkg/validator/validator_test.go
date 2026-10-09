@@ -74,7 +74,7 @@ func Test_ValidateFromPath(t *testing.T) {
 		"good_provider_permissions":              {},
 		"good_provider_permissions_input":        {},
 		"good_integration_group":                 {},
-		"good_root":                              {},
+		"good_group_package":                     {},
 		"good_input_group":                       {},
 		"bad_integration_group": {
 			"manifest.yml",
@@ -307,10 +307,22 @@ func Test_ValidateFromPath(t *testing.T) {
 				`field policy_templates.0.deployment_modes.agentless.resources.requests: Additional property disk is not allowed`,
 			},
 		},
-		"bad_root_policy_templates": {
+		"bad_group_package_policy_templates": {
 			"manifest.yml",
 			[]string{
-				`requires.integration is only allowed in root packages, which must not define policy_templates`,
+				`requires.integration is only allowed in integration groups, which must not define policy_templates`,
+			},
+		},
+		"bad_group_package_schema_ref": {
+			"manifest.yml",
+			[]string{
+				`schemas.ecs.integration "nginx_classic" must be listed in requires.integration`,
+			},
+		},
+		"bad_group_package_default": {
+			"manifest.yml",
+			[]string{
+				`exactly one schema must set default: true, found 0`,
 			},
 		},
 		"bad_requires": {
