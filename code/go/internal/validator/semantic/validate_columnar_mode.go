@@ -399,8 +399,9 @@ func checkColumnarMappingProperties(manifestPath, parentPath string, properties 
 
 // checkColumnarIndexSort validates elasticsearch.index_template.settings.index.sort against the
 // data stream field definitions. Index sorting reads doc values, so every sort field must be
-// defined, must keep its doc values and must be of a type that has them. Columnar index modes
-// always sort on @timestamp, so it has to be part of the sort specification.
+// defined, must keep its doc values and must be of a type that has them. Elasticsearch does not
+// require @timestamp in a custom sort, but most queries filter on a time range, so a sort that
+// leaves it out is reported as a filterable warning (SVR00016) rather than an error.
 func checkColumnarIndexSort(manifestPath string, sort *columnarIndexSort, streamFields *columnarStreamFields) specerrors.ValidationErrors {
 	if sort == nil || len(sort.Field) == 0 {
 		return nil
@@ -417,9 +418,9 @@ func checkColumnarIndexSort(manifestPath string, sort *columnarIndexSort, stream
 	for _, name := range sort.Field {
 		info, defined := streamFields.defined[name]
 		if !defined {
-			// Fleet always maps @timestamp, and the logsdb index modes inject host.name themselves,
-			// so both are sortable whether or not the package declares them.
-			if name == "@timestamp" || name == "host.name" {
+			// Fleet always maps @timestamp, whether or not the package declares it. host.name is
+			// only injected by Elasticsearch for its default sort, so a custom sort must map it.
+			if name == "@timestamp" {
 				continue
 			}
 			errs = append(errs, specerrors.NewStructuredErrorf(
@@ -438,9 +439,10 @@ func checkColumnarIndexSort(manifestPath string, sort *columnarIndexSort, stream
 	}
 
 	if !slices.Contains(sort.Field, "@timestamp") {
-		errs = append(errs, specerrors.NewStructuredErrorf(
-			`file "%s" is invalid: index.sort must include @timestamp`,
-			manifestPath,
+		errs = append(errs, specerrors.NewStructuredError(
+			fmt.Errorf(`file "%s" is invalid: index.sort does not include @timestamp; most queries filter on a time range, `+
+				`so sorting on it keeps time-range pruning effective`, manifestPath),
+			specerrors.CodeColumnarSortWithoutTimestamp,
 		))
 	}
 
