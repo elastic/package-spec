@@ -31,6 +31,7 @@ const (
 	CodeEsqlViewValidation                  = "SVR00013"
 
 	// Columnar index mode validation warnings (filterable)
-	CodeColumnarDynamicFalse = "SVR00014" // dynamic: false causes data loss in columnar mode (no _source)
-	CodeColumnarEnabledFalse = "SVR00015" // enabled: false on object causes data loss in columnar mode (no _source)
+	CodeColumnarDynamicFalse         = "SVR00014" // dynamic: false causes data loss in columnar mode (no _source)
+	CodeColumnarEnabledFalse         = "SVR00015" // enabled: false on object causes data loss in columnar mode (no _source)
+	CodeColumnarSortWithoutTimestamp = "SVR00016" // custom index.sort that does not include @timestamp
 )

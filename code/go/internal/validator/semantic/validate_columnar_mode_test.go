@@ -320,7 +320,7 @@ func TestCheckColumnarIndexSort(t *testing.T) {
 			title: "missing @timestamp",
 			sort:  &columnarIndexSort{Field: []string{"host.name"}},
 			want: []string{
-				`file "ds/manifest.yml" is invalid: index.sort must include @timestamp`,
+				`file "ds/manifest.yml" is invalid: index.sort does not include @timestamp; most queries filter on a time range, so sorting on it keeps time-range pruning effective (SVR00016)`,
 			},
 		},
 		{
@@ -595,11 +595,14 @@ func TestValidateColumnarModeConstraints(t *testing.T) {
 }
 
 func TestCheckColumnarIndexSortImplicitFields(t *testing.T) {
-	// @timestamp is always mapped by Fleet and host.name is injected by the logsdb index modes,
-	// so neither needs a local field definition to be used as a sort field.
+	// @timestamp is always mapped by Fleet, so it needs no local definition. host.name is only
+	// injected by Elasticsearch for its default sort: a custom sort has to map it like any field.
 	streamFields := newColumnarStreamFields()
-	sort := &columnarIndexSort{Field: []string{"host.name", "@timestamp"}, Order: []string{"asc", "desc"}}
 
-	errs := checkColumnarIndexSort("ds/manifest.yml", sort, streamFields)
+	errs := checkColumnarIndexSort("ds/manifest.yml", &columnarIndexSort{Field: []string{"@timestamp"}}, streamFields)
 	assert.Empty(t, errs)
+
+	errs = checkColumnarIndexSort("ds/manifest.yml", &columnarIndexSort{Field: []string{"host.name", "@timestamp"}}, streamFields)
+	require.Len(t, errs, 1)
+	assert.Equal(t, `file "ds/manifest.yml" is invalid: index.sort field "host.name" is not defined in the data stream fields`, errs[0].Error())
 }
