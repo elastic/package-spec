@@ -25,6 +25,9 @@
     - description: Add semantic validator (SVR00013) for ES|QL views enforcing name-vs-stem match, 255-byte limit, and non-empty query.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1266
+    - description: Update EPR categories reference URL to v1.41.0.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1215
 - version: 3.6.6
   changes:
     - description: Add support for mode-aware constructors and validation APIs.
