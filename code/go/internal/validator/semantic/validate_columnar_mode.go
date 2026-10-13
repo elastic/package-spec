@@ -33,24 +33,6 @@ const (
 // logsDataStreamType is the only data stream type that supports the logsdb_columnar index mode.
 const logsDataStreamType = "logs"
 
-// columnarUnsupportedTypes is the set of field types that have no synthetic-source
-// implementation in Elasticsearch. Indexing such a field into a columnar data stream
-// causes ES to reject the index template at PUT time.
-// Source: FieldMapper.calculateSyntheticSourceMode / IndexMode.validateAllFieldsReconstructableFromDocValues.
-//
-// This check is defensive: none of these types are currently allowed by the `type` enum in
-// spec/integration/data_stream/fields/fields.spec.yml, so JSON-schema validation rejects them
-// before this semantic validator runs. It exists to guard against a future enum expansion
-// accidentally admitting a type that columnar mode cannot store.
-var columnarUnsupportedTypes = map[string]bool{
-	"completion":         true,
-	"search_as_you_type": true,
-	"token_count":        true,
-	"rank_feature":       true,
-	"rank_features":      true,
-	"percolator":         true,
-}
-
 // columnarUnsortableTypes is the set of field types that cannot back an index.sort setting,
 // because they have no doc values Lucene can sort segments on.
 var columnarUnsortableTypes = map[string]bool{
@@ -68,7 +50,7 @@ var columnarUnsortableTypes = map[string]bool{
 // level, for mappings and index sort settings Elasticsearch rejects in columnar index modes.
 //
 // Hard errors (copy_to, keyword normalizers other than lowercase, mapping-level runtime fields,
-// nested inside nested, types without synthetic source, invalid index.sort) always fail.
+// nested inside nested, invalid index.sort) always fail.
 // Warnings (dynamic: false, enabled: false) are filterable via their SVR codes and behave as
 // warnings when the caller uses warnOn.
 func ValidateColumnarModeConstraints(fsys fspath.FS) specerrors.ValidationErrors {
@@ -120,7 +102,7 @@ func ValidateColumnarModeConstraints(fsys fspath.FS) specerrors.ValidationErrors
 		return errs
 	}
 
-	// Manifest-level checks (dynamic: false, index_template mapping overrides, index.sort).
+	// Manifest-level checks (dynamic: false, index.sort).
 	// Field definitions are collected first: index.sort and nested-in-nested need the whole
 	// data stream, not a single field.
 	streamFields := make(map[string]*columnarStreamFields, len(dataStreams))
@@ -284,14 +266,6 @@ func (c *columnarStreamFields) nestedInNestedErrors() specerrors.ValidationError
 	return errs
 }
 
-// columnarMappingNode is a single node of elasticsearch.index_template.mappings.properties.
-// Only the mapping parameters that block columnar mode are decoded.
-type columnarMappingNode struct {
-	CopyTo     any                            `yaml:"copy_to"`
-	Properties map[string]columnarMappingNode `yaml:"properties"`
-	Fields     map[string]columnarMappingNode `yaml:"fields"`
-}
-
 // columnarIndexSort is the elasticsearch.index_template.settings.index.sort section. Both
 // `field` and `order` accept a single string or a list of strings.
 type columnarIndexSort struct {
@@ -335,8 +309,7 @@ func checkColumnarManifest(fsys fspath.FS, manifestPath string, streamFields *co
 					} `yaml:"index"`
 				} `yaml:"settings"`
 				Mappings struct {
-					Dynamic    any                            `yaml:"dynamic"`
-					Properties map[string]columnarMappingNode `yaml:"properties"`
+					Dynamic any `yaml:"dynamic"`
 				} `yaml:"mappings"`
 			} `yaml:"index_template"`
 		} `yaml:"elasticsearch"`
@@ -355,45 +328,12 @@ func checkColumnarManifest(fsys fspath.FS, manifestPath string, streamFields *co
 		))
 	}
 
-	// Fleet merges elasticsearch.index_template.mappings on top of the mappings generated
-	// from fields/, so blockers declared here are not caught by the field-level checks.
-	// Note that since spec 3.0.0 the JSON schema itself rejects arbitrary `properties` in
-	// this section, so this walk is mostly defence in depth (build-mode manifests and any
-	// future relaxation of the schema).
-	errs = append(errs, checkColumnarMappingProperties(
-		fsys.Path(manifestPath),
-		"elasticsearch.index_template.mappings.properties",
-		manifest.Elasticsearch.IndexTemplate.Mappings.Properties,
-	)...)
-
 	errs = append(errs, checkColumnarIndexSort(
 		fsys.Path(manifestPath),
 		manifest.Elasticsearch.IndexTemplate.Settings.Index.Sort,
 		streamFields,
 	)...)
 
-	return errs
-}
-
-// checkColumnarMappingProperties walks a properties map from an index_template mapping
-// override and reports the settings that Elasticsearch rejects in columnar index mode.
-func checkColumnarMappingProperties(manifestPath, parentPath string, properties map[string]columnarMappingNode) specerrors.ValidationErrors {
-	var errs specerrors.ValidationErrors
-	for _, name := range slices.Sorted(maps.Keys(properties)) {
-		node := properties[name]
-		nodePath := parentPath + "." + name
-
-		if node.CopyTo != nil {
-			errs = append(errs, specerrors.NewStructuredErrorf(
-				`file "%s" is invalid: %s has copy_to set, which prevents synthetic source reconstruction in columnar index mode; `+
-					`use an ingest pipeline to copy the value instead`,
-				manifestPath, nodePath,
-			))
-		}
-
-		errs = append(errs, checkColumnarMappingProperties(manifestPath, nodePath+".properties", node.Properties)...)
-		errs = append(errs, checkColumnarMappingProperties(manifestPath, nodePath+".fields", node.Fields)...)
-	}
 	return errs
 }
 
@@ -470,14 +410,6 @@ func checkColumnarField(meta fieldFileMetadata, f field) specerrors.ValidationEr
 			`file "%s" is invalid: field %q is a keyword field with a normalizer, which prevents synthetic source reconstruction in columnar index mode; `+
 				`remove the normalizer or apply the transformation in an ingest pipeline`,
 			meta.fullFilePath, f.Name,
-		))
-	}
-
-	// Types with no synthetic-source implementation are rejected by ES at template PUT time.
-	if columnarUnsupportedTypes[f.Type] {
-		errs = append(errs, specerrors.NewStructuredErrorf(
-			`file "%s" is invalid: field %q is of type %q, which is not supported in columnar index mode`,
-			meta.fullFilePath, f.Name, f.Type,
 		))
 	}
 
