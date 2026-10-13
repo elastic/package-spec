@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"maps"
 	"os"
 	"path"
 	"slices"
@@ -33,6 +32,28 @@ const (
 // logsDataStreamType is the only data stream type that supports the logsdb_columnar index mode.
 const logsDataStreamType = "logs"
 
+var (
+	// Invalid combinations of elasticsearch.logsdb_columnar with other data stream settings.
+	errInvalidDSTypeColumnar          = errors.New("elasticsearch.logsdb_columnar is only supported on logs data streams")
+	errInvalidIndexModeLogsDBColumnar = errors.New("elasticsearch.index_mode and elasticsearch.logsdb_columnar cannot both be set; logsdb_columnar only applies when index_mode is unset")
+
+	// Mappings that Elasticsearch rejects in columnar index modes.
+	errColumnarCopyTo         = errors.New("copy_to is not supported in columnar index modes, it prevents synthetic source reconstruction; use an ingest pipeline to copy the value instead")
+	errColumnarNormalizer     = errors.New("keyword normalizers other than lowercase are not supported in columnar index modes, they prevent synthetic source reconstruction; remove the normalizer or apply the transformation in an ingest pipeline")
+	errColumnarRuntimeField   = errors.New("mapping-level runtime fields are not supported in columnar index modes; compute the field in an ingest pipeline or use a search-request runtime field instead")
+	errColumnarNestedInNested = errors.New("columnar index modes support only a single level of nesting")
+
+	// Mappings that drop data in columnar index modes, which have no stored _source to fall back on.
+	errColumnarEnabledFalse = errors.New("enabled: false loses the object contents in columnar index modes, which have no stored _source")
+	errColumnarDynamicFalse = errors.New("dynamic: false loses unmapped fields in columnar index modes, which have no stored _source")
+
+	// Invalid index.sort settings.
+	errColumnarSortOrderLength      = errors.New("index.sort.order must have one entry per index.sort.field")
+	errColumnarSortFieldUndefined   = errors.New("index sort fields must be defined in the data stream fields")
+	errColumnarSortFieldNoDocValues = errors.New("index sort fields must have doc values")
+	errColumnarSortWithoutTimestamp = errors.New("index.sort does not include @timestamp; most queries filter on a time range, so sorting on it keeps time-range pruning effective")
+)
+
 // columnarUnsortableTypes is the set of field types that cannot back an index.sort setting,
 // because they have no doc values Lucene can sort segments on.
 var columnarUnsortableTypes = map[string]bool{
@@ -49,100 +70,63 @@ var columnarUnsortableTypes = map[string]bool{
 // logsdb_columnar index mode through elasticsearch.logsdb_columnar, at package or data stream
 // level, for mappings and index sort settings Elasticsearch rejects in columnar index modes.
 //
-// Hard errors (copy_to, keyword normalizers other than lowercase, mapping-level runtime fields,
-// nested inside nested, invalid index.sort) always fail.
-// Warnings (dynamic: false, enabled: false) are filterable via their SVR codes and behave as
-// warnings when the caller uses warnOn.
+// Errors without a code (invalid logsdb_columnar settings, copy_to, keyword normalizers other
+// than lowercase, mapping-level runtime fields, nested inside nested, invalid index.sort fields)
+// cannot be filtered. dynamic: false, enabled: false and an index.sort without @timestamp are
+// reported with their own SVR codes.
 func ValidateColumnarModeConstraints(fsys fspath.FS) specerrors.ValidationErrors {
-	dataStreams, err := listDataStreams(fsys)
-	if err != nil {
-		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
-	}
-
 	packageReadiness, err := readPackageColumnarReadiness(fsys)
 	if err != nil {
 		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
-	var errs specerrors.ValidationErrors
-
-	// Resolve which data streams are ready for the columnar index mode, and report the
-	// data stream manifests that combine logsdb_columnar with incompatible settings.
-	ready := make(map[string]bool, len(dataStreams))
-	manifestPaths := make(map[string]string, len(dataStreams))
-	for _, dataStream := range dataStreams {
-		manifestPath := path.Join(dataStreamDir, dataStream, "manifest.yml")
-		manifestPaths[dataStream] = manifestPath
-
-		manifest, err := readDataStreamColumnarManifest(fsys, manifestPath)
-		if err != nil {
-			return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
-		}
-
-		if manifest.Elasticsearch.LogsDBColumnar != "" {
-			if manifest.Type != logsDataStreamType {
-				errs = append(errs, specerrors.NewStructuredErrorf(
-					`file "%s" is invalid: elasticsearch.logsdb_columnar is only supported on logs data streams (data stream type is %q)`,
-					fsys.Path(manifestPath), manifest.Type,
-				))
-			}
-			if manifest.Elasticsearch.IndexMode != "" {
-				errs = append(errs, specerrors.NewStructuredErrorf(
-					`file "%s" is invalid: elasticsearch.index_mode and elasticsearch.logsdb_columnar cannot both be set; `+
-						`logsdb_columnar only applies when index_mode is unset`,
-					fsys.Path(manifestPath),
-				))
-			}
-		}
-
-		ready[dataStream] = isColumnarReady(manifest, packageReadiness)
+	dataStreams, err := readColumnarDataStreams(fsys)
+	if err != nil {
+		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
 	}
 
-	if !slices.Contains(slices.Collect(maps.Values(ready)), true) {
+	errs := validateLogsDBColumnarSettings(dataStreams)
+
+	ready := columnarReadyDataStreams(dataStreams, packageReadiness)
+	if len(ready) == 0 {
 		return errs
 	}
 
-	// Manifest-level checks (dynamic: false, index.sort).
-	// Field definitions are collected first: index.sort and nested-in-nested need the whole
-	// data stream, not a single field.
-	streamFields := make(map[string]*columnarStreamFields, len(dataStreams))
-	errs = append(errs, validateFields(fsys, func(meta fieldFileMetadata, f field) specerrors.ValidationErrors {
-		// Transform fields are reported with an empty data stream; they are never part of a
-		// columnar data stream mapping.
-		if meta.transform != "" || meta.dataStream == "" || !ready[meta.dataStream] {
-			return nil
-		}
-		collected, ok := streamFields[meta.dataStream]
-		if !ok {
-			collected = newColumnarStreamFields()
-			streamFields[meta.dataStream] = collected
-		}
-		collected.add(meta, f)
-		return checkColumnarField(meta, f)
-	})...)
+	streamFields, fieldErrs := validateColumnarFields(fsys, ready)
+	errs = append(errs, fieldErrs...)
 
-	for _, dataStream := range slices.Sorted(maps.Keys(ready)) {
-		if !ready[dataStream] {
-			continue
-		}
-		collected := streamFields[dataStream]
-		if collected == nil {
-			collected = newColumnarStreamFields()
-		}
-		errs = append(errs, collected.nestedInNestedErrors()...)
-		errs = append(errs, checkColumnarManifest(fsys, manifestPaths[dataStream], collected)...)
+	for _, dataStream := range ready {
+		errs = append(errs, streamFields[dataStream.name].nestedInNestedErrors()...)
+		errs = append(errs, validateColumnarIndexTemplate(dataStream, streamFields[dataStream.name])...)
 	}
 
 	return errs
 }
 
+// columnarDataStream is a data stream with the manifest settings the columnar checks read.
+type columnarDataStream struct {
+	name         string
+	manifestPath string
+	manifest     columnarDataStreamManifest
+}
+
 // columnarDataStreamManifest holds the data stream manifest settings that decide whether the
-// columnar compatibility checks apply.
+// columnar compatibility checks apply, and the index template settings they validate.
 type columnarDataStreamManifest struct {
 	Type          string `yaml:"type"`
 	Elasticsearch struct {
 		IndexMode      string `yaml:"index_mode"`
 		LogsDBColumnar string `yaml:"logsdb_columnar"`
+		IndexTemplate  struct {
+			Settings struct {
+				Index struct {
+					Sort *columnarIndexSort `yaml:"sort"`
+				} `yaml:"index"`
+			} `yaml:"settings"`
+			Mappings struct {
+				Dynamic any `yaml:"dynamic"`
+			} `yaml:"mappings"`
+		} `yaml:"index_template"`
 	} `yaml:"elasticsearch"`
 }
 
@@ -182,6 +166,30 @@ func readPackageColumnarReadiness(fsys fspath.FS) (string, error) {
 	return manifest.Elasticsearch.LogsDBColumnar, nil
 }
 
+// readColumnarDataStreams decodes the columnar-relevant settings of every data stream manifest,
+// in data stream directory order.
+func readColumnarDataStreams(fsys fspath.FS) ([]columnarDataStream, error) {
+	names, err := listDataStreams(fsys)
+	if err != nil {
+		return nil, err
+	}
+
+	dataStreams := make([]columnarDataStream, 0, len(names))
+	for _, name := range names {
+		manifestPath := path.Join(dataStreamDir, name, "manifest.yml")
+		manifest, err := readDataStreamColumnarManifest(fsys, manifestPath)
+		if err != nil {
+			return nil, err
+		}
+		dataStreams = append(dataStreams, columnarDataStream{
+			name:         name,
+			manifestPath: fsys.Path(manifestPath),
+			manifest:     manifest,
+		})
+	}
+	return dataStreams, nil
+}
+
 // readDataStreamColumnarManifest decodes the columnar-relevant settings of a data stream manifest.
 func readDataStreamColumnarManifest(fsys fspath.FS, manifestPath string) (columnarDataStreamManifest, error) {
 	var manifest columnarDataStreamManifest
@@ -197,6 +205,111 @@ func readDataStreamColumnarManifest(fsys fspath.FS, manifestPath string) (column
 		return manifest, fmt.Errorf("failed to parse data stream manifest in %q: %w", fsys.Path(manifestPath), err)
 	}
 	return manifest, nil
+}
+
+// validateLogsDBColumnarSettings reports the data stream manifests that combine
+// elasticsearch.logsdb_columnar with settings it cannot be used with.
+func validateLogsDBColumnarSettings(dataStreams []columnarDataStream) specerrors.ValidationErrors {
+	var errs specerrors.ValidationErrors
+	for _, dataStream := range dataStreams {
+		if err := validateLogsDBColumnarDataStreamType(dataStream.manifest); err != nil {
+			errs = append(errs, specerrors.NewStructuredErrorf(`file "%s" is invalid: %w`, dataStream.manifestPath, err))
+		}
+		if err := validateLogsDBColumnarIndexMode(dataStream.manifest); err != nil {
+			errs = append(errs, specerrors.NewStructuredErrorf(`file "%s" is invalid: %w`, dataStream.manifestPath, err))
+		}
+	}
+	return errs
+}
+
+// validateLogsDBColumnarDataStreamType rejects elasticsearch.logsdb_columnar on data streams
+// that are not logs data streams.
+func validateLogsDBColumnarDataStreamType(manifest columnarDataStreamManifest) error {
+	if manifest.Elasticsearch.LogsDBColumnar == "" || manifest.Type == logsDataStreamType {
+		return nil
+	}
+	return fmt.Errorf("%w (data stream type is %q)", errInvalidDSTypeColumnar, manifest.Type)
+}
+
+// validateLogsDBColumnarIndexMode rejects elasticsearch.logsdb_columnar together with a fixed
+// elasticsearch.index_mode.
+func validateLogsDBColumnarIndexMode(manifest columnarDataStreamManifest) error {
+	if manifest.Elasticsearch.LogsDBColumnar == "" || manifest.Elasticsearch.IndexMode == "" {
+		return nil
+	}
+	return errInvalidIndexModeLogsDBColumnar
+}
+
+// columnarReadyDataStreams returns the data streams whose effective readiness is opt_in or default.
+func columnarReadyDataStreams(dataStreams []columnarDataStream, packageReadiness string) []columnarDataStream {
+	var ready []columnarDataStream
+	for _, dataStream := range dataStreams {
+		if isColumnarReady(dataStream.manifest, packageReadiness) {
+			ready = append(ready, dataStream)
+		}
+	}
+	return ready
+}
+
+// validateColumnarFields validates every field definition of the ready data streams, and
+// collects them per data stream for the checks that need the whole data stream: index.sort
+// and nested-in-nested.
+func validateColumnarFields(fsys fspath.FS, ready []columnarDataStream) (map[string]*columnarStreamFields, specerrors.ValidationErrors) {
+	streamFields := make(map[string]*columnarStreamFields, len(ready))
+	for _, dataStream := range ready {
+		streamFields[dataStream.name] = newColumnarStreamFields()
+	}
+
+	errs := validateFields(fsys, func(meta fieldFileMetadata, f field) specerrors.ValidationErrors {
+		// Transform fields are reported with an empty data stream, so they are skipped too:
+		// they are never part of a columnar data stream mapping.
+		collected, ready := streamFields[meta.dataStream]
+		if !ready {
+			return nil
+		}
+		collected.add(meta, f)
+		return validateColumnarField(meta, f)
+	})
+
+	return streamFields, errs
+}
+
+// validateColumnarField validates a single field definition for columnar compatibility.
+func validateColumnarField(meta fieldFileMetadata, f field) specerrors.ValidationErrors {
+	var errs specerrors.ValidationErrors
+
+	// copy_to prevents synthetic source reconstruction (FieldMapper.calculateSyntheticSourceMode).
+	if f.CopyTo != nil {
+		errs = append(errs, columnarFieldError(meta, f, errColumnarCopyTo, specerrors.UnassignedCode))
+	}
+
+	// keyword with normalizer prevents synthetic source reconstruction (KeywordFieldMapper).
+	// The built-in "lowercase" normalizer is accepted: ES defaults normalizer_skip_store_original_value
+	// to true for it, so synthetic source returns the lowercased value instead of failing.
+	if f.Type == "keyword" && f.Normalizer != "" && f.Normalizer != "lowercase" {
+		errs = append(errs, columnarFieldError(meta, f, errColumnarNormalizer, specerrors.UnassignedCode))
+	}
+
+	if f.Runtime.isEnabled() {
+		errs = append(errs, columnarFieldError(meta, f, errColumnarRuntimeField, specerrors.UnassignedCode))
+	}
+
+	if f.Enabled != nil && !*f.Enabled {
+		errs = append(errs, columnarFieldError(meta, f, errColumnarEnabledFalse, specerrors.CodeColumnarEnabledFalse))
+	}
+
+	if dynamicIsFalse(f.Dynamic) {
+		errs = append(errs, columnarFieldError(meta, f, errColumnarDynamicFalse, specerrors.CodeColumnarDynamicFalse))
+	}
+
+	return errs
+}
+
+func columnarFieldError(meta fieldFileMetadata, f field, err error, code string) specerrors.ValidationError {
+	return specerrors.NewStructuredError(
+		fmt.Errorf(`file "%s" is invalid: field %q: %w`, meta.fullFilePath, f.Name, err),
+		code,
+	)
 }
 
 // columnarFieldInfo is the subset of a field definition needed to validate index.sort.
@@ -258,12 +371,30 @@ func (c *columnarStreamFields) nestedInNestedErrors() specerrors.ValidationError
 			continue
 		}
 		errs = append(errs, specerrors.NewStructuredErrorf(
-			`file "%s" is invalid: field %q is a nested field inside another nested field (%q); `+
-				`columnar index modes support only a single level of nesting`,
-			child.filePath, child.name, parent,
+			`file "%s" is invalid: field %q is inside nested field %q: %w`,
+			child.filePath, child.name, parent, errColumnarNestedInNested,
 		))
 	}
 	return errs
+}
+
+// sortableError returns why a field cannot back an index.sort setting, or nil when it can.
+// Index sorting reads doc values, so a sort field must be defined, must keep its doc values
+// and must be of a type that has them.
+func (c *columnarStreamFields) sortableError(name string) error {
+	info, defined := c.defined[name]
+	if !defined {
+		// Fleet always maps @timestamp, whether or not the package declares it. host.name is
+		// only injected by Elasticsearch for its default sort, so a custom sort must map it.
+		if name == "@timestamp" {
+			return nil
+		}
+		return errColumnarSortFieldUndefined
+	}
+	if (info.docValues != nil && !*info.docValues) || columnarUnsortableTypes[info.fieldType] {
+		return fmt.Errorf("%w (type %q)", errColumnarSortFieldNoDocValues, info.fieldType)
+	}
+	return nil
 }
 
 // columnarIndexSort is the elasticsearch.index_template.settings.index.sort section. Both
@@ -290,59 +421,26 @@ func (l *columnarStringList) UnmarshalYAML(value *yaml.Node) error {
 	return nil
 }
 
-// checkColumnarManifest validates the manifest-level settings of a columnar-ready data stream.
-func checkColumnarManifest(fsys fspath.FS, manifestPath string, streamFields *columnarStreamFields) specerrors.ValidationErrors {
-	d, err := fs.ReadFile(fsys, manifestPath)
-	if errors.Is(err, os.ErrNotExist) {
-		return nil
-	}
-	if err != nil {
-		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
-	}
-
-	var manifest struct {
-		Elasticsearch struct {
-			IndexTemplate struct {
-				Settings struct {
-					Index struct {
-						Sort *columnarIndexSort `yaml:"sort"`
-					} `yaml:"index"`
-				} `yaml:"settings"`
-				Mappings struct {
-					Dynamic any `yaml:"dynamic"`
-				} `yaml:"mappings"`
-			} `yaml:"index_template"`
-		} `yaml:"elasticsearch"`
-	}
-	if err := yaml.Unmarshal(d, &manifest); err != nil {
-		return specerrors.ValidationErrors{specerrors.NewStructuredError(err, specerrors.UnassignedCode)}
-	}
+// validateColumnarIndexTemplate validates the index template settings of a columnar-ready data stream.
+func validateColumnarIndexTemplate(dataStream columnarDataStream, streamFields *columnarStreamFields) specerrors.ValidationErrors {
+	indexTemplate := dataStream.manifest.Elasticsearch.IndexTemplate
 
 	var errs specerrors.ValidationErrors
-	if dynamicIsFalse(manifest.Elasticsearch.IndexTemplate.Mappings.Dynamic) {
+	if dynamicIsFalse(indexTemplate.Mappings.Dynamic) {
 		errs = append(errs, specerrors.NewStructuredError(
-			fmt.Errorf(`file "%s" is invalid: elasticsearch.index_template.mappings.dynamic is set to false; `+
-				`columnar index mode has no stored _source, so unmapped fields are permanently lost when dynamic is false`,
-				fsys.Path(manifestPath)),
+			fmt.Errorf(`file "%s" is invalid: elasticsearch.index_template.mappings: %w`, dataStream.manifestPath, errColumnarDynamicFalse),
 			specerrors.CodeColumnarDynamicFalse,
 		))
 	}
-
-	errs = append(errs, checkColumnarIndexSort(
-		fsys.Path(manifestPath),
-		manifest.Elasticsearch.IndexTemplate.Settings.Index.Sort,
-		streamFields,
-	)...)
-
+	errs = append(errs, validateColumnarIndexSort(dataStream.manifestPath, indexTemplate.Settings.Index.Sort, streamFields)...)
 	return errs
 }
 
-// checkColumnarIndexSort validates elasticsearch.index_template.settings.index.sort against the
-// data stream field definitions. Index sorting reads doc values, so every sort field must be
-// defined, must keep its doc values and must be of a type that has them. Elasticsearch does not
-// require @timestamp in a custom sort, but most queries filter on a time range, so a sort that
-// leaves it out is reported as a filterable warning (SVR00016) rather than an error.
-func checkColumnarIndexSort(manifestPath string, sort *columnarIndexSort, streamFields *columnarStreamFields) specerrors.ValidationErrors {
+// validateColumnarIndexSort validates elasticsearch.index_template.settings.index.sort against
+// the data stream field definitions. Elasticsearch does not require @timestamp in a custom sort,
+// but most queries filter on a time range, so a sort that leaves it out is reported with its
+// own code (SVR00016).
+func validateColumnarIndexSort(manifestPath string, sort *columnarIndexSort, streamFields *columnarStreamFields) specerrors.ValidationErrors {
 	if sort == nil || len(sort.Field) == 0 {
 		return nil
 	}
@@ -350,95 +448,23 @@ func checkColumnarIndexSort(manifestPath string, sort *columnarIndexSort, stream
 	var errs specerrors.ValidationErrors
 	if len(sort.Order) > 0 && len(sort.Order) != len(sort.Field) {
 		errs = append(errs, specerrors.NewStructuredErrorf(
-			`file "%s" is invalid: index.sort.order has %d entries but index.sort.field has %d, they must have the same length`,
-			manifestPath, len(sort.Order), len(sort.Field),
+			`file "%s" is invalid: %w (%d fields, %d orders)`,
+			manifestPath, errColumnarSortOrderLength, len(sort.Field), len(sort.Order),
 		))
 	}
 
 	for _, name := range sort.Field {
-		info, defined := streamFields.defined[name]
-		if !defined {
-			// Fleet always maps @timestamp, whether or not the package declares it. host.name is
-			// only injected by Elasticsearch for its default sort, so a custom sort must map it.
-			if name == "@timestamp" {
-				continue
-			}
+		if err := streamFields.sortableError(name); err != nil {
 			errs = append(errs, specerrors.NewStructuredErrorf(
-				`file "%s" is invalid: index.sort field %q is not defined in the data stream fields`,
-				manifestPath, name,
-			))
-			continue
-		}
-		noDocValues := info.docValues != nil && !*info.docValues
-		if noDocValues || columnarUnsortableTypes[info.fieldType] {
-			errs = append(errs, specerrors.NewStructuredErrorf(
-				`file "%s" is invalid: index.sort field %q has no doc values (type %q), index sorting requires doc values`,
-				manifestPath, name, info.fieldType,
+				`file "%s" is invalid: index.sort field %q: %w`, manifestPath, name, err,
 			))
 		}
 	}
 
 	if !slices.Contains(sort.Field, "@timestamp") {
 		errs = append(errs, specerrors.NewStructuredError(
-			fmt.Errorf(`file "%s" is invalid: index.sort does not include @timestamp; most queries filter on a time range, `+
-				`so sorting on it keeps time-range pruning effective`, manifestPath),
+			fmt.Errorf(`file "%s" is invalid: %w`, manifestPath, errColumnarSortWithoutTimestamp),
 			specerrors.CodeColumnarSortWithoutTimestamp,
-		))
-	}
-
-	return errs
-}
-
-// checkColumnarField validates a single field definition for columnar compatibility.
-func checkColumnarField(meta fieldFileMetadata, f field) specerrors.ValidationErrors {
-	var errs specerrors.ValidationErrors
-
-	// copy_to prevents synthetic source reconstruction (FieldMapper.calculateSyntheticSourceMode).
-	if f.CopyTo != nil {
-		errs = append(errs, specerrors.NewStructuredErrorf(
-			`file "%s" is invalid: field %q has copy_to set, which prevents synthetic source reconstruction in columnar index mode; `+
-				`use an ingest pipeline to copy the value instead`,
-			meta.fullFilePath, f.Name,
-		))
-	}
-
-	// keyword with normalizer prevents synthetic source reconstruction (KeywordFieldMapper).
-	// The built-in "lowercase" normalizer is accepted: ES defaults normalizer_skip_store_original_value
-	// to true for it, so synthetic source returns the lowercased value instead of failing.
-	if f.Type == "keyword" && f.Normalizer != "" && f.Normalizer != "lowercase" {
-		errs = append(errs, specerrors.NewStructuredErrorf(
-			`file "%s" is invalid: field %q is a keyword field with a normalizer, which prevents synthetic source reconstruction in columnar index mode; `+
-				`remove the normalizer or apply the transformation in an ingest pipeline`,
-			meta.fullFilePath, f.Name,
-		))
-	}
-
-	// Mapping-level runtime fields are rejected in columnar mode.
-	if f.Runtime.isEnabled() {
-		errs = append(errs, specerrors.NewStructuredErrorf(
-			`file "%s" is invalid: field %q is a mapping-level runtime field, which is not supported in columnar index mode; `+
-				`use a concrete field computed by an ingest pipeline, or use a search-request runtime field instead`,
-			meta.fullFilePath, f.Name,
-		))
-	}
-
-	// enabled: false on an object field causes data loss — contents are not stored in columnar mode.
-	if f.Enabled != nil && !*f.Enabled {
-		errs = append(errs, specerrors.NewStructuredError(
-			fmt.Errorf(`file "%s" is invalid: field %q has enabled set to false; `+
-				`columnar index mode has no stored _source so disabled object contents are permanently lost`,
-				meta.fullFilePath, f.Name),
-			specerrors.CodeColumnarEnabledFalse,
-		))
-	}
-
-	// dynamic: false on a field object causes data loss — unmapped sub-fields are not stored.
-	if dynamicIsFalse(f.Dynamic) {
-		errs = append(errs, specerrors.NewStructuredError(
-			fmt.Errorf(`file "%s" is invalid: field %q has dynamic set to false; `+
-				`columnar index mode has no stored _source so unmapped sub-fields are permanently lost`,
-				meta.fullFilePath, f.Name),
-			specerrors.CodeColumnarDynamicFalse,
 		))
 	}
 
