@@ -1317,7 +1317,7 @@ func TestValidateLogsDBColumnar(t *testing.T) {
 			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
 			var expectedErrMessages []string
 			for file, messages := range files {
-				errPrefix := fmt.Sprintf("file \"%s\" is invalid: ", filepath.Join(pkgRootPath, filepath.FromSlash(file)))
+				errPrefix := fmt.Sprintf("file \"%s/%s\" is invalid: ", pkgRootPath, file)
 				for _, message := range messages {
 					expectedErrMessages = append(expectedErrMessages, errPrefix+message)
 				}
