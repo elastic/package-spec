@@ -81,27 +81,27 @@ func Test_ValidateFromPath(t *testing.T) {
 		"bad_logsdb_columnar_blocker": {
 			"data_stream/logs/fields/base-fields.yml",
 			[]string{
-				`field "short_message" has copy_to set, which prevents synthetic source reconstruction in columnar index mode; use an ingest pipeline to copy the value instead`,
+				`field "short_message": copy_to is not supported in columnar index modes, it prevents synthetic source reconstruction; use an ingest pipeline to copy the value instead`,
 			},
 		},
 		"bad_columnar_normalizer": {
 			"data_stream/logs/fields/base-fields.yml",
 			[]string{
-				`field "status" is a keyword field with a normalizer, which prevents synthetic source reconstruction in columnar index mode; remove the normalizer or apply the transformation in an ingest pipeline`,
+				`field "status": keyword normalizers other than lowercase are not supported in columnar index modes, they prevent synthetic source reconstruction; remove the normalizer or apply the transformation in an ingest pipeline`,
 			},
 		},
 		"bad_columnar_nested_in_nested": {
 			"data_stream/logs/fields/base-fields.yml",
 			[]string{
-				`field "events.inner" is a nested field inside another nested field ("events"); columnar index modes support only a single level of nesting`,
-				`field "attributes.items" is a nested field inside another nested field ("attributes"); columnar index modes support only a single level of nesting`,
+				`field "events.inner" is inside nested field "events": columnar index modes support only a single level of nesting`,
+				`field "attributes.items" is inside nested field "attributes": columnar index modes support only a single level of nesting`,
 			},
 		},
 		"bad_columnar_sort": {
 			"data_stream/logs/manifest.yml",
 			[]string{
-				`index.sort field "message" has no doc values (type "text"), index sorting requires doc values`,
-				`index.sort field "host.name" is not defined in the data stream fields`,
+				`index.sort field "message": index sort fields must have doc values (type "text")`,
+				`index.sort field "host.name": index sort fields must be defined in the data stream fields`,
 			},
 		},
 		"bad_logsdb_columnar_non_logs": {

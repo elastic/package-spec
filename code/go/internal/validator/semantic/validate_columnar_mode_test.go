@@ -71,15 +71,50 @@ func TestIsColumnarReady(t *testing.T) {
 	}
 }
 
-func TestCheckColumnarField(t *testing.T) {
+func TestValidateLogsDBColumnarSettings(t *testing.T) {
+	cases := []struct {
+		title          string
+		dataStreamType string
+		indexMode      string
+		streamValue    string
+		want           []error
+	}{
+		{title: "unset on metrics", dataStreamType: "metrics"},
+		{title: "unset with index_mode", dataStreamType: "logs", indexMode: "time_series"},
+		{title: "set on logs", dataStreamType: "logs", streamValue: "opt_in"},
+		{title: "set on metrics", dataStreamType: "metrics", streamValue: "opt_in", want: []error{errInvalidDSTypeColumnar}},
+		{title: "set with index_mode", dataStreamType: "logs", indexMode: "time_series", streamValue: "unsupported", want: []error{errInvalidIndexModeLogsDBColumnar}},
+		{
+			title:          "set on metrics with index_mode",
+			dataStreamType: "metrics", indexMode: "time_series", streamValue: "opt_in",
+			want: []error{errInvalidDSTypeColumnar, errInvalidIndexModeLogsDBColumnar},
+		},
+	}
+	for _, c := range cases {
+		t.Run(c.title, func(t *testing.T) {
+			dataStream := columnarDataStream{name: "ds", manifestPath: "ds/manifest.yml"}
+			dataStream.manifest.Type = c.dataStreamType
+			dataStream.manifest.Elasticsearch.IndexMode = c.indexMode
+			dataStream.manifest.Elasticsearch.LogsDBColumnar = c.streamValue
+
+			errs := validateLogsDBColumnarSettings([]columnarDataStream{dataStream})
+			require.Len(t, errs, len(c.want))
+			for i, want := range c.want {
+				assert.ErrorIs(t, errs[i], want)
+				assert.Equal(t, specerrors.UnassignedCode, errs[i].Code())
+			}
+		})
+	}
+}
+
+func TestValidateColumnarField(t *testing.T) {
 	meta := fieldFileMetadata{filePath: "fields.yml", fullFilePath: "/pkg/fields.yml"}
 
 	cases := []struct {
-		title     string
-		f         field
-		wantErrs  bool
-		wantCode  string
-		wantCount int
+		title    string
+		f        field
+		wantErr  error
+		wantCode string
 	}{
 		{
 			title: "clean field passes",
@@ -92,7 +127,7 @@ func TestCheckColumnarField(t *testing.T) {
 		{
 			title:    "runtime field is a hard error",
 			f:        field{Name: "computed", Type: "keyword", Runtime: runtimeField{enabled: true}},
-			wantErrs: true,
+			wantErr:  errColumnarRuntimeField,
 			wantCode: specerrors.UnassignedCode,
 		},
 		{
@@ -100,21 +135,21 @@ func TestCheckColumnarField(t *testing.T) {
 			f:     field{Name: "events", Type: "nested"},
 		},
 		{
-			title:    "enabled false is a filterable warning",
+			title:    "enabled false is filterable",
 			f:        field{Name: "metadata", Type: "object", Enabled: boolPtr(false)},
-			wantErrs: true,
+			wantErr:  errColumnarEnabledFalse,
 			wantCode: specerrors.CodeColumnarEnabledFalse,
 		},
 		{
-			title:    "dynamic false on field is a filterable warning",
+			title:    "dynamic false on field is filterable",
 			f:        field{Name: "extra", Type: "object", Dynamic: false},
-			wantErrs: true,
+			wantErr:  errColumnarDynamicFalse,
 			wantCode: specerrors.CodeColumnarDynamicFalse,
 		},
 		{
-			title:    "dynamic string false on field is a filterable warning",
+			title:    "dynamic string false on field is filterable",
 			f:        field{Name: "extra", Type: "object", Dynamic: "false"},
-			wantErrs: true,
+			wantErr:  errColumnarDynamicFalse,
 			wantCode: specerrors.CodeColumnarDynamicFalse,
 		},
 		{
@@ -124,51 +159,41 @@ func TestCheckColumnarField(t *testing.T) {
 		{
 			title:    "copy_to is a hard error",
 			f:        field{Name: "source.address", Type: "keyword", CopyTo: "source.ip"},
-			wantErrs: true,
+			wantErr:  errColumnarCopyTo,
 			wantCode: specerrors.UnassignedCode,
 		},
 		{
 			title:    "copy_to as slice is a hard error",
 			f:        field{Name: "source.address", Type: "keyword", CopyTo: []any{"source.ip", "host.ip"}},
-			wantErrs: true,
+			wantErr:  errColumnarCopyTo,
 			wantCode: specerrors.UnassignedCode,
 		},
 		{
 			title:    "keyword with custom normalizer is a hard error",
 			f:        field{Name: "status", Type: "keyword", Normalizer: "my_normalizer"},
-			wantErrs: true,
+			wantErr:  errColumnarNormalizer,
 			wantCode: specerrors.UnassignedCode,
 		},
 		{
-			title:    "keyword with lowercase normalizer is accepted",
-			f:        field{Name: "status", Type: "keyword", Normalizer: "lowercase"},
-			wantErrs: false,
+			title: "keyword with lowercase normalizer is accepted",
+			f:     field{Name: "status", Type: "keyword", Normalizer: "lowercase"},
 		},
 		{
-			title:    "non-keyword normalizer is ignored",
-			f:        field{Name: "text_field", Type: "text", Normalizer: "something"},
-			wantErrs: false,
-		},
-		{
-			title: "store true is accepted",
-			f:     field{Name: "message", Type: "keyword"},
+			title: "non-keyword normalizer is ignored",
+			f:     field{Name: "text_field", Type: "text", Normalizer: "something"},
 		},
 	}
 
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
-			errs := checkColumnarField(meta, c.f)
-			if !c.wantErrs {
+			errs := validateColumnarField(meta, c.f)
+			if c.wantErr == nil {
 				assert.Empty(t, errs)
 				return
 			}
-			assert.NotEmpty(t, errs)
-			if c.wantCode != "" {
-				assert.Equal(t, c.wantCode, errs[0].Code())
-			}
-			if c.wantCount != 0 {
-				assert.Len(t, errs, c.wantCount)
-			}
+			require.Len(t, errs, 1)
+			assert.ErrorIs(t, errs[0], c.wantErr)
+			assert.Equal(t, c.wantCode, errs[0].Code())
 		})
 	}
 }
@@ -197,7 +222,7 @@ func TestColumnarNestedInNested(t *testing.T) {
 				{name: "events.inner", filePath: "fields.yml"},
 			},
 			want: []string{
-				`file "fields.yml" is invalid: field "events.inner" is a nested field inside another nested field ("events"); ` +
+				`file "fields.yml" is invalid: field "events.inner" is inside nested field "events": ` +
 					`columnar index modes support only a single level of nesting`,
 			},
 		},
@@ -208,7 +233,7 @@ func TestColumnarNestedInNested(t *testing.T) {
 				{name: "attributes.items", filePath: "fields.yml"},
 			},
 			want: []string{
-				`file "fields.yml" is invalid: field "attributes.items" is a nested field inside another nested field ("attributes"); ` +
+				`file "fields.yml" is invalid: field "attributes.items" is inside nested field "attributes": ` +
 					`columnar index modes support only a single level of nesting`,
 			},
 		},
@@ -220,9 +245,9 @@ func TestColumnarNestedInNested(t *testing.T) {
 				{name: "a.b.c", filePath: "fields.yml"},
 			},
 			want: []string{
-				`file "fields.yml" is invalid: field "a.b" is a nested field inside another nested field ("a"); ` +
+				`file "fields.yml" is invalid: field "a.b" is inside nested field "a": ` +
 					`columnar index modes support only a single level of nesting`,
-				`file "fields.yml" is invalid: field "a.b.c" is a nested field inside another nested field ("a.b"); ` +
+				`file "fields.yml" is invalid: field "a.b.c" is inside nested field "a.b": ` +
 					`columnar index modes support only a single level of nesting`,
 			},
 		},
@@ -249,7 +274,7 @@ func TestColumnarNestedInNested(t *testing.T) {
 	}
 }
 
-func TestCheckColumnarIndexSort(t *testing.T) {
+func TestValidateColumnarIndexSort(t *testing.T) {
 	streamFields := newColumnarStreamFields()
 	streamFields.defined = map[string]columnarFieldInfo{
 		"@timestamp":      {fieldType: "date"},
@@ -280,22 +305,22 @@ func TestCheckColumnarIndexSort(t *testing.T) {
 			title: "undefined field",
 			sort:  &columnarIndexSort{Field: []string{"missing.field", "@timestamp"}},
 			want: []string{
-				`file "ds/manifest.yml" is invalid: index.sort field "missing.field" is not defined in the data stream fields`,
+				`file "ds/manifest.yml" is invalid: index.sort field "missing.field": index sort fields must be defined in the data stream fields`,
 			},
 		},
 		{
 			title: "type without doc values",
 			sort:  &columnarIndexSort{Field: []string{"message", "labels", "@timestamp"}},
 			want: []string{
-				`file "ds/manifest.yml" is invalid: index.sort field "message" has no doc values (type "text"), index sorting requires doc values`,
-				`file "ds/manifest.yml" is invalid: index.sort field "labels" has no doc values (type "object"), index sorting requires doc values`,
+				`file "ds/manifest.yml" is invalid: index.sort field "message": index sort fields must have doc values (type "text")`,
+				`file "ds/manifest.yml" is invalid: index.sort field "labels": index sort fields must have doc values (type "object")`,
 			},
 		},
 		{
 			title: "doc_values disabled on the field",
 			sort:  &columnarIndexSort{Field: []string{"event.original", "@timestamp"}},
 			want: []string{
-				`file "ds/manifest.yml" is invalid: index.sort field "event.original" has no doc values (type "keyword"), index sorting requires doc values`,
+				`file "ds/manifest.yml" is invalid: index.sort field "event.original": index sort fields must have doc values (type "keyword")`,
 			},
 		},
 		{
@@ -309,7 +334,7 @@ func TestCheckColumnarIndexSort(t *testing.T) {
 			title: "order length mismatch",
 			sort:  &columnarIndexSort{Field: []string{"host.name", "@timestamp"}, Order: []string{"asc"}},
 			want: []string{
-				`file "ds/manifest.yml" is invalid: index.sort.order has 1 entries but index.sort.field has 2, they must have the same length`,
+				`file "ds/manifest.yml" is invalid: index.sort.order must have one entry per index.sort.field (2 fields, 1 orders)`,
 			},
 		},
 	}
@@ -317,12 +342,25 @@ func TestCheckColumnarIndexSort(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
 			var messages []string
-			for _, err := range checkColumnarIndexSort("ds/manifest.yml", c.sort, streamFields) {
+			for _, err := range validateColumnarIndexSort("ds/manifest.yml", c.sort, streamFields) {
 				messages = append(messages, err.Error())
 			}
 			assert.Equal(t, c.want, messages)
 		})
 	}
+}
+
+func TestValidateColumnarIndexSortImplicitFields(t *testing.T) {
+	// @timestamp is always mapped by Fleet, so it needs no local definition. host.name is only
+	// injected by Elasticsearch for its default sort: a custom sort has to map it like any field.
+	streamFields := newColumnarStreamFields()
+
+	errs := validateColumnarIndexSort("ds/manifest.yml", &columnarIndexSort{Field: []string{"@timestamp"}}, streamFields)
+	assert.Empty(t, errs)
+
+	errs = validateColumnarIndexSort("ds/manifest.yml", &columnarIndexSort{Field: []string{"host.name", "@timestamp"}}, streamFields)
+	require.Len(t, errs, 1)
+	assert.ErrorIs(t, errs[0], errColumnarSortFieldUndefined)
 }
 
 func TestColumnarStringListUnmarshal(t *testing.T) {
@@ -343,7 +381,7 @@ func TestColumnarStringListUnmarshal(t *testing.T) {
 	}
 }
 
-func TestCheckColumnarManifest(t *testing.T) {
+func TestValidateColumnarIndexTemplate(t *testing.T) {
 	cases := []struct {
 		title    string
 		manifest string
@@ -354,7 +392,7 @@ func TestCheckColumnarManifest(t *testing.T) {
 			manifest: "type: logs\nelasticsearch:\n  logsdb_columnar: opt_in\n",
 		},
 		{
-			title: "dynamic false is a filterable warning",
+			title: "dynamic false is filterable",
 			manifest: `
 type: logs
 elasticsearch:
@@ -364,26 +402,48 @@ elasticsearch:
       dynamic: false
 `,
 			want: []string{
-				"elasticsearch.index_template.mappings.dynamic is set to false; " +
-					"columnar index mode has no stored _source, so unmapped fields are permanently lost when dynamic is false (SVR00014)",
+				`file "ds/manifest.yml" is invalid: elasticsearch.index_template.mappings: ` +
+					`dynamic: false loses unmapped fields in columnar index modes, which have no stored _source (SVR00014)`,
+			},
+		},
+		{
+			title: "dynamic strict is accepted",
+			manifest: `
+type: logs
+elasticsearch:
+  logsdb_columnar: opt_in
+  index_template:
+    mappings:
+      dynamic: strict
+`,
+		},
+		{
+			title: "index sort is validated",
+			manifest: `
+type: logs
+elasticsearch:
+  logsdb_columnar: opt_in
+  index_template:
+    settings:
+      index:
+        sort:
+          field: host.name
+`,
+			want: []string{
+				`file "ds/manifest.yml" is invalid: index.sort field "host.name": index sort fields must be defined in the data stream fields`,
+				`file "ds/manifest.yml" is invalid: index.sort does not include @timestamp; most queries filter on a time range, so sorting on it keeps time-range pruning effective (SVR00016)`,
 			},
 		},
 	}
 
 	for _, c := range cases {
 		t.Run(c.title, func(t *testing.T) {
-			tempDir := t.TempDir()
-			dsDir := filepath.Join(tempDir, "data_stream", "logs")
-			require.NoError(t, os.MkdirAll(dsDir, 0755))
-			require.NoError(t, os.WriteFile(filepath.Join(dsDir, "manifest.yml"), []byte(c.manifest), 0644))
-
-			fsys := fspath.DirFS(tempDir)
-			errs := checkColumnarManifest(fsys, "data_stream/logs/manifest.yml", newColumnarStreamFields())
+			dataStream := columnarDataStream{name: "ds", manifestPath: "ds/manifest.yml"}
+			require.NoError(t, yaml.Unmarshal([]byte(c.manifest), &dataStream.manifest))
 
 			var messages []string
-			prefix := `file "` + fsys.Path("data_stream/logs/manifest.yml") + `" is invalid: `
-			for _, err := range errs {
-				messages = append(messages, strings.TrimPrefix(err.Error(), prefix))
+			for _, err := range validateColumnarIndexTemplate(dataStream, newColumnarStreamFields()) {
+				messages = append(messages, err.Error())
 			}
 			assert.Equal(t, c.want, messages)
 		})
@@ -393,7 +453,7 @@ elasticsearch:
 func TestValidateColumnarModeConstraints(t *testing.T) {
 	const logsStreamManifest = "title: Logs\ntype: logs\n"
 	const blockerFields = "- name: short_message\n  type: keyword\n  copy_to: message\n"
-	const copyToError = `field "short_message" has copy_to set, which prevents synthetic source reconstruction in columnar index mode; ` +
+	const copyToError = `field "short_message": copy_to is not supported in columnar index modes, it prevents synthetic source reconstruction; ` +
 		`use an ingest pipeline to copy the value instead`
 
 	cases := []struct {
@@ -474,7 +534,7 @@ func TestValidateColumnarModeConstraints(t *testing.T) {
 				},
 			},
 			want: []string{
-				`file "<extra>" is invalid: field "attributes.items" is a nested field inside another nested field ("attributes"); ` +
+				`file "<extra>" is invalid: field "attributes.items" is inside nested field "attributes": ` +
 					`columnar index modes support only a single level of nesting`,
 			},
 		},
@@ -516,17 +576,4 @@ func TestValidateColumnarModeConstraints(t *testing.T) {
 			assert.Equal(t, c.want, messages)
 		})
 	}
-}
-
-func TestCheckColumnarIndexSortImplicitFields(t *testing.T) {
-	// @timestamp is always mapped by Fleet, so it needs no local definition. host.name is only
-	// injected by Elasticsearch for its default sort: a custom sort has to map it like any field.
-	streamFields := newColumnarStreamFields()
-
-	errs := checkColumnarIndexSort("ds/manifest.yml", &columnarIndexSort{Field: []string{"@timestamp"}}, streamFields)
-	assert.Empty(t, errs)
-
-	errs = checkColumnarIndexSort("ds/manifest.yml", &columnarIndexSort{Field: []string{"host.name", "@timestamp"}}, streamFields)
-	require.Len(t, errs, 1)
-	assert.Equal(t, `file "ds/manifest.yml" is invalid: index.sort field "host.name" is not defined in the data stream fields`, errs[0].Error())
 }
