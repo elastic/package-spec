@@ -1,5 +1,5 @@
 format_version: 3.7.0
-name: bad_logsdb_columnar
+name: bad_columnar_manifest
 title: Bad package declaring logsdb_columnar readiness
 description: Tests the logsdb_columnar validation, with one data stream per invalid case.
 version: 1.0.0-beta1

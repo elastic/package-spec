@@ -1295,7 +1295,7 @@ func TestValidateLogsDBColumnar(t *testing.T) {
 		"good_logsdb_columnar_opt_in":          {},
 		"good_logsdb_columnar_stream_override": {},
 		"good_logsdb_columnar_metrics_ignored": {},
-		"bad_logsdb_columnar": {
+		"bad_columnar_manifest": {
 			"data_stream/copy_to/fields/base-fields.yml": {
 				`field "short_message": copy_to is not supported in columnar index modes, it prevents synthetic source reconstruction; use an ingest pipeline to copy the value instead`,
 			},
