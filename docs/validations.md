@@ -21,6 +21,7 @@
 | [SVR00011]          | use_otel_suffix with an input defined |
 | [SVR00012]          | Package-level agent.version condition           |
 | [SVR00013]          | ES\|QL view definition is invalid               |
+| [SVR00014]          | Alerting v2 rule template structure is invalid   |
 
 ## JSE00001 - Rename message to event.original
 
@@ -255,3 +256,23 @@ Elasticsearch enforces a 255-byte limit on index-like names.
 
 A query consisting only of whitespace characters passes `minLength: 1` in the JSON
 Schema but is rejected by Elasticsearch (`Strings.hasText()` check in `PutViewAction`).
+
+## SVR00014 - Alerting v2 rule template structure is invalid
+
+[SVR00014]: #svr00014---alerting-v2-rule-template-structure-is-invalid
+
+Alerting v2 templates under `kibana/alerting_rule_template/` are checked for required
+metadata, schedule, query parts, lifecycle strategy, grouping, artifacts, and state
+transition values. Classic templates (`engine: v1` or no engine) continue to use
+their package specification schema and are skipped by this rule. This structural
+check does not parse or execute ES|QL, so query syntax and field types still need
+testing against the target stack.
+
+Like other coded semantic rules, these errors can be suppressed during a migration
+window by adding the code to the package's `validation.yml`:
+
+```yaml
+errors:
+  exclude_checks:
+    - SVR00014
+```

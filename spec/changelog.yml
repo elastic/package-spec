@@ -28,6 +28,9 @@
     - description: Update EPR categories reference URL to v1.41.0.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1215
+    - description: Validate Alerting v2 rule template structure as a semantic rule (SVR00014).
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1273
 - version: 3.6.6
   changes:
     - description: Add support for mode-aware constructors and validation APIs.
