@@ -75,47 +75,6 @@ func Test_ValidateFromPath(t *testing.T) {
 		"good_provider_permissions_input":        {},
 		"good_integration_group":                 {},
 		"good_input_group":                       {},
-		"good_logsdb_columnar_opt_in":            {},
-		"good_logsdb_columnar_stream_override":   {},
-		"good_logsdb_columnar_metrics_ignored":   {},
-		"bad_logsdb_columnar_blocker": {
-			"data_stream/logs/fields/base-fields.yml",
-			[]string{
-				`field "short_message": copy_to is not supported in columnar index modes, it prevents synthetic source reconstruction; use an ingest pipeline to copy the value instead`,
-			},
-		},
-		"bad_columnar_normalizer": {
-			"data_stream/logs/fields/base-fields.yml",
-			[]string{
-				`field "status": keyword normalizers other than lowercase are not supported in columnar index modes, they prevent synthetic source reconstruction; remove the normalizer or apply the transformation in an ingest pipeline`,
-			},
-		},
-		"bad_columnar_nested_in_nested": {
-			"data_stream/logs/fields/base-fields.yml",
-			[]string{
-				`field "events.inner" is inside nested field "events": columnar index modes support only a single level of nesting`,
-				`field "attributes.items" is inside nested field "attributes": columnar index modes support only a single level of nesting`,
-			},
-		},
-		"bad_columnar_sort": {
-			"data_stream/logs/manifest.yml",
-			[]string{
-				`index.sort field "message": index sort fields must have doc values (type "text")`,
-				`index.sort field "host.name": index sort fields must be defined in the data stream fields`,
-			},
-		},
-		"bad_logsdb_columnar_non_logs": {
-			"data_stream/metrics/manifest.yml",
-			[]string{
-				`elasticsearch.logsdb_columnar is only supported on logs data streams (data stream type is "metrics")`,
-			},
-		},
-		"bad_logsdb_columnar_with_index_mode": {
-			"data_stream/logs/manifest.yml",
-			[]string{
-				`elasticsearch.index_mode and elasticsearch.logsdb_columnar cannot both be set; logsdb_columnar only applies when index_mode is unset`,
-			},
-		},
 		"bad_integration_group": {
 			"manifest.yml",
 			[]string{
@@ -1326,6 +1285,69 @@ func TestValidateIngestPipelines(t *testing.T) {
 					}
 				}
 			}
+		})
+	}
+}
+
+func TestValidateLogsDBColumnar(t *testing.T) {
+	// Expected errors per package, keyed by the file they are reported against.
+	tests := map[string]map[string][]string{
+		"good_logsdb_columnar_opt_in":          {},
+		"good_logsdb_columnar_stream_override": {},
+		"good_logsdb_columnar_metrics_ignored": {},
+		"bad_logsdb_columnar": {
+			"data_stream/copy_to/fields/base-fields.yml": {
+				`field "short_message": copy_to is not supported in columnar index modes, it prevents synthetic source reconstruction; use an ingest pipeline to copy the value instead`,
+			},
+			"data_stream/normalizer/fields/base-fields.yml": {
+				`field "status": keyword normalizers other than lowercase are not supported in columnar index modes, they prevent synthetic source reconstruction; remove the normalizer or apply the transformation in an ingest pipeline`,
+			},
+			"data_stream/runtime_field/fields/base-fields.yml": {
+				`field "computed": mapping-level runtime fields are not supported in columnar index modes; compute the field in an ingest pipeline or use a search-request runtime field instead`,
+			},
+			"data_stream/nested_in_nested/fields/base-fields.yml": {
+				`field "events.inner" is inside nested field "events": columnar index modes support only a single level of nesting`,
+				`field "attributes.items" is inside nested field "attributes": columnar index modes support only a single level of nesting`,
+			},
+			"data_stream/index_sort/manifest.yml": {
+				`index.sort field "message": index sort fields must have doc values (type "text")`,
+				`index.sort field "host.name": index sort fields must be defined in the data stream fields`,
+			},
+			"data_stream/index_mode/manifest.yml": {
+				`elasticsearch.index_mode and elasticsearch.logsdb_columnar cannot both be set; logsdb_columnar only applies when index_mode is unset`,
+			},
+			"data_stream/non_logs/manifest.yml": {
+				`elasticsearch.logsdb_columnar is only supported on logs data streams (data stream type is "metrics")`,
+			},
+		},
+	}
+
+	for pkgName, files := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
+			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
+			var expectedErrMessages []string
+			for file, messages := range files {
+				errPrefix := fmt.Sprintf("file \"%s\" is invalid: ", filepath.Join(pkgRootPath, filepath.FromSlash(file)))
+				for _, message := range messages {
+					expectedErrMessages = append(expectedErrMessages, errPrefix+message)
+				}
+			}
+
+			errs := ValidateFromPath(pkgRootPath)
+			if len(expectedErrMessages) == 0 {
+				require.NoError(t, errs)
+				return
+			}
+			require.Error(t, errs)
+			vErrs, ok := errs.(specerrors.ValidationErrors)
+			require.True(t, ok)
+
+			var errMessages []string
+			for _, vErr := range vErrs {
+				errMessages = append(errMessages, vErr.Error())
+			}
+			assert.ElementsMatch(t, expectedErrMessages, errMessages)
 		})
 	}
 }
