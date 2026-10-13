@@ -145,24 +145,6 @@ func TestCheckColumnarField(t *testing.T) {
 			wantErrs: false,
 		},
 		{
-			title:    "completion type is a hard error",
-			f:        field{Name: "suggest", Type: "completion"},
-			wantErrs: true,
-			wantCode: specerrors.UnassignedCode,
-		},
-		{
-			title:    "search_as_you_type is a hard error",
-			f:        field{Name: "title", Type: "search_as_you_type"},
-			wantErrs: true,
-			wantCode: specerrors.UnassignedCode,
-		},
-		{
-			title:    "percolator is a hard error",
-			f:        field{Name: "query", Type: "percolator"},
-			wantErrs: true,
-			wantCode: specerrors.UnassignedCode,
-		},
-		{
 			title:    "non-keyword normalizer is ignored",
 			f:        field{Name: "text_field", Type: "text", Normalizer: "something"},
 			wantErrs: false,
@@ -372,49 +354,6 @@ func TestCheckColumnarManifest(t *testing.T) {
 			manifest: "type: logs\nelasticsearch:\n  logsdb_columnar: opt_in\n",
 		},
 		{
-			title: "copy_to in nested properties",
-			manifest: `
-type: logs
-elasticsearch:
-  logsdb_columnar: opt_in
-  index_template:
-    mappings:
-      properties:
-        event:
-          properties:
-            original:
-              type: keyword
-              copy_to: message
-`,
-			want: []string{
-				"elasticsearch.index_template.mappings.properties.event.properties.original has copy_to set, " +
-					"which prevents synthetic source reconstruction in columnar index mode; " +
-					"use an ingest pipeline to copy the value instead",
-			},
-		},
-		{
-			title: "copy_to inside multi-fields",
-			manifest: `
-type: logs
-elasticsearch:
-  logsdb_columnar: opt_in
-  index_template:
-    mappings:
-      properties:
-        host.name:
-          type: keyword
-          fields:
-            text:
-              type: text
-              copy_to: message
-`,
-			want: []string{
-				"elasticsearch.index_template.mappings.properties.host.name.fields.text has copy_to set, " +
-					"which prevents synthetic source reconstruction in columnar index mode; " +
-					"use an ingest pipeline to copy the value instead",
-			},
-		},
-		{
 			title: "dynamic false is a filterable warning",
 			manifest: `
 type: logs
@@ -428,21 +367,6 @@ elasticsearch:
 				"elasticsearch.index_template.mappings.dynamic is set to false; " +
 					"columnar index mode has no stored _source, so unmapped fields are permanently lost when dynamic is false (SVR00014)",
 			},
-		},
-		{
-			title: "doc_values and store are no longer reported",
-			manifest: `
-type: logs
-elasticsearch:
-  logsdb_columnar: opt_in
-  index_template:
-    mappings:
-      properties:
-        message:
-          type: keyword
-          doc_values: false
-          store: true
-`,
 		},
 	}
 

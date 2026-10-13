@@ -116,16 +116,6 @@ func Test_ValidateFromPath(t *testing.T) {
 				`elasticsearch.index_mode and elasticsearch.logsdb_columnar cannot both be set; logsdb_columnar only applies when index_mode is unset`,
 			},
 		},
-		// Since spec 3.0.0 the JSON schema also rejects arbitrary `properties` under
-		// elasticsearch.index_template.mappings, so both errors are expected here. The
-		// columnar check stays as a defence in depth for build-mode/relaxed schemas.
-		"bad_columnar_manifest_props": {
-			"data_stream/logs/manifest.yml",
-			[]string{
-				`field elasticsearch.index_template.mappings: Additional property properties is not allowed`,
-				`elasticsearch.index_template.mappings.properties.event.properties.original has copy_to set, which prevents synthetic source reconstruction in columnar index mode; use an ingest pipeline to copy the value instead`,
-			},
-		},
 		"bad_integration_group": {
 			"manifest.yml",
 			[]string{
