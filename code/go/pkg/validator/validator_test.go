@@ -591,20 +591,20 @@ func Test_ValidateFromPath(t *testing.T) {
 			},
 		},
 		"bad_esql_view_uppercase_name_integration": {
-			"elasticsearch/esql_view/bad_esql_view_uppercase_name_integration-view.yml",
+			"elasticsearch/esql_view/view.yml",
 			[]string{
-				"field name: Does not match pattern '^[a-z0-9][a-z0-9_\\-]*$'",
-				`name field "BadView" must equal the filename stem "bad_esql_view_uppercase_name_integration-view" (SVR00013)`,
+				"field name: Does not match pattern '^\\$\\.integrations\\.[a-z0-9_]+\\.[a-z0-9][a-z0-9_\\-]*$'",
+				`name field "BadView" must be "$.integrations.bad_esql_view_uppercase_name_integration.view" ("$.integrations." + package name "bad_esql_view_uppercase_name_integration" + "." + filename stem "view") (SVR00013)`,
 			},
 		},
 		"bad_esql_view_name_mismatch_integration": {
-			"elasticsearch/esql_view/bad_esql_view_name_mismatch_integration-view.yml",
+			"elasticsearch/esql_view/view.yml",
 			[]string{
-				`name field "bad_esql_view_name_mismatch_integration-other" must equal the filename stem "bad_esql_view_name_mismatch_integration-view" (SVR00013)`,
+				`name field "$.integrations.bad_esql_view_name_mismatch_integration.other" must be "$.integrations.bad_esql_view_name_mismatch_integration.view" ("$.integrations." + package name "bad_esql_view_name_mismatch_integration" + "." + filename stem "view") (SVR00013)`,
 			},
 		},
 		"bad_esql_view_content": {
-			"elasticsearch/esql_view/bad_esql_view_content-view.yml",
+			"elasticsearch/esql_view/view.yml",
 			[]string{
 				"field query: Invalid type. Expected: string, given: null",
 				"field (root): Additional property extra_field is not allowed",
@@ -612,7 +612,7 @@ func Test_ValidateFromPath(t *testing.T) {
 			},
 		},
 		"bad_esql_view_integration": {
-			"elasticsearch/esql_view/bad_esql_view_integration-view.yml",
+			"elasticsearch/esql_view/view.yml",
 			[]string{
 				"field query: Invalid type. Expected: string, given: null",
 				"field (root): Additional property extra_field is not allowed",
@@ -762,7 +762,7 @@ func TestValidateItemNotAllowed(t *testing.T) {
 		},
 		"bad_esql_view_bad_filename_integration": {
 			"elasticsearch/esql_view": []string{
-				"wrongname.yml",
+				"Wrong_Name.yml",
 			},
 		},
 		"bad_esql_view_old_format_integration": {

@@ -1,4 +1,4 @@
-name: good_content-my_view
+name: $.integrations.good_content.my_view
 description: Counts events grouped by source IP from all log indices.
 query: |
   FROM logs-*
