@@ -263,8 +263,10 @@ Schema but is rejected by Elasticsearch (`Strings.hasText()` check in `PutViewAc
 
 Alerting v2 templates under `kibana/alerting_rule_template/` are checked for required
 metadata, schedule, query parts, lifecycle strategy, grouping, artifacts, and state
-transition values. Only templates with `engine: v2` are checked; classic templates
-(`engine: v1`, no engine, or a null/non-string engine) are skipped. package-spec has
+transition values. Only templates with `engine: v2` are checked. Classic templates
+(`engine: ""` or `v1`, no engine, or a null or non-string engine) are skipped. Any
+other engine string, such as `v3`, is rejected. A file that is not valid JSON is not
+reported under this rule; the Kibana object checks already fail it. package-spec has
 no structural schema for `alerting_rule_template` files, so classic templates are not
 content-validated. This structural check does not parse or execute ES|QL, so query
 syntax and field types still need testing against the target stack.

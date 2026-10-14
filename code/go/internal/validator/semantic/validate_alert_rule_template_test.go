@@ -66,6 +66,8 @@ func TestV2TemplateStructure(t *testing.T) {
 	require.NoError(t, validateAlertRuleTemplate([]byte(`{"attributes":{"engine":null,"name":"Classic"}}`)))
 	require.NoError(t, validateAlertRuleTemplate([]byte(`{"id":123,"type":false,"attributes":{"name":"Classic"}}`)))
 	require.NoError(t, validateAlertRuleTemplate([]byte(`{"attributes":{"engine":7,"name":"Classic"}}`)))
+	require.NoError(t, validateAlertRuleTemplate([]byte(`{"id": "some-rule",`)))
+	require.NoError(t, validateAlertRuleTemplate([]byte(`not json`)))
 	require.NoError(t, validateAlertRuleTemplate([]byte(`{"id":"future","type":"alerting_rule_template","attributes":{"engine":"v2","future":true,"rule":{"kind":"alert","future_option":true,"metadata":{"name":"Future"},"schedule":{"every":"1m"},"query":{"base":"FROM logs"},"recovery":{"strategy":"no_breach"},"no_data":{"strategy":"ignore"}}}}`)))
 
 	rule := func(doc map[string]any) map[string]any {
@@ -378,6 +380,7 @@ func TestAlertRuleTemplateSemanticRule(t *testing.T) {
 	require.Empty(t, ValidateAlertRuleTemplates(fspath.DirFS(root)))
 
 	require.NoError(t, os.WriteFile(filepath.Join(dir, "invalid.json"), []byte(`{"id":"invalid","type":"alerting_rule_template","attributes":{"engine":"v2","rule":{"kind":"invalid"}}}`), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(dir, "truncated.json"), []byte(`{"id": "truncated",`), 0o644))
 	errs := ValidateAlertRuleTemplates(fspath.DirFS(root))
 	require.Len(t, errs, 1)
 	require.ErrorContains(t, errs[0], "rule.kind")

@@ -23,8 +23,10 @@ import (
 // nested state-transition phases). This is not Kibana's complete schema and it
 // does not parse or execute ES|QL. Unknown fields are left in place so a later
 // schema addition is not rejected here. Classic templates (engine "", "v1",
-// absent, or null) are skipped: package-spec has no structural schema for
-// alerting_rule_template files, so classic templates are not content-validated.
+// absent, null, or non-string) are skipped, and any other engine string is
+// rejected. package-spec has no structural schema for alerting_rule_template
+// files, so classic templates are not content-validated. Bytes that are not
+// valid JSON are skipped here; the Kibana object checks already report them.
 
 const (
 	templateIDMax          = 150
@@ -78,10 +80,11 @@ func ValidateAlertRuleTemplates(root fspath.FS) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 	for _, file := range files {
 		data, err := fs.ReadFile(root, file)
-		if err == nil {
-			err = validateAlertRuleTemplate(data)
-		}
 		if err != nil {
+			errs = append(errs, specerrors.NewStructuredErrorf("failed to read alert rule template %s: %w", root.Path(file), err))
+			continue
+		}
+		if err := validateAlertRuleTemplate(data); err != nil {
 			errs = append(errs, specerrors.NewStructuredError(
 				fmt.Errorf("file \"%s\" is invalid: %w", root.Path(file), err),
 				specerrors.CodeAlertRuleTemplateValidation,
@@ -100,7 +103,9 @@ func validateAlertRuleTemplate(data []byte) error {
 		Attributes json.RawMessage `json:"attributes"`
 	}
 	if err := json.Unmarshal(data, &envelope); err != nil {
-		return err
+		// Not valid JSON. The Kibana object checks already report the parse
+		// failure, so tagging it SVR00014 would also flag classic templates.
+		return nil
 	}
 	engine, ok := alertRuleEngineString(envelope.Attributes)
 	if !ok || engine == "" || engine == "v1" {
