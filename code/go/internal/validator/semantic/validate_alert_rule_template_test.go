@@ -60,6 +60,12 @@ func TestV2TemplateStructure(t *testing.T) {
 	require.NoError(t, validateAlertRuleTemplate([]byte(validSignalTemplate)))
 	require.NoError(t, validateAlertRuleTemplate([]byte(`{"attributes":{"name":"Classic"}}`)))
 	require.NoError(t, validateAlertRuleTemplate([]byte(`{"attributes":{"engine":"v1","name":"Classic"}}`)))
+	// Classic templates are skipped even when engine is null or non-string, or
+	// when classic-only fields like id/type are not strings. Only an explicit
+	// "v2" engine triggers structural validation.
+	require.NoError(t, validateAlertRuleTemplate([]byte(`{"attributes":{"engine":null,"name":"Classic"}}`)))
+	require.NoError(t, validateAlertRuleTemplate([]byte(`{"id":123,"type":false,"attributes":{"name":"Classic"}}`)))
+	require.NoError(t, validateAlertRuleTemplate([]byte(`{"attributes":{"engine":7,"name":"Classic"}}`)))
 	require.NoError(t, validateAlertRuleTemplate([]byte(`{"id":"future","type":"alerting_rule_template","attributes":{"engine":"v2","future":true,"rule":{"kind":"alert","future_option":true,"metadata":{"name":"Future"},"schedule":{"every":"1m"},"query":{"base":"FROM logs"},"recovery":{"strategy":"no_breach"},"no_data":{"strategy":"ignore"}}}}`)))
 
 	rule := func(doc map[string]any) map[string]any {

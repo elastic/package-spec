@@ -22,8 +22,9 @@ import (
 // query.base plus optional breach.segment, recovery and no_data objects, and
 // nested state-transition phases). This is not Kibana's complete schema and it
 // does not parse or execute ES|QL. Unknown fields are left in place so a later
-// schema addition is not rejected here. Classic templates remain covered by
-// their package specification schema.
+// schema addition is not rejected here. Classic templates (engine "", "v1",
+// absent, or null) are skipped: package-spec has no structural schema for
+// alerting_rule_template files, so classic templates are not content-validated.
 
 const (
 	templateIDMax          = 150
@@ -91,23 +92,33 @@ func ValidateAlertRuleTemplates(root fspath.FS) specerrors.ValidationErrors {
 }
 
 func validateAlertRuleTemplate(data []byte) error {
+	// Read attributes.engine first so classic templates (engine "", "v1",
+	// absent, or null, and any non-string engine) are skipped before the full
+	// document is type-checked. Otherwise a classic template with a non-string
+	// id, type, or engine would fail decoding and be reported under this rule.
+	var envelope struct {
+		Attributes json.RawMessage `json:"attributes"`
+	}
+	if err := json.Unmarshal(data, &envelope); err != nil {
+		return err
+	}
+	engine, ok := alertRuleEngineString(envelope.Attributes)
+	if !ok || engine == "" || engine == "v1" {
+		return nil
+	}
+	if engine != "v2" {
+		return fmt.Errorf("unsupported alert template engine %q", engine)
+	}
+
 	var doc struct {
 		ID         string `json:"id"`
 		Type       string `json:"type"`
 		Attributes struct {
-			Engine string          `json:"engine"`
-			Rule   json.RawMessage `json:"rule"`
+			Rule json.RawMessage `json:"rule"`
 		} `json:"attributes"`
 	}
 	if err := json.Unmarshal(data, &doc); err != nil {
 		return err
-	}
-	// Classic templates remain governed by package-spec.
-	if doc.Attributes.Engine == "" || doc.Attributes.Engine == "v1" {
-		return nil
-	}
-	if doc.Attributes.Engine != "v2" {
-		return fmt.Errorf("unsupported alert template engine %q", doc.Attributes.Engine)
 	}
 
 	var problems templateProblems
@@ -138,6 +149,28 @@ func validateAlertRuleTemplate(data []byte) error {
 	validateTemplateGrouping(rule["grouping"], &problems)
 	validateTemplateArtifacts(rule["artifacts"], &problems)
 	return problems.err()
+}
+
+// alertRuleEngineString extracts attributes.engine as a string. The boolean is
+// false when attributes is not an object, or when engine is missing, null, or
+// not a string. Those cases are treated as classic (skipped) rather than
+// reported, so only an explicit string engine reaches the v2/unsupported logic.
+func alertRuleEngineString(attributes json.RawMessage) (string, bool) {
+	var attrs struct {
+		Engine json.RawMessage `json:"engine"`
+	}
+	if err := json.Unmarshal(attributes, &attrs); err != nil {
+		return "", false
+	}
+	raw := bytes.TrimSpace(attrs.Engine)
+	if len(raw) == 0 || string(raw) == "null" {
+		return "", false
+	}
+	var engine string
+	if err := json.Unmarshal(raw, &engine); err != nil {
+		return "", false
+	}
+	return engine, true
 }
 
 func validateTemplateMetadata(raw json.RawMessage, problems *templateProblems) {
