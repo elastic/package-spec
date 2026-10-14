@@ -271,6 +271,13 @@ no structural schema for `alerting_rule_template` files, so classic templates ar
 content-validated. This structural check does not parse or execute ES|QL, so query
 syntax and field types still need testing against the target stack.
 
+The checked shape and limits mirror Kibana's
+[`alerting-v2-schemas`](https://github.com/elastic/kibana/tree/600a8067f05e21388a63ffcc22cf602a3ffb1aa3/x-pack/platform/packages/shared/response-ops/alerting-v2-schemas/src)
+(`rule_template_schema.ts`, `rule_data_schema.ts`, `constants.ts`). This is not Kibana's
+complete schema. Kibana's objects are `.strict()`, so a template can pass `SVR00014` and
+still be rejected by Kibana on install; unknown fields are left in place here on purpose
+so a later Kibana schema addition does not fail an older package-spec.
+
 Like other coded semantic rules, these errors can be suppressed during a migration
 window by adding the code to the package's `validation.yml`:
 

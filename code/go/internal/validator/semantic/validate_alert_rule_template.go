@@ -20,13 +20,21 @@ import (
 
 // Offline structural checks for Alerting v2 templates (Kibana 9.6 shape:
 // query.base plus optional breach.segment, recovery and no_data objects, and
-// nested state-transition phases). This is not Kibana's complete schema and it
-// does not parse or execute ES|QL. Unknown fields are left in place so a later
-// schema addition is not rejected here. Classic templates (engine "", "v1",
-// absent, null, or non-string) are skipped, and any other engine string is
-// rejected. package-spec has no structural schema for alerting_rule_template
-// files, so classic templates are not content-validated. Bytes that are not
-// valid JSON are skipped here; the Kibana object checks already report them.
+// nested state-transition phases). The shape and the limit constants below
+// mirror Kibana's alerting-v2-schemas at commit 600a8067f05e21388a63ffcc22cf602a3ffb1aa3:
+//   - rule_template_schema.ts: https://github.com/elastic/kibana/blob/600a8067f05e21388a63ffcc22cf602a3ffb1aa3/x-pack/platform/packages/shared/response-ops/alerting-v2-schemas/src/rule_template_schema.ts
+//   - rule_data_schema.ts:     https://github.com/elastic/kibana/blob/600a8067f05e21388a63ffcc22cf602a3ffb1aa3/x-pack/platform/packages/shared/response-ops/alerting-v2-schemas/src/rule_data_schema.ts
+//   - constants.ts:            https://github.com/elastic/kibana/blob/600a8067f05e21388a63ffcc22cf602a3ffb1aa3/x-pack/platform/packages/shared/response-ops/alerting-v2-schemas/src/constants.ts
+//
+// This is not Kibana's complete schema and it does not parse or execute ES|QL.
+// Kibana's objects are .strict(), but this check deliberately leaves unknown
+// fields in place so a later schema addition is not rejected here; a template
+// can therefore pass package-spec and still be rejected by Kibana on install.
+// Classic templates (engine "", "v1", absent, null, or non-string) are skipped,
+// and any other engine string is rejected. package-spec has no structural schema
+// for alerting_rule_template files, so classic templates are not content-validated.
+// Bytes that are not valid JSON are skipped here; the Kibana object checks
+// already report them.
 
 const (
 	templateIDMax          = 150
@@ -427,9 +435,13 @@ func validateTemplateGrouping(raw json.RawMessage, problems *templateProblems) {
 		problems.add("rule.grouping.fields must be an array")
 		return
 	}
+	if jsonKind(fieldsRaw) != "array" {
+		problems.add("rule.grouping.fields must be an array")
+		return
+	}
 	var fields []string
 	if err := json.Unmarshal(fieldsRaw, &fields); err != nil {
-		problems.add("rule.grouping.fields must be an array")
+		problems.add("rule.grouping.fields entries must be strings")
 		return
 	}
 	if len(fields) == 0 || len(fields) > templateGroupingMax {
@@ -453,7 +465,7 @@ func validateTemplateArtifacts(raw json.RawMessage, problems *templateProblems) 
 	}
 	var artifacts []map[string]json.RawMessage
 	if err := json.Unmarshal(raw, &artifacts); err != nil {
-		problems.add("rule.artifacts must be an array")
+		problems.add("rule.artifacts entries must be objects")
 		return
 	}
 	if len(artifacts) == 0 || len(artifacts) > templateArtifactsMax {

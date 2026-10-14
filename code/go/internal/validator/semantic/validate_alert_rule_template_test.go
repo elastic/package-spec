@@ -111,8 +111,11 @@ func TestV2TemplateStructure(t *testing.T) {
 		{"fractional delay", func(doc map[string]any) {
 			rule(doc)["state_transition"] = map[string]any{"pending": map[string]any{"count": 1.5}}
 		}, "must be an integer"},
-		{"group shape", func(doc map[string]any) { rule(doc)["grouping"] = map[string]any{"fields": "host"} }, "must be an array"},
-		{"group missing", func(doc map[string]any) { rule(doc)["grouping"] = map[string]any{} }, "must be an array"},
+		{"group shape", func(doc map[string]any) { rule(doc)["grouping"] = map[string]any{"fields": "host"} }, "grouping.fields must be an array"},
+		{"group missing", func(doc map[string]any) { rule(doc)["grouping"] = map[string]any{} }, "grouping.fields must be an array"},
+		{"group entries", func(doc map[string]any) {
+			rule(doc)["grouping"] = map[string]any{"fields": []any{1}}
+		}, "grouping.fields entries must be strings"},
 		{"empty field", func(doc map[string]any) {
 			rule(doc)["grouping"] = map[string]any{"fields": []string{""}}
 		}, "empty or oversized"},
@@ -122,6 +125,8 @@ func TestV2TemplateStructure(t *testing.T) {
 		{"dashboard camel case", func(doc map[string]any) {
 			rule(doc)["artifacts"] = []any{map[string]any{"id": "dash", "type": "dashboard", "data": map[string]any{"dashboardId": "abc"}}}
 		}, "dashboard_id"},
+		{"artifacts not array", func(doc map[string]any) { rule(doc)["artifacts"] = "runbook" }, "rule.artifacts must be an array"},
+		{"artifacts entries", func(doc map[string]any) { rule(doc)["artifacts"] = []any{"runbook"} }, "rule.artifacts entries must be objects"},
 		{"query syntax needs stack", func(doc map[string]any) {
 			rule(doc)["query"].(map[string]any)["base"] = "THIS IS NOT ESQL"
 		}, ""},
