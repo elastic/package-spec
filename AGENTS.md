@@ -606,7 +606,7 @@ Remove the comment once the blocker is resolved. Also add a corresponding `@skip
 
 ## Notes
 
-- Spec versions with `-next` suffix are in development (currently `3.7.0-next`)
+- Spec versions with `-next` suffix are in development (currently `3.8.0-next`)
 - Use `-count=1` flag to bypass test cache
 - Custom validation logic exists beyond JSON schema in `code/go/internal/validator/semantic/`
 - For real package examples, see [elastic/integrations](https://github.com/elastic/integrations)
