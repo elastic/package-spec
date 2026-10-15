@@ -44,8 +44,9 @@ var (
 	errColumnarNestedInNested = errors.New("columnar index modes support only a single level of nesting")
 
 	// Mappings that drop data in columnar index modes, which have no stored _source to fall back on.
-	errColumnarEnabledFalse = errors.New("enabled: false loses the object contents in columnar index modes, which have no stored _source")
-	errColumnarDynamicFalse = errors.New("dynamic: false loses unmapped fields in columnar index modes, which have no stored _source")
+	errColumnarEnabledFalse   = errors.New("enabled: false is not supported in columnar index modes, which have no stored _source to keep the object in")
+	errColumnarDynamicFalse   = errors.New("dynamic: false is not supported in columnar index modes, which have no stored _source to keep unmapped fields in")
+	errColumnarDynamicRuntime = errors.New("dynamic: runtime is not supported in columnar index modes, which have no stored _source to load runtime fields from")
 
 	// Invalid index.sort settings.
 	errColumnarSortOrderLength      = errors.New("index.sort.order must have one entry per index.sort.field")
@@ -295,11 +296,15 @@ func validateColumnarField(meta fieldFileMetadata, f field) specerrors.Validatio
 	}
 
 	if f.Enabled != nil && !*f.Enabled {
-		errs = append(errs, columnarFieldError(meta, f, errColumnarEnabledFalse, specerrors.CodeColumnarEnabledFalse))
+		errs = append(errs, columnarFieldError(meta, f, errColumnarEnabledFalse, specerrors.UnassignedCode))
 	}
 
 	if dynamicIsFalse(f.Dynamic) {
-		errs = append(errs, columnarFieldError(meta, f, errColumnarDynamicFalse, specerrors.CodeColumnarDynamicFalse))
+		errs = append(errs, columnarFieldError(meta, f, errColumnarDynamicFalse, specerrors.UnassignedCode))
+	}
+
+	if dynamicIsRuntime(f.Dynamic) {
+		errs = append(errs, columnarFieldError(meta, f, errColumnarDynamicRuntime, specerrors.UnassignedCode))
 	}
 
 	return errs
@@ -426,10 +431,17 @@ func validateColumnarIndexTemplate(dataStream columnarDataStream, streamFields *
 	indexTemplate := dataStream.manifest.Elasticsearch.IndexTemplate
 
 	var errs specerrors.ValidationErrors
-	if dynamicIsFalse(indexTemplate.Mappings.Dynamic) {
+	var dynamicErr error
+	switch {
+	case dynamicIsFalse(indexTemplate.Mappings.Dynamic):
+		dynamicErr = errColumnarDynamicFalse
+	case dynamicIsRuntime(indexTemplate.Mappings.Dynamic):
+		dynamicErr = errColumnarDynamicRuntime
+	}
+	if dynamicErr != nil {
 		errs = append(errs, specerrors.NewStructuredError(
-			fmt.Errorf(`file "%s" is invalid: elasticsearch.index_template.mappings: %w`, dataStream.manifestPath, errColumnarDynamicFalse),
-			specerrors.CodeColumnarDynamicFalse,
+			fmt.Errorf(`file "%s" is invalid: elasticsearch.index_template.mappings: %w`, dataStream.manifestPath, dynamicErr),
+			specerrors.UnassignedCode,
 		))
 	}
 	errs = append(errs, validateColumnarIndexSort(dataStream.manifestPath, indexTemplate.Settings.Index.Sort, streamFields)...)
@@ -480,4 +492,10 @@ func dynamicIsFalse(v any) bool {
 		return val == "false"
 	}
 	return false
+}
+
+// dynamicIsRuntime returns true when the YAML value is the string "runtime".
+func dynamicIsRuntime(v any) bool {
+	val, ok := v.(string)
+	return ok && val == "runtime"
 }
