@@ -1,0 +1,35 @@
+- name: data_stream.type
+  type: constant_keyword
+  description: Data stream type.
+- name: data_stream.dataset
+  type: constant_keyword
+  description: Data stream dataset.
+- name: data_stream.namespace
+  type: constant_keyword
+  description: Data stream namespace.
+- name: '@timestamp'
+  type: date
+  description: Event timestamp.
+- name: message
+  type: keyword
+  description: Message.
+- name: metadata
+  type: object
+  enabled: false
+  description: Kept only in _source, which columnar index modes do not store.
+- name: extra
+  type: group
+  dynamic: false
+  description: Unmapped subfields are kept only in _source, which columnar index modes do not store.
+  fields:
+    - name: id
+      type: keyword
+      description: Mapped subfield.
+- name: computed
+  type: group
+  dynamic: runtime
+  description: Unmapped subfields become runtime fields, which columnar index modes cannot load.
+  fields:
+    - name: id
+      type: keyword
+      description: Mapped subfield.

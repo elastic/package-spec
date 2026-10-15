@@ -1291,6 +1291,11 @@ func TestValidateLogsDBColumnar(t *testing.T) {
 			"data_stream/normalizer/fields/base-fields.yml": {
 				`field "status": keyword normalizers other than lowercase are not supported in columnar index modes, they prevent synthetic source reconstruction; remove the normalizer or apply the transformation in an ingest pipeline`,
 			},
+			"data_stream/dynamic/fields/base-fields.yml": {
+				`field "metadata": enabled: false is not supported in columnar index modes, which have no stored _source to keep the object in`,
+				`field "extra": dynamic: false is not supported in columnar index modes, which have no stored _source to keep unmapped fields in`,
+				`field "computed": dynamic: runtime is not supported in columnar index modes, which have no stored _source to load runtime fields from`,
+			},
 			"data_stream/runtime_field/fields/base-fields.yml": {
 				`field "computed": mapping-level runtime fields are not supported in columnar index modes; compute the field in an ingest pipeline or use a search-request runtime field instead`,
 			},

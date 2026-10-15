@@ -135,22 +135,32 @@ func TestValidateColumnarField(t *testing.T) {
 			f:     field{Name: "events", Type: "nested"},
 		},
 		{
-			title:    "enabled false is filterable",
+			title:    "enabled false is a hard error",
 			f:        field{Name: "metadata", Type: "object", Enabled: boolPtr(false)},
 			wantErr:  errColumnarEnabledFalse,
-			wantCode: specerrors.CodeColumnarEnabledFalse,
+			wantCode: specerrors.UnassignedCode,
 		},
 		{
-			title:    "dynamic false on field is filterable",
+			title:    "dynamic false on field is a hard error",
 			f:        field{Name: "extra", Type: "object", Dynamic: false},
 			wantErr:  errColumnarDynamicFalse,
-			wantCode: specerrors.CodeColumnarDynamicFalse,
+			wantCode: specerrors.UnassignedCode,
 		},
 		{
-			title:    "dynamic string false on field is filterable",
+			title:    "dynamic string false on field is a hard error",
 			f:        field{Name: "extra", Type: "object", Dynamic: "false"},
 			wantErr:  errColumnarDynamicFalse,
-			wantCode: specerrors.CodeColumnarDynamicFalse,
+			wantCode: specerrors.UnassignedCode,
+		},
+		{
+			title:    "dynamic runtime on field is a hard error",
+			f:        field{Name: "extra", Type: "object", Dynamic: "runtime"},
+			wantErr:  errColumnarDynamicRuntime,
+			wantCode: specerrors.UnassignedCode,
+		},
+		{
+			title: "dynamic strict on field is accepted",
+			f:     field{Name: "extra", Type: "object", Dynamic: "strict"},
 		},
 		{
 			title: "enabled true is fine",
@@ -392,7 +402,7 @@ func TestValidateColumnarIndexTemplate(t *testing.T) {
 			manifest: "type: logs\nelasticsearch:\n  logsdb_columnar: opt_in\n",
 		},
 		{
-			title: "dynamic false is filterable",
+			title: "dynamic false is a hard error",
 			manifest: `
 type: logs
 elasticsearch:
@@ -403,7 +413,22 @@ elasticsearch:
 `,
 			want: []string{
 				`file "ds/manifest.yml" is invalid: elasticsearch.index_template.mappings: ` +
-					`dynamic: false loses unmapped fields in columnar index modes, which have no stored _source (SVR00014)`,
+					`dynamic: false is not supported in columnar index modes, which have no stored _source to keep unmapped fields in`,
+			},
+		},
+		{
+			title: "dynamic runtime is a hard error",
+			manifest: `
+type: logs
+elasticsearch:
+  logsdb_columnar: opt_in
+  index_template:
+    mappings:
+      dynamic: runtime
+`,
+			want: []string{
+				`file "ds/manifest.yml" is invalid: elasticsearch.index_template.mappings: ` +
+					`dynamic: runtime is not supported in columnar index modes, which have no stored _source to load runtime fields from`,
 			},
 		},
 		{
