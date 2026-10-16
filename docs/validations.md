@@ -240,12 +240,14 @@ errors:
 ES|QL views are cluster-state objects installed into Elasticsearch. The following
 semantic rules are enforced for every file in the `elasticsearch/esql_view/` folder:
 
-**`name` must equal the filename stem**
+**`name` must be `$.integrations.<package>.<filename stem>`**
 
-The `name` field in the YAML must exactly match the filename without the `.yml`
-extension. For example, `my_package-my_view.yml` must declare `name: my_package-my_view`.
-This rule, combined with the `{PACKAGE_NAME}-` filename pattern, guarantees that
-the view name is scoped to the package and cannot collide with views from other packages.
+The `name` field in the YAML must be the `$.integrations.` namespace, followed by the
+package name and the filename without the `.yml` extension. For example, the file
+`my_view.yml` in the package `my_package` must declare `name: $.integrations.my_package.my_view`.
+This guarantees that the view name is scoped to the package, cannot collide with views from
+other packages, and stays within the namespace Fleet is granted access to in Elasticsearch.
+It also prevents duplicate view names within a package, since filenames are unique.
 
 **`name` must be at most 255 bytes**
 

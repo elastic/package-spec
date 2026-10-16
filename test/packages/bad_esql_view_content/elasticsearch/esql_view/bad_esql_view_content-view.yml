@@ -1,3 +1,0 @@
-name: bad_esql_view_content-view
-query:
-extra_field: not_allowed

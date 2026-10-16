@@ -52,7 +52,7 @@ spec:
         - description: ES|QL view definition in YAML
           type: file
           sizeLimit: 3MB
-          pattern: '^{PACKAGE_NAME}-.+\.yml$'
+          pattern: '^[a-z0-9][a-z0-9_\-]*\.yml$'
           contentMediaType: "application/x-yaml"
           required: false
           $ref: "./view.spec.yml"
