@@ -1046,6 +1046,23 @@ spec:
       type: object
       additionalProperties: false
       properties:
+        logsdb_columnar:
+          description: >
+            Readiness of the package's `type: logs` data streams for the `logsdb_columnar` index mode.
+            Absent means not ready.
+
+            `opt_in`: the data streams are compatible with `logsdb_columnar`; the mode is available to the
+            user, and LogsDB stays the default.
+            `default`: new installations use `logsdb_columnar`; the user can switch back. Existing data
+            streams keep their current mode.
+
+            A data stream can override this value with `elasticsearch.logsdb_columnar` in its own manifest.
+            The setting is ignored for data streams of other types, and only applies when the data stream
+            sets no `index_mode`.
+          type: string
+          enum:
+            - opt_in
+            - default
         privileges:
           description: Elasticsearch privilege requirements
           type: object
@@ -1093,6 +1110,9 @@ spec:
 versions:
   - before: 3.7.0
     patch:
+      # Remove the columnar readiness setting added in 3.7.0.
+      - op: remove
+        path: "/properties/elasticsearch/properties/logsdb_columnar"
       - op: add
         path: "/definitions/conditions/properties/agent"
         value:

@@ -1289,6 +1289,74 @@ func TestValidateIngestPipelines(t *testing.T) {
 	}
 }
 
+func TestValidateLogsDBColumnar(t *testing.T) {
+	// Expected errors per package, keyed by the file they are reported against.
+	tests := map[string]map[string][]string{
+		"good_logsdb_columnar_opt_in":          {},
+		"good_logsdb_columnar_stream_override": {},
+		"good_logsdb_columnar_metrics_ignored": {},
+		"bad_columnar_manifest": {
+			"data_stream/copy_to/fields/base-fields.yml": {
+				`field "short_message": copy_to is not supported in columnar index modes, it prevents synthetic source reconstruction; use an ingest pipeline to copy the value instead`,
+			},
+			"data_stream/normalizer/fields/base-fields.yml": {
+				`field "status": keyword normalizers other than lowercase are not supported in columnar index modes, they prevent synthetic source reconstruction; remove the normalizer or apply the transformation in an ingest pipeline`,
+			},
+			"data_stream/dynamic/fields/base-fields.yml": {
+				`field "metadata": enabled: false is not supported in columnar index modes, which have no stored _source to keep the object in`,
+				`field "extra": dynamic: false is not supported in columnar index modes, which have no stored _source to keep unmapped fields in`,
+				`field "computed": dynamic: runtime is not supported in columnar index modes, which have no stored _source to load runtime fields from`,
+			},
+			"data_stream/runtime_field/fields/base-fields.yml": {
+				`field "computed": mapping-level runtime fields are not supported in columnar index modes; compute the field in an ingest pipeline or use a search-request runtime field instead`,
+			},
+			"data_stream/nested_in_nested/fields/base-fields.yml": {
+				`field "events.inner" is inside nested field "events": columnar index modes support only a single level of nesting`,
+				`field "attributes.items" is inside nested field "attributes": columnar index modes support only a single level of nesting`,
+			},
+			"data_stream/index_sort/manifest.yml": {
+				`index.sort field "message": index sort fields must have doc values (type "text")`,
+				`index.sort field "host.name": index sort fields must be defined in the data stream fields`,
+			},
+			"data_stream/index_mode/manifest.yml": {
+				`elasticsearch.index_mode and elasticsearch.logsdb_columnar cannot both be set; logsdb_columnar only applies when index_mode is unset`,
+			},
+			"data_stream/non_logs/manifest.yml": {
+				`elasticsearch.logsdb_columnar is only supported on logs data streams (data stream type is "metrics")`,
+			},
+		},
+	}
+
+	for pkgName, files := range tests {
+		t.Run(pkgName, func(t *testing.T) {
+			t.Parallel()
+			pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", pkgName)
+			var expectedErrMessages []string
+			for file, messages := range files {
+				errPrefix := fmt.Sprintf("file \"%s/%s\" is invalid: ", pkgRootPath, file)
+				for _, message := range messages {
+					expectedErrMessages = append(expectedErrMessages, errPrefix+message)
+				}
+			}
+
+			errs := ValidateFromPath(pkgRootPath)
+			if len(expectedErrMessages) == 0 {
+				require.NoError(t, errs)
+				return
+			}
+			require.Error(t, errs)
+			vErrs, ok := errs.(specerrors.ValidationErrors)
+			require.True(t, ok)
+
+			var errMessages []string
+			for _, vErr := range vErrs {
+				errMessages = append(errMessages, vErr.Error())
+			}
+			assert.ElementsMatch(t, expectedErrMessages, errMessages)
+		})
+	}
+}
+
 func TestValidateForbiddenDataStreamName(t *testing.T) {
 	testPackagesPath := path.Join("..", "..", "..", "..", "test", "packages")
 	pkgPath := path.Join(testPackagesPath, "bad_data_stream_name")
