@@ -9,6 +9,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -479,6 +480,14 @@ func (k *Kibana) mustExistSavedObject(soType, id string) error {
 	return nil
 }
 
+var errPackageNotInstalled = errors.New("package is not installed")
+
+type packageInstallResponse struct {
+	Item struct {
+		Status string `json:"status"`
+	} `json:"item"`
+}
+
 // isPackageInstalled checks if a package with the given name is installed.
 func (k *Kibana) isPackageInstalled(packageName string) error {
 	apiPath, err := url.JoinPath(apiInstalledPackagesPath, packageName)
@@ -497,7 +506,7 @@ func (k *Kibana) isPackageInstalled(packageName string) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusNotFound {
-		return fmt.Errorf("package %q is not installed", packageName)
+		return fmt.Errorf("package %q is not installed: %w", packageName, errPackageNotInstalled)
 	}
 	if resp.StatusCode >= 400 {
 		respBody, err := io.ReadAll(resp.Body)
@@ -505,6 +514,14 @@ func (k *Kibana) isPackageInstalled(packageName string) error {
 			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
 		}
 		return fmt.Errorf("request failed with status %d, body: %s", resp.StatusCode, string(respBody))
+	}
+
+	var packageInfo packageInstallResponse
+	if err := json.NewDecoder(resp.Body).Decode(&packageInfo); err != nil {
+		return fmt.Errorf("failed to decode package %q response: %w", packageName, err)
+	}
+	if packageInfo.Item.Status != "installed" {
+		return fmt.Errorf("package %q is not installed (status: %q): %w", packageName, packageInfo.Item.Status, errPackageNotInstalled)
 	}
 
 	return nil
