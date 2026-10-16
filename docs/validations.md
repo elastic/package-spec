@@ -21,6 +21,7 @@
 | [SVR00011]          | use_otel_suffix with an input defined |
 | [SVR00012]          | Package-level agent.version condition           |
 | [SVR00013]          | ES\|QL view definition is invalid               |
+| [SVR00014]          | Alerting v2 rule template structure is invalid   |
 
 ## JSE00001 - Rename message to event.original
 
@@ -255,3 +256,33 @@ Elasticsearch enforces a 255-byte limit on index-like names.
 
 A query consisting only of whitespace characters passes `minLength: 1` in the JSON
 Schema but is rejected by Elasticsearch (`Strings.hasText()` check in `PutViewAction`).
+
+## SVR00014 - Alerting v2 rule template structure is invalid
+
+[SVR00014]: #svr00014---alerting-v2-rule-template-structure-is-invalid
+
+Alerting v2 templates under `kibana/alerting_rule_template/` are checked for required
+metadata, schedule, query parts, lifecycle strategy, grouping, artifacts, and state
+transition values. Only templates with `engine: v2` are checked. Classic templates
+(`engine: ""` or `v1`, no engine, or a null or non-string engine) are skipped. Any
+other engine string, such as `v3`, is rejected. A file that is not valid JSON is not
+reported under this rule; the Kibana object checks already fail it. package-spec has
+no structural schema for `alerting_rule_template` files, so classic templates are not
+content-validated. This structural check does not parse or execute ES|QL, so query
+syntax and field types still need testing against the target stack.
+
+The checked shape and limits mirror Kibana's
+[`alerting-v2-schemas`](https://github.com/elastic/kibana/tree/600a8067f05e21388a63ffcc22cf602a3ffb1aa3/x-pack/platform/packages/shared/response-ops/alerting-v2-schemas/src)
+(`rule_template_schema.ts`, `rule_data_schema.ts`, `constants.ts`). This is not Kibana's
+complete schema. Kibana's objects are `.strict()`, so a template can pass `SVR00014` and
+still be rejected by Kibana on install; unknown fields are left in place here on purpose
+so a later Kibana schema addition does not fail an older package-spec.
+
+Like other coded semantic rules, these errors can be suppressed during a migration
+window by adding the code to the package's `validation.yml`:
+
+```yaml
+errors:
+  exclude_checks:
+    - SVR00014
+```
