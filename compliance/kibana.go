@@ -15,6 +15,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"slices"
 	"strings"
 )
 
@@ -162,7 +163,91 @@ func (k *Kibana) deletePackagePolicyForPackage(name string) error {
 	return k.deletePackagePolicy(policy.ID)
 }
 
+type packagePolicyItem struct {
+	ID        string   `json:"id"`
+	PolicyID  string   `json:"policy_id"`
+	PolicyIDs []string `json:"policy_ids"`
+}
+
+func (p packagePolicyItem) belongsTo(agentPolicyID string) bool {
+	if p.PolicyID == agentPolicyID {
+		return true
+	}
+	return slices.Contains(p.PolicyIDs, agentPolicyID)
+}
+
+// deletePackagePoliciesForAgentPolicy removes package policies attached to the agent policy.
+// Kibana 8.9 and 8.14 reject a "force" field on agent policy deletion, so the package
+// policies have to be removed first.
+func (k *Kibana) deletePackagePoliciesForAgentPolicy(agentPolicyID string) error {
+	req, err := k.newRequest(http.MethodGet, apiPackagePolicyPath, nil)
+	if err != nil {
+		return err
+	}
+	req = addRequestParams(req, map[string]string{"perPage": "1000"})
+
+	resp, err := k.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return fmt.Errorf("listing package policies failed with status %d, body: %q", resp.StatusCode, string(respBody))
+	}
+
+	var listed struct {
+		Items []packagePolicyItem `json:"items"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&listed); err != nil {
+		return fmt.Errorf("failed to decode package policies response: %w", err)
+	}
+
+	var packagePolicyIDs []string
+	for _, item := range listed.Items {
+		if item.belongsTo(agentPolicyID) {
+			packagePolicyIDs = append(packagePolicyIDs, item.ID)
+		}
+	}
+	if len(packagePolicyIDs) == 0 {
+		return nil
+	}
+
+	deleteBody, err := json.Marshal(map[string]any{"packagePolicyIds": packagePolicyIDs})
+	if err != nil {
+		return err
+	}
+	req, err = k.newRequest(http.MethodPost, apiPackagePolicyPath+"/delete", bytes.NewReader(deleteBody))
+	if err != nil {
+		return err
+	}
+
+	resp, err = k.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return fmt.Errorf("deleting package policies for agent policy %q failed with status %d, body: %q", agentPolicyID, resp.StatusCode, string(respBody))
+	}
+
+	return nil
+}
+
 func (k *Kibana) deletePackagePolicy(policyID string) error {
+	if err := k.deletePackagePoliciesForAgentPolicy(policyID); err != nil {
+		return err
+	}
+
 	deleteBody := fmt.Sprintf(`{"agentPolicyId": "%s"}`, policyID)
 	req, err := k.newRequest(http.MethodPost, apiAgentPolicyPath+"/delete", strings.NewReader(deleteBody))
 	if err != nil {
@@ -522,6 +607,90 @@ func (k *Kibana) isPackageInstalled(packageName string) error {
 	}
 	if packageInfo.Item.Status != "installed" {
 		return fmt.Errorf("package %q is not installed (status: %q): %w", packageName, packageInfo.Item.Status, errPackageNotInstalled)
+	}
+
+	return nil
+}
+
+type installedPackage struct {
+	Name    string `json:"name"`
+	Version string `json:"version"`
+	Status  string `json:"status"`
+}
+
+type installedPackagesResponse struct {
+	Items []installedPackage `json:"items"`
+}
+
+// listInstalledPackages returns the packages currently installed in Kibana.
+func (k *Kibana) listInstalledPackages() ([]installedPackage, error) {
+	apiPath, err := url.JoinPath(apiInstalledPackagesPath, "installed")
+	if err != nil {
+		return nil, err
+	}
+	req, err := k.newRequest(http.MethodGet, apiPath, nil)
+	if err != nil {
+		return nil, err
+	}
+	req = addRequestParams(req, map[string]string{"perPage": "1000"})
+
+	resp, err := k.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return nil, fmt.Errorf("listing installed packages failed with status %d, body: %s", resp.StatusCode, string(respBody))
+	}
+
+	var packages installedPackagesResponse
+	if err := json.NewDecoder(resp.Body).Decode(&packages); err != nil {
+		return nil, fmt.Errorf("failed to decode installed packages response: %w", err)
+	}
+
+	return packages.Items, nil
+}
+
+// uninstallPackage uninstalls the given package. The installed version is looked up
+// first in the list of installed packages, nothing is done if it is not installed.
+func (k *Kibana) uninstallPackage(packageName string) error {
+	packages, err := k.listInstalledPackages()
+	if err != nil {
+		return fmt.Errorf("failed to look for package %q to uninstall: %w", packageName, err)
+	}
+
+	idx := slices.IndexFunc(packages, func(p installedPackage) bool { return p.Name == packageName })
+	if idx < 0 {
+		// Nothing to do.
+		return nil
+	}
+
+	apiPath, err := url.JoinPath(apiInstalledPackagesPath, packageName, packages[idx].Version)
+	if err != nil {
+		return err
+	}
+	req, err := k.newRequest(http.MethodDelete, apiPath, nil)
+	if err != nil {
+		return err
+	}
+
+	resp, err := k.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return fmt.Errorf("uninstalling package %q failed with status %d, body: %s", packageName, resp.StatusCode, string(respBody))
 	}
 
 	return nil

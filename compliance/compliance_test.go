@@ -464,6 +464,9 @@ func transformHasDatasetStatement(processor otelTransformProcessor, expectedData
 	return false
 }
 
+// packagesToKeep are the packages that must remain installed between scenarios.
+var packagesToKeep = []string{"elastic_agent", "fleet_server", "synthetics"}
+
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
 		skipped := slices.ContainsFunc(sc.Tags, func(elem *messages.PickleTag) bool {
@@ -471,6 +474,31 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 		})
 		if skipped {
 			return ctx, godog.ErrSkip
+		}
+		return ctx, nil
+	})
+	ctx.After(func(ctx context.Context, sc *godog.Scenario, _ error) (context.Context, error) {
+		kibana, err := NewKibanaClient()
+		if err != nil {
+			return ctx, err
+		}
+		// The policy goes first, so its package is not in use when uninstalling it.
+		if agentPolicyID, ok := ctx.Value(agentPolicyIDKey).(string); ok && agentPolicyID != "" {
+			if err := kibana.deletePackagePolicy(agentPolicyID); err != nil {
+				return ctx, err
+			}
+		}
+		packages, err := kibana.listInstalledPackages()
+		if err != nil {
+			return ctx, err
+		}
+		for _, p := range packages {
+			if slices.Contains(packagesToKeep, p.Name) {
+				continue
+			}
+			if err := kibana.uninstallPackage(p.Name); err != nil {
+				return ctx, err
+			}
 		}
 		return ctx, nil
 	})
