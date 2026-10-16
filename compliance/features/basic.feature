@@ -18,6 +18,15 @@ Feature: Basic package types support
    Given the "good_input_otel" package is installed
      And a policy is created with "good_input_otel" package, "0.0.1" version, "httpcheckreceiver" template, "httpcheckreceiver" input, "otelcol" input type and dataset "spec.otel_input_test"
     Then there is an index template "metrics-spec.otel_input_test" with pattern "metrics-spec.otel_input_test.otel-*"
+
+  # This is duplicated from above since time_series index_mode requires spec 3.6.0 and kibana 9.4
+  # https://github.com/elastic/package-spec/pull/1066
+  # https://github.com/elastic/kibana/pull/251205
+  @3.6.0
+  Scenario: OTel input package can be installed
+   Given the "good_input_otel" package is installed
+     And a policy is created with "good_input_otel" package, "0.0.1" version, "httpcheckreceiver" template, "httpcheckreceiver" input, "otelcol" input type and dataset "spec.otel_input_test"
+    Then there is an index template "metrics-spec.otel_input_test" with pattern "metrics-spec.otel_input_test.otel-*"
      And index template "metrics-spec.otel_input_test" is configured for "time_series index mode"
 
   @3.3.0
@@ -42,16 +51,11 @@ Feature: Basic package types support
     Then there is an index template "logs-good_integration_otel.otel_logs" with pattern "logs-good_integration_otel.otel_logs.otel-*"
 
   @3.7.0
-  @skip
-  # Pending on https://github.com/elastic/package-spec/issues/1260
   Scenario: Integration package with use_otel_suffix installs .otel index pattern
    Given the "good_integration_otel_suffix" package is installed
     Then there is an index template "logs-good_integration_otel_suffix.logs" with pattern "logs-good_integration_otel_suffix.logs.otel-*"
   
   @3.6.0
-  @skip
-  # See conversation in https://github.com/elastic/package-spec/pull/1173#issuecomment-4517809538
-  # Pending on https://github.com/elastic/ingest-dev/issues/7797
   Scenario: OTel input package with profiles type can be installed
    Given the "good_input_profiles" package is installed
      And a policy is created with "good_input_profiles" package, "0.0.1" version, "profilingreceiver" template, "profilingreceiver" input, "otelcol" input type and dataset "spec.otel_input_test"
