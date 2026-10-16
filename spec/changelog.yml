@@ -14,6 +14,13 @@
     - description: Disallow package-level `conditions.agent.version` (SVR00012). Packages using this field will now produce a validation error instead of a deprecation warning.
       type: breaking change
       link: https://github.com/elastic/package-spec/pull/1265
+    # Pending on the Kibana change adding Fleet install support for workflow assets, tracked in https://github.com/elastic/package-spec/issues/1262
+    - description: Add support for Kibana `workflow` assets in integration packages.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1271
+    - description: "Warn (SVR00014) when a Kibana workflow sets `enabled: true`."
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1271
 - version: 3.6.7-next
   changes:
     - description: Warn when a package declares a package-level `conditions.agent.version`.

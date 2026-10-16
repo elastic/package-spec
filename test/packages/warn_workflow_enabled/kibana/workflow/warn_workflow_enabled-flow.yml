@@ -1,0 +1,5 @@
+name: warn_workflow_enabled-flow
+enabled: true
+triggers:
+  - type: manual
+steps: []

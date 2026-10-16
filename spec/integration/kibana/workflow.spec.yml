@@ -1,0 +1,16 @@
+spec:
+  type: object
+  # Kibana owns the authoritative workflow schema; only the presence of the
+  # top-level fields is checked here.
+  additionalProperties: true
+  properties:
+    name:
+      description: Name of the workflow
+    triggers:
+      description: Triggers that start the workflow
+    steps:
+      description: Steps executed by the workflow
+  required:
+    - name
+    - triggers
+    - steps
