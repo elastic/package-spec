@@ -7,6 +7,6 @@ Feature: Package dependencies support
   # Tested locally that it worked with v9.5.6-SNAPSHOT, so the scenario is moved to spec 3.7.0 for that reason
   @3.7.0
   Scenario: Integration package with dependencies installs required packages
-   Given the "apache_otel" package is not installed
-    When the "good_requires" package is installed
+   Given the "apache_otel" package is uninstalled
+     And the "good_requires" package is installed
     Then the content packages "good_requires" require are installed
