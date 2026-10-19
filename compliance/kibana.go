@@ -27,6 +27,8 @@ const (
 	apiExportSavedObjectPath          = "/api/saved_objects/_export"
 	apiGetDetecionRulePath            = "/api/detection_engine/rules"
 	apiLoadPrebuiltDetectionRulesPath = "/api/detection_engine/rules/prepackaged"
+	apiFindDetectionRulesPath         = "/api/detection_engine/rules/_find"
+	apiBulkActionDetectionRulesPath   = "/api/detection_engine/rules/_bulk_action"
 	apiSavedObjects                   = "/api/saved_objects"
 	apiStatusPath                     = "/api/status"
 	apiInstalledPackagesPath          = "/api/fleet/epm/packages"
@@ -607,6 +609,85 @@ func (k *Kibana) isPackageInstalled(packageName string) error {
 	}
 	if packageInfo.Item.Status != "installed" {
 		return fmt.Errorf("package %q is not installed (status: %q): %w", packageName, packageInfo.Item.Status, errPackageNotInstalled)
+	}
+
+	return nil
+}
+
+type detectionRule struct {
+	ID     string `json:"id"`
+	RuleID string `json:"rule_id"`
+}
+
+type detectionRulesResponse struct {
+	Data []detectionRule `json:"data"`
+}
+
+// listDetectionRules returns the detection rules found in Kibana.
+func (k *Kibana) listDetectionRules() ([]detectionRule, error) {
+	req, err := k.newRequest(http.MethodGet, apiFindDetectionRulesPath, nil)
+	if err != nil {
+		return nil, err
+	}
+	req = addRequestParams(req, map[string]string{"per_page": "1000"})
+
+	resp, err := k.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return nil, fmt.Errorf("listing detection rules failed with status %d, body: %s", resp.StatusCode, string(respBody))
+	}
+
+	var rules detectionRulesResponse
+	if err := json.NewDecoder(resp.Body).Decode(&rules); err != nil {
+		return nil, fmt.Errorf("failed to decode detection rules response: %w", err)
+	}
+
+	return rules.Data, nil
+}
+
+// deleteDetectionRules lists the detection rules and deletes all of them.
+func (k *Kibana) deleteDetectionRules() error {
+	rules, err := k.listDetectionRules()
+	if err != nil {
+		return err
+	}
+	if len(rules) == 0 {
+		return nil
+	}
+
+	ids := make([]string, 0, len(rules))
+	for _, rule := range rules {
+		ids = append(ids, rule.ID)
+	}
+	body, err := json.Marshal(map[string]any{"action": "delete", "ids": ids})
+	if err != nil {
+		return err
+	}
+	req, err := k.newRequest(http.MethodPost, apiBulkActionDetectionRulesPath, bytes.NewReader(body))
+	if err != nil {
+		return err
+	}
+
+	resp, err := k.client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to read response body (status: %d)", resp.StatusCode)
+		}
+		return fmt.Errorf("deleting detection rules failed with status %d, body: %s", resp.StatusCode, string(respBody))
 	}
 
 	return nil
