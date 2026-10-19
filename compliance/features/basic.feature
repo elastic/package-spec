@@ -31,7 +31,7 @@ Feature: Basic package types support
 
   @3.3.0
   Scenario: Basic content package can be installed
-   Given the detection rules are deleted
+   Given the detection rule "12cea9e9-5766-474d-a9dc-34ef7c7677c7" is deleted
      And the "basic_content" package is installed
      And prebuilt detection rules are loaded
     Then there is a dashboard "basic_content-dashboard-abc-1"
@@ -39,7 +39,7 @@ Feature: Basic package types support
 
   @3.6.0
   Scenario: Content package can be installed
-   Given the detection rules are deleted
+   Given the detection rule "12cea9e9-5766-474d-a9dc-34ef7c7677c6" is deleted
      And the "good_content" package is installed
      And prebuilt detection rules are loaded
     Then there is a dashboard "good_content-dashboard-abc-1"

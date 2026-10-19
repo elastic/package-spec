@@ -24,7 +24,7 @@ Reference packages used on each scenario can be found in [`compliance/testdata/p
 > packages and creates agent and package policies, and it cleans up after each
 > scenario by deleting the agent policy it created and uninstalling every
 > installed package except `elastic_agent`, `fleet_server` and `synthetics`. Some
-> scenarios also delete all the detection rules. Use a disposable stack, such as
+> scenarios also delete the detection rules they check for. Use a disposable stack, such as
 > one started with `elastic-package stack`.
 
 To run the suite, you need a target to evaluate. The target is configured with
