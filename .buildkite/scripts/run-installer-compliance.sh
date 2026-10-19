@@ -44,9 +44,6 @@ function start_stack() {
     local elastic_package="go run github.com/elastic/elastic-package"
 
     cd compliance
-    # Next elastic-package release should not require this env var
-    # Related PR: https://github.com/elastic/elastic-package/pull/3995
-    export ELASTIC_PACKAGE_KIBANA_SKIP_UPLOAD_PACKAGE_VALIDATION=true
     $elastic_package stack up -d --version "$stack_version"
     eval $($elastic_package stack shellinit)
     cd -

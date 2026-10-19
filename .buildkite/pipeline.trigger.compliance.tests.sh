@@ -3,6 +3,9 @@
 # Exit immediately on failure, or if an undefined variable is used.
 set -eu
 
+# The next elastic-package release should not require
+# ELASTIC_PACKAGE_KIBANA_SKIP_UPLOAD_PACKAGE_VALIDATION.
+# Related PR: https://github.com/elastic/elastic-package/pull/3995
 function compliance_test() {
 	local stack_version=$1
 	local spec_version=$2
@@ -14,6 +17,7 @@ cat <<EOF
           - compliance/report-*.xml
         env:
           ELASTIC_PACKAGE_CHECK_UPDATE_DISABLED: "true"
+          ELASTIC_PACKAGE_KIBANA_SKIP_UPLOAD_PACKAGE_VALIDATION: "true"
         agents:
           provider: "gcp"
 EOF
