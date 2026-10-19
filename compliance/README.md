@@ -22,10 +22,12 @@ Reference packages used on each scenario can be found in [`compliance/testdata/p
 > Do not run the compliance suite against production clusters, or against any
 > stack whose data you want to keep. The suite is destructive: it installs
 > packages and creates agent and package policies, and it cleans up after each
-> scenario by deleting the agent policy it created and uninstalling every
-> installed package except `elastic_agent`, `fleet_server` and `synthetics`. Some
-> scenarios also delete the detection rules they check for. Use a disposable stack, such as
-> one started with `elastic-package stack`.
+> scenario by deleting the agent policy it created and uninstalling the packages
+> it installed (including the content packages required by them, even if they were
+> already installed before). Some scenarios also delete the detection rules they
+> check for. Only these resources are removed, but any of them that exist on the
+> target are lost. Use a disposable stack, such as one started with
+> `elastic-package stack`.
 
 To run the suite, you need a target to evaluate. The target is configured with
 environment variables as described below.

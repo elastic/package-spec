@@ -92,24 +92,26 @@ func thePackageIsUninstalled(packageName string) error {
 	return kibana.uninstallPackage(packageName)
 }
 
-func thePackageIsInstalled(packageName string) error {
-	packagePath, err := findTestPackage(packageName)
-	if err != nil {
-		return err
-	}
+func thePackageIsInstalled(ctx context.Context, packageName string) (context.Context, error) {
+	return withInstalledPackages(ctx, []string{packageName}, func() error {
+		packagePath, err := findTestPackage(packageName)
+		if err != nil {
+			return err
+		}
 
-	elasticPackage, err := NewElasticPackage()
-	if err != nil {
-		return err
-	}
-	defer elasticPackage.Close()
+		elasticPackage, err := NewElasticPackage()
+		if err != nil {
+			return err
+		}
+		defer elasticPackage.Close()
 
-	err = elasticPackage.Install(packagePath)
-	if err != nil {
-		return fmt.Errorf("cannot install package %q: %w", packagePath, err)
-	}
+		err = elasticPackage.Install(packagePath)
+		if err != nil {
+			return fmt.Errorf("cannot install package %q: %w", packagePath, err)
+		}
 
-	return nil
+		return nil
+	})
 }
 
 func findTestPackage(packageName string) (string, error) {
@@ -141,7 +143,30 @@ func findTestPackage(packageName string) (string, error) {
 
 type contextKey string
 
-const agentPolicyIDKey contextKey = "agentPolicyID"
+const (
+	agentPolicyIDKey     contextKey = "agentPolicyID"
+	installedPackagesKey contextKey = "installedPackages"
+)
+
+// trackInstalledPackages records, in the context of the scenario, the packages that it installs
+// so the After hook can remove them. Only these packages are removed, in the order they were added.
+func trackInstalledPackages(ctx context.Context, packageNames ...string) context.Context {
+	tracked, _ := ctx.Value(installedPackagesKey).([]string)
+	tracked = slices.Clone(tracked)
+	for _, name := range packageNames {
+		if !slices.Contains(tracked, name) {
+			tracked = append(tracked, name)
+		}
+	}
+	return context.WithValue(ctx, installedPackagesKey, tracked)
+}
+
+// withInstalledPackages tracks the given packages in the context, so the After hook removes them,
+// and then runs fn. They are tracked before running fn, so they are also cleaned up if fn fails
+// halfway.
+func withInstalledPackages(ctx context.Context, packageNames []string, fn func() error) (context.Context, error) {
+	return trackInstalledPackages(ctx, packageNames...), fn()
+}
 
 // withAgentPolicyID creates a Kibana client, runs fn, and stores the returned agent policy ID
 // in the context for use by subsequent steps.
@@ -344,15 +369,15 @@ func thereIsASecurityAIPrompt(promptID string) error {
 	return nil
 }
 
-func theContentPackagesRequireAreInstalled(packageName string) error {
+func theContentPackagesRequireAreInstalled(ctx context.Context, packageName string) (context.Context, error) {
 	packagePath, err := findTestPackage(packageName)
 	if err != nil {
-		return err
+		return ctx, err
 	}
 
 	manifestData, err := os.ReadFile(filepath.Join(packagePath, "manifest.yml"))
 	if err != nil {
-		return fmt.Errorf("failed to read manifest for package %q: %w", packageName, err)
+		return ctx, fmt.Errorf("failed to read manifest for package %q: %w", packageName, err)
 	}
 
 	var manifest struct {
@@ -363,21 +388,26 @@ func theContentPackagesRequireAreInstalled(packageName string) error {
 		} `yaml:"requires"`
 	}
 	if err := yaml.Unmarshal(manifestData, &manifest); err != nil {
-		return fmt.Errorf("failed to parse manifest for package %q: %w", packageName, err)
+		return ctx, fmt.Errorf("failed to parse manifest for package %q: %w", packageName, err)
+	}
+
+	// The required packages are installed along with the package, track them to clean them up.
+	for _, dep := range manifest.Requires.Content {
+		ctx = trackInstalledPackages(ctx, dep.Package)
 	}
 
 	kibana, err := NewKibanaClient()
 	if err != nil {
-		return err
+		return ctx, err
 	}
 
 	for _, dep := range manifest.Requires.Content {
 		if err := kibana.isPackageInstalled(dep.Package); err != nil {
-			return fmt.Errorf("required content package %q is not installed: %w", dep.Package, err)
+			return ctx, fmt.Errorf("required content package %q is not installed: %w", dep.Package, err)
 		}
 	}
 
-	return nil
+	return ctx, nil
 }
 
 func theCompiledPolicyHasDataset(ctx context.Context, expectedDataset, inputType string) error {
@@ -466,9 +496,6 @@ func transformHasDatasetStatement(processor otelTransformProcessor, expectedData
 	return false
 }
 
-// packagesToKeep are the packages that must remain installed between scenarios.
-var packagesToKeep = []string{"elastic_agent", "fleet_server", "synthetics"}
-
 func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Before(func(ctx context.Context, sc *godog.Scenario) (context.Context, error) {
 		skipped := slices.ContainsFunc(sc.Tags, func(elem *messages.PickleTag) bool {
@@ -479,30 +506,29 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 		}
 		return ctx, nil
 	})
+	// Clean up only what the scenario created: its agent policy and the packages it installed.
 	ctx.After(func(ctx context.Context, sc *godog.Scenario, _ error) (context.Context, error) {
 		kibana, err := NewKibanaClient()
 		if err != nil {
 			return ctx, err
 		}
-		// The policy goes first, so its package is not in use when uninstalling it.
+
+		var errs []error
+		// The policy goes first, so its packages are not in use when uninstalling them.
 		if agentPolicyID, ok := ctx.Value(agentPolicyIDKey).(string); ok && agentPolicyID != "" {
+			fmt.Printf("Deleting agent policy %q\n", agentPolicyID)
 			if err := kibana.deletePackagePolicy(agentPolicyID); err != nil {
-				return ctx, err
+				errs = append(errs, err)
 			}
 		}
-		packages, err := kibana.listInstalledPackages()
-		if err != nil {
-			return ctx, err
-		}
-		for _, p := range packages {
-			if slices.Contains(packagesToKeep, p.Name) {
-				continue
-			}
-			if err := kibana.uninstallPackage(p.Name); err != nil {
-				return ctx, err
+		installed, _ := ctx.Value(installedPackagesKey).([]string)
+		for _, packageName := range installed {
+			fmt.Printf("Uninstalling package %q\n", packageName)
+			if err := kibana.uninstallPackage(packageName); err != nil {
+				errs = append(errs, err)
 			}
 		}
-		return ctx, nil
+		return ctx, errors.Join(errs...)
 	})
 	ctx.Step(`^index template "([^"]*)" has a field "([^"]*)" with "([^"]*)"$`, indexTemplateHasAFieldWith)
 	ctx.Step(`^the "([^"]*)" package is uninstalled$`, thePackageIsUninstalled)

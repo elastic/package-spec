@@ -238,10 +238,12 @@ Always restore the corresponding `# Pending on <issue>` comment in `spec/changel
 ### Executing Compliance Tests
 
 **Warning:** never run the compliance tests against production clusters, or any
-stack whose data you want to keep. They are destructive: after each scenario they
-delete the agent policy created by the scenario and uninstall every installed
-package except `elastic_agent`, `fleet_server` and `synthetics`, and some
-scenarios delete the detection rules they check for. Use only disposable stacks.
+stack whose data you want to keep. They are destructive: scenarios install packages
+and create agent and package policies, and after each scenario they delete the agent
+policy created by the scenario and uninstall the packages it installed (including the
+content packages required by them, even if they were already installed before). Some
+scenarios also delete the detection rules they check for. Only these resources are
+removed, but any of them that exist on the target are lost. Use only disposable stacks.
 
 Compliance tests require a running Kibana and Elasticsearch stack. The easiest
 way to run them locally is with `elastic-package stack`:
