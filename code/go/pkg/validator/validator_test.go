@@ -36,6 +36,7 @@ func Test_ValidateFromPath(t *testing.T) {
 		"good":                                   {},
 		"good_v2":                                {},
 		"good_v3":                                {},
+		"good_workflow_integration":              {},
 		"good_var_groups":                        {},
 		"good_var_groups_input":                  {},
 		"good_geo_shape":                         {},
