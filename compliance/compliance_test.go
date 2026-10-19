@@ -83,20 +83,13 @@ func indexTemplateHasAFieldWith(indexTemplateName, fieldName, condition string) 
 	return fmt.Errorf("condition %q not satisfied by field %q", condition, fieldName)
 }
 
-func thePackageIsNotInstalled(packageName string) error {
+func thePackageIsUninstalled(packageName string) error {
 	kibana, err := NewKibanaClient()
 	if err != nil {
 		return err
 	}
 
-	err = kibana.isPackageInstalled(packageName)
-	if err == nil {
-		return fmt.Errorf("package %q is installed", packageName)
-	}
-	if errors.Is(err, errPackageNotInstalled) {
-		return nil
-	}
-	return err
+	return kibana.uninstallPackage(packageName)
 }
 
 func thePackageIsInstalled(packageName string) error {
@@ -503,7 +496,7 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 		return ctx, nil
 	})
 	ctx.Step(`^index template "([^"]*)" has a field "([^"]*)" with "([^"]*)"$`, indexTemplateHasAFieldWith)
-	ctx.Step(`^the "([^"]*)" package is not installed$`, thePackageIsNotInstalled)
+	ctx.Step(`^the "([^"]*)" package is uninstalled$`, thePackageIsUninstalled)
 	ctx.Step(`^the "([^"]*)" package is installed$`, thePackageIsInstalled)
 	ctx.Step(`^a policy is created with "([^"]*)" package$`, aPolicyIsCreatedWithPackage)
 	ctx.Step(`^a policy is created with "([^"]*)" package and "([^"]*)" version$`, aPolicyIsCreatedWithPackageAndVersion)
