@@ -26,6 +26,8 @@ import (
 var featuresFS embed.FS
 
 func TestSpecCompliance(t *testing.T) {
+	requireSafeTarget(t)
+
 	paths := []string{"features"}
 	if pathsEnv := os.Getenv("TEST_SPEC_FEATURES"); pathsEnv != "" {
 		paths = strings.Split(pathsEnv, ",")
