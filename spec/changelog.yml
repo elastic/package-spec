@@ -30,6 +30,9 @@
     - description: Update EPR categories reference URL to v1.41.0.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1215
+    - description: Require esql_view names to follow the `$.integrations.<package>.<view>` form, where `<view>` is the filename stem, instead of requiring the `{PACKAGE_NAME}-` filename prefix.
+      type: breaking change
+      link: https://github.com/elastic/package-spec/pull/1267
 - version: 3.6.6
   changes:
     - description: Add support for mode-aware constructors and validation APIs.

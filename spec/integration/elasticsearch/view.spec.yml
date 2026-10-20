@@ -3,9 +3,13 @@ spec:
   additionalProperties: false
   properties:
     name:
-      description: Name of the ES|QL view. Must be lowercase alphanumeric (may start with a digit) and match the filename stem.
+      description: >-
+        Name of the ES|QL view, in the form `$.integrations.<package>.<view>`, where
+        `<package>` is the package name and `<view>` matches the filename stem.
+        Must be lowercase; `<view>` may start with a digit. The `$.integrations.` prefix is
+        the namespace Fleet is granted access to in Elasticsearch.
       type: string
-      pattern: '^[a-z0-9][a-z0-9_\-]*$'
+      pattern: '^\$\.integrations\.[a-z0-9_]+\.[a-z0-9][a-z0-9_\-]*$'
       # Elasticsearch index names are limited to 255 bytes (MAX_INDEX_NAME_BYTES in
       # MetadataCreateIndexService); since the pattern is ASCII-only, bytes equal
       # characters and maxLength: 255 enforces the same ceiling.

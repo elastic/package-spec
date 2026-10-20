@@ -17,7 +17,13 @@ import (
 	"github.com/elastic/package-spec/v3/code/go/pkg/specerrors"
 )
 
-const esqlViewFolder = "elasticsearch/esql_view"
+const (
+	esqlViewFolder = "elasticsearch/esql_view"
+
+	// esqlViewNamePrefix is the namespace in Elasticsearch where Fleet is allowed
+	// to manage views; the full view name is "<prefix><package>.<view>".
+	esqlViewNamePrefix = "$.integrations."
+)
 
 type esqlView struct {
 	Name  string `yaml:"name"`
@@ -32,6 +38,11 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 			return nil
 		}
 		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("error reading %s: %v", esqlViewFolder, err)}
+	}
+
+	packageName, err := readPackageName(fsys)
+	if err != nil {
+		return specerrors.ValidationErrors{specerrors.NewStructuredErrorf("%v", err)}
 	}
 
 	var errs specerrors.ValidationErrors
@@ -64,16 +75,18 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 		}
 
 		stem := strings.TrimSuffix(entry.Name(), ".yml")
+		expectedName := esqlViewNamePrefix + packageName + "." + stem
 
-		// Enforcing name == stem also prevents duplicate view names: filesystem
-		// filenames are unique, so two files cannot share the same stem.
-		if view.Name != stem {
+		// Enforcing the name to be derived from the filename stem also prevents
+		// duplicate view names: filesystem filenames are unique, so two files
+		// cannot share the same stem. The package name in the prefix scopes the
+		// view to the package so it cannot collide with views from other packages.
+		if view.Name != expectedName {
 			errs = append(errs, specerrors.NewStructuredError(
-				fmt.Errorf("file \"%s\" is invalid: name field %q must equal the filename stem %q", fullPath, view.Name, stem),
+				fmt.Errorf("file \"%s\" is invalid: name field %q must be %q (\"%s\" + package name %q + \".\" + filename stem %q)", fullPath, view.Name, expectedName, esqlViewNamePrefix, packageName, stem),
 				specerrors.CodeEsqlViewValidation,
 			))
 		}
-
 	}
 
 	return errs

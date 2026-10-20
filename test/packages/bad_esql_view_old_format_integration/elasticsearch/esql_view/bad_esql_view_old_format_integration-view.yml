@@ -1,2 +1,0 @@
-name: bad_esql_view_old_format_integration-view
-query: FROM logs-*

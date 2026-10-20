@@ -1,4 +1,4 @@
-name: good_v3-my_view
+name: $.integrations.good_v3.my_view
 query: |
   FROM security_logs
   | WHERE event.kind == "alert"
