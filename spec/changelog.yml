@@ -23,10 +23,10 @@
       link: https://github.com/elastic/package-spec/pull/1265
     - description: Add semantic validator (SVR00013) ensuring ES|QL view names are unique within a package.
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/1266
-    - description: Restrict esql_view name to lowercase characters, not starting with an underscore or hyphen, and at most 255 characters.
+      link: https://github.com/elastic/package-spec/pull/9999 # FIXME Replace with the real PR link
+    - description: Restrict esql_view name to lowercase characters, not starting with an underscore or hyphen, and at most 255 characters. Require a non-empty query and add the optional description field.
       type: bugfix
-      link: https://github.com/elastic/package-spec/pull/1266
+      link: https://github.com/elastic/package-spec/pull/9999 # FIXME Replace with the real PR link
     - description: Update EPR categories reference URL to v1.41.0.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1215
