@@ -602,6 +602,18 @@ func Test_ValidateFromPath(t *testing.T) {
 			"elasticsearch/esql_view/second.yml",
 			[]string{`ES|QL view name "duplicate_view" is already defined in file "../../../../test/packages/bad_esql_view_duplicate_name_integration/elasticsearch/esql_view/first.yml" (SVR00013)`},
 		},
+		"bad_esql_view_uppercase_name_integration": {
+			"elasticsearch/esql_view/uppercase_name.yml",
+			[]string{"field name: Does not match pattern '^[a-z0-9][a-z0-9_\\-]*$'"},
+		},
+		"bad_esql_view_leading_underscore_integration": {
+			"elasticsearch/esql_view/leading_underscore.yml",
+			[]string{"field name: Does not match pattern '^[a-z0-9][a-z0-9_\\-]*$'"},
+		},
+		"bad_esql_view_too_long_name_integration": {
+			"elasticsearch/esql_view/too_long_name.yml",
+			[]string{"field name: String length must be less than or equal to 255"},
+		},
 		"bad_content_duplicate_tags": {
 			"kibana/tags.yml",
 			[]string{"duplicate tag name 'Tag One' found (SVR00007)"},

@@ -1,0 +1,2 @@
+name: _leading_underscore
+query: FROM logs-*
