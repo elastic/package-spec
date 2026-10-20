@@ -143,7 +143,7 @@ spec:
         type: file
         contentMediaType: "application/json"
         pattern: '^.+\.json$'
-  - description: Folder containing Elastic Workflow definitions
+  - description: Folder containing Elastic Workflow definitions. Requires Kibana 9.7.0 or later, set conditions.kibana.version accordingly.
     type: folder
     name: workflow
     required: false
