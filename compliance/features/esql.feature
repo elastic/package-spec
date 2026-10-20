@@ -6,3 +6,11 @@ Feature: ES|QL
    Given the "good_lookup_index" package is installed
      And a policy is created with "good_lookup_index" package and "0.1.4" version
     Then index template "logs-good_lookup_index.foo-template" is configured for "lookup index mode"
+
+  @3.6.7
+  @skip
+  # Pending on https://github.com/elastic/kibana/issues/244655
+  # The step "there is an ES|QL view" has not been tested yet.
+  Scenario: Content package with ES|QL view installs the view
+   Given the "good_content" package is installed
+    Then there is an ES|QL view "good_content-my_view"
