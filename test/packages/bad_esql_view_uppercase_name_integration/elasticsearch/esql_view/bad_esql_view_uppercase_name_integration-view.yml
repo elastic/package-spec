@@ -1,2 +1,0 @@
-name: BadView
-query: FROM logs-*

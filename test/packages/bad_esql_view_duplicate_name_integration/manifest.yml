@@ -1,5 +1,5 @@
 format_version: 3.6.0
-name: bad_esql_view_bad_filename_integration
+name: bad_esql_view_duplicate_name_integration
 title: "New Package"
 version: 0.0.1
 source:

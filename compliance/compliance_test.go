@@ -351,14 +351,6 @@ func prebuiltDetectionRulesAreLoaded() error {
 	return nil
 }
 
-func thereIsAnEsqlView(viewName string) error {
-	es, err := NewElasticsearchClient()
-	if err != nil {
-		return err
-	}
-	return es.EsqlView(viewName)
-}
-
 func thereIsASecurityAIPrompt(promptID string) error {
 	kibana, err := NewKibanaClient()
 	if err != nil {
@@ -548,7 +540,6 @@ func InitializeScenario(ctx *godog.ScenarioContext) {
 	ctx.Step(`^there is a detection rule "([^"]*)"$`, thereIsADetectionRule)
 	ctx.Step(`^the detection rule "([^"]*)" is deleted$`, theDetectionRuleIsDeleted)
 	ctx.Step(`^prebuilt detection rules are loaded$`, prebuiltDetectionRulesAreLoaded)
-	ctx.Step(`^there is an ES\|QL view "([^"]*)"$`, thereIsAnEsqlView)
 	ctx.Step(`^there is a security AI prompt "([^"]*)"$`, thereIsASecurityAIPrompt)
 	ctx.Step(`^the content packages "([^"]*)" require are installed$`, theContentPackagesRequireAreInstalled)
 	ctx.Step(`^the compiled policy has dataset "([^"]*)" for "([^"]*)" input type$`, theCompiledPolicyHasDataset)

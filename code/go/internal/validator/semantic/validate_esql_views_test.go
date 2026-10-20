@@ -26,56 +26,27 @@ func makeEsqlViewFS(t *testing.T, files map[string]string) fspath.FS {
 	return fspath.DirFS(tmpDir)
 }
 
-func TestValidateEsqlViews(t *testing.T) {
+func TestValidateEsqlViewNames(t *testing.T) {
 	t.Run("no esql_view folder", func(t *testing.T) {
-		fsys := fspath.DirFS(t.TempDir())
-		errs := ValidateEsqlViews(fsys)
-		assert.Empty(t, errs)
+		assert.Empty(t, ValidateEsqlViewNames(fspath.DirFS(t.TempDir())))
 	})
 
-	t.Run("valid view", func(t *testing.T) {
+	t.Run("unique names", func(t *testing.T) {
 		fsys := makeEsqlViewFS(t, map[string]string{
-			"mypkg-access_logs.yml": "name: mypkg-access_logs\nquery: FROM logs-*\n",
+			"a.yml": "name: view_a\nquery: FROM logs-*\n",
+			"b.yml": "name: view_b\nquery: FROM logs-*\n",
 		})
-		errs := ValidateEsqlViews(fsys)
-		assert.Empty(t, errs)
+		assert.Empty(t, ValidateEsqlViewNames(fsys))
 	})
 
-	t.Run("name does not match filename stem", func(t *testing.T) {
+	t.Run("duplicate names", func(t *testing.T) {
 		fsys := makeEsqlViewFS(t, map[string]string{
-			"mypkg-access_logs.yml": "name: other_name\nquery: FROM logs-*\n",
+			"a.yml": "name: same\nquery: FROM logs-*\n",
+			"b.yml": "name: same\nquery: FROM metrics-*\n",
 		})
-		errs := ValidateEsqlViews(fsys)
+		errs := ValidateEsqlViewNames(fsys)
 		require.Len(t, errs, 1)
-		assert.Contains(t, errs[0].Error(), `name field "other_name" must equal the filename stem "mypkg-access_logs"`)
+		assert.Contains(t, errs[0].Error(), `ES|QL view name "same" is already defined in file`)
 		assert.Contains(t, errs[0].Error(), "SVR00013")
-	})
-
-	t.Run("whitespace-only query", func(t *testing.T) {
-		fsys := makeEsqlViewFS(t, map[string]string{
-			"mypkg-view.yml": "name: mypkg-view\nquery: \"   \"\n",
-		})
-		errs := ValidateEsqlViews(fsys)
-		require.Len(t, errs, 1)
-		assert.Contains(t, errs[0].Error(), "query must not be empty or whitespace-only")
-		assert.Contains(t, errs[0].Error(), "SVR00013")
-	})
-
-	t.Run("empty query", func(t *testing.T) {
-		fsys := makeEsqlViewFS(t, map[string]string{
-			"mypkg-view.yml": "name: mypkg-view\nquery: \"\"\n",
-		})
-		errs := ValidateEsqlViews(fsys)
-		require.Len(t, errs, 1)
-		assert.Contains(t, errs[0].Error(), "query must not be empty or whitespace-only")
-	})
-
-	t.Run("non-yml files are ignored", func(t *testing.T) {
-		fsys := makeEsqlViewFS(t, map[string]string{
-			"mypkg-view.yml":  "name: mypkg-view\nquery: FROM logs-*\n",
-			"mypkg-other.txt": "not a view",
-		})
-		errs := ValidateEsqlViews(fsys)
-		assert.Empty(t, errs)
 	})
 }

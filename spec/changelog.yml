@@ -21,10 +21,7 @@
     - description: Warn when a package declares a package-level `conditions.agent.version`.
       type: deprecation
       link: https://github.com/elastic/package-spec/pull/1265
-    - description: Correct esql_view name pattern to enforce lowercase-only names and require {PACKAGE_NAME}- filename prefix.
-      type: bugfix
-      link: https://github.com/elastic/package-spec/pull/1266
-    - description: Add semantic validator (SVR00013) for ES|QL views enforcing name-vs-stem match, 255-byte limit, and non-empty query.
+    - description: Add semantic validator (SVR00013) ensuring ES|QL view names are unique within a package.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1266
     - description: Update EPR categories reference URL to v1.41.0.
