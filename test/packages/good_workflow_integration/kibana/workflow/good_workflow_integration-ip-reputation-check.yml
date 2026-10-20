@@ -1,0 +1,59 @@
+name: IP Reputation Check
+description: Check IP address reputation using AbuseIPDB and enrich it with geolocation data.
+enabled: false
+tags:
+  - good_workflow_integration
+  - threat-intel
+
+consts:
+  abuseipdb_base_url: https://api.abuseipdb.com/api/v2
+  ipapi_base_url: http://ip-api.com/json
+
+triggers:
+  - type: manual
+    inputs:
+      properties:
+        ip_address:
+          type: string
+          description: The IP address to check for malicious activity (e.g., 8.8.8.8)
+      required:
+        - ip_address
+
+steps:
+  - name: check_abuseipdb
+    type: http
+    with:
+      url: '{{ consts.abuseipdb_base_url }}/check?ipAddress={{ inputs.ip_address }}&maxAgeInDays=90&verbose=true'
+      method: GET
+      headers:
+        Accept: application/json
+    on-failure:
+      retry:
+        max-attempts: 2
+        delay: 3s
+      continue: true
+
+  - name: get_geolocation
+    type: http
+    with:
+      url: '{{ consts.ipapi_base_url }}/{{ inputs.ip_address }}?fields=status,country,countryCode,city,isp,proxy,hosting'
+      method: GET
+    on-failure:
+      retry:
+        max-attempts: 2
+        delay: 2s
+      continue: true
+
+  - name: assess_risk
+    type: if
+    condition: '${{ steps.check_abuseipdb.output.data.data.abuseConfidenceScore > 75 }}'
+    steps:
+      - name: report_high_risk
+        type: console
+        with:
+          message: 'HIGH RISK: {{ inputs.ip_address }} ({{ steps.get_geolocation.output.data.country }})'
+    else:
+      - name: report_low_risk
+        type: console
+        with:
+          message: 'No significant abuse reports for {{ inputs.ip_address }}'

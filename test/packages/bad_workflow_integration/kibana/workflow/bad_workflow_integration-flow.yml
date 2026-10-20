@@ -1,0 +1,4 @@
+name: bad_workflow_integration-flow
+enabled: false
+triggers:
+  - type: manual

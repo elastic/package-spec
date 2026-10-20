@@ -47,6 +47,7 @@ For a quick overview, these are the assets typically found in an Elastic Package
   * Osquery pack assets.
   * Osquery saved queries.
   * Tags
+  * Workflows
 * Other
   * fields.yml
 

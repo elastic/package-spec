@@ -1,0 +1,5 @@
+name: wrong
+enabled: false
+triggers:
+  - type: manual
+steps: []
