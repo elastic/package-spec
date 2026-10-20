@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io/fs"
 	"path"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -20,10 +21,14 @@ const esqlViewFolder = "elasticsearch/esql_view"
 
 type esqlView struct {
 	Name string `yaml:"name"`
+	// Query is a pointer so a missing or null query can be told apart from an empty one:
+	// the former is already reported by the JSON schema validation.
+	Query *string `yaml:"query"`
 }
 
-// ValidateEsqlViewNames checks that ES|QL view names are unique within a package.
-func ValidateEsqlViewNames(fsys fspath.FS) specerrors.ValidationErrors {
+// ValidateEsqlViews checks semantic rules for ES|QL view definitions: view names must be
+// unique within a package and queries must not be empty or whitespace-only.
+func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 	entries, err := fs.ReadDir(fsys, esqlViewFolder)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
@@ -54,6 +59,14 @@ func ValidateEsqlViewNames(fsys fspath.FS) specerrors.ValidationErrors {
 			errs = append(errs, specerrors.NewStructuredErrorf("error unmarshaling file %s: %v", fullPath, err))
 			continue
 		}
+
+		if view.Query != nil && strings.TrimSpace(*view.Query) == "" {
+			errs = append(errs, specerrors.NewStructuredError(
+				fmt.Errorf("file \"%s\" is invalid: query must not be empty or whitespace-only", fullPath),
+				specerrors.CodeEsqlViewValidation,
+			))
+		}
+
 		if view.Name == "" {
 			continue
 		}

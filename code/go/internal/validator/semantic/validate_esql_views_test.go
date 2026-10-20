@@ -26,9 +26,9 @@ func makeEsqlViewFS(t *testing.T, files map[string]string) fspath.FS {
 	return fspath.DirFS(tmpDir)
 }
 
-func TestValidateEsqlViewNames(t *testing.T) {
+func TestValidateEsqlViews(t *testing.T) {
 	t.Run("no esql_view folder", func(t *testing.T) {
-		assert.Empty(t, ValidateEsqlViewNames(fspath.DirFS(t.TempDir())))
+		assert.Empty(t, ValidateEsqlViews(fspath.DirFS(t.TempDir())))
 	})
 
 	t.Run("unique names", func(t *testing.T) {
@@ -36,7 +36,7 @@ func TestValidateEsqlViewNames(t *testing.T) {
 			"a.yml": "name: view_a\nquery: FROM logs-*\n",
 			"b.yml": "name: view_b\nquery: FROM logs-*\n",
 		})
-		assert.Empty(t, ValidateEsqlViewNames(fsys))
+		assert.Empty(t, ValidateEsqlViews(fsys))
 	})
 
 	t.Run("duplicate names", func(t *testing.T) {
@@ -44,9 +44,27 @@ func TestValidateEsqlViewNames(t *testing.T) {
 			"a.yml": "name: same\nquery: FROM logs-*\n",
 			"b.yml": "name: same\nquery: FROM metrics-*\n",
 		})
-		errs := ValidateEsqlViewNames(fsys)
+		errs := ValidateEsqlViews(fsys)
 		require.Len(t, errs, 1)
 		assert.Contains(t, errs[0].Error(), `ES|QL view name "same" is already defined in file`)
+		assert.Contains(t, errs[0].Error(), "SVR00013")
+	})
+
+	t.Run("missing or null query is left to the schema validation", func(t *testing.T) {
+		fsys := makeEsqlViewFS(t, map[string]string{
+			"a.yml": "name: view_a\n",
+			"b.yml": "name: view_b\nquery:\n",
+		})
+		assert.Empty(t, ValidateEsqlViews(fsys))
+	})
+
+	t.Run("whitespace-only query", func(t *testing.T) {
+		fsys := makeEsqlViewFS(t, map[string]string{
+			"a.yml": "name: view_a\nquery: \"   \"\n",
+		})
+		errs := ValidateEsqlViews(fsys)
+		require.Len(t, errs, 1)
+		assert.Contains(t, errs[0].Error(), "query must not be empty or whitespace-only")
 		assert.Contains(t, errs[0].Error(), "SVR00013")
 	})
 }

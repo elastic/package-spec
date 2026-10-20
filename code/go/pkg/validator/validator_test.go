@@ -614,6 +614,10 @@ func Test_ValidateFromPath(t *testing.T) {
 			"elasticsearch/esql_view/too_long_name.yml",
 			[]string{"field name: String length must be less than or equal to 255"},
 		},
+		"bad_esql_view_whitespace_query_integration": {
+			"elasticsearch/esql_view/whitespace_query.yml",
+			[]string{"query must not be empty or whitespace-only (SVR00013)"},
+		},
 		"bad_content_duplicate_tags": {
 			"kibana/tags.yml",
 			[]string{"duplicate tag name 'Tag One' found (SVR00007)"},

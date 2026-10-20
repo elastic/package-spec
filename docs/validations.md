@@ -243,3 +243,8 @@ The following semantic rule is enforced for the files in the `elasticsearch/esql
 
 Each ES|QL view in a package must declare a different `name`. Two files defining
 a view with the same name are rejected.
+
+**`query` must be non-empty after trimming whitespace**
+
+A query consisting only of whitespace characters passes `minLength: 1` in the JSON
+Schema but is rejected by Elasticsearch.
