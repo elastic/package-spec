@@ -42,9 +42,11 @@ spec:
       type: folder
       name: esql_view
       required: false
+      additionalContents: false
       contents:
         - description: ES|QL view definition in YAML
           type: file
+          sizeLimit: 3MB
           pattern: '^.+\.yml$'
           contentMediaType: "application/x-yaml"
           required: false
