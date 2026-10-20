@@ -237,6 +237,21 @@ Always restore the corresponding `# Pending on <issue>` comment in `spec/changel
 
 ### Executing Compliance Tests
 
+**Warning:** never run the compliance tests against production clusters, or any
+stack whose data you want to keep. They are destructive: scenarios install packages
+and create agent and package policies, and after each scenario they delete the agent
+policy created by the scenario and uninstall the packages it installed (including the
+content packages required by them, even if they were already installed before). Some
+scenarios also delete the detection rules they check for. Only these resources are
+removed, but any of them that exist on the target are lost. Use only disposable stacks.
+
+The suite refuses to start unless `KIBANA_HOST` and `ELASTICSEARCH_HOST` point to the
+local machine (`localhost`, `127.0.0.1` or `::1`). To run it against any other target
+you must set `COMPLIANCE_ALLOW_DESTRUCTIVE=true`, and you accept that it can delete
+packages and other resources there. AI agents must never set
+`COMPLIANCE_ALLOW_DESTRUCTIVE=true` on their own: ask the user for explicit
+confirmation first.
+
 Compliance tests require a running Kibana and Elasticsearch stack. The easiest
 way to run them locally is with `elastic-package stack`:
 
