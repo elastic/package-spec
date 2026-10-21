@@ -8,7 +8,7 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
-- version: 3.7.0-next
+- version: 3.7.0
   changes:
     - description: Add optional use_otel_suffix on integration data streams so index templates can use the .otel suffix without an input, and reject the flag when the data stream defines an input.
       type: enhancement
@@ -16,7 +16,7 @@
     - description: Disallow package-level `conditions.agent.version` (SVR00012). Packages using this field will now produce a validation error instead of a deprecation warning.
       type: breaking change
       link: https://github.com/elastic/package-spec/pull/1265
-- version: 3.6.7-next
+- version: 3.6.7
   changes:
     - description: Warn when a package declares a package-level `conditions.agent.version`.
       type: deprecation
