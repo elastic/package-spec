@@ -153,6 +153,10 @@ func (es *Elasticsearch) TransformHasAlias(transformID, aliasName string) error 
 }
 
 // EsqlView checks whether an ES|QL view with the given name exists.
+//
+// NOTE: this function has not been tested against a real Elasticsearch cluster yet,
+// since the scenario using it is skipped until ES|QL views can be installed
+// (https://github.com/elastic/kibana/issues/244655).
 func (es *Elasticsearch) EsqlView(name string) error {
 	resp, err := es.client.EsqlGetView(
 		es.client.EsqlGetView.WithContext(context.TODO()),

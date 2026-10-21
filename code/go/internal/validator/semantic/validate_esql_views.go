@@ -20,11 +20,14 @@ import (
 const esqlViewFolder = "elasticsearch/esql_view"
 
 type esqlView struct {
-	Name  string `yaml:"name"`
-	Query string `yaml:"query"`
+	Name string `yaml:"name"`
+	// Query is a pointer so a missing or null query can be told apart from an empty one:
+	// the former is already reported by the JSON schema validation.
+	Query *string `yaml:"query"`
 }
 
-// ValidateEsqlViews checks semantic rules for ES|QL view definitions.
+// ValidateEsqlViews checks semantic rules for ES|QL view definitions: view names must be
+// unique within a package and queries must not be empty or whitespace-only.
 func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 	entries, err := fs.ReadDir(fsys, esqlViewFolder)
 	if err != nil {
@@ -35,6 +38,7 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 	}
 
 	var errs specerrors.ValidationErrors
+	seen := make(map[string]string) // view name -> name of the first file defining it
 
 	for _, entry := range entries {
 		if entry.IsDir() || path.Ext(entry.Name()) != ".yml" {
@@ -56,24 +60,25 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 			continue
 		}
 
-		if strings.TrimSpace(view.Query) == "" {
+		if view.Query != nil && strings.TrimSpace(*view.Query) == "" {
 			errs = append(errs, specerrors.NewStructuredError(
 				fmt.Errorf("file \"%s\" is invalid: query must not be empty or whitespace-only", fullPath),
 				specerrors.CodeEsqlViewValidation,
 			))
 		}
 
-		stem := strings.TrimSuffix(entry.Name(), ".yml")
-
-		// Enforcing name == stem also prevents duplicate view names: filesystem
-		// filenames are unique, so two files cannot share the same stem.
-		if view.Name != stem {
-			errs = append(errs, specerrors.NewStructuredError(
-				fmt.Errorf("file \"%s\" is invalid: name field %q must equal the filename stem %q", fullPath, view.Name, stem),
-				specerrors.CodeEsqlViewValidation,
-			))
+		if view.Name == "" {
+			continue
 		}
 
+		if first, found := seen[view.Name]; found {
+			errs = append(errs, specerrors.NewStructuredError(
+				fmt.Errorf("file \"%s\" is invalid: ES|QL view name \"%s\" is already defined in file \"%s\"", fullPath, view.Name, first),
+				specerrors.CodeEsqlViewValidation,
+			))
+			continue
+		}
+		seen[view.Name] = entry.Name()
 	}
 
 	return errs
