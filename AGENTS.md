@@ -429,12 +429,12 @@ func TestValidateMyRule(t *testing.T) {
 	}{
 		"valid": {
 			manifest: `name: test
-format_version: 3.6.6`,
+format_version: 3.7.0`,
 			expectError: false,
 		},
 		"invalid": {
 			manifest: `name: test
-format_version: 3.6.6
+format_version: 3.7.0
 invalid_field: value`,
 			expectError: true,
 			errorContains: "invalid_field",
@@ -494,7 +494,7 @@ In `code/go/internal/validator/spec.go`:
 {
 	Func:    semantic.ValidateMyRule,
 	Type:    spectypes.Integration,
-	Version: semver.MustParse("3.6.6"),
+	Version: semver.MustParse("3.7.0"),
 }
 ```
 
