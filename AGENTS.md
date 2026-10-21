@@ -264,11 +264,11 @@ go run github.com/elastic/elastic-package stack up -d --version 9.4.0-SNAPSHOT
 eval $(go run github.com/elastic/elastic-package stack shellinit)
 cd ..
 
-# Run compliance tests against spec version 3.6.6
-TEST_SPEC_VERSION=3.6.6 make -C compliance test
+# Run compliance tests against spec version 3.7.0
+TEST_SPEC_VERSION=3.7.0 make -C compliance test
 
 # Run only specific feature files (comma-separated, paths relative to compliance/)
-TEST_SPEC_VERSION=3.6.6 TEST_SPEC_FEATURES=features/basic.feature,features/package-dependencies.feature make -C compliance test
+TEST_SPEC_VERSION=3.7.0 TEST_SPEC_FEATURES=features/basic.feature,features/package-dependencies.feature make -C compliance test
 
 # Stop the stack when done
 cd compliance && go run github.com/elastic/elastic-package stack down
@@ -283,7 +283,7 @@ export ELASTICSEARCH_USERNAME=elastic
 export ELASTICSEARCH_PASSWORD=changeme
 export KIBANA_HOST=https://localhost:5601
 export CA_CERT=/path/to/ca.crt  # only if needed
-TEST_SPEC_VERSION=3.6.6 make -C compliance test
+TEST_SPEC_VERSION=3.7.0 make -C compliance test
 ```
 
 CI version combinations (stack version ↔ spec version) are in
@@ -534,7 +534,7 @@ make check
 Location: `spec/changelog.yml`
 
 ```yaml
-- version: 3.7.0-next
+- version: 3.8.0-next
   changes:
     - description: Brief description of the change.
       type: enhancement|breaking-change|bugfix
