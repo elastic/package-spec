@@ -38,7 +38,7 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 	}
 
 	var errs specerrors.ValidationErrors
-	seen := make(map[string]string) // view name -> full path of the first file defining it
+	seen := make(map[string]string) // view name -> name of the first file defining it
 
 	for _, entry := range entries {
 		if entry.IsDir() || path.Ext(entry.Name()) != ".yml" {
@@ -78,7 +78,7 @@ func ValidateEsqlViews(fsys fspath.FS) specerrors.ValidationErrors {
 			))
 			continue
 		}
-		seen[view.Name] = fullPath
+		seen[view.Name] = entry.Name()
 	}
 
 	return errs

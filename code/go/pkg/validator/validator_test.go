@@ -600,7 +600,7 @@ func Test_ValidateFromPath(t *testing.T) {
 		},
 		"bad_esql_view_duplicate_name_integration": {
 			"elasticsearch/esql_view/second.yml",
-			[]string{`ES|QL view name "duplicate_view" is already defined in file "../../../../test/packages/bad_esql_view_duplicate_name_integration/elasticsearch/esql_view/first.yml" (SVR00013)`},
+			[]string{`ES|QL view name "duplicate_view" is already defined in file "first.yml" (SVR00013)`},
 		},
 		"bad_esql_view_uppercase_name_integration": {
 			"elasticsearch/esql_view/uppercase_name.yml",
