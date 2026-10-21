@@ -3,7 +3,7 @@ spec:
   additionalProperties: false
   properties:
     name:
-      description: Name of the ES|QL view. Must be lowercase alphanumeric (may start with a digit) and match the filename stem.
+      description: Name of the ES|QL view. Must be lowercase and cannot start with an underscore or a hyphen.
       type: string
       pattern: '^[a-z0-9][a-z0-9_\-]*$'
       # Elasticsearch index names are limited to 255 bytes (MAX_INDEX_NAME_BYTES in

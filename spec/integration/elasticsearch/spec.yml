@@ -42,8 +42,6 @@ spec:
         Folder containing Elasticsearch ES|QL view definitions. ES|QL views are
         cluster-state objects installed into the global Elasticsearch index
         namespace via PUT /_query/view/<name> (not scoped to a data stream).
-        They are installed after index templates and require Elasticsearch 9.4+
-        or Elastic Serverless.
       type: folder
       name: esql_view
       required: false
@@ -51,8 +49,7 @@ spec:
       contents:
         - description: ES|QL view definition in YAML
           type: file
-          sizeLimit: 3MB
-          pattern: '^{PACKAGE_NAME}-.+\.yml$'
+          pattern: '^.+\.yml$'
           contentMediaType: "application/x-yaml"
           required: false
           $ref: "./view.spec.yml"
