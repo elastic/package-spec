@@ -506,6 +506,37 @@ spec:
       required:
         - github
         - type
+    discovery:
+      description: >
+        Description of the data this package can be used with. It can be used to discover
+        the package from elements in the existing data.
+      type: object
+      additionalProperties: false
+      properties:
+        datasets:
+          description: List of the datasets this package can be used with. For a package to be used with an index, the `data_stream.dataset` field of this index should be one of the datasets listed here.
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              name:
+                description: Name of the dataset.
+                type: string
+            required:
+              - name
+        fields:
+          description: List of fields this package expects to find in an index. For a package to be used with an index, the index should contain all the fields listed here.
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              name:
+                description: Name of the field.
+                type: string
+            required:
+              - name
     deprecated:
       description: Information on deprecation of a package or an individual feature.
       type: object
@@ -1057,6 +1088,10 @@ spec:
               type: array
               items:
                 type: string
+    discovery:
+      # PROTOTYPE: discovery on integration packages, so an integration that ships its own
+      # content can be offered when matching data shows up (was content packages only).
+      $ref: "#/definitions/discovery"
     requires:
       $ref: "#/definitions/requires"
     deprecated:
@@ -1125,6 +1160,9 @@ versions:
         path: "/properties/policy_templates/items/properties/inputs/items/properties/dynamic_signal_types"
       - op: remove
         path: "/definitions/dynamic_signal_types"
+      # Discovery on integration packages (prototype).
+      - op: remove
+        path: "/properties/discovery"
       # Package dependencies.
       - op: remove
         path: "/properties/requires"

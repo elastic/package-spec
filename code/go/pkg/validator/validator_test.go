@@ -74,6 +74,7 @@ func Test_ValidateFromPath(t *testing.T) {
 		"good_provider_permissions":              {},
 		"good_provider_permissions_input":        {},
 		"good_integration_group":                 {},
+		"good_integration_discovery":             {},
 		"good_input_group":                       {},
 		"bad_integration_group": {
 			"manifest.yml",
@@ -304,6 +305,12 @@ func Test_ValidateFromPath(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				`field policy_templates.0.deployment_modes.agentless.resources.requests: Additional property disk is not allowed`,
+			},
+		},
+		"bad_integration_discovery_old_version": {
+			"manifest.yml",
+			[]string{
+				`field (root): Additional property discovery is not allowed`,
 			},
 		},
 		"bad_requires": {

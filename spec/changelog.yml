@@ -8,6 +8,9 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: "PROTOTYPE: allow `discovery` on integration packages."
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1272
 - version: 3.7.0
   changes:
     - description: Add optional use_otel_suffix on integration data streams so index templates can use the .otel suffix without an input, and reject the flag when the data stream defines an input.
