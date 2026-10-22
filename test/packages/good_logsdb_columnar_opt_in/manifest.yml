@@ -1,4 +1,4 @@
-format_version: 3.7.0
+format_version: 3.8.0
 name: good_logsdb_columnar_opt_in
 title: Good package declaring logsdb_columnar opt-in
 description: Tests that a package declaring elasticsearch.logsdb_columnar opt_in passes the columnar compatibility checks.

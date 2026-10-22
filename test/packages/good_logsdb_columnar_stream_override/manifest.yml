@@ -1,4 +1,4 @@
-format_version: 3.7.0
+format_version: 3.8.0
 name: good_logsdb_columnar_stream_override
 title: Good package with a data stream level columnar override
 description: Tests that a data stream marked unsupported is excluded from the columnar compatibility checks the package default enables.
