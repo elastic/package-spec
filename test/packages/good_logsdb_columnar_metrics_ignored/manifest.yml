@@ -1,0 +1,26 @@
+format_version: 3.7.0
+name: good_logsdb_columnar_metrics_ignored
+title: Good package where the package level opt-in does not reach metrics data streams
+description: Tests that elasticsearch.logsdb_columnar at package level is ignored for data streams that are not logs.
+version: 1.0.0-beta1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: "^9.5.0"
+  elastic:
+    subscription: basic
+policy_templates:
+  - name: metrics
+    title: Metrics
+    description: Collect metrics
+    inputs:
+      - type: logfile
+        title: Collect metrics
+        description: Collecting metrics
+elasticsearch:
+  logsdb_columnar: opt_in
+owner:
+  github: elastic/obs-infraobs-integrations
+  type: elastic

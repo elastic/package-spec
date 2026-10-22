@@ -1,0 +1,20 @@
+- name: data_stream.type
+  type: constant_keyword
+  description: Data stream type.
+- name: data_stream.dataset
+  type: constant_keyword
+  description: Data stream dataset.
+- name: data_stream.namespace
+  type: constant_keyword
+  description: Data stream namespace.
+- name: '@timestamp'
+  type: date
+  description: Event timestamp.
+- name: host.name
+  type: keyword
+  dimension: true
+  description: Host name.
+- name: short_message
+  type: keyword
+  copy_to: message
+  description: copy_to is a columnar blocker, but this data stream is not a logs data stream so it must not be reported.

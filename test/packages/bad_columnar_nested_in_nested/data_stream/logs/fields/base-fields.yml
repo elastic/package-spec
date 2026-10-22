@@ -1,0 +1,27 @@
+- name: data_stream.type
+  type: constant_keyword
+  description: Data stream type.
+- name: data_stream.dataset
+  type: constant_keyword
+  description: Data stream dataset.
+- name: data_stream.namespace
+  type: constant_keyword
+  description: Data stream namespace.
+- name: '@timestamp'
+  type: date
+  description: Event timestamp.
+# Structural nesting: a nested field declared under another nested field.
+- name: events
+  type: nested
+  description: Outer nested field.
+  fields:
+    - name: inner
+      type: nested
+      description: Intentionally invalid, columnar index modes support only one level of nesting.
+# Dotted siblings: two separate entries that describe the same nesting.
+- name: attributes
+  type: nested
+  description: Outer nested field declared as its own entry.
+- name: attributes.items
+  type: nested
+  description: Intentionally invalid, columnar index modes support only one level of nesting.

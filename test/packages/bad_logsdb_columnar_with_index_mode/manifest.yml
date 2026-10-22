@@ -1,0 +1,24 @@
+format_version: 3.7.0
+name: bad_logsdb_columnar_with_index_mode
+title: Bad package setting both index_mode and logsdb_columnar
+description: Tests that elasticsearch.index_mode and elasticsearch.logsdb_columnar cannot both be set on a data stream.
+version: 1.0.0-beta1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: "^9.5.0"
+  elastic:
+    subscription: basic
+policy_templates:
+  - name: logs
+    title: Logs
+    description: Tests that elasticsearch.index_mode and elasticsearch.logsdb_columnar cannot both be set on a data stream.
+    inputs:
+      - type: logfile
+        title: Collect logs from files
+        description: Tests that elasticsearch.index_mode and elasticsearch.logsdb_columnar cannot both be set on a data stream.
+owner:
+  github: elastic/obs-infraobs-integrations
+  type: elastic
