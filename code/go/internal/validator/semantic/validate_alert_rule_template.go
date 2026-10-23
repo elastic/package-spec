@@ -29,7 +29,9 @@ import (
 // This is not Kibana's complete schema and it does not parse or execute ES|QL.
 // Kibana's objects are .strict(), but this check deliberately leaves unknown
 // fields in place so a later schema addition is not rejected here; a template
-// can therefore pass package-spec and still be rejected by Kibana on install.
+// can therefore pass package-spec and still be rejected by Kibana when a rule is
+// created from it. Fleet does not validate the rule body when it installs the
+// package, so this check is the earliest point where these errors are reported.
 // Classic templates (engine "", "v1", absent, null, or non-string) are skipped,
 // and any other engine string is rejected. package-spec has no structural schema
 // for alerting_rule_template files, so classic templates are not content-validated.
@@ -49,10 +51,15 @@ const (
 	templateArtifactsMax   = 100
 	templateRunbookMax     = 50000
 	templateDashboardIDMax = 1024
+	templateBuilderTypeMax = 64
 	templateMinScheduleMS  = int64(5 * 1000)
 	templateMaxDurationMS  = int64(365 * 24 * 60 * 60 * 1000)
 )
 
+// Durations use Kibana's syntax, copied from DURATION_RE and DURATION_UNIT_TO_MS in
+// https://github.com/elastic/kibana/blob/600a8067f05e21388a63ffcc22cf602a3ffb1aa3/x-pack/platform/packages/shared/response-ops/alerting-v2-schemas/src/validation.ts
+// This is not Go's time.ParseDuration syntax. Kibana accepts d and w, and it
+// rejects decimals and combined values such as 1h30m.
 var (
 	templateDurationPattern = regexp.MustCompile(`^([0-9]+)(ms|s|m|h|d|w)$`)
 	templateDurationUnitMS  = map[string]int64{
@@ -124,8 +131,8 @@ func validateAlertRuleTemplate(data []byte) error {
 	}
 
 	var doc struct {
-		ID         string `json:"id"`
-		Type       string `json:"type"`
+		ID         json.RawMessage `json:"id"`
+		Type       json.RawMessage `json:"type"`
 		Attributes struct {
 			Rule json.RawMessage `json:"rule"`
 		} `json:"attributes"`
@@ -135,10 +142,11 @@ func validateAlertRuleTemplate(data []byte) error {
 	}
 
 	var problems templateProblems
-	if strings.TrimSpace(doc.ID) == "" || templateStringLength(doc.ID) > templateIDMax {
+	id := jsonString(doc.ID)
+	if strings.TrimSpace(id) == "" || templateStringLength(id) > templateIDMax {
 		problems.add("id is required and must be at most %d characters", templateIDMax)
 	}
-	if doc.Type != "alerting_rule_template" {
+	if jsonString(doc.Type) != "alerting_rule_template" {
 		problems.add("type must be alerting_rule_template")
 	}
 	if jsonKind(doc.Attributes.Rule) != "object" {
@@ -154,7 +162,7 @@ func validateAlertRuleTemplate(data []byte) error {
 	if kind != "alert" && kind != "signal" {
 		problems.add("rule.kind must be alert or signal")
 	}
-	validateTemplateMetadata(rule["metadata"], &problems)
+	validateTemplateMetadata(kind, rule["metadata"], &problems)
 	validateTemplateSchedule(rule["schedule"], &problems)
 	validateTemplateTimeField(rule["time_field"], &problems)
 	hasBreach := validateTemplateQuery(rule["query"], &problems)
@@ -186,7 +194,7 @@ func alertRuleEngineString(attributes json.RawMessage) (string, bool) {
 	return engine, true
 }
 
-func validateTemplateMetadata(raw json.RawMessage, problems *templateProblems) {
+func validateTemplateMetadata(kind string, raw json.RawMessage, problems *templateProblems) {
 	obj, ok := jsonObject(raw)
 	if !ok {
 		problems.add("rule.metadata is required")
@@ -202,21 +210,37 @@ func validateTemplateMetadata(raw json.RawMessage, problems *templateProblems) {
 			problems.add("rule.metadata.description must be a non-empty string of at most %d characters", templateDescriptionMax)
 		}
 	}
-	rawTags, exists := obj["tags"]
-	if !exists {
-		return
+	if raw, exists := obj["tags"]; exists {
+		validateTemplateTags("rule.metadata.tags", raw, problems)
 	}
+	if raw, exists := obj["routing_tags"]; exists {
+		if kind == "signal" {
+			problems.add("signal rules cannot set rule.metadata.routing_tags")
+		} else {
+			validateTemplateTags("rule.metadata.routing_tags", raw, problems)
+		}
+	}
+	if raw, exists := obj["builder"]; exists {
+		builder, ok := jsonObject(raw)
+		builderType := jsonString(builder["type"])
+		if !ok || strings.TrimSpace(builderType) == "" || templateStringLength(builderType) > templateBuilderTypeMax {
+			problems.add("rule.metadata.builder must be an object with a non-empty type of at most %d characters", templateBuilderTypeMax)
+		}
+	}
+}
+
+func validateTemplateTags(field string, raw json.RawMessage, problems *templateProblems) {
 	var tags []string
-	if err := json.Unmarshal(rawTags, &tags); jsonKind(rawTags) != "array" || err != nil {
-		problems.add("rule.metadata.tags must be an array of strings")
+	if err := json.Unmarshal(raw, &tags); jsonKind(raw) != "array" || err != nil {
+		problems.add("%s must be an array of strings", field)
 		return
 	}
 	if len(tags) == 0 || len(tags) > templateTagsMax {
-		problems.add("rule.metadata.tags must contain 1 to %d items", templateTagsMax)
+		problems.add("%s must contain 1 to %d items", field, templateTagsMax)
 	}
 	for _, tag := range tags {
 		if strings.TrimSpace(tag) == "" || templateStringLength(tag) > templateTagMax {
-			problems.add("rule.metadata.tags entries must be non-empty strings of at most %d characters", templateTagMax)
+			problems.add("%s entries must be non-empty strings of at most %d characters", field, templateTagMax)
 			return
 		}
 	}

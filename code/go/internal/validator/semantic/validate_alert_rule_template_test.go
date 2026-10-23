@@ -131,6 +131,33 @@ func TestV2TemplateStructure(t *testing.T) {
 			rule(doc)["query"].(map[string]any)["base"] = "THIS IS NOT ESQL"
 		}, ""},
 		{"unsupported engine", func(doc map[string]any) { doc["attributes"].(map[string]any)["engine"] = "v3" }, "unsupported alert template engine"},
+		{"numeric id", func(doc map[string]any) { doc["id"] = 5 }, "id is required"},
+		{"numeric type", func(doc map[string]any) { doc["type"] = 5 }, "type must be alerting_rule_template"},
+		{"routing tags", func(doc map[string]any) {
+			rule(doc)["metadata"].(map[string]any)["routing_tags"] = []string{"oncall"}
+		}, ""},
+		{"routing tags not array", func(doc map[string]any) {
+			rule(doc)["metadata"].(map[string]any)["routing_tags"] = "oncall"
+		}, "rule.metadata.routing_tags must be an array of strings"},
+		{"routing tags empty", func(doc map[string]any) {
+			rule(doc)["metadata"].(map[string]any)["routing_tags"] = []string{}
+		}, "rule.metadata.routing_tags must contain 1 to"},
+		{"routing tags on signal", func(doc map[string]any) {
+			rule(doc)["kind"] = "signal"
+			for _, field := range []string{"recovery", "no_data", "state_transition"} {
+				delete(rule(doc), field)
+			}
+			rule(doc)["metadata"].(map[string]any)["routing_tags"] = []string{"oncall"}
+		}, "signal rules cannot set rule.metadata.routing_tags"},
+		{"builder", func(doc map[string]any) {
+			rule(doc)["metadata"].(map[string]any)["builder"] = map[string]any{"type": "threshold"}
+		}, ""},
+		{"builder not object", func(doc map[string]any) {
+			rule(doc)["metadata"].(map[string]any)["builder"] = "threshold"
+		}, "rule.metadata.builder must be an object"},
+		{"builder blank type", func(doc map[string]any) {
+			rule(doc)["metadata"].(map[string]any)["builder"] = map[string]any{"type": " "}
+		}, "rule.metadata.builder must be an object"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -162,6 +189,12 @@ func TestV2TemplateStringLimits(t *testing.T) {
 		}},
 		{"tag", 128, func(doc map[string]any, value string) {
 			templateRule(doc)["metadata"].(map[string]any)["tags"] = []string{value}
+		}},
+		{"routing tag", 128, func(doc map[string]any, value string) {
+			templateRule(doc)["metadata"].(map[string]any)["routing_tags"] = []string{value}
+		}},
+		{"builder type", 64, func(doc map[string]any, value string) {
+			templateRule(doc)["metadata"].(map[string]any)["builder"] = map[string]any{"type": value}
 		}},
 		{"time_field", 256, func(doc map[string]any, value string) { templateRule(doc)["time_field"] = value }},
 		{"base", 10000, func(doc map[string]any, value string) { templateRule(doc)["query"].(map[string]any)["base"] = value }},
@@ -304,6 +337,7 @@ func templateRule(doc map[string]any) map[string]any {
 func TestV2TemplateOptionalNulls(t *testing.T) {
 	paths := [][]string{
 		{"metadata", "description"}, {"metadata", "tags"},
+		{"metadata", "routing_tags"}, {"metadata", "builder"},
 		{"schedule", "lookback"}, {"time_field"}, {"query", "breach"},
 		{"query", "format"}, {"grouping"}, {"artifacts"},
 		{"state_transition", "pending"}, {"state_transition", "recovering"},

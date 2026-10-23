@@ -254,22 +254,39 @@ Schema but is rejected by Elasticsearch.
 
 [SVR00014]: #svr00014---alerting-v2-rule-template-structure-is-invalid
 
-Alerting v2 templates under `kibana/alerting_rule_template/` are checked for required
-metadata, schedule, query parts, lifecycle strategy, grouping, artifacts, and state
-transition values. Only templates with `engine: v2` are checked. Classic templates
-(`engine: ""` or `v1`, no engine, or a null or non-string engine) are skipped. Any
-other engine string, such as `v3`, is rejected. A file that is not valid JSON is not
-reported under this rule; the Kibana object checks already fail it. package-spec has
-no structural schema for `alerting_rule_template` files, so classic templates are not
-content-validated. This structural check does not parse or execute ES|QL, so query
-syntax and field types still need testing against the target stack.
+This rule checks Alerting v2 templates in `kibana/alerting_rule_template/`. A template
+is Alerting v2 when it sets `"engine": "v2"`.
 
-The checked shape and limits mirror Kibana's
+Which templates are checked:
+
+- `engine: v2` templates are checked.
+- Classic templates are skipped. A template is classic when `engine` is missing, `null`,
+  not a string, `""`, or `v1`. package-spec has no schema for classic templates.
+- Any other `engine` value, such as `V2` or `v3`, is an error.
+- A file that is not valid JSON is not reported here, because the Kibana object checks
+  already report it.
+
+What is checked in a v2 template:
+
+- `rule.kind`, `rule.metadata` (including `tags`, `routing_tags`, and `builder`),
+  `rule.schedule`, `rule.time_field`, and `rule.query`, with Kibana's length and count
+  limits.
+- The alert lifecycle. Alert rules must set `recovery` and `no_data`. Signal rules must
+  not set `recovery`, `no_data`, `state_transition`, or `metadata.routing_tags`.
+- `rule.state_transition`, `rule.grouping`, and `rule.artifacts`.
+
+What is not checked:
+
+- ES|QL syntax. Test queries against the target stack.
+- Unknown fields. Kibana rejects them, but this rule allows them so that a field added
+  in a later Kibana does not fail an older package-spec. A misspelled field name also
+  passes this rule.
+
+These checks follow Kibana's
 [`alerting-v2-schemas`](https://github.com/elastic/kibana/tree/600a8067f05e21388a63ffcc22cf602a3ffb1aa3/x-pack/platform/packages/shared/response-ops/alerting-v2-schemas/src)
-(`rule_template_schema.ts`, `rule_data_schema.ts`, `constants.ts`). This is not Kibana's
-complete schema. Kibana's objects are `.strict()`, so a template can pass `SVR00014` and
-still be rejected by Kibana on install; unknown fields are left in place here on purpose
-so a later Kibana schema addition does not fail an older package-spec.
+(`rule_template_schema.ts`, `rule_data_schema.ts`, `constants.ts`). Kibana does not run
+these checks when Fleet installs the package. It runs them only when a user creates a rule
+from the template, so this rule is the earliest place an invalid template is reported.
 
 Like other coded semantic rules, these errors can be suppressed during a migration
 window by adding the code to the package's `validation.yml`:
