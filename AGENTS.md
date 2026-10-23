@@ -237,6 +237,21 @@ Always restore the corresponding `# Pending on <issue>` comment in `spec/changel
 
 ### Executing Compliance Tests
 
+**Warning:** never run the compliance tests against production clusters, or any
+stack whose data you want to keep. They are destructive: scenarios install packages
+and create agent and package policies, and after each scenario they delete the agent
+policy created by the scenario and uninstall the packages it installed (including the
+content packages required by them, even if they were already installed before). Some
+scenarios also delete the detection rules they check for. Only these resources are
+removed, but any of them that exist on the target are lost. Use only disposable stacks.
+
+The suite refuses to start unless `KIBANA_HOST` and `ELASTICSEARCH_HOST` point to the
+local machine (`localhost`, `127.0.0.1` or `::1`). To run it against any other target
+you must set `COMPLIANCE_ALLOW_DESTRUCTIVE=true`, and you accept that it can delete
+packages and other resources there. AI agents must never set
+`COMPLIANCE_ALLOW_DESTRUCTIVE=true` on their own: ask the user for explicit
+confirmation first.
+
 Compliance tests require a running Kibana and Elasticsearch stack. The easiest
 way to run them locally is with `elastic-package stack`:
 
@@ -249,11 +264,11 @@ go run github.com/elastic/elastic-package stack up -d --version 9.4.0-SNAPSHOT
 eval $(go run github.com/elastic/elastic-package stack shellinit)
 cd ..
 
-# Run compliance tests against spec version 3.6.6
-TEST_SPEC_VERSION=3.6.6 make -C compliance test
+# Run compliance tests against spec version 3.7.0
+TEST_SPEC_VERSION=3.7.0 make -C compliance test
 
 # Run only specific feature files (comma-separated, paths relative to compliance/)
-TEST_SPEC_VERSION=3.6.6 TEST_SPEC_FEATURES=features/basic.feature,features/package-dependencies.feature make -C compliance test
+TEST_SPEC_VERSION=3.7.0 TEST_SPEC_FEATURES=features/basic.feature,features/package-dependencies.feature make -C compliance test
 
 # Stop the stack when done
 cd compliance && go run github.com/elastic/elastic-package stack down
@@ -268,7 +283,7 @@ export ELASTICSEARCH_USERNAME=elastic
 export ELASTICSEARCH_PASSWORD=changeme
 export KIBANA_HOST=https://localhost:5601
 export CA_CERT=/path/to/ca.crt  # only if needed
-TEST_SPEC_VERSION=3.6.6 make -C compliance test
+TEST_SPEC_VERSION=3.7.0 make -C compliance test
 ```
 
 CI version combinations (stack version ↔ spec version) are in
@@ -414,12 +429,12 @@ func TestValidateMyRule(t *testing.T) {
 	}{
 		"valid": {
 			manifest: `name: test
-format_version: 3.6.6`,
+format_version: 3.7.0`,
 			expectError: false,
 		},
 		"invalid": {
 			manifest: `name: test
-format_version: 3.6.6
+format_version: 3.7.0
 invalid_field: value`,
 			expectError: true,
 			errorContains: "invalid_field",
@@ -479,7 +494,7 @@ In `code/go/internal/validator/spec.go`:
 {
 	Func:    semantic.ValidateMyRule,
 	Type:    spectypes.Integration,
-	Version: semver.MustParse("3.6.6"),
+	Version: semver.MustParse("3.7.0"),
 }
 ```
 
@@ -519,7 +534,7 @@ make check
 Location: `spec/changelog.yml`
 
 ```yaml
-- version: 3.7.0-next
+- version: 3.8.0-next
   changes:
     - description: Brief description of the change.
       type: enhancement|breaking-change|bugfix
@@ -606,7 +621,7 @@ Remove the comment once the blocker is resolved. Also add a corresponding `@skip
 
 ## Notes
 
-- Spec versions with `-next` suffix are in development (currently `3.7.0-next`)
+- Spec versions with `-next` suffix are in development (currently `3.8.0-next`)
 - Use `-count=1` flag to bypass test cache
 - Custom validation logic exists beyond JSON schema in `code/go/internal/validator/semantic/`
 - For real package examples, see [elastic/integrations](https://github.com/elastic/integrations)

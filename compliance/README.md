@@ -18,6 +18,22 @@ Reference packages used on each scenario can be found in [`compliance/testdata/p
 
 ## Running the suite
 
+> [!WARNING]
+> Do not run the compliance suite against production clusters, or against any
+> stack whose data you want to keep. The suite is destructive: it installs
+> packages and creates agent and package policies, and it cleans up after each
+> scenario by deleting the agent policy it created and uninstalling the packages
+> it installed (including the content packages required by them, even if they were
+> already installed before). Some scenarios also delete the detection rules they
+> check for. Only these resources are removed, but any of them that exist on the
+> target are lost. Use a disposable stack, such as one started with
+> `elastic-package stack`.
+>
+> The suite refuses to start unless `KIBANA_HOST` and `ELASTICSEARCH_HOST` point to the
+> local machine (`localhost`, `127.0.0.1` or `::1`). To run it against any other target
+> you must set `COMPLIANCE_ALLOW_DESTRUCTIVE=true`, and you accept that it can delete
+> packages and other resources there.
+
 To run the suite, you need a target to evaluate. The target is configured with
 environment variables as described below.
 

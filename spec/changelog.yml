@@ -2,35 +2,37 @@
 ## This file documents changes in the package specification. It is NOT a package specification file.
 ## Newer entries go at the bottom of each in-development version.
 ##
-- version: 3.7.0-next
+- version: 3.8.0-next
   changes:
     # Pending on https://github.com/elastic/kibana/issues/220294
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: Validate Alerting v2 rule template structure as a semantic rule (SVR00014).
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1273
+- version: 3.7.0
+  changes:
     - description: Add optional use_otel_suffix on integration data streams so index templates can use the .otel suffix without an input, and reject the flag when the data stream defines an input.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1261
     - description: Disallow package-level `conditions.agent.version` (SVR00012). Packages using this field will now produce a validation error instead of a deprecation warning.
       type: breaking change
       link: https://github.com/elastic/package-spec/pull/1265
-- version: 3.6.7-next
+- version: 3.6.7
   changes:
     - description: Warn when a package declares a package-level `conditions.agent.version`.
       type: deprecation
       link: https://github.com/elastic/package-spec/pull/1265
-    - description: Correct esql_view name pattern to enforce lowercase-only names and require {PACKAGE_NAME}- filename prefix.
-      type: bugfix
-      link: https://github.com/elastic/package-spec/pull/1266
-    - description: Add semantic validator (SVR00013) for ES|QL views enforcing name-vs-stem match, 255-byte limit, and non-empty query.
+    - description: Add semantic validator (SVR00013) ensuring ES|QL view names are unique within a package and queries are not empty.
       type: enhancement
-      link: https://github.com/elastic/package-spec/pull/1266
+      link: https://github.com/elastic/package-spec/pull/1288
+    - description: Restrict esql_view name to lowercase characters, not starting with an underscore or hyphen, and at most 255 characters. Require a non-empty query and add the optional description field.
+      type: bugfix
+      link: https://github.com/elastic/package-spec/pull/1288
     - description: Update EPR categories reference URL to v1.41.0.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1215
-    - description: Validate Alerting v2 rule template structure as a semantic rule (SVR00014).
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/1273
 - version: 3.6.6
   changes:
     - description: Add support for mode-aware constructors and validation APIs.
@@ -61,7 +63,6 @@
     - description: Add provider_permissions field to package, policy_template, input, and data_stream levels for declaring provider-specific permissions.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1180
-    # Pending on https://github.com/elastic/ingest-dev/issues/7797
     - description: Replace `profiling` data stream type with `profiles` to align with the OTel Profiles signal name.
       type: bugfix
       link: https://github.com/elastic/package-spec/pull/1189

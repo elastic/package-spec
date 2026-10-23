@@ -11,21 +11,19 @@ conditions:
     version: '^8.0.0'
 requires:
   input:
-    - package: sql_input
+    - package: sql
       version: "1.0.0"
-    - package: log_input
+    - package: log
       version: "2.0.0"
   content:
-    - package: elastic_agent
-      version: "^1.2.0"
-    - package: system
-      version: "~2.0.0"
+    - package: apache_otel
+      version: "^0.6.1"
 policy_templates:
   - name: apache
     title: Apache logs and metrics
     description: Collect logs and metrics from Apache instances
     inputs:
-      - package: sql_input
+      - package: sql
         title: Collect logs with SQL input
         description: Collect Apache logs using SQL input package
       - type: apache/metrics
