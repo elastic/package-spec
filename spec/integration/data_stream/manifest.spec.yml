@@ -293,6 +293,9 @@ spec:
       description: |-
         Index mode to use. Index mode can be used to enable use case specific functionalities.
         This setting must be installed in the composable index template, not in the package component templates.
+        `index_mode` declares a fixed mode the user cannot change (`time_series`). When unset, the Elasticsearch
+        default applies (LogsDB for logs data streams on 9.x and serverless); use `elasticsearch.logsdb_columnar`
+        to offer or default to the columnar mode.
       type: string
       enum:
       - "time_series" # Enables time series data streams https://www.elastic.co/guide/en/elasticsearch/reference/master/tsds.html
@@ -739,6 +742,21 @@ spec:
       properties:
         index_mode:
           $ref: "#/definitions/elasticsearch_index_mode"
+        logsdb_columnar:
+          description: >
+            Overrides the package-level `elasticsearch.logsdb_columnar` for this data stream; see the package
+            manifest for the meaning of `opt_in` and `default`. When absent, the package-level value applies.
+
+            `unsupported`: the data stream stays on the Elasticsearch default (LogsDB) even when the package
+            declares readiness.
+
+            Only supported on `type: logs` data streams, and only when `index_mode` is unset; either
+            combination is a validation error.
+          type: string
+          enum:
+            - opt_in
+            - default
+            - unsupported
         index_template:
           $ref: "#/definitions/elasticsearch_index_template"
         privileges:
@@ -784,6 +802,11 @@ spec:
   - title
 # JSON patches for newer versions should be placed on top
 versions:
+  - before: 3.8.0
+    patch:
+      # Remove the columnar readiness setting added in 3.8.0.
+      - op: remove
+        path: /properties/elasticsearch/properties/logsdb_columnar
   - before: 3.7.0
     patch:
       # use_otel_suffix requires >=3.7.0.

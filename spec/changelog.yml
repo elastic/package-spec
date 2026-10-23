@@ -8,6 +8,14 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    # Pending on https://github.com/elastic/kibana/issues/296252
+    - description: >
+        Add `elasticsearch.logsdb_columnar` (`opt_in`, `default`, `unsupported`) to integration package and
+        data stream manifests to declare readiness for the logsdb_columnar index mode, validate ready logs data
+        streams for mappings and index sort settings that Elasticsearch rejects in columnar modes, and
+        warn (SVR00016) when a custom index sort does not include @timestamp.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1250
 - version: 3.7.0
   changes:
     - description: Add optional use_otel_suffix on integration data streams so index templates can use the .otel suffix without an input, and reject the flag when the data stream defines an input.

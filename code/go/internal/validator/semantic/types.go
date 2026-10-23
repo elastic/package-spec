@@ -161,10 +161,17 @@ type field struct {
 	MetricType string `yaml:"metric_type"`
 	Dimension  bool   `yaml:"dimension"`
 	External   string `yaml:"external"`
+	DocValues  *bool  `yaml:"doc_values"`
+	Store      *bool  `yaml:"store"`
+	Enabled    *bool  `yaml:"enabled"`
+	Dynamic    any    `yaml:"dynamic"`
+	CopyTo     any    `yaml:"copy_to"`    // string or []string; non-nil means set
+	Normalizer string `yaml:"normalizer"` // keyword-only; non-empty means set
 
 	Runtime runtimeField `yaml:"runtime"`
 
-	Fields fields `yaml:"fields"`
+	Fields      fields `yaml:"fields"`
+	MultiFields fields `yaml:"multi_fields"`
 }
 
 type fieldFileMetadata struct {
