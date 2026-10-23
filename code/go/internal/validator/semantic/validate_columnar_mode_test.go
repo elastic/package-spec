@@ -121,8 +121,38 @@ func TestValidateColumnarField(t *testing.T) {
 			f:     field{Name: "host.name", Type: "keyword"},
 		},
 		{
-			title: "doc_values false is accepted",
-			f:     field{Name: "event.original", Type: "keyword", DocValues: boolPtr(false)},
+			title:    "doc_values false is a hard error",
+			f:        field{Name: "event.original", Type: "keyword", DocValues: boolPtr(false)},
+			wantErr:  errColumnarDocValuesFalse,
+			wantCode: specerrors.UnassignedCode,
+		},
+		{
+			title: "doc_values true is accepted",
+			f:     field{Name: "event.original", Type: "keyword", DocValues: boolPtr(true)},
+		},
+		{
+			title: "doc_values false on a multi-field is accepted",
+			f: field{Name: "message", Type: "text", MultiFields: fields{
+				{Name: "raw", Type: "keyword", DocValues: boolPtr(false)},
+			}},
+		},
+		{
+			title:    "store true is a hard error",
+			f:        field{Name: "message", Type: "text", Store: boolPtr(true)},
+			wantErr:  errColumnarStoreTrue,
+			wantCode: specerrors.UnassignedCode,
+		},
+		{
+			title: "store true on a multi-field is a hard error",
+			f: field{Name: "message", Type: "text", MultiFields: fields{
+				{Name: "raw", Type: "keyword", Store: boolPtr(true)},
+			}},
+			wantErr:  errColumnarStoreTrue,
+			wantCode: specerrors.UnassignedCode,
+		},
+		{
+			title: "store false is accepted",
+			f:     field{Name: "message", Type: "text", Store: boolPtr(false)},
 		},
 		{
 			title:    "runtime field is a hard error",
@@ -441,6 +471,41 @@ elasticsearch:
     mappings:
       dynamic: strict
 `,
+		},
+		{
+			title: "dynamic templates with doc_values false or store true are hard errors",
+			manifest: `
+type: logs
+elasticsearch:
+  logsdb_columnar: opt_in
+  index_template:
+    mappings:
+      dynamic_templates:
+        - _embedded_ecs-event_original_non_indexed_keyword:
+            path_match: event.original
+            mapping:
+              type: keyword
+              index: false
+              doc_values: false
+        - _embedded_ecs-stored:
+            path_match: "*.stored"
+            mapping:
+              type: text
+              fields:
+                raw:
+                  type: keyword
+                  store: true
+        - _embedded_ecs-port_to_long:
+            match: port
+            mapping:
+              type: long
+`,
+			want: []string{
+				`file "ds/manifest.yml" is invalid: elasticsearch.index_template.mappings.dynamic_templates "_embedded_ecs-event_original_non_indexed_keyword": ` +
+					`doc_values: false is not supported in columnar index modes, which rebuild _source from doc values`,
+				`file "ds/manifest.yml" is invalid: elasticsearch.index_template.mappings.dynamic_templates "_embedded_ecs-stored": ` +
+					`store: true is not supported in columnar index modes, which read every field from doc values`,
+			},
 		},
 		{
 			title: "index sort is validated",

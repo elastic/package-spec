@@ -1299,6 +1299,11 @@ func TestValidateLogsDBColumnar(t *testing.T) {
 			"data_stream/runtime_field/fields/base-fields.yml": {
 				`field "computed": mapping-level runtime fields are not supported in columnar index modes; compute the field in an ingest pipeline or use a search-request runtime field instead`,
 			},
+			"data_stream/doc_values_store/fields/base-fields.yml": {
+				`field "event.original": doc_values: false is not supported in columnar index modes, which rebuild _source from doc values`,
+				`field "message": store: true is not supported in columnar index modes, which read every field from doc values`,
+				`field "message.raw": store: true is not supported in columnar index modes, which read every field from doc values`,
+			},
 			"data_stream/nested_in_nested/fields/base-fields.yml": {
 				`field "events.inner" is inside nested field "events": columnar index modes support only a single level of nesting`,
 				`field "attributes.items" is inside nested field "attributes": columnar index modes support only a single level of nesting`,

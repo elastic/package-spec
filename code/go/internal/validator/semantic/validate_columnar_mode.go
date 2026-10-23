@@ -8,9 +8,11 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"maps"
 	"os"
 	"path"
 	"slices"
+	"strconv"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -42,6 +44,8 @@ var (
 	errColumnarNormalizer     = errors.New("keyword normalizers other than lowercase are not supported in columnar index modes, they prevent synthetic source reconstruction; remove the normalizer or apply the transformation in an ingest pipeline")
 	errColumnarRuntimeField   = errors.New("mapping-level runtime fields are not supported in columnar index modes; compute the field in an ingest pipeline or use a search-request runtime field instead")
 	errColumnarNestedInNested = errors.New("columnar index modes support only a single level of nesting")
+	errColumnarDocValuesFalse = errors.New("doc_values: false is not supported in columnar index modes, which rebuild _source from doc values")
+	errColumnarStoreTrue      = errors.New("store: true is not supported in columnar index modes, which read every field from doc values")
 
 	// Mappings that drop data in columnar index modes, which have no stored _source to fall back on.
 	errColumnarEnabledFalse   = errors.New("enabled: false is not supported in columnar index modes, which have no stored _source to keep the object in")
@@ -72,9 +76,9 @@ var columnarUnsortableTypes = map[string]bool{
 // level, for mappings and index sort settings Elasticsearch rejects in columnar index modes.
 //
 // Errors without a code (invalid logsdb_columnar settings, copy_to, keyword normalizers other
-// than lowercase, mapping-level runtime fields, nested inside nested, invalid index.sort fields)
-// cannot be filtered. dynamic: false, enabled: false and an index.sort without @timestamp are
-// reported with their own SVR codes.
+// than lowercase, mapping-level runtime fields, nested inside nested, dynamic: false,
+// dynamic: runtime, enabled: false, doc_values: false, store: true, invalid index.sort fields)
+// cannot be filtered. An index.sort without @timestamp is reported with its own SVR code.
 func ValidateColumnarModeConstraints(fsys fspath.FS) specerrors.ValidationErrors {
 	packageReadiness, err := readPackageColumnarReadiness(fsys)
 	if err != nil {
@@ -125,10 +129,23 @@ type columnarDataStreamManifest struct {
 				} `yaml:"index"`
 			} `yaml:"settings"`
 			Mappings struct {
-				Dynamic any `yaml:"dynamic"`
+				Dynamic          any                                  `yaml:"dynamic"`
+				DynamicTemplates []map[string]columnarDynamicTemplate `yaml:"dynamic_templates"`
 			} `yaml:"mappings"`
 		} `yaml:"index_template"`
 	} `yaml:"elasticsearch"`
+}
+
+// columnarDynamicTemplate is an entry of elasticsearch.index_template.mappings.dynamic_templates,
+// with the mapping parameters Elasticsearch rejects in columnar index modes.
+type columnarDynamicTemplate struct {
+	Mapping columnarDynamicMapping `yaml:"mapping"`
+}
+
+type columnarDynamicMapping struct {
+	DocValues any                               `yaml:"doc_values"`
+	Store     any                               `yaml:"store"`
+	Fields    map[string]columnarDynamicMapping `yaml:"fields"`
 }
 
 // isColumnarReady reports whether a data stream must be validated for columnar compatibility.
@@ -307,6 +324,23 @@ func validateColumnarField(meta fieldFileMetadata, f field) specerrors.Validatio
 		errs = append(errs, columnarFieldError(meta, f, errColumnarDynamicRuntime, specerrors.UnassignedCode))
 	}
 
+	// A multi-field may disable doc values, since it is not part of _source. Fields imported with
+	// external: ecs, such as event.original, only carry the ECS doc_values: false once the package
+	// is built, so they are reported when the built package is validated.
+	if f.DocValues != nil && !*f.DocValues {
+		errs = append(errs, columnarFieldError(meta, f, errColumnarDocValuesFalse, specerrors.UnassignedCode))
+	}
+
+	if f.Store != nil && *f.Store {
+		errs = append(errs, columnarFieldError(meta, f, errColumnarStoreTrue, specerrors.UnassignedCode))
+	}
+	for _, multiField := range f.MultiFields {
+		if multiField.Store != nil && *multiField.Store {
+			multiField.Name = f.Name + "." + multiField.Name
+			errs = append(errs, columnarFieldError(meta, multiField, errColumnarStoreTrue, specerrors.UnassignedCode))
+		}
+	}
+
 	return errs
 }
 
@@ -444,8 +478,48 @@ func validateColumnarIndexTemplate(dataStream columnarDataStream, streamFields *
 			specerrors.UnassignedCode,
 		))
 	}
+	errs = append(errs, validateColumnarDynamicTemplates(dataStream.manifestPath, indexTemplate.Mappings.DynamicTemplates)...)
 	errs = append(errs, validateColumnarIndexSort(dataStream.manifestPath, indexTemplate.Settings.Index.Sort, streamFields)...)
 	return errs
+}
+
+// validateColumnarDynamicTemplates reports dynamic templates whose mapping disables doc values
+// or stores the field. Elasticsearch accepts such a template, then rejects every document with a
+// matching field. The schema only allows these parameters in the _embedded_ecs templates that
+// elastic-package adds to built packages with import_mappings.
+func validateColumnarDynamicTemplates(manifestPath string, templates []map[string]columnarDynamicTemplate) specerrors.ValidationErrors {
+	var errs specerrors.ValidationErrors
+	for _, entry := range templates {
+		for _, name := range slices.Sorted(maps.Keys(entry)) {
+			mapping := entry[name].Mapping
+			var found []error
+			if isYAMLBool(mapping.DocValues, false) {
+				found = append(found, errColumnarDocValuesFalse)
+			}
+			if mapping.storesField() {
+				found = append(found, errColumnarStoreTrue)
+			}
+			for _, err := range found {
+				errs = append(errs, specerrors.NewStructuredErrorf(
+					`file "%s" is invalid: elasticsearch.index_template.mappings.dynamic_templates %q: %w`, manifestPath, name, err,
+				))
+			}
+		}
+	}
+	return errs
+}
+
+// storesField reports whether the mapping, or one of its multi-fields, sets store: true.
+func (m columnarDynamicMapping) storesField() bool {
+	if isYAMLBool(m.Store, true) {
+		return true
+	}
+	for _, multiField := range m.Fields {
+		if isYAMLBool(multiField.Store, true) {
+			return true
+		}
+	}
+	return false
 }
 
 // validateColumnarIndexSort validates elasticsearch.index_template.settings.index.sort against
@@ -498,4 +572,15 @@ func dynamicIsFalse(v any) bool {
 func dynamicIsRuntime(v any) bool {
 	val, ok := v.(string)
 	return ok && val == "runtime"
+}
+
+// isYAMLBool returns true when the YAML value is the given boolean, written as a bool or a string.
+func isYAMLBool(v any, want bool) bool {
+	switch val := v.(type) {
+	case bool:
+		return val == want
+	case string:
+		return val == strconv.FormatBool(want)
+	}
+	return false
 }
