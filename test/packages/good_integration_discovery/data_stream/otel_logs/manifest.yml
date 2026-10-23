@@ -1,0 +1,6 @@
+title: OTel logs
+type: logs
+streams:
+  - input: otel_logs
+    title: Collect logs via OTel receiver
+    description: Collecting logs via OpenTelemetry receiver

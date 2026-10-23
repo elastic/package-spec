@@ -1,0 +1,51 @@
+##
+## Describes the group.yml file copied into a built package that belongs to an integration group.
+##
+## PROTOTYPE: integration groups v3. In the source repo, group.yml sits in the group directory
+## (parent of the member packages); elastic-package build copies it into each member's root.
+## Deliberately lenient (additionalProperties allowed) until the shape is refined.
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: true
+  properties:
+    title:
+      description: Title of the group, shown on the technology tile.
+      type: string
+      examples:
+        - Nginx
+    description:
+      description: Description of the group.
+      type: string
+      examples:
+        - Collect logs and metrics from Nginx.
+    icon:
+      description: >
+        Path of the group icon, relative to the group directory in the source repo.
+        Copied to the same relative path inside each member package.
+      type: string
+      examples:
+        - img/nginx-group.svg
+    default:
+      description: Name of the member package selected by default.
+      type: string
+      pattern: '^[a-z0-9_]+$'
+      examples:
+        - nginx_otel
+    schema_labels:
+      description: Display labels per schema (prototype placeholder).
+      type: object
+      propertyNames:
+        $ref: "./manifest.spec.yml#/definitions/schema"
+      additionalProperties:
+        type: string
+      examples:
+        - ecs: Legacy
+    planned_schemas:
+      description: Schemas not available yet, shown disabled (prototype placeholder).
+      type: array
+      items:
+        $ref: "./manifest.spec.yml#/definitions/schema"
+  required:
+    - title

@@ -1,0 +1,28 @@
+format_version: 3.0.0
+name: good_group_member
+title: Good Group Member
+description: Built integration package that belongs to an integration group (group.yml + schema).
+version: 0.0.1
+type: integration
+group: nginx
+schema: otel
+source:
+  license: "Apache-2.0"
+categories:
+  - web
+conditions:
+  kibana:
+    version: "^9.0.0"
+  elastic:
+    subscription: "basic"
+policy_templates:
+  - name: nginx
+    title: Nginx logs and metrics
+    description: Collect logs and metrics from Nginx instances
+    inputs:
+      - type: logfile
+        title: Collect logs from Nginx
+        description: Collecting Nginx access and error logs
+owner:
+  github: elastic/ecosystem
+  type: elastic
