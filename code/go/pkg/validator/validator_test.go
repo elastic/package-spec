@@ -55,6 +55,7 @@ func Test_ValidateFromPath(t *testing.T) {
 		"good_integration_with_dev_tools":        {},
 		"good_lookup_index":                      {},
 		"good_alert_rule_templates":              {},
+		"good_alert_rule_templates_v2":           {},
 		"good_requires":                          {},
 		"good_package_reference_policy_template": {},
 		"good_datastream_categories_match":       {},
@@ -719,6 +720,55 @@ func Test_ValidateFromPath(t *testing.T) {
 			}
 		})
 	}
+}
+
+// Test_ValidateFromPath_badAlertRuleTemplatesV2 needs its own test because
+// Test_ValidateFromPath expects every error in a package to come from one file,
+// and this fixture has one invalid template per file.
+func Test_ValidateFromPath_badAlertRuleTemplatesV2(t *testing.T) {
+	pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", "bad_alert_rule_templates_v2")
+	expected := map[string]string{
+		"invalid-kind.json":            "rule.kind must be alert or signal",
+		"alert-without-lifecycle.json": "alert rules require recovery; alert rules require no_data",
+		"signal-with-recovery.json":    "signal rules cannot set recovery or no_data",
+		"v1-query-format.json":         "rule.query.format is not part of Alerting v2",
+		"schedule-too-frequent.json":   "rule.schedule.every must be a duration from 5s to 365d",
+		"unsupported-engine.json":      `unsupported alert template engine "v3"`,
+	}
+	requireTemplateErrors := func(t *testing.T, err error) {
+		t.Helper()
+		verrs, ok := err.(specerrors.ValidationErrors)
+		require.True(t, ok, "expected validation errors, got %v", err)
+		var messages []string
+		for _, verr := range verrs {
+			if verr.Code() == specerrors.CodeAlertRuleTemplateValidation {
+				messages = append(messages, verr.Error())
+			}
+		}
+		require.Len(t, messages, len(expected), "one SVR00014 error per template: %v", messages)
+		for file, want := range expected {
+			found := false
+			for _, message := range messages {
+				if strings.Contains(message, file+`" is invalid: `) && strings.Contains(message, want) {
+					found = true
+				}
+			}
+			assert.True(t, found, "no SVR00014 error for %s containing %q in %v", file, want, messages)
+		}
+	}
+
+	for _, mode := range []Mode{LegacyMode, SourceMode, BuildMode} {
+		t.Run(string(mode), func(t *testing.T) {
+			validator, err := New(mode)
+			require.NoError(t, err)
+			requireTemplateErrors(t, validator.ValidateFromPath(pkgRootPath))
+		})
+	}
+	t.Run("zip", func(t *testing.T) {
+		validator, err := New(LegacyMode)
+		require.NoError(t, err)
+		requireTemplateErrors(t, validator.ValidateFromZip(writePackageZip(t, pkgRootPath, "bad_alert_rule_templates_v2")))
+	})
 }
 
 func TestValidateItemNotAllowed(t *testing.T) {

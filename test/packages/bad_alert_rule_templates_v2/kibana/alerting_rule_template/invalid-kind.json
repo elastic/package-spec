@@ -1,0 +1,13 @@
+{
+    "id": "invalid-kind",
+    "type": "alerting_rule_template",
+    "attributes": {
+        "engine": "v2",
+        "rule": {
+            "kind": "invalid",
+            "metadata": {"name": "Invalid kind"},
+            "schedule": {"every": "1m"},
+            "query": {"base": "FROM logs-something-default"}
+        }
+    }
+}
