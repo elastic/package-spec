@@ -1,0 +1,13 @@
+{
+    "id": "schedule-too-frequent",
+    "type": "alerting_rule_template",
+    "attributes": {
+        "engine": "v2",
+        "rule": {
+            "kind": "signal",
+            "metadata": {"name": "Schedule below the 5s minimum"},
+            "schedule": {"every": "1s"},
+            "query": {"base": "FROM logs-something-default"}
+        }
+    }
+}

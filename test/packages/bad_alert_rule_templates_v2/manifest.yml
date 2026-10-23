@@ -1,0 +1,14 @@
+format_version: 3.4.0
+name: bad_alert_rule_templates_v2
+title: "Bad Alert Rule Templates v2"
+version: 1.0.0
+description: "This package contains invalid Alerting v2 rule templates, one failure per template."
+type: integration
+conditions:
+  kibana:
+    version: "^8.19.0"
+  elastic:
+    subscription: "basic"
+owner:
+  github: elastic/integrations
+  type: elastic
