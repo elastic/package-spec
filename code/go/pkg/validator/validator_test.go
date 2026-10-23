@@ -75,6 +75,7 @@ func Test_ValidateFromPath(t *testing.T) {
 		"good_provider_permissions_input":        {},
 		"good_integration_group":                 {},
 		"good_integration_discovery":             {},
+		"good_group_member":                      {},
 		"good_input_group":                       {},
 		"bad_integration_group": {
 			"manifest.yml",
@@ -311,6 +312,21 @@ func Test_ValidateFromPath(t *testing.T) {
 			"manifest.yml",
 			[]string{
 				`field (root): Additional property discovery is not allowed`,
+			},
+		},
+		"bad_group_member": {
+			"group.yml",
+			[]string{
+				`field (root): title is required`,
+				`field planned_schemas.0: planned_schemas.0 must be one of the following: "ecs", "otel", "prometheus", "ocsf"`,
+				`field schema_labels: Property name of "elastic" does not match`,
+				`field schema_labels: schema_labels must be one of the following: "ecs", "otel", "prometheus", "ocsf"`,
+			},
+		},
+		"bad_package_schema": {
+			"manifest.yml",
+			[]string{
+				`field schema: schema must be one of the following: "ecs", "otel", "prometheus", "ocsf"`,
 			},
 		},
 		"bad_requires": {

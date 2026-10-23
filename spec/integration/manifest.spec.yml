@@ -581,6 +581,19 @@ spec:
       examples:
         - nginx
         - redis
+    schema:
+      # PROTOTYPE: integration groups v3. Not gated by format_version on purpose.
+      description: >
+        Data schema the package produces. When missing, consumers infer `otel`
+        if the package uses otelcol inputs, otherwise `ecs`.
+      type: string
+      enum:
+        - ecs
+        - otel
+        - prometheus
+        - ocsf
+      examples:
+        - otel
     package_reference:
       description: >
         Reference to an input package. When specified, configuration is inherited
@@ -858,6 +871,8 @@ spec:
         - apache
     group:
       $ref: "#/definitions/group"
+    schema:
+      $ref: "#/definitions/schema"
     title:
       $ref: "#/definitions/title"
     description:
