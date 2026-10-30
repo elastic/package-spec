@@ -8,6 +8,9 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+    - description: Pipeline and system tests reject string values in integer, short, byte, unsigned_long, half_float and scaled_float fields, as they already do for long, float and double, unless the field is listed in string_number_fields.
+      type: breaking-change
+      link: https://github.com/elastic/package-spec/pull/1293
 - version: 3.7.0
   changes:
     - description: Add optional use_otel_suffix on integration data streams so index templates can use the .otel suffix without an input, and reject the flag when the data stream defines an input.
