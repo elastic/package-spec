@@ -188,7 +188,7 @@ input type, which already applies the `.otel` index pattern suffix.
 
 ## SVR00012 - Package-level agent.version condition
 
-[SVR00012]: #svr00012---pacakge-level-agent.version-condition
+[SVR00012]: #svr00012---package-level-agentversion-condition
 
 **Available since [3.6.7](https://github.com/elastic/package-spec/releases/tag/v3.6.7)** (warning)
 **Promoted to error since [3.7.0](https://github.com/elastic/package-spec/releases/tag/v3.7.0)**
@@ -230,7 +230,7 @@ To suppress this check during the migration window, add to the package's `valida
 ```yaml
 errors:
   exclude_checks:
-    - SVR00011
+    - SVR00012
 ```
 
 ## SVR00013 - ES|QL view definition is invalid
