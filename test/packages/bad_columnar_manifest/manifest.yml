@@ -1,0 +1,26 @@
+format_version: 3.8.0
+name: bad_columnar_manifest
+title: Bad package declaring logsdb_columnar readiness
+description: Tests the logsdb_columnar validation, with one data stream per invalid case.
+version: 1.0.0-beta1
+type: integration
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: "^9.5.0"
+  elastic:
+    subscription: basic
+policy_templates:
+  - name: logs
+    title: Logs
+    description: Collect logs.
+    inputs:
+      - type: logfile
+        title: Collect logs from files
+        description: Collect logs from files.
+owner:
+  github: elastic/obs-infraobs-integrations
+  type: elastic
+elasticsearch:
+  logsdb_columnar: opt_in

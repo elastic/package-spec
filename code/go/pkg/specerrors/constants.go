@@ -29,4 +29,7 @@ const (
 	CodeUseOtelSuffixWithInput              = "SVR00011"
 	CodeAgentVersionCondition               = "SVR00012"
 	CodeEsqlViewValidation                  = "SVR00013"
+
+	// Columnar index mode validation warnings (filterable)
+	CodeColumnarSortWithoutTimestamp = "SVR00016" // custom index.sort that does not include @timestamp
 )
