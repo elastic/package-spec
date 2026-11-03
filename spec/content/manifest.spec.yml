@@ -5,38 +5,6 @@ spec:
   # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
   type: object
   additionalProperties: false
-  definitions:
-    discovery:
-      description: >
-        Description of the data this package can be used with. It can be used to discover
-        the package from elements in the existing data.
-      type: object
-      additionalProperties: false
-      properties:
-        datasets:
-          description: List of the datasets this package can be used with. For a package to be used with an index, the `data_stream.dataset` field of this index should be one of the datasets listed here.
-          type: array
-          items:
-            type: object
-            additionalProperties: false
-            properties:
-              name:
-                description: Name of the dataset.
-                type: string
-            required:
-              - name
-        fields:
-          description: List of fields this package expects to find in an index. For a package to be used with an index, the index should contain all the fields listed here.
-          type: array
-          items:
-            type: object
-            additionalProperties: false
-            properties:
-              name:
-                description: Name of the field.
-                type: string
-            required:
-              - name
   properties:
     format_version:
       description: The version of the package specification format used by this package.
@@ -49,6 +17,8 @@ spec:
       - apache
     group:
       $ref: "../integration/manifest.spec.yml#/definitions/group"
+    schema:
+      $ref: "../integration/manifest.spec.yml#/definitions/schema"
     title:
       $ref: "../integration/manifest.spec.yml#/definitions/title"
     description:
@@ -77,7 +47,7 @@ spec:
         kibana:
           $ref: "../integration/manifest.spec.yml#/definitions/conditions/properties/kibana"
     discovery:
-      $ref: "#/definitions/discovery"
+      $ref: "../integration/manifest.spec.yml#/definitions/discovery"
     icons:
       $ref: "../integration/manifest.spec.yml#/definitions/icons"
     screenshots:

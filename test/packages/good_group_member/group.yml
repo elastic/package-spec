@@ -1,0 +1,10 @@
+title: Nginx
+description: Collect logs and metrics from Nginx.
+icon: img/nginx-group.svg
+default: good_group_member
+schema_labels:
+  ecs: Legacy
+planned_schemas:
+  - ocsf
+# Unknown keys are allowed while the shape is a prototype.
+experimental_note: anything

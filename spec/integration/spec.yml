@@ -78,6 +78,12 @@ spec:
     name: img
     required: false
     $ref: "./img/spec.yml"
+  - description: "PROTOTYPE: group config, copied from the group directory by elastic-package build when the package belongs to an integration group."
+    type: file
+    contentMediaType: "application/x-yaml"
+    name: "group.yml"
+    required: false
+    $ref: "./group.spec.yml"
 
 versions:
   - before: 3.2.2

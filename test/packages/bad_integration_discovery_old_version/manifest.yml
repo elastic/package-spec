@@ -1,0 +1,36 @@
+format_version: 3.5.0
+name: bad_integration_discovery_old_version
+title: "Bad Integration package with discovery on old format version"
+version: 0.0.1
+source:
+  license: "Elastic-2.0"
+description: "Integration package on format_version 3.5.0 that declares discovery."
+type: integration
+categories:
+  - custom
+conditions:
+  kibana:
+    version: "^9.4.0"
+  elastic:
+    subscription: "basic"
+discovery:
+  datasets:
+    - name: bad_integration_discovery_old_version.logs
+  fields:
+    - name: service.name
+icons:
+  - src: /img/sample-logo.svg
+    title: Sample logo
+    size: 32x32
+    type: image/svg+xml
+policy_templates:
+  - name: logs
+    title: Logs
+    description: Collect logs
+    inputs:
+      - type: logfile
+        title: Collect logs
+        description: Collecting logs from files
+owner:
+  github: elastic/ecosystem
+  type: elastic
