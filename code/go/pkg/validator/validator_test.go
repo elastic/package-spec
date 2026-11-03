@@ -742,11 +742,14 @@ func Test_ValidateFromPath_badAlertRuleTemplatesV2(t *testing.T) {
 		require.True(t, ok, "expected validation errors, got %v", err)
 		var messages []string
 		for _, verr := range verrs {
-			if verr.Code() == specerrors.CodeAlertRuleTemplateValidation {
-				messages = append(messages, verr.Error())
+			messages = append(messages, verr.Error())
+			if strings.Contains(verr.Error(), "unsupported-engine.json") {
+				require.Empty(t, verr.Code(), "unsupported engines must not be excludable")
+			} else {
+				require.Equal(t, specerrors.CodeAlertRuleTemplateValidation, verr.Code())
 			}
 		}
-		require.Len(t, messages, len(expected), "one SVR00014 error per template: %v", messages)
+		require.Len(t, messages, len(expected), "one error per template: %v", messages)
 		for file, want := range expected {
 			found := false
 			for _, message := range messages {
@@ -754,8 +757,13 @@ func Test_ValidateFromPath_badAlertRuleTemplatesV2(t *testing.T) {
 					found = true
 				}
 			}
-			assert.True(t, found, "no SVR00014 error for %s containing %q in %v", file, want, messages)
+			assert.True(t, found, "no error for %s containing %q in %v", file, want, messages)
 		}
+		filtered, err := specerrors.NewExcludeCheck(specerrors.CodeAlertRuleTemplateValidation).Process(verrs)
+		require.NoError(t, err)
+		require.Len(t, filtered.Processed, 1)
+		assert.ErrorContains(t, filtered.Processed[0], `unsupported alert template engine "v3"`)
+		assert.Len(t, filtered.Removed, len(expected)-1)
 	}
 
 	for _, mode := range []Mode{LegacyMode, SourceMode, BuildMode} {
@@ -790,14 +798,53 @@ func Test_ValidateFromPath_alertRuleTemplatesV2FormatVersion(t *testing.T) {
 	require.True(t, ok)
 	var messages []string
 	for _, verr := range verrs {
+		require.Empty(t, verr.Code())
 		messages = append(messages, verr.Error())
 	}
 	require.Len(t, messages, 2, messages)
+	filtered, err := specerrors.NewExcludeCheck(specerrors.CodeAlertRuleTemplateValidation).Process(verrs)
+	require.NoError(t, err)
+	assert.Len(t, filtered.Processed, len(verrs))
 	for _, file := range []string{"alert-rule.json", "signal-rule.json"} {
 		assert.True(t, slices.ContainsFunc(messages, func(message string) bool {
 			return strings.Contains(message, file+`" is invalid: Alerting v2 rule templates (engine v2) require format_version 3.7.0 or later`)
 		}), "no format_version error for %s in %v", file, messages)
 	}
+}
+
+func Test_ValidateFromPath_alertRuleTemplateInvalidJSON(t *testing.T) {
+	packageRoot := filepath.Join(t.TempDir(), "good_alert_rule_templates_v2")
+	require.NoError(t, os.CopyFS(packageRoot, os.DirFS(filepath.Join("..", "..", "..", "..", "test", "packages", "good_alert_rule_templates_v2"))))
+	templatePath := filepath.Join(packageRoot, "kibana", "alerting_rule_template", "alert-rule.json")
+	require.NoError(t, os.WriteFile(templatePath, []byte(`{"id":"alert-rule",`), 0o644))
+
+	requireJSONErrors := func(t *testing.T, err error) {
+		t.Helper()
+		validationErrors, ok := err.(specerrors.ValidationErrors)
+		require.True(t, ok, "expected validation errors, got %v", err)
+		require.NotEmpty(t, validationErrors)
+		for _, validationError := range validationErrors {
+			assert.Empty(t, validationError.Code())
+			assert.ErrorContains(t, validationError, "unmarshalling JSON file failed")
+			assert.ErrorContains(t, validationError, "alert-rule.json")
+		}
+		filtered, err := specerrors.NewExcludeCheck(specerrors.CodeAlertRuleTemplateValidation).Process(validationErrors)
+		require.NoError(t, err)
+		assert.Len(t, filtered.Processed, len(validationErrors))
+		assert.Empty(t, filtered.Removed)
+	}
+	for _, mode := range []Mode{LegacyMode, SourceMode, BuildMode} {
+		t.Run(string(mode), func(t *testing.T) {
+			validator, err := New(mode)
+			require.NoError(t, err)
+			requireJSONErrors(t, validator.ValidateFromPath(packageRoot))
+		})
+	}
+	t.Run("zip", func(t *testing.T) {
+		validator, err := New(LegacyMode)
+		require.NoError(t, err)
+		requireJSONErrors(t, validator.ValidateFromZip(writePackageZip(t, packageRoot, "good_alert_rule_templates_v2")))
+	})
 }
 
 func TestValidateItemNotAllowed(t *testing.T) {

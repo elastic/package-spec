@@ -56,19 +56,19 @@ const validSignalTemplate = `{
 }`
 
 func TestV2TemplateStructure(t *testing.T) {
-	require.NoError(t, validateAlertRuleTemplate([]byte(validV2Template)))
-	require.NoError(t, validateAlertRuleTemplate([]byte(validSignalTemplate)))
-	require.NoError(t, validateAlertRuleTemplate([]byte(`{"attributes":{"name":"Classic"}}`)))
-	require.NoError(t, validateAlertRuleTemplate([]byte(`{"attributes":{"engine":"v1","name":"Classic"}}`)))
+	require.NoError(t, validateAlertRuleTemplateJSON([]byte(validV2Template)))
+	require.NoError(t, validateAlertRuleTemplateJSON([]byte(validSignalTemplate)))
+	require.NoError(t, validateAlertRuleTemplateJSON([]byte(`{"attributes":{"name":"Classic"}}`)))
+	require.NoError(t, validateAlertRuleTemplateJSON([]byte(`{"attributes":{"engine":"v1","name":"Classic"}}`)))
 	// Classic templates are skipped even when engine is null or non-string, or
 	// when classic-only fields like id/type are not strings. Only an explicit
 	// "v2" engine triggers structural validation.
-	require.NoError(t, validateAlertRuleTemplate([]byte(`{"attributes":{"engine":null,"name":"Classic"}}`)))
-	require.NoError(t, validateAlertRuleTemplate([]byte(`{"id":123,"type":false,"attributes":{"name":"Classic"}}`)))
-	require.NoError(t, validateAlertRuleTemplate([]byte(`{"attributes":{"engine":7,"name":"Classic"}}`)))
-	require.NoError(t, validateAlertRuleTemplate([]byte(`{"id": "some-rule",`)))
-	require.NoError(t, validateAlertRuleTemplate([]byte(`not json`)))
-	require.NoError(t, validateAlertRuleTemplate([]byte(`{"id":"future","type":"alerting_rule_template","attributes":{"engine":"v2","future":true,"rule":{"kind":"alert","future_option":true,"metadata":{"name":"Future"},"schedule":{"every":"1m"},"query":{"base":"FROM logs"},"recovery":{"strategy":"no_breach"},"no_data":{"strategy":"ignore"}}}}`)))
+	require.NoError(t, validateAlertRuleTemplateJSON([]byte(`{"attributes":{"engine":null,"name":"Classic"}}`)))
+	require.NoError(t, validateAlertRuleTemplateJSON([]byte(`{"id":123,"type":false,"attributes":{"name":"Classic"}}`)))
+	require.NoError(t, validateAlertRuleTemplateJSON([]byte(`{"attributes":{"engine":7,"name":"Classic"}}`)))
+	require.NoError(t, validateAlertRuleTemplateJSON([]byte(`{"id": "some-rule",`)))
+	require.NoError(t, validateAlertRuleTemplateJSON([]byte(`not json`)))
+	require.NoError(t, validateAlertRuleTemplateJSON([]byte(`{"id":"future","type":"alerting_rule_template","attributes":{"engine":"v2","future":true,"rule":{"kind":"alert","future_option":true,"metadata":{"name":"Future"},"schedule":{"every":"1m"},"query":{"base":"FROM logs"},"recovery":{"strategy":"no_breach"},"no_data":{"strategy":"ignore"}}}}`)))
 
 	rule := func(doc map[string]any) map[string]any {
 		return doc["attributes"].(map[string]any)["rule"].(map[string]any)
@@ -166,7 +166,7 @@ func TestV2TemplateStructure(t *testing.T) {
 			tt.edit(doc)
 			raw, err := json.Marshal(doc)
 			require.NoError(t, err)
-			err = validateAlertRuleTemplate(raw)
+			err = validateAlertRuleTemplateJSON(raw)
 			if tt.want == "" {
 				require.NoError(t, err)
 			} else {
@@ -239,11 +239,11 @@ func TestV2TemplateStringLimits(t *testing.T) {
 				field.set(doc, strings.Repeat(character, count))
 				raw, err := json.Marshal(doc)
 				require.NoError(t, err)
-				require.NoError(t, validateAlertRuleTemplate(raw))
+				require.NoError(t, validateAlertRuleTemplateJSON(raw))
 				field.set(doc, strings.Repeat(character, count+1))
 				raw, err = json.Marshal(doc)
 				require.NoError(t, err)
-				require.Error(t, validateAlertRuleTemplate(raw))
+				require.Error(t, validateAlertRuleTemplateJSON(raw))
 			})
 		}
 	}
@@ -263,7 +263,7 @@ func TestV2TemplateDurationBounds(t *testing.T) {
 				}
 				raw, err := json.Marshal(doc)
 				require.NoError(t, err)
-				err = validateAlertRuleTemplate(raw)
+				err = validateAlertRuleTemplateJSON(raw)
 				if duration == "366d" || duration == "-1s" || duration == "invalid" {
 					require.Error(t, err)
 				} else {
@@ -286,9 +286,9 @@ func TestV2TemplateDurationBounds(t *testing.T) {
 		raw, err := json.Marshal(doc)
 		require.NoError(t, err)
 		if test.valid {
-			require.NoError(t, validateAlertRuleTemplate(raw))
+			require.NoError(t, validateAlertRuleTemplateJSON(raw))
 		} else {
-			require.ErrorContains(t, validateAlertRuleTemplate(raw), "schedule.every")
+			require.ErrorContains(t, validateAlertRuleTemplateJSON(raw), "schedule.every")
 		}
 	}
 
@@ -297,7 +297,7 @@ func TestV2TemplateDurationBounds(t *testing.T) {
 	templateRule(doc)["schedule"].(map[string]any)["every"] = "0s"
 	raw, err := json.Marshal(doc)
 	require.NoError(t, err)
-	require.ErrorContains(t, validateAlertRuleTemplate(raw), "schedule.every")
+	require.ErrorContains(t, validateAlertRuleTemplateJSON(raw), "schedule.every")
 }
 
 func TestV2TemplateNoDataQuery(t *testing.T) {
@@ -330,7 +330,7 @@ func TestV2TemplateNoDataQuery(t *testing.T) {
 					rule["no_data"] = map[string]any{"strategy": strategy, "query": query.value}
 					raw, err := json.Marshal(doc)
 					require.NoError(t, err)
-					err = validateAlertRuleTemplate(raw)
+					err = validateAlertRuleTemplateJSON(raw)
 					if query.valid {
 						require.NoError(t, err)
 					} else {
@@ -353,7 +353,7 @@ func TestV2TemplateTransitionCounts(t *testing.T) {
 				templateRule(doc)["state_transition"].(map[string]any)[phase] = map[string]any{"count": json.RawMessage(count)}
 				raw, err := json.Marshal(doc)
 				require.NoError(t, err)
-				err = validateAlertRuleTemplate(raw)
+				err = validateAlertRuleTemplateJSON(raw)
 				switch count {
 				case "0", "-0", "2", "2.0", "2e0", "2e1", "1000.0":
 					require.NoError(t, err)
@@ -399,11 +399,11 @@ func TestV2TemplateOptionalNulls(t *testing.T) {
 			delete(parent, field)
 			raw, err := json.Marshal(doc)
 			require.NoError(t, err)
-			require.NoError(t, validateAlertRuleTemplate(raw), "omission should be accepted")
+			require.NoError(t, validateAlertRuleTemplateJSON(raw), "omission should be accepted")
 			parent[field] = nil
 			raw, err = json.Marshal(doc)
 			require.NoError(t, err)
-			require.Error(t, validateAlertRuleTemplate(raw), "explicit null should be rejected")
+			require.Error(t, validateAlertRuleTemplateJSON(raw), "explicit null should be rejected")
 		})
 	}
 	for _, template := range []string{validV2Template, validSignalTemplate} {
@@ -412,7 +412,7 @@ func TestV2TemplateOptionalNulls(t *testing.T) {
 		templateRule(doc)["state_transition"] = nil
 		raw, err := json.Marshal(doc)
 		require.NoError(t, err)
-		require.ErrorContains(t, validateAlertRuleTemplate(raw), "state_transition")
+		require.ErrorContains(t, validateAlertRuleTemplateJSON(raw), "state_transition")
 	}
 }
 
@@ -426,7 +426,7 @@ func TestV2SignalTransitions(t *testing.T) {
 			}
 			raw, err := json.Marshal(doc)
 			require.NoError(t, err)
-			err = validateAlertRuleTemplate(raw)
+			err = validateAlertRuleTemplateJSON(raw)
 			if transition == "missing" {
 				require.NoError(t, err)
 			} else {
@@ -441,7 +441,7 @@ func TestV2SignalTransitions(t *testing.T) {
 			templateRule(doc)[field] = nil
 			raw, err := json.Marshal(doc)
 			require.NoError(t, err)
-			require.ErrorContains(t, validateAlertRuleTemplate(raw), "signal rules cannot set recovery or no_data")
+			require.ErrorContains(t, validateAlertRuleTemplateJSON(raw), "signal rules cannot set recovery or no_data")
 		})
 	}
 }
@@ -460,6 +460,38 @@ func TestAlertRuleTemplateSemanticRule(t *testing.T) {
 	require.ErrorContains(t, errs[0], "rule.kind")
 	require.ErrorContains(t, errs[0], "SVR00014")
 	require.ErrorContains(t, errs[0], filepath.Join(dir, "invalid.json"))
+}
+
+func TestParseAlertRuleTemplate(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		data string
+		skip bool
+		want string
+	}{
+		{"v2", validV2Template, false, ""},
+		{"invalid v2 id and type", `{"id":5,"type":false,"attributes":{"engine":"v2"}}`, false, ""},
+		{"missing engine", `{"id":5,"type":false,"attributes":{}}`, true, ""},
+		{"null engine", `{"attributes":{"engine":null}}`, true, ""},
+		{"numeric engine", `{"attributes":{"engine":7}}`, true, ""},
+		{"empty engine", `{"attributes":{"engine":""}}`, true, ""},
+		{"classic engine", `{"id":5,"attributes":{"engine":"v1"}}`, true, ""},
+		{"non-object attributes", `{"attributes":[]}`, true, ""},
+		{"null attributes", `{"attributes":null}`, true, ""},
+		{"invalid JSON", `{"attributes":{"engine":"v2"`, true, ""},
+		{"unsupported engine", `{"attributes":{"engine":"v3"}}`, false, `unsupported alert template engine "v3"`},
+		{"uppercase engine", `{"attributes":{"engine":"V2"}}`, false, `unsupported alert template engine "V2"`},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			_, skip, err := parseAlertRuleTemplate([]byte(test.data))
+			require.Equal(t, test.skip, skip)
+			if test.want == "" {
+				require.NoError(t, err)
+			} else {
+				require.ErrorContains(t, err, test.want)
+			}
+		})
+	}
 }
 
 func TestAlertRuleTemplatesV2FormatVersion(t *testing.T) {
@@ -500,7 +532,7 @@ func TestV2TemplateNonemptyCollections(t *testing.T) {
 			test.edit(templateRule(doc))
 			raw, err := json.Marshal(doc)
 			require.NoError(t, err)
-			require.ErrorContains(t, validateAlertRuleTemplate(raw), test.want)
+			require.ErrorContains(t, validateAlertRuleTemplateJSON(raw), test.want)
 		})
 	}
 }
@@ -526,7 +558,7 @@ func TestV2TemplateUntrimmedStrings(t *testing.T) {
 			test.edit(doc)
 			raw, err := json.Marshal(doc)
 			require.NoError(t, err)
-			require.NoError(t, validateAlertRuleTemplate(raw))
+			require.NoError(t, validateAlertRuleTemplateJSON(raw))
 		})
 	}
 }
@@ -558,9 +590,9 @@ func TestV2TemplateArtifactData(t *testing.T) {
 			raw, err := json.Marshal(doc)
 			require.NoError(t, err)
 			if test.want == "" {
-				require.NoError(t, validateAlertRuleTemplate(raw))
+				require.NoError(t, validateAlertRuleTemplateJSON(raw))
 			} else {
-				require.ErrorContains(t, validateAlertRuleTemplate(raw), test.want)
+				require.ErrorContains(t, validateAlertRuleTemplateJSON(raw), test.want)
 			}
 		})
 	}
@@ -584,9 +616,9 @@ func TestV2TemplateJavaScriptWhitespace(t *testing.T) {
 			raw, err := json.Marshal(doc)
 			require.NoError(t, err)
 			if test.want == "" {
-				require.NoError(t, validateAlertRuleTemplate(raw))
+				require.NoError(t, validateAlertRuleTemplateJSON(raw))
 			} else {
-				require.ErrorContains(t, validateAlertRuleTemplate(raw), test.want)
+				require.ErrorContains(t, validateAlertRuleTemplateJSON(raw), test.want)
 			}
 		})
 	}
@@ -596,7 +628,7 @@ func TestV2TemplateJavaScriptWhitespace(t *testing.T) {
 	templateRule(doc)["query"].(map[string]any)["breach"] = map[string]any{"segment": "\uFEFF"}
 	raw, err := json.Marshal(doc)
 	require.NoError(t, err)
-	require.ErrorContains(t, validateAlertRuleTemplate(raw), "rule.query.breach.segment is required")
+	require.ErrorContains(t, validateAlertRuleTemplateJSON(raw), "rule.query.breach.segment is required")
 }
 
 func TestTemplateJSONLength(t *testing.T) {
@@ -632,7 +664,17 @@ func TestV2TemplateReportsEveryArtifact(t *testing.T) {
 	}
 	raw, err := json.Marshal(doc)
 	require.NoError(t, err)
-	err = validateAlertRuleTemplate(raw)
+	err = validateAlertRuleTemplateJSON(raw)
 	require.ErrorContains(t, err, "rule.artifacts[0].id is required")
 	require.ErrorContains(t, err, "dashboard artifact data.dashboardId is not accepted")
+}
+
+// validateAlertRuleTemplateJSON exercises the shared engine parser and the v2
+// structural checks with the same inline documents used by these unit tests.
+func validateAlertRuleTemplateJSON(data []byte) error {
+	template, skip, err := parseAlertRuleTemplate(data)
+	if err != nil || skip {
+		return err
+	}
+	return validateAlertRuleTemplate(template)
 }

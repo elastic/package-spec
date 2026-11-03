@@ -36,8 +36,9 @@ import (
 // created from it. Fleet does not validate the rule body when it installs the
 // package, so this check is the earliest point where these errors are reported.
 // Classic templates (engine "", "v1", absent, null, or non-string) are skipped,
-// and any other engine string is rejected. package-spec has no structural schema
-// for alerting_rule_template files, so classic templates are not content-validated.
+// and any other engine string is rejected without an excludable error code.
+// package-spec has no structural schema for alerting_rule_template files, so
+// classic templates are not content-validated.
 // Bytes that are not valid JSON are skipped here; the Kibana object checks
 // already report them.
 
@@ -100,6 +101,12 @@ const alertRuleTemplateFiles = "kibana/alerting_rule_template/*.json"
 // Kibana 9.6.0, the first Kibana that installs Alerting v2 templates.
 const alertingV2MinFormatVersion = "3.7.0"
 
+type alertRuleTemplate struct {
+	ID         json.RawMessage `json:"id"`
+	Type       json.RawMessage `json:"type"`
+	Attributes json.RawMessage `json:"attributes"`
+}
+
 // ValidateAlertRuleTemplatesV2FormatVersion rejects Alerting v2 templates, and
 // templates with an unsupported engine, in packages whose format_version is
 // older than alertingV2MinFormatVersion. Kibana before 9.6.0 fails to install
@@ -118,23 +125,17 @@ func ValidateAlertRuleTemplatesV2FormatVersion(root fspath.FS) specerrors.Valida
 			errs = append(errs, specerrors.NewStructuredErrorf("failed to read alert rule template %s: %w", root.Path(file), err))
 			continue
 		}
-		var envelope struct {
-			Attributes json.RawMessage `json:"attributes"`
-		}
-		if err := json.Unmarshal(data, &envelope); err != nil {
+		_, skip, err := parseAlertRuleTemplate(data)
+		if err != nil {
+			errs = append(errs, specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", root.Path(file), err))
 			continue
 		}
-		engine, ok := alertRuleEngineString(envelope.Attributes)
-		switch {
-		case !ok || engine == "" || engine == "v1":
-		case engine == "v2":
-			errs = append(errs, specerrors.NewStructuredErrorf(
-				"file \"%s\" is invalid: Alerting v2 rule templates (engine v2) require format_version %s or later",
-				root.Path(file), alertingV2MinFormatVersion))
-		default:
-			errs = append(errs, specerrors.NewStructuredErrorf(
-				"file \"%s\" is invalid: unsupported alert template engine %q", root.Path(file), engine))
+		if skip {
+			continue
 		}
+		errs = append(errs, specerrors.NewStructuredErrorf(
+			"file \"%s\" is invalid: Alerting v2 rule templates (engine v2) require format_version %s or later",
+			root.Path(file), alertingV2MinFormatVersion))
 	}
 	return errs
 }
@@ -153,7 +154,15 @@ func ValidateAlertRuleTemplates(root fspath.FS) specerrors.ValidationErrors {
 			errs = append(errs, specerrors.NewStructuredErrorf("failed to read alert rule template %s: %w", root.Path(file), err))
 			continue
 		}
-		if err := validateAlertRuleTemplate(data); err != nil {
+		template, skip, err := parseAlertRuleTemplate(data)
+		if err != nil {
+			errs = append(errs, specerrors.NewStructuredErrorf("file \"%s\" is invalid: %w", root.Path(file), err))
+			continue
+		}
+		if skip {
+			continue
+		}
+		if err := validateAlertRuleTemplate(template); err != nil {
 			errs = append(errs, specerrors.NewStructuredError(
 				fmt.Errorf("file \"%s\" is invalid: %w", root.Path(file), err),
 				specerrors.CodeAlertRuleTemplateValidation,
@@ -163,42 +172,34 @@ func ValidateAlertRuleTemplates(root fspath.FS) specerrors.ValidationErrors {
 	return errs
 }
 
-func validateAlertRuleTemplate(data []byte) error {
-	// Read attributes.engine first so classic templates (engine "", "v1",
-	// absent, or null, and any non-string engine) are skipped before the full
-	// document is type-checked. Otherwise a classic template with a non-string
-	// id, type, or engine would fail decoding and be reported under this rule.
-	var envelope struct {
-		Attributes json.RawMessage `json:"attributes"`
+// parseAlertRuleTemplate separates engine errors from v2 structural findings.
+// skip is true for classic templates and invalid JSON. The existing Kibana
+// object checks report invalid JSON. RawMessage fields preserve the classic
+// skip even when id, type, attributes, or engine have unexpected types.
+func parseAlertRuleTemplate(data []byte) (alertRuleTemplate, bool, error) {
+	var template alertRuleTemplate
+	if err := json.Unmarshal(data, &template); err != nil {
+		return template, true, nil
 	}
-	if err := json.Unmarshal(data, &envelope); err != nil {
-		// Not valid JSON. The Kibana object checks already report the parse
-		// failure, so tagging it SVR00014 would also flag classic templates.
-		return nil
-	}
-	engine, ok := alertRuleEngineString(envelope.Attributes)
+	engine, ok := alertRuleEngineString(template.Attributes)
 	if !ok || engine == "" || engine == "v1" {
-		return nil
+		return template, true, nil
 	}
 	if engine != "v2" {
-		return fmt.Errorf("unsupported alert template engine %q", engine)
+		return template, false, fmt.Errorf("unsupported alert template engine %q", engine)
 	}
+	return template, false, nil
+}
 
-	var doc struct {
-		ID   json.RawMessage `json:"id"`
-		Type json.RawMessage `json:"type"`
-	}
-	if err := json.Unmarshal(data, &doc); err != nil {
-		return err
-	}
-	attributes, _ := jsonObject(envelope.Attributes)
+func validateAlertRuleTemplate(template alertRuleTemplate) error {
+	attributes, _ := jsonObject(template.Attributes)
 
 	var problems templateProblems
-	id := jsonString(doc.ID)
+	id := jsonString(template.ID)
 	if id == "" || templateStringLength(id) > templateIDMax {
 		problems.add("id is required and must be at most %d characters", templateIDMax)
 	}
-	if jsonString(doc.Type) != "alerting_rule_template" {
+	if jsonString(template.Type) != "alerting_rule_template" {
 		problems.add("type must be alerting_rule_template")
 	}
 	rule, ok := jsonObject(attributes["rule"])

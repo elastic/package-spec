@@ -268,7 +268,8 @@ Which templates are checked:
 - `engine: v2` templates are checked.
 - Classic templates are skipped. A template is classic when `engine` is missing, `null`,
   not a string, `""`, or `v1`. package-spec has no schema for classic templates.
-- Any other `engine` value, such as `V2` or `v3`, is an error.
+- Any other string `engine` value, such as `V2` or `v3`, is an error without a code
+  on every `format_version`, so `validation.yml` cannot exclude it.
 - A file that is not valid JSON is not reported here, because the Kibana object checks
   already report it.
 
@@ -300,8 +301,10 @@ These checks follow Kibana's
 these checks when Fleet installs the package. It runs them only when a user creates a rule
 from the template, so this rule is the earliest place an invalid template is reported.
 
-Like other coded semantic rules, these errors can be suppressed during a migration
-window by adding the code to the package's `validation.yml`:
+Like other coded semantic rules, v2 structural errors from `format_version` 3.7.0
+can be suppressed during a migration window by adding the code to the package's
+`validation.yml`. Unsupported-engine errors, invalid JSON errors from the Kibana
+object checks, and the minimum-format-version errors cannot be suppressed:
 
 ```yaml
 errors:
