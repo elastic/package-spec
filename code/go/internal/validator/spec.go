@@ -259,6 +259,8 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidatePipelineTags, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
 		{fn: semantic.ValidateStaticHandlebarsFiles, types: []string{"integration", "input"}},
 		{fn: semantic.ValidateKibanaTagDuplicates},
+		{fn: semantic.ValidateAlertRuleTemplatesV2FormatVersion, types: []string{"integration", "content"}, until: semver.MustParse("3.7.0")},
+		{fn: semantic.ValidateAlertRuleTemplates, types: []string{"integration", "content"}, since: semver.MustParse("3.7.0")},
 		{fn: semantic.ValidateEsqlViews, types: []string{"integration", "content"}, since: semver.MustParse("3.6.0")},
 		{fn: semantic.ValidatePipelineOnFailure, types: []string{"integration"}, since: semver.MustParse("3.6.0")},
 		{fn: semantic.ValidateIntegrationInputsDeprecation, types: []string{"integration"}, since: semver.MustParse("3.6.0")},

@@ -1,0 +1,13 @@
+{
+    "id": "v1-query-format",
+    "type": "alerting_rule_template",
+    "attributes": {
+        "engine": "v2",
+        "rule": {
+            "kind": "signal",
+            "metadata": {"name": "Query in the old format"},
+            "schedule": {"every": "1m"},
+            "query": {"format": "composed", "base": "FROM logs-something-default"}
+        }
+    }
+}

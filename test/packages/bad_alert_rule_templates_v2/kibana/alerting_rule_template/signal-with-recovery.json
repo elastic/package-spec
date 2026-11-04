@@ -1,0 +1,14 @@
+{
+    "id": "signal-with-recovery",
+    "type": "alerting_rule_template",
+    "attributes": {
+        "engine": "v2",
+        "rule": {
+            "kind": "signal",
+            "metadata": {"name": "Signal with recovery"},
+            "schedule": {"every": "1m"},
+            "query": {"base": "FROM logs-something-default"},
+            "recovery": {"strategy": "no_breach"}
+        }
+    }
+}

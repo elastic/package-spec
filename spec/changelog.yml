@@ -8,6 +8,11 @@
     - description: Add support for semantic_text field definition.
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
+- version: 3.7.1-next
+  changes:
+    - description: Validate Alerting v2 rule template structure as a semantic rule (SVR00014) from format_version 3.7.0, reject Alerting v2 rule templates in packages with an earlier format_version, and reject unsupported engines with non-excludable errors in every format_version.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1273
 - version: 3.7.0
   changes:
     - description: Add optional use_otel_suffix on integration data streams so index templates can use the .otel suffix without an input, and reject the flag when the data stream defines an input.

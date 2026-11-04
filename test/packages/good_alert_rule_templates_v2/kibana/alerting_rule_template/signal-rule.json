@@ -1,0 +1,14 @@
+{
+    "id": "signal-rule",
+    "type": "alerting_rule_template",
+    "managed": true,
+    "attributes": {
+        "engine": "v2",
+        "rule": {
+            "kind": "signal",
+            "metadata": {"name": "[Something] Service started"},
+            "schedule": {"every": "5m"},
+            "query": {"base": "FROM logs-something-default | WHERE event.action == \"start\""}
+        }
+    }
+}
