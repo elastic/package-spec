@@ -1,0 +1,13 @@
+{
+    "id": "alert-without-lifecycle",
+    "type": "alerting_rule_template",
+    "attributes": {
+        "engine": "v2",
+        "rule": {
+            "kind": "alert",
+            "metadata": {"name": "Alert without recovery or no_data"},
+            "schedule": {"every": "1m"},
+            "query": {"base": "FROM logs-something-default"}
+        }
+    }
+}

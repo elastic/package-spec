@@ -1,0 +1,13 @@
+{
+    "id": "unsupported-engine",
+    "type": "alerting_rule_template",
+    "attributes": {
+        "engine": "v3",
+        "rule": {
+            "kind": "signal",
+            "metadata": {"name": "Unknown engine"},
+            "schedule": {"every": "1m"},
+            "query": {"base": "FROM logs-something-default"}
+        }
+    }
+}

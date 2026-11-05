@@ -21,6 +21,7 @@
 | [SVR00011]          | use_otel_suffix with an input defined |
 | [SVR00012]          | Package-level agent.version condition           |
 | [SVR00013]          | ES\|QL view definition is invalid               |
+| [SVR00014]          | Alerting v2 rule template structure is invalid   |
 
 ## JSE00001 - Rename message to event.original
 
@@ -188,7 +189,7 @@ input type, which already applies the `.otel` index pattern suffix.
 
 ## SVR00012 - Package-level agent.version condition
 
-[SVR00012]: #svr00012---pacakge-level-agent.version-condition
+[SVR00012]: #svr00012---package-level-agentversion-condition
 
 **Available since [3.6.7](https://github.com/elastic/package-spec/releases/tag/v3.6.7)** (warning)
 **Promoted to error since [3.7.0](https://github.com/elastic/package-spec/releases/tag/v3.7.0)**
@@ -230,7 +231,7 @@ To suppress this check during the migration window, add to the package's `valida
 ```yaml
 errors:
   exclude_checks:
-    - SVR00011
+    - SVR00012
 ```
 
 ## SVR00013 - ES|QL view definition is invalid
@@ -246,4 +247,57 @@ a view with the same name are rejected.
 
 **`query` must be non-empty after trimming whitespace**
 
-A query consisting only of whitespace characters passes `minLength: 1` in the JSON Schema but is rejected by Elasticsearch.
+A query consisting only of whitespace characters passes `minLength: 1` in the JSON
+Schema but is rejected by Elasticsearch.
+
+## SVR00014 - Alerting v2 rule template structure is invalid
+
+[SVR00014]: #svr00014---alerting-v2-rule-template-structure-is-invalid
+
+**Applies to `format_version` 3.7.0 and later.**
+
+Checks templates in `kibana/alerting_rule_template/` that set `attributes.engine` to
+`"v2"`, in integration and content packages.
+
+V2 templates require `format_version` 3.7.0 or later. An earlier format produces an
+error that cannot be excluded. Kibana 9.6.0 is the first version that installs v2
+templates and supports format 3.7.0. Requiring this format keeps the package registry
+from offering these packages to older Kibana versions.
+
+Other templates are handled as follows:
+
+- Classic templates are skipped by this rule: `engine` is missing, `null`, not a
+  string, `""`, or `"v1"`. package-spec has no structural schema for classic templates.
+- Unsupported string engines, such as `"V2"` or `"v3"`, always produce an error that
+  cannot be excluded, regardless of `format_version`.
+- Invalid JSON is reported by the existing Kibana object checks.
+
+The v2 checks cover:
+
+- `rule.kind`, metadata (including `tags`, `routing_tags`, and `builder`), schedule,
+  time field, and query structure, with Kibana's length and count limits.
+- Lifecycle settings: alerts require `recovery` and `no_data`; signals cannot set
+  `recovery`, `no_data`, `state_transition`, or `metadata.routing_tags`.
+- State transitions, grouping, and artifacts, including artifact `id`, `type`, and
+  `data` limits.
+
+String lengths use UTF-16 code units, whitespace checks follow JavaScript's `trim()`,
+and artifact data size uses `JSON.stringify(data).length`.
+
+These checks follow Kibana's
+[`alerting-v2-schemas`](https://github.com/elastic/kibana/tree/600a8067f05e21388a63ffcc22cf602a3ffb1aa3/x-pack/platform/packages/shared/response-ops/alerting-v2-schemas/src).
+ES|QL syntax is not checked, so test queries against the target stack. Unknown fields
+are allowed for compatibility with later Kibana versions, so misspelled fields can
+also pass. Fleet does not validate the v2 rule body on package installation; Kibana
+validates it when a user creates a rule from the template.
+
+To exclude v2 structural errors during a migration, add to `validation.yml`:
+
+```yaml
+errors:
+  exclude_checks:
+    - SVR00014
+```
+
+This does not exclude unsupported-engine errors, malformed JSON errors, or errors
+for v2 templates using a format earlier than 3.7.0.
