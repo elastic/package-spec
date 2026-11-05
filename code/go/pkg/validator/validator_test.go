@@ -1426,7 +1426,7 @@ func TestValidateWorkflows(t *testing.T) {
 			"field (root): enabled is required",
 		},
 		"bad_workflow_integration-enabled.yml": {
-			"workflow should set enabled: false; package workflows are installed disabled",
+			"field enabled: enabled must be one of the following: false",
 		},
 	}
 

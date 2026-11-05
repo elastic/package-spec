@@ -9,10 +9,7 @@
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/807
     # Pending on https://github.com/elastic/kibana/pull/299129
-    - description: Add support for Kibana `workflow` assets in integration packages.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/1271
-    - description: "Require Kibana workflows to set `enabled: false`."
+    - description: "Add support for Kibana `workflow` assets in integration packages. Workflows must set `enabled: false`."
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1271
 - version: 3.7.1-next

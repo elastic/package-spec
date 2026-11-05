@@ -10,6 +10,9 @@ spec:
       minLength: 1
     enabled:
       description: Whether the workflow is enabled. Kibana enables workflows that omit it, so packages must set it to false.
+      type: boolean
+      enum:
+        - false
     triggers:
       description: Triggers that start the workflow
       type: array

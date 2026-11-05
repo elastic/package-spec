@@ -276,7 +276,6 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateStreamInputBundled, modes: []Mode{BuildMode},
 			types: []string{"integration"}},
 		{fn: semantic.ValidateUseOtelSuffix, types: []string{"integration"}},
-		{fn: semantic.ValidateWorkflowsEnabled, types: []string{"integration"}},
 	}
 
 	var validationRules validationRules
