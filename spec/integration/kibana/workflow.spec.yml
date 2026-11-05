@@ -8,6 +8,9 @@ spec:
       description: Name of the workflow
       type: string
       minLength: 1
+    description:
+      description: Description of what the workflow does
+      type: string
     enabled:
       description: Whether the workflow is enabled. Kibana enables workflows that omit it, so packages must set it to false.
       type: boolean
