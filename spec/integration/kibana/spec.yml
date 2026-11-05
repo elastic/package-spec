@@ -158,6 +158,10 @@ spec:
         pattern: '^{PACKAGE_NAME}-[a-z0-9-]+\.yml$'
         $ref: "./workflow.spec.yml"
 versions:
+  - before: 3.8.0
+    patch:
+      - op: remove
+        path: "/contents/15" # remove workflow definitions
   - before: 3.4.0
     patch:
       - op: remove
