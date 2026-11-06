@@ -1,0 +1,6 @@
+name: Step without type
+enabled: false
+triggers:
+  - type: manual
+steps:
+  - name: log

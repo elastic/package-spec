@@ -37,6 +37,7 @@ func Test_ValidateFromPath(t *testing.T) {
 		"good":                                   {},
 		"good_v2":                                {},
 		"good_v3":                                {},
+		"good_workflow_integration":              {},
 		"good_var_groups":                        {},
 		"good_var_groups_input":                  {},
 		"good_geo_shape":                         {},
@@ -880,6 +881,11 @@ func TestValidateItemNotAllowed(t *testing.T) {
 				"alerting_rule_template",
 			},
 		},
+		"bad_workflow_format_version": {
+			"kibana": []string{
+				"workflow",
+			},
+		},
 		"bad_content_dev_deploy_variants": {
 			"_dev": []string{
 				"deploy",
@@ -1402,6 +1408,59 @@ func TestValidateIngestPipelines(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestValidateWorkflows(t *testing.T) {
+	pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", "bad_workflow_integration")
+	workflowsPath := path.Join(pkgRootPath, "kibana", "workflow")
+
+	invalidWorkflows := map[string][]string{
+		"bad_workflow_integration-missing-steps.yml": {
+			"field (root): steps is required",
+		},
+		"bad_workflow_integration-empty-steps.yml": {
+			"field steps: Array must have at least 1 items",
+		},
+		"bad_workflow_integration-invalid-step.yml": {
+			"field steps.0: type is required",
+		},
+		"bad_workflow_integration-invalid-trigger.yml": {
+			"field triggers.0: type is required",
+		},
+		"bad_workflow_integration-missing-enabled.yml": {
+			"field (root): enabled is required",
+		},
+		"bad_workflow_integration-enabled.yml": {
+			"field enabled: enabled must be one of the following: false",
+		},
+		"bad_workflow_integration-non-ascii-name.yml": {
+			"field name: Does not match pattern '[A-Za-z0-9]'",
+		},
+	}
+
+	expectedErrors := []string{
+		fmt.Sprintf("item [bad_workflow_integration-invalid_filename.yml] is not allowed in folder [%s]", workflowsPath),
+	}
+	for file, errMsgs := range invalidWorkflows {
+		errPrefix := fmt.Sprintf("file \"%s\" is invalid: ", path.Join(workflowsPath, file))
+		for _, errMsg := range errMsgs {
+			expectedErrors = append(expectedErrors, errPrefix+errMsg)
+		}
+	}
+
+	errs := ValidateFromPath(pkgRootPath)
+	require.Error(t, errs)
+	vErrs, ok := errs.(specerrors.ValidationErrors)
+	require.True(t, ok)
+
+	var errMessages []string
+	for _, vErr := range vErrs {
+		errMessages = append(errMessages, vErr.Error())
+	}
+	for _, expectedErr := range expectedErrors {
+		assert.Contains(t, errMessages, expectedErr)
+	}
+	assert.Len(t, errMessages, len(expectedErrors))
 }
 
 func TestValidateForbiddenDataStreamName(t *testing.T) {

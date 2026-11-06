@@ -1,0 +1,9 @@
+name: Invalid filename
+enabled: false
+triggers:
+  - type: manual
+steps:
+  - name: log
+    type: console
+    with:
+      message: hello

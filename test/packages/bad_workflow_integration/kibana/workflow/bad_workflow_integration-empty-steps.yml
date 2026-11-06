@@ -1,0 +1,5 @@
+name: Empty steps
+enabled: false
+triggers:
+  - type: manual
+steps: []
