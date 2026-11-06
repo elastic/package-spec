@@ -5,9 +5,12 @@ spec:
   additionalProperties: true
   properties:
     name:
-      description: Name of the workflow
+      description: Name of the workflow. It must contain at least one ASCII letter or digit, so that a file name can be derived from it.
       type: string
+      # Kibana doesn't limit the length of workflow names (WorkflowSchemaBase in
+      # src/platform/packages/shared/kbn-workflows/spec/schema.ts), so no maxLength is set here.
       minLength: 1
+      pattern: '[A-Za-z0-9]'
     description:
       description: Description of what the workflow does
       type: string

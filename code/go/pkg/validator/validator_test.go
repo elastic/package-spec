@@ -1433,6 +1433,9 @@ func TestValidateWorkflows(t *testing.T) {
 		"bad_workflow_integration-enabled.yml": {
 			"field enabled: enabled must be one of the following: false",
 		},
+		"bad_workflow_integration-non-ascii-name.yml": {
+			"field name: Does not match pattern '[A-Za-z0-9]'",
+		},
 	}
 
 	expectedErrors := []string{
