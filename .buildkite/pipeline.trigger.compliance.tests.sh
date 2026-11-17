@@ -32,7 +32,7 @@ steps:
 EOF
 
 # Generate each test we want to do.
-compliance_test 9.6.0-SNAPSHOT 3.7.0
+compliance_test 9.6.0-SNAPSHOT 3.7.1
 compliance_test 9.5.6-SNAPSHOT 3.6.7
 compliance_test 9.4.9-SNAPSHOT 3.6.7
 compliance_test 9.3.8 3.5.8
