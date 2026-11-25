@@ -78,6 +78,13 @@ spec:
     name: img
     required: false
     $ref: "./img/spec.yml"
+  - description: Group definition file. It is copied from the parent group directory into each built member package, so it is only expected in built packages.
+    type: file
+    contentMediaType: "application/x-yaml"
+    name: "group.yml"
+    required: false
+    validationMode: build
+    $ref: "./group.spec.yml"
 
 versions:
   - before: 3.2.2

@@ -1849,6 +1849,76 @@ func TestBuildModeValidation(t *testing.T) {
 	}
 }
 
+// TestGroupFile verifies the group.yml definition added to integration, input and
+// content packages. The fixtures are built packages: group.yml only exists once
+// elastic-package has copied it from the parent group directory into each member
+// package, which is why the file is declared with validationMode: build.
+//
+// Every fixture runs in all three modes. In source mode the build-only gate rejects
+// the file before its contents are read, so the expected error is always the same.
+// Legacy mode is never mode-gated, so it accepts the file and checks its contents
+// just like build mode does. That is the gap legacy leaves, not the wanted behaviour.
+func TestGroupFile(t *testing.T) {
+	basePath := filepath.Join("..", "..", "..", "..", "test", "packages")
+	sourceErrContains := []string{`group.yml": build-only file is not allowed in source packages`}
+
+	tests := map[string]struct {
+		// contentsErrContains lists the group.spec.yml errors expected whenever the
+		// file is read, which is build mode and legacy mode. Empty when it is valid.
+		contentsErrContains []string
+	}{
+		// A valid group.yml in a built package of each type.
+		"good_built_group":         {},
+		"good_built_input_group":   {},
+		"good_built_content_group": {},
+		// Each type gets a negative case too: the "good" fixtures alone would still
+		// pass for integration and input, which allow additional contents.
+		"bad_built_group": {
+			contentsErrContains: []string{
+				"title is required",
+				"Additional property unknown_key is not allowed",
+				// The icon file exists, so only the img folder pattern can reject it.
+				`field icon: Does not match pattern '^/img/[^/]+$'`,
+			},
+		},
+		"bad_built_input_group": {
+			contentsErrContains: []string{
+				"title is required",
+				"Additional property unknown_key is not allowed",
+			},
+		},
+		"bad_built_content_group": {
+			contentsErrContains: []string{
+				"title is required",
+				"Additional property unknown_key is not allowed",
+			},
+		},
+	}
+
+	for packageName, testCase := range tests {
+		for _, mode := range []Mode{BuildMode, SourceMode, LegacyMode} {
+			expectedErrContains := testCase.contentsErrContains
+			if mode == SourceMode {
+				expectedErrContains = sourceErrContains
+			}
+			t.Run(packageName+"/"+string(mode), func(t *testing.T) {
+				t.Parallel()
+				v, err := New(mode)
+				require.NoError(t, err)
+				err = v.ValidateFromPath(filepath.Join(basePath, packageName))
+				if len(expectedErrContains) == 0 {
+					require.NoError(t, err)
+					return
+				}
+				require.Error(t, err)
+				for _, expectedError := range expectedErrContains {
+					require.ErrorContains(t, err, expectedError)
+				}
+			})
+		}
+	}
+}
+
 // TestSourceMode_BadEmbeddedEcs verifies that ValidateNoEmbeddedEcsInDynamicTemplates
 // rejects the bad_embedded_ecs fixture when the validator runs in source mode.
 // See test/packages/bad_embedded_ecs/data_stream/logs/manifest.yml for fixture details.

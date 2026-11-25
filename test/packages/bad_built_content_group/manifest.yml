@@ -1,0 +1,22 @@
+format_version: 3.6.0
+name: bad_built_content_group
+title: Bad Built Content Group Member
+description: >
+  Built content package whose group.yml has a missing title and an unknown key.
+version: 1.0.0
+type: content
+source:
+  license: "Apache-2.0"
+conditions:
+  kibana:
+    version: '^8.16.0'
+  elastic:
+    subscription: 'basic'
+    capabilities:
+      - security
+discovery:
+  fields:
+    - name: process.pid
+owner:
+  github: elastic/ecosystem
+  type: elastic
