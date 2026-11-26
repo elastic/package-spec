@@ -1,470 +1,66 @@
-# package-spec PR Review Checklist — Detailed Reference
+# package-spec PR Review Checklist
 
-This file contains the full rules, rationale, and examples for each review category.
-It is referenced by `SKILL.md` and is loaded on demand when deeper detail is needed.
+Review items grouped by changed-file category. The rules, rationale, and examples live in
+[AGENTS.md](../../../../AGENTS.md); each section links to the one to apply. Do not restate rules
+here — update AGENTS.md instead.
 
-The human-oriented contributor guide ([CONTRIBUTING.md](../../../../CONTRIBUTING.md)) covers the same development workflows (Makefile targets, test packages, integrations testing) in narrative form. Prefer that document for onboarding; use this checklist for systematic PR review.
+## Contribution process
 
----
+When: large or cross-product spec changes, or new package categories.
+Rules: [Contribution Process](../../../../AGENTS.md#contribution-process).
 
-## 0. Contribution process
+- [ ] A substantial spec or validator change references a proposal or tracking issue; if not, ask the author to confirm the process was followed.
 
-**When it applies:** Large or cross-product spec changes, or new package categories.
+## Changelog (always)
 
-| Topic | Rule |
-| --- | --- |
-| **Change proposals** | Changes that impact the Elastic Stack or Elastic Packages beyond this repo should follow the **Change Proposals** process in [CONTRIBUTING.md](../../../../CONTRIBUTING.md#change-proposals) (GitHub issue, consensus, ordered checklist) before landing as a single drive-by PR. |
-| **Category proposals** | New supported package categories require the **Category Proposals** flow in [CONTRIBUTING.md](../../../../CONTRIBUTING.md#category-proposals). |
+Rules: [Changelog Management](../../../../AGENTS.md#changelog-management).
 
-**Review hint:** If the diff is a substantial spec or validator change and the PR description does not reference a proposal or tracking issue, add an extra-review note asking the author to confirm process was followed.
+- [ ] `spec/changelog.yml` has a new entry (unless the PR is a Dependabot bump).
+- [ ] Entry is at the bottom of the `-next` version's `changes` list.
+- [ ] `description` is a complete sentence ending with a period; `type` is `enhancement`, `bugfix`, or `breaking-change`.
+- [ ] `link` is a PR URL or `TBD`.
+- [ ] Blocked features have a `# Pending on <url>` comment directly above the entry.
 
----
+## Spec files (`spec/**/*.spec.yml`)
 
-## 1. Changelog
+Rules: [Spec File Structure](../../../../AGENTS.md#spec-file-structure), [Version Patches](../../../../AGENTS.md#version-patches).
 
-**File:** `spec/changelog.yml`
+- [ ] New `properties`/`definitions` that older `format_version` values must not see have `remove` patches, or the change is scoped to the introducing version.
+- [ ] New `versions` entries are at the top of the list; properties are removed before their definitions.
+- [ ] `_dev` files have no patches.
+- [ ] Patch comments follow the path-line convention.
+- [ ] Shared fields are defined once in `spec/integration/manifest.spec.yml` and referenced with relative `$ref`.
+- [ ] New object schemas set `additionalProperties: false` where appropriate.
 
-### Changelog Format
+## Semantic validators (`code/go/internal/validator/semantic/`, `code/go/internal/validator/spec.go`)
 
-```yaml
-- version: 3.7.0-next        # in-development version always has -next suffix
-  changes:
-    - description: Brief description of the change ending with a period.
-      type: enhancement        # enhancement | bugfix | breaking-change
-      link: https://github.com/elastic/package-spec/pull/NUMBER
-```
+Rules: [Semantic Validators](../../../../AGENTS.md#semantic-validators).
 
-### Changelog Rules
+- [ ] Every new `ValidateXxx` is registered in `rulesDef` with the right `since`, `until`, and `types`.
+- [ ] `warnOn()` is used only for rules being phased in.
+- [ ] Error messages use `fsys.Path()` and `\"%s\"` (never `%q`) for file paths.
+- [ ] Tests cover valid and invalid cases, either as a `t.TempDir()` unit test or as test packages plus `validator_test.go` cases.
+- [ ] `expectedErrContains` substrings are specific.
 
-| Rule | Detail |
-| --- | --- |
-| Always required | Every non-trivial PR must add an entry. Dependabot dependency bumps are the only exception. |
-| Position | New entries go at the **bottom** of the `changes` list of the in-development version. |
-| Version | Must be the version with a `-next` suffix, not a released version. |
-| Description | Complete sentence ending with a period. Describes what was added/changed, not why. |
-| Type | Exactly one of: `enhancement`, `bugfix`, `breaking-change`. |
-| Link | Full GitHub PR URL. Use `TBD` only if the PR does not exist yet. Never use an issue URL here unless explicitly intended. |
+## Test packages (`test/packages/**`, `compliance/testdata/packages/**`)
 
-### Pending features
+Rules: [Test Packages](../../../../AGENTS.md#test-packages), [Transform packages in compliance tests](../../../../AGENTS.md#transform-packages-in-compliance-tests).
 
-When a spec feature is complete but blocked on upstream (Kibana, elastic-package):
+- [ ] `manifest.yml`, `changelog.yml`, and `docs/README.md` are present.
+- [ ] Ingest pipelines tag every processor and have a valid `on_failure` block.
+- [ ] Compliance transform packages use a non-hidden dest index and `run_as_kibana_system: false`.
 
-```yaml
-    # Pending on https://github.com/elastic/kibana/issues/NNNNNN
-    - description: Add support for foo.
-      type: enhancement
-      link: https://github.com/elastic/package-spec/pull/NNN
-```
+## Compliance features (`compliance/features/*.feature`)
 
-- The `# Pending on <url>` comment must appear on the line **directly above** the entry.
-- The corresponding compliance `.feature` file must also have a `@skip` tag with the same URL.
-- Remove both when the blocker is resolved.
+Rules: [Compliance Testing](../../../../AGENTS.md#compliance-testing).
 
----
+- [ ] Every `Scenario:` has an `@X.Y.Z` tag.
+- [ ] Every `@skip` follows the version tag and has a `# Pending ...: <url>` comment.
+- [ ] The matching changelog entry has a `# Pending on <url>` comment.
 
-## 2. Version Patches
+## Go files (`**/*.go`)
 
-**Why they exist:** The spec supports multiple format versions. When a single `.spec.yml` still
-validates **older** `format_version` values, **remove patches** drop newer optional
-`properties` and `definitions` from the schema those older versions use. **Not** every change needs
-a remove patch: if the change applies **only** at the introducing version (e.g. a new **required**
-field or **breaking** change with a clear minimum `format_version`), **version scoping** may be
-enough—see the Patch Rules table below.
+Rules: [Go Style](../../../../AGENTS.md#go-style).
 
-**Where they live:** In the same `.spec.yml` file that defines the new field, under a `versions`
-key at the top level.
-
-### Patch Format
-
-Add each new patch block at the **top** of the `versions` list so **newer spec versions come first**
-(higher `before` value above lower). When you add a patch for a new release, **insert** a new list
-item at the top—do not append at the bottom.
-
-```yaml
-versions:
-  # Newer `before` first — insert new patch blocks here, above existing entries.
-  - before: 3.7.0
-    patch:
-      - op: remove
-        path: "/properties/recent_field"
-      - op: remove
-        path: "/definitions/recent_field"
-  - before: 3.6.0
-    patch:
-      - op: remove
-        path: "/properties/my_new_field"
-      - op: remove
-        path: "/definitions/my_new_definition"
-```
-
-### Patch Rules
-
-| Rule | Detail |
-| --- | --- |
-| When to add `before:` patches | Add `versions.before` remove patches for new `properties` and `definitions` when the file still validates **older** `format_version` values and that schema must **not** apply to them (typical for optional fields in a spec file shared across versions). **Not every change needs a patch:** if the change is **already scoped** to the introducing spec version—e.g. a new **required** field or other **breaking** change with a clear minimum `format_version`—you may rely on that scoping instead of remove patches. |
-| `versions` list order | Add new version entries at the **top** of the `versions` list (newer spec versions first), per [CONTRIBUTING.md](../../../../CONTRIBUTING.md#version-patches). |
-| Remove order | **References before definitions.** Remove `/properties/my_field` before `/definitions/my_field`. Otherwise the patch fails because it tries to remove a definition that is still referenced. |
-| `_dev` exception | Files under `_dev` directories do not need version patches. These are developer tooling files, not part of the distributed spec. |
-| Patch comments | Comments should be placed on the `path:` line, not the `op:` line. Only add comments for non-obvious paths (e.g., array index paths like `required/-`). Omit comments for simple, self-explanatory paths. |
-
-### Comment convention examples
-
-```yaml
-# GOOD — comment on path line, only for complex path
-- op: add
-  path: "/properties/policy_templates/items/required/-"  # re-add type as required
-  value: type
-
-# GOOD — no comment for simple path
-- op: remove
-  path: "/properties/my_field"
-
-# BAD — comment on op line
-- op: remove  # removes my_field
-  path: "/properties/my_field"
-
-# BAD — redundant comment for obvious path
-- op: remove
-  path: "/properties/my_field"  # removes my_field property
-```
-
-### Version Patches Checklist
-
-- [ ] Every new `properties` or `definitions` entry that **older** `format_version` values must not include has a matching `remove` patch (or the change is correctly **scoped to the introducing version** only, e.g. required/breaking at a minimum `format_version`).
-- [ ] Properties are removed before their definitions in the patch list.
-- [ ] `_dev` files are excluded.
-- [ ] Comments follow the path-line convention.
-
----
-
-## 3. Schema Reuse
-
-**Why it matters:** Duplicate inline definitions drift out of sync. The spec uses JSON Schema
-`$ref` to define a field once and reference it everywhere.
-
-### When to use `$ref`
-
-If the same field definition appears in two or more spec files: define it once in
-`spec/integration/manifest.spec.yml` under `definitions`, then reference it everywhere else.
-
-### Cross-file reference syntax
-
-```yaml
-# Same file
-$ref: "#/definitions/my_field"
-
-# From spec/input/manifest.spec.yml referencing spec/integration/manifest.spec.yml
-$ref: "../integration/manifest.spec.yml#/definitions/my_field"
-
-# From spec/integration/data_stream/manifest.spec.yml
-$ref: "../../integration/manifest.spec.yml#/definitions/my_field"
-```
-
-Always use **relative paths** (starting with `../`). Absolute or root-relative paths break
-portability.
-
-### `additionalProperties: false`
-
-Objects should have `additionalProperties: false` to prevent undeclared fields from silently
-passing validation. Flag if a new object type is missing this.
-
-### Schema Reuse Checklist
-
-- [ ] No field definition appears inline in two different `.spec.yml` files.
-- [ ] Shared definitions live in `spec/integration/manifest.spec.yml`.
-- [ ] All `$ref` uses relative paths.
-- [ ] New object schemas include `additionalProperties: false` where appropriate.
-
----
-
-## 4. Semantic Validators
-
-**Location:** `code/go/internal/validator/semantic/`
-
-### Registration
-
-New validator functions must be registered in `code/go/internal/validator/spec.go` inside
-the `rulesDef` slice within the `rules()` function:
-
-```go
-// Minimal — applies to all package types and all versions
-{fn: semantic.ValidateMyRule},
-
-// With version gate — only applies for spec >= 3.7.0
-{fn: semantic.ValidateMyRule, since: semver.MustParse("3.7.0")},
-
-// With package type filter
-{fn: semantic.ValidateMyRule, types: []string{"integration", "input"}, since: semver.MustParse("3.7.0")},
-
-// With upper bound — only applies before 3.0.0
-{fn: warnOn(semantic.ValidateMyRule), until: semver.MustParse("3.0.0")},
-```
-
-Fields:
-
-- `fn` — required, the validator function
-- `since` — optional, minimum spec version (inclusive)
-- `until` — optional, maximum spec version (exclusive)
-- `types` — optional, package types this applies to; omit to apply to all types
-
-### Semantic Validators Checklist
-
-- [ ] New `ValidateXxx` function is present in the `rulesDef` slice.
-- [ ] `since` is set when the rule corresponds to a new spec feature (should match the spec
-  version being targeted).
-- [ ] `types` is set when the rule is not universally applicable (e.g., only for `integration`
-  packages).
-- [ ] `warnOn()` is used only for rules that are being phased in (deprecation warnings before
-  becoming hard errors in a future version).
-
----
-
-## 5. Tests for Semantic Validators
-
-Two testing strategies; choose based on complexity:
-
-### Simple: unit test with `t.TempDir()`
-
-Use when the validator reads a single file or a simple directory structure.
-
-```go
-func TestValidateMyRule(t *testing.T) {
-    tests := map[string]struct {
-        manifest      string
-        expectError   bool
-        errorContains string
-    }{
-        "valid": {
-            manifest:    "name: test\nformat_version: 3.7.0\n",
-            expectError: false,
-        },
-        "invalid_missing_field": {
-            manifest:      "name: test\nformat_version: 3.7.0\nbad_field: value\n",
-            expectError:   true,
-            errorContains: "bad_field",
-        },
-    }
-    for name, tc := range tests {
-        t.Run(name, func(t *testing.T) {
-            pkgRoot := t.TempDir()
-            err := os.WriteFile(filepath.Join(pkgRoot, "manifest.yml"),
-                []byte(tc.manifest), 0644)
-            require.NoError(t, err)
-            fsys := fspath.DirFS(pkgRoot)
-            errs := semantic.ValidateMyRule(fsys)
-            if tc.expectError {
-                require.NotEmpty(t, errs)
-                require.Contains(t, errs[0].Error(), tc.errorContains)
-            } else {
-                require.Empty(t, errs)
-            }
-        })
-    }
-}
-```
-
-### Complex: test packages + `validator_test.go`
-
-Use when the rule requires a full package structure (multiple data streams, pipelines, etc.).
-
-1. Scaffold with **`elastic-package create package`** (`cd test/packages` first), or add a data
-   stream with **`elastic-package create data-stream`** from inside the package directory.
-2. Modify `manifest.yml` (and data stream files if applicable) to exercise the rule.
-3. Add entries to `code/go/pkg/validator/validator_test.go`:
-
-```go
-tests := map[string]struct {
-    invalidPkgFilePath  string
-    expectedErrContains []string
-}{
-    "good_my_feature": {},   // valid — no errors expected
-    "bad_my_feature": {
-        "manifest.yml",
-        []string{`expected error substring here`},
-    },
-}
-```
-
-### Validator Tests Checklist
-
-- [ ] At least one of the above test strategies is present for every new validator.
-- [ ] Tests cover both the valid and invalid cases.
-- [ ] Error message substrings in `expectedErrContains` are specific enough to be meaningful.
-
----
-
-## 6. Test Packages
-
-**Location:** `test/packages/` (general), `compliance/testdata/packages/` (compliance-only)
-
-### Required files
-
-The layout below is what **`elastic-package`** scaffolds when you create artifacts interactively:
-use **`elastic-package create package`** for a new package (integration, input, or content), or
-**`elastic-package create data-stream`** to add a data stream under an existing package. Prefer those
-commands over copying folders by hand so required files stay consistent.
-
-Every package directory must contain:
-
-```text
-my_package/
-├── manifest.yml          # package manifest
-├── changelog.yml         # at minimum: one version entry with at least one change
-└── docs/
-    └── README.md         # package documentation
-```
-
-### Valid ingest pipeline
-
-Any data stream that includes an ingest pipeline must follow this structure:
-
-```yaml
----
-description: Pipeline description.
-processors:
-  - set:
-      tag: set_field_name     # tag is required on every processor
-      field: my.field
-      value: test
-on_failure:                   # on_failure block is required
-  - set:
-      field: event.kind
-      value: pipeline_error
-  - set:
-      field: error.message
-      value: >-
-        Processor '{{{ _ingest.on_failure_processor_type }}}'
-        with tag '{{{ _ingest.on_failure_processor_tag }}}'
-        in pipeline '{{{ _ingest.pipeline }}}'
-        failed with message '{{{ _ingest.on_failure_message }}}'
-```
-
-Required elements:
-
-- Every processor must have a `tag` field.
-- `on_failure` must set `event.kind` to `pipeline_error`.
-- `error.message` must include all three Handlebars placeholders:
-  `_ingest.on_failure_processor_type`, `_ingest.on_failure_processor_tag`, `_ingest.pipeline`.
-  (A fourth, `_ingest.on_failure_message`, is also included by convention.)
-
-### Transform packages (compliance only)
-
-Transforms in `compliance/testdata/packages/` that are installed and uninstalled across
-test runs must use:
-
-```yaml
-dest:
-  index: "metrics-mypackage.my_dest_default"  # no leading dot — hidden indices cause 403 on uninstall
-_meta:
-  managed: true
-  run_as_kibana_system: false  # use logged-in user credentials, not kibana_system
-```
-
-### Test Packages Checklist
-
-- [ ] `manifest.yml`, `changelog.yml`, and `docs/README.md` all present.
-- [ ] Data stream ingest pipelines have `tag` on each processor and a valid `on_failure` block.
-- [ ] Compliance-only transform packages use non-hidden dest index and `run_as_kibana_system: false`.
-- [ ] Prefer **`elastic-package create package`** or **`elastic-package create data-stream`** over
-      manual scaffolding when adding a test package or data stream.
-
----
-
-## 7. Compliance Feature Files
-
-**Location:** `compliance/features/*.feature`
-
-### Version tagging
-
-Every `Scenario:` must be tagged with the minimum spec version that introduced the feature:
-
-```gherkin
-  @3.6.0
-  Scenario: Integration package with named input can be installed
-   Given the "good_v3" package is installed
-   ...
-```
-
-The tag controls whether the scenario runs: it is skipped if the `TEST_SPEC_VERSION`
-environment variable is lower than the tag.
-
-### Skipped scenarios
-
-When a scenario cannot pass because upstream (Kibana or elastic-package) hasn't implemented
-support yet:
-
-```gherkin
-  @3.6.0
-  @skip
-  # Pending support for qualified input names: https://github.com/elastic/kibana/pull/262138
-  Scenario: Integration package with OTel input can be installed
-   Given the "good_v3" package is installed
-   ...
-```
-
-Rules:
-
-- `@skip` must appear directly after the version tag.
-- A `# Pending <description>: <url>` comment must appear on the line after `@skip`.
-- The corresponding `spec/changelog.yml` entry must have a matching `# Pending on <url>`
-  comment above it.
-- Both the `@skip` and the `# Pending on` comment in the changelog must be removed together
-  when the blocker is resolved.
-
-### Compliance Features Checklist
-
-- [ ] Every `Scenario:` has a `@X.Y.Z` tag.
-- [ ] Every `@skip` is accompanied by a `# Pending ...` comment with a URL.
-- [ ] Changelog entry for the same feature has a matching `# Pending on <url>` comment.
-- [ ] No scenario has `@skip` without a tracking issue URL.
-
----
-
-## 8. Go Style
-
-### License header
-
-Every new `.go` file must begin with:
-
-```go
-// Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
-// or more contributor license agreements. Licensed under the Elastic License;
-// you may not use this file except in compliance with the Elastic License.
-```
-
-Enforced by `make check`. Running `make -C code/go update` adds headers automatically.
-
-### Naming conventions
-
-| Bad (abbreviation) | Good (full name) |
-| --- | --- |
-| `pkgName` | `packageName` |
-| `dsManifests` | `dataStreamManifests` |
-| `ptIdx` | `templateIndex` |
-| `errs` (in loops) | `validationErrors` or be specific |
-
-Exception: loop variables (`i`, `j`) and widely accepted short names (`err`, `ok`) are fine.
-
-### Indentation
-
-Go files use **tabs**, not spaces. `gofmt` enforces this — run `make -C code/go format`.
-
-### Error messages
-
-When creating structured errors with file paths, use `fsys.Path("relative/path")` rather than
-`file.Path()` to get the full package-relative path expected by the test framework:
-
-```go
-// Good
-specerrors.NewStructuredErrorf("file %q is invalid: %s", fsys.Path("_dev/test/config.yml"), err)
-
-// Bad — path is relative within fsys, not the full package path
-specerrors.NewStructuredErrorf("file %q is invalid: %s", config.Path(), err)
-```
-
-### Go Style Checklist
-
-- [ ] License header present in every new `.go` file.
-- [ ] No abbreviations in variable/function names (outside `err`, `ok`, loop vars).
-- [ ] Indentation uses tabs.
-- [ ] Error messages use `fsys.Path()` for file path references.
+- [ ] New files have the Elastic license header.
+- [ ] Tabs for indentation; no abbreviated names.

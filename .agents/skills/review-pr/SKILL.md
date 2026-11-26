@@ -17,7 +17,7 @@ change anything on the branch under review. If an issue is found, describe it an
 not attempt to fix it. The only file it writes is the review report at `.agents/review-pr-output.md`.
 
 Reviews a branch or pull request against the contribution rules for this repository.
-See [references/checklist.md](references/checklist.md) for full rules and examples.
+See [references/checklist.md](references/checklist.md) for the checklist and [AGENTS.md](../../../AGENTS.md) for the rules behind it.
 
 For narrative onboarding (Makefile targets, scaffolding test packages, testing against the integrations repo), see **[CONTRIBUTING.md](../../../CONTRIBUTING.md)** at the repository root. This skill and the checklist focus on **PR completeness** against those practices.
 
@@ -79,6 +79,7 @@ Using the file list from `--stat`, bucket each changed file into one or more cat
 | **Test packages** | `test/packages/**` |
 | **Compliance packages** | `compliance/testdata/packages/**` |
 | **Compliance features** | `compliance/features/*.feature` |
+| **Go files** | `**/*.go` |
 
 Use the categories internally to pick checklist sections; do not paste the full categorized file list into the report unless it clarifies an extra-review item.
 
@@ -86,94 +87,13 @@ Use the categories internally to pick checklist sections; do not paste the full 
 
 ## Step 3 — Run the Checklist
 
-Work through each applicable section from [references/checklist.md](references/checklist.md).
+For each category found in Step 2, work through the matching section of
+[references/checklist.md](references/checklist.md). Each section links to the rules in
+[AGENTS.md](../../../AGENTS.md), the single source of truth for contribution rules; read the
+linked AGENTS.md section when an item needs detail or examples.
 
-Below is a compact version of the checks. The reference file has full rules, edge cases, and
-exact examples.
-
-### Contribution process (when relevant)
-
-Consult section **0** in the reference file and [CONTRIBUTING.md](../../../CONTRIBUTING.md#change-proposals).
-
-- Cross-stack or cross-product spec changes should follow the **Change Proposals** process before merge.
-- New **package categories** require the **Category Proposals** process.
-- If the change is large and the PR does not reference a proposal or tracking issue, add an extra-review note asking the author to confirm process was followed.
-
-### Always: Changelog
-
-- Is `spec/changelog.yml` modified?
-  - If not: **flag as missing** (required for all non-trivial changes; dependency-bump PRs
-    from Dependabot are the only exception).
-- If modified, verify:
-  - Entry is under the correct in-development version (the one with `-next` suffix).
-  - New entry is at the **bottom** of that version's `changes` list.
-  - `description` is a complete sentence ending with a period.
-  - `type` is one of: `enhancement`, `bugfix`, or `breaking-change`.
-  - `link` points to a valid PR URL or is `TBD` (not empty, not an issue URL unless the
-    change originated from an issue with no PR).
-  - If the feature is blocked on Kibana/elastic-package: a `# Pending on <url>` comment
-    appears directly above the entry.
-
-### If spec files changed
-
-Consult the "Version patches" and "Schema reuse" sections of the reference file.
-
-- For new `properties` or `definitions` that older `format_version` values must **not** include, add
-  `versions[].patch` remove operations (see the reference file). **Not** every addition needs a
-  patch: if the change is **only** meaningful at the introducing spec version (e.g. a new
-  **required** field or other **breaking** change with a clear minimum `format_version`), rely on
-  **version scoping** instead of remove patches when appropriate.
-- The remove order matters: property `$ref` entries must be removed before the definition
-  they reference.
-- Shared fields used in multiple spec files must be defined once in
-  `spec/integration/manifest.spec.yml` and referenced via `$ref` elsewhere — not duplicated
-  inline.
-
-### If semantic validators changed
-
-Consult the "Semantic validators" section of the reference file.
-
-- New validator function: check it is registered in `code/go/internal/validator/spec.go`
-  in the `rulesDef` slice, with appropriate `fn`, `since`, and `types` fields.
-- Tests: at least one of the following must be present:
-  - A `*_test.go` file alongside the validator using `t.TempDir()` (simple/single-file rules).
-  - New test cases in `code/go/pkg/validator/validator_test.go` referencing packages in
-    `test/packages/` (complex multi-file scenarios).
-
-### If test packages changed
-
-Consult the "Test packages" section of the reference file.
-
-- Prefer scaffolding with **`elastic-package create package`** or, for new data streams in an
-  existing package, **`elastic-package create data-stream`** (from that package’s directory), over
-  manual copies.
-- Each package under `test/packages/` or `compliance/testdata/packages/` must contain:
-  `manifest.yml`, `changelog.yml`, `docs/README.md`.
-- Any data stream must include a valid ingest pipeline: processors need a `tag` field, and
-  there must be an `on_failure` block that sets `event.kind: pipeline_error` and
-  `error.message` to a string containing the three Handlebars placeholders.
-
-### If compliance feature files changed
-
-Consult the "Compliance features" section of the reference file.
-
-- Every `Scenario:` must have a `@X.Y.Z` version tag immediately above it.
-- A `@skip` tag must always be paired with a `# Pending on <url>` comment on the next line.
-- When `@skip` is added, the corresponding `spec/changelog.yml` entry must also have a
-  matching `# Pending on <url>` comment.
-
-### If new Go files added
-
-- Every new `.go` file must start with the Elastic license header:
-
-  ```go
-  // Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
-  // or more contributor license agreements. Licensed under the Elastic License;
-  // you may not use this file except in compliance with the Elastic License.
-  ```
-- Variable and function names must be unabbreviated (e.g., `packageName` not `pkgName`,
-  `dataStreamManifests` not `dsManifests`).
-- Indentation must use tabs, not spaces.
+Always run the **Changelog** and, for large or cross-product changes, the **Contribution process**
+sections, whatever the categories.
 
 ---
 
