@@ -4,4 +4,4 @@ Step-by-step workflow for maintainers preparing a **`prepare-release-X.Y.Z`** pu
 
 **Full procedure (single source of truth):** [.agents/skills/package-spec-release/references/workflow.md](../.agents/skills/package-spec-release/references/workflow.md)
 
-That document is portable across editors and agents (Cursor, Claude Code, Copilot, and other [Agent Skills](https://agentskills.io/clients.md)-compatible tools). The packaged skill metadata lives under [.agents/skills/package-spec-release/](../.agents/skills/package-spec-release/).
+Agents run it as the `package-spec-release` skill in [.agents/skills/package-spec-release/](../.agents/skills/package-spec-release/).

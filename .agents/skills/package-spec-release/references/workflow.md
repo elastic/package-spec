@@ -1,6 +1,6 @@
 # package-spec release workflow
 
-Portable steps to open a **`prepare-release-<version>`** pull request against `elastic/package-spec` `main`. Repository paths below are relative to the **repository root**.
+Steps to open a **`prepare-release-<version>`** pull request against `elastic/package-spec` `main`. Repository paths below are relative to the **repository root**.
 
 ## Prompting for choices
 
@@ -9,7 +9,7 @@ Whenever the workflow needs a **discrete choice** from the user (fork remote, Go
 1. Be **direct**: one short sentence of context, then the choice (no long setup).
 2. Present a **numbered markdown list** (or two clear options **A** / **B**), one entry per concrete choice; put distinguishing detail in each line (e.g. remote name and fetch URL).
 3. Ask for a **single reply** (the number, the letter, or the exact label).
-4. If the client provides a **structured selectable list** UI, you may use it instead, with the **same** options as the numbered list.
+4. A structured choice UI with the **same** options is fine if available.
 
 ## When the user skips required input
 

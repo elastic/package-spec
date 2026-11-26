@@ -1,35 +1,16 @@
 ---
 name: review-pr
 description: Review a package-spec pull request or branch for completeness and correctness. Use when the user asks to review a PR, check their branch is ready to merge, verify they have not missed required changes, or wants a pre-submission checklist. Accepts a PR number, a branch name, or no argument (current branch vs main).
-license: Elastic License (see LICENSE.txt in repository root)
-compatibility: Requires git. For PR number resolution, also requires the gh CLI authenticated against elastic/package-spec. For local validation (make check, go test), requires a Go toolchain and make. Compatible with Claude Code (/review-pr), Cursor, GitHub Copilot, Gemini CLI, and other Agent Skills-compatible agents.
-metadata:
-  spec: https://agentskills.io/specification.md
 ---
 
-# package-spec PR Review (Agent Skill)
-
-This skill conforms to the **[Agent Skills](https://agentskills.io/specification.md)** open format ([agentskills.io](https://agentskills.io/)).
+# package-spec PR review
 
 **This skill does not modify the codebase.** It does not edit source files, run any git
 command that modifies state (no commit, push, checkout, reset, stash, merge, or rebase), or
 change anything on the branch under review. If an issue is found, describe it and stop — do
 not attempt to fix it. The only file it writes is the review report at `.agents/review-pr-output.md`.
 
-Reviews a branch or pull request against the contribution rules for this repository.
-See [references/checklist.md](references/checklist.md) for the checklist and [AGENTS.md](../../../AGENTS.md) for the rules behind it.
-
-For narrative onboarding (Makefile targets, scaffolding test packages, testing against the integrations repo), see **[CONTRIBUTING.md](../../../CONTRIBUTING.md)** at the repository root. This skill and the checklist focus on **PR completeness** against those practices.
-
-## How to Use This Skill
-
-| Situation | What to do |
-| --- | --- |
-| **Claude Code** | `/review-pr`, `/review-pr <branch>`, or `/review-pr <PR-number>` (discovered via `.claude/skills/`) |
-| **Cursor / Copilot** | Discovered via `.cursor/skills/` / `.github/skills/`; ask to "review my changes", or attach this file to the chat |
-| **Any LLM** | Paste this file as a system message, then provide the output of `git diff main...HEAD` |
-
----
+Input: a PR number, a branch name, or nothing (current branch vs `main`). PR numbers need an authenticated `gh` CLI.
 
 ## Step 1 — Resolve the Target
 
@@ -148,12 +129,4 @@ After writing the file, print this message to the user:
 
 ```
 Review written to .agents/review-pr-output.md
-```
-
-## Validating this skill
-
-After substantive edits to this skill, run (if installed):
-
-```bash
-skills-ref validate ./.agents/skills/review-pr
 ```

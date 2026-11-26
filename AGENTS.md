@@ -7,7 +7,7 @@ links back to the sections below. For narrative onboarding, see [CONTRIBUTING.md
 
 ## Agent Skills
 
-Portable [Agent Skills](https://agentskills.io/specification.md) live in `.agents/skills/`
+Agent skills live in `.agents/skills/`
 (symlinked from `.claude/skills/`, `.github/skills/`, and `.cursor/skills/`):
 
 - `review-pr`: review a branch or PR against the rules in this file.
