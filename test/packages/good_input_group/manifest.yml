@@ -5,6 +5,7 @@ description: Input package declaring membership in a marketplace group.
 version: 0.0.1
 type: input
 group: nginx
+schema: ecs
 source:
   license: "Apache-2.0"
 categories:

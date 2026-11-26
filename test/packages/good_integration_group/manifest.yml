@@ -5,6 +5,7 @@ description: Integration package declaring membership in a marketplace group.
 version: 0.0.1
 type: integration
 group: nginx
+schema: otel
 source:
   license: "Apache-2.0"
 categories:
