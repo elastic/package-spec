@@ -21,7 +21,9 @@ description: Draft a pull request body that follows .github/PULL_REQUEST_TEMPLAT
 
 5. **Length:** Keep **What does this PR do?** and **Why is it important?** brief. Prefer pointers (file paths, spec areas) over long narratives. Put deep detail in review comments or commits if needed.
 
-6. **Output:** a single Markdown body (no title line) usable with `gh pr create --body-file`. Open the PR with `gh` only if the user asks; otherwise hand over the Markdown.
+6. **Proposed commit message:** Fill the template's **Proposed commit message** section, following its comment, with a fenced block the maintainer can paste when squash-merging. Wrap the body at ~72 characters and describe the change as a whole, not the list of branch commits.
+
+7. **Output:** a single Markdown body (no title line) usable with `gh pr create --body-file`. Open the PR with `gh` only if the user asks; otherwise hand over the Markdown.
 
 ## Examples
 
@@ -47,3 +49,16 @@ After the agent asked for references, the user sends `Closes elastic/package-spe
 
 Prevents invalid packages from passing `elastic-package` checks and documents the behavior change for integrators.
 ```
+
+**Proposed commit message:**
+
+````markdown
+## Proposed commit message
+
+```
+Tighten validation for foo
+
+Reject packages that set foo to an unsupported value, so invalid
+packages fail elastic-package checks instead of at install time.
+```
+````
