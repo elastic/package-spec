@@ -1,0 +1,59 @@
+spec:
+  type: object
+  # Kibana owns the authoritative workflow schema; only the top-level fields and
+  # the minimal shape of triggers and steps are checked here.
+  additionalProperties: true
+  properties:
+    name:
+      description: Name of the workflow. It must contain at least one ASCII letter or digit, so that a file name can be derived from it.
+      type: string
+      # Kibana doesn't limit the length of workflow names (WorkflowSchemaBase in
+      # src/platform/packages/shared/kbn-workflows/spec/schema.ts), so no maxLength is set here.
+      minLength: 1
+      pattern: '[A-Za-z0-9]'
+    description:
+      description: Description of what the workflow does
+      type: string
+    enabled:
+      description: Whether the workflow is enabled. Kibana enables workflows that omit it, so packages must set it to false.
+      type: boolean
+      enum:
+        - false
+    triggers:
+      description: Triggers that start the workflow
+      type: array
+      minItems: 1
+      items:
+        type: object
+        additionalProperties: true
+        properties:
+          type:
+            description: Type of the trigger (for example `manual`, `scheduled` or `alert`)
+            type: string
+            minLength: 1
+        required:
+          - type
+    steps:
+      description: Steps executed by the workflow
+      type: array
+      minItems: 1
+      items:
+        type: object
+        additionalProperties: true
+        properties:
+          name:
+            description: Unique name of the step
+            type: string
+            minLength: 1
+          type:
+            description: Type of the step (for example `console`, `if` or `foreach`)
+            type: string
+            minLength: 1
+        required:
+          - name
+          - type
+  required:
+    - name
+    - enabled
+    - triggers
+    - steps

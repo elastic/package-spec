@@ -1,0 +1,9 @@
+name: 日本語
+enabled: false
+triggers:
+  - type: manual
+steps:
+  - name: log
+    type: console
+    with:
+      message: hello

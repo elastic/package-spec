@@ -1,0 +1,8 @@
+name: Missing enabled
+triggers:
+  - type: manual
+steps:
+  - name: log
+    type: console
+    with:
+      message: hello

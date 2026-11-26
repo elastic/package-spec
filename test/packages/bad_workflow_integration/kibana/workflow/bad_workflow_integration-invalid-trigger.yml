@@ -1,0 +1,10 @@
+name: Trigger without type
+enabled: false
+triggers:
+  - with:
+      every: 1d
+steps:
+  - name: log
+    type: console
+    with:
+      message: hello

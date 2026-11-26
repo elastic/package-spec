@@ -12,6 +12,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -36,6 +37,7 @@ func Test_ValidateFromPath(t *testing.T) {
 		"good":                                   {},
 		"good_v2":                                {},
 		"good_v3":                                {},
+		"good_workflow_integration":              {},
 		"good_var_groups":                        {},
 		"good_var_groups_input":                  {},
 		"good_geo_shape":                         {},
@@ -55,6 +57,7 @@ func Test_ValidateFromPath(t *testing.T) {
 		"good_integration_with_dev_tools":        {},
 		"good_lookup_index":                      {},
 		"good_alert_rule_templates":              {},
+		"good_alert_rule_templates_v2":           {},
 		"good_requires":                          {},
 		"good_package_reference_policy_template": {},
 		"good_datastream_categories_match":       {},
@@ -721,6 +724,130 @@ func Test_ValidateFromPath(t *testing.T) {
 	}
 }
 
+// Test_ValidateFromPath_badAlertRuleTemplatesV2 needs its own test because
+// Test_ValidateFromPath expects every error in a package to come from one file,
+// and this fixture has one invalid template per file.
+func Test_ValidateFromPath_badAlertRuleTemplatesV2(t *testing.T) {
+	pkgRootPath := filepath.Join("..", "..", "..", "..", "test", "packages", "bad_alert_rule_templates_v2")
+	expected := map[string]string{
+		"invalid-kind.json":            "rule.kind must be alert or signal",
+		"alert-without-lifecycle.json": "alert rules require recovery; alert rules require no_data",
+		"signal-with-recovery.json":    "signal rules cannot set recovery or no_data",
+		"v1-query-format.json":         "rule.query.format is not part of Alerting v2",
+		"schedule-too-frequent.json":   "rule.schedule.every must be a duration from 5s to 365d",
+		"unsupported-engine.json":      `unsupported alert template engine "v3"`,
+	}
+	requireTemplateErrors := func(t *testing.T, err error) {
+		t.Helper()
+		verrs, ok := err.(specerrors.ValidationErrors)
+		require.True(t, ok, "expected validation errors, got %v", err)
+		var messages []string
+		for _, verr := range verrs {
+			messages = append(messages, verr.Error())
+			if strings.Contains(verr.Error(), "unsupported-engine.json") {
+				require.Empty(t, verr.Code(), "unsupported engines must not be excludable")
+			} else {
+				require.Equal(t, specerrors.CodeAlertRuleTemplateValidation, verr.Code())
+			}
+		}
+		require.Len(t, messages, len(expected), "one error per template: %v", messages)
+		for file, want := range expected {
+			found := false
+			for _, message := range messages {
+				if strings.Contains(message, file+`" is invalid: `) && strings.Contains(message, want) {
+					found = true
+				}
+			}
+			assert.True(t, found, "no error for %s containing %q in %v", file, want, messages)
+		}
+		filtered, err := specerrors.NewExcludeCheck(specerrors.CodeAlertRuleTemplateValidation).Process(verrs)
+		require.NoError(t, err)
+		require.Len(t, filtered.Processed, 1)
+		assert.ErrorContains(t, filtered.Processed[0], `unsupported alert template engine "v3"`)
+		assert.Len(t, filtered.Removed, len(expected)-1)
+	}
+
+	for _, mode := range []Mode{LegacyMode, SourceMode, BuildMode} {
+		t.Run(string(mode), func(t *testing.T) {
+			validator, err := New(mode)
+			require.NoError(t, err)
+			requireTemplateErrors(t, validator.ValidateFromPath(pkgRootPath))
+		})
+	}
+	t.Run("zip", func(t *testing.T) {
+		validator, err := New(LegacyMode)
+		require.NoError(t, err)
+		requireTemplateErrors(t, validator.ValidateFromZip(writePackageZip(t, pkgRootPath, "bad_alert_rule_templates_v2")))
+	})
+}
+
+// Test_ValidateFromPath_alertRuleTemplatesV2FormatVersion checks that Alerting
+// v2 templates are rejected before format_version 3.7.0, while classic
+// templates in the same package are not.
+func Test_ValidateFromPath_alertRuleTemplatesV2FormatVersion(t *testing.T) {
+	pkgRootPath := filepath.Join(t.TempDir(), "good_alert_rule_templates_v2")
+	require.NoError(t, os.CopyFS(pkgRootPath, os.DirFS(filepath.Join("..", "..", "..", "..", "test", "packages", "good_alert_rule_templates_v2"))))
+	manifestPath := filepath.Join(pkgRootPath, "manifest.yml")
+	manifest, err := os.ReadFile(manifestPath)
+	require.NoError(t, err)
+	manifest = []byte(strings.Replace(string(manifest), "format_version: 3.7.0", "format_version: 3.6.0", 1))
+	require.NoError(t, os.WriteFile(manifestPath, manifest, 0o644))
+
+	validator, err := New(LegacyMode)
+	require.NoError(t, err)
+	verrs, ok := validator.ValidateFromPath(pkgRootPath).(specerrors.ValidationErrors)
+	require.True(t, ok)
+	var messages []string
+	for _, verr := range verrs {
+		require.Empty(t, verr.Code())
+		messages = append(messages, verr.Error())
+	}
+	require.Len(t, messages, 2, messages)
+	filtered, err := specerrors.NewExcludeCheck(specerrors.CodeAlertRuleTemplateValidation).Process(verrs)
+	require.NoError(t, err)
+	assert.Len(t, filtered.Processed, len(verrs))
+	for _, file := range []string{"alert-rule.json", "signal-rule.json"} {
+		assert.True(t, slices.ContainsFunc(messages, func(message string) bool {
+			return strings.Contains(message, file+`" is invalid: Alerting v2 rule templates (engine v2) require format_version 3.7.0 or later`)
+		}), "no format_version error for %s in %v", file, messages)
+	}
+}
+
+func Test_ValidateFromPath_alertRuleTemplateInvalidJSON(t *testing.T) {
+	packageRoot := filepath.Join(t.TempDir(), "good_alert_rule_templates_v2")
+	require.NoError(t, os.CopyFS(packageRoot, os.DirFS(filepath.Join("..", "..", "..", "..", "test", "packages", "good_alert_rule_templates_v2"))))
+	templatePath := filepath.Join(packageRoot, "kibana", "alerting_rule_template", "alert-rule.json")
+	require.NoError(t, os.WriteFile(templatePath, []byte(`{"id":"alert-rule",`), 0o644))
+
+	requireJSONErrors := func(t *testing.T, err error) {
+		t.Helper()
+		validationErrors, ok := err.(specerrors.ValidationErrors)
+		require.True(t, ok, "expected validation errors, got %v", err)
+		require.NotEmpty(t, validationErrors)
+		for _, validationError := range validationErrors {
+			assert.Empty(t, validationError.Code())
+			assert.ErrorContains(t, validationError, "unmarshalling JSON file failed")
+			assert.ErrorContains(t, validationError, "alert-rule.json")
+		}
+		filtered, err := specerrors.NewExcludeCheck(specerrors.CodeAlertRuleTemplateValidation).Process(validationErrors)
+		require.NoError(t, err)
+		assert.Len(t, filtered.Processed, len(validationErrors))
+		assert.Empty(t, filtered.Removed)
+	}
+	for _, mode := range []Mode{LegacyMode, SourceMode, BuildMode} {
+		t.Run(string(mode), func(t *testing.T) {
+			validator, err := New(mode)
+			require.NoError(t, err)
+			requireJSONErrors(t, validator.ValidateFromPath(packageRoot))
+		})
+	}
+	t.Run("zip", func(t *testing.T) {
+		validator, err := New(LegacyMode)
+		require.NoError(t, err)
+		requireJSONErrors(t, validator.ValidateFromZip(writePackageZip(t, packageRoot, "good_alert_rule_templates_v2")))
+	})
+}
+
 func TestValidateItemNotAllowed(t *testing.T) {
 	tests := map[string]map[string][]string{
 		"wrong_kibana_filename": {
@@ -1348,6 +1475,59 @@ func TestValidateLogsDBColumnar(t *testing.T) {
 			assert.ElementsMatch(t, expectedErrMessages, errMessages)
 		})
 	}
+}
+
+func TestValidateWorkflows(t *testing.T) {
+	pkgRootPath := path.Join("..", "..", "..", "..", "test", "packages", "bad_workflow_integration")
+	workflowsPath := path.Join(pkgRootPath, "kibana", "workflow")
+
+	invalidWorkflows := map[string][]string{
+		"bad_workflow_integration-missing-steps.yml": {
+			"field (root): steps is required",
+		},
+		"bad_workflow_integration-empty-steps.yml": {
+			"field steps: Array must have at least 1 items",
+		},
+		"bad_workflow_integration-invalid-step.yml": {
+			"field steps.0: type is required",
+		},
+		"bad_workflow_integration-invalid-trigger.yml": {
+			"field triggers.0: type is required",
+		},
+		"bad_workflow_integration-missing-enabled.yml": {
+			"field (root): enabled is required",
+		},
+		"bad_workflow_integration-enabled.yml": {
+			"field enabled: enabled must be one of the following: false",
+		},
+		"bad_workflow_integration-non-ascii-name.yml": {
+			"field name: Does not match pattern '[A-Za-z0-9]'",
+		},
+	}
+
+	expectedErrors := []string{
+		fmt.Sprintf("item [bad_workflow_integration-invalid_filename.yml] is not allowed in folder [%s]", workflowsPath),
+	}
+	for file, errMsgs := range invalidWorkflows {
+		errPrefix := fmt.Sprintf("file \"%s\" is invalid: ", path.Join(workflowsPath, file))
+		for _, errMsg := range errMsgs {
+			expectedErrors = append(expectedErrors, errPrefix+errMsg)
+		}
+	}
+
+	errs := ValidateFromPath(pkgRootPath)
+	require.Error(t, errs)
+	vErrs, ok := errs.(specerrors.ValidationErrors)
+	require.True(t, ok)
+
+	var errMessages []string
+	for _, vErr := range vErrs {
+		errMessages = append(errMessages, vErr.Error())
+	}
+	for _, expectedErr := range expectedErrors {
+		assert.Contains(t, errMessages, expectedErr)
+	}
+	assert.Len(t, errMessages, len(expectedErrors))
 }
 
 func TestValidateForbiddenDataStreamName(t *testing.T) {

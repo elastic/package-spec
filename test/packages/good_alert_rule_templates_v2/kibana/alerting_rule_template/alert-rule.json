@@ -1,0 +1,35 @@
+{
+    "id": "alert-rule",
+    "type": "alerting_rule_template",
+    "managed": true,
+    "attributes": {
+        "engine": "v2",
+        "rule": {
+            "kind": "alert",
+            "metadata": {
+                "name": "[Something] High value",
+                "description": "Alerts when a host reports a value above 100.",
+                "tags": ["Something"],
+                "routing_tags": ["oncall"],
+                "builder": {"type": "threshold"}
+            },
+            "schedule": {"every": "1m", "lookback": "5m"},
+            "time_field": "@timestamp",
+            "query": {
+                "base": "FROM metrics-something-default | STATS max = MAX(some_field) BY host.name",
+                "breach": {"segment": "WHERE max > 100"}
+            },
+            "recovery": {"strategy": "condition", "segment": "WHERE max < 80"},
+            "no_data": {"strategy": "keep_last"},
+            "state_transition": {
+                "pending": {"count": 2, "timeframe": "10m", "operator": "and"},
+                "recovering": {"count": 1}
+            },
+            "grouping": {"fields": ["host.name"]},
+            "artifacts": [
+                {"id": "runbook", "type": "runbook", "data": {"content": "Check the host."}},
+                {"id": "dashboard", "type": "dashboard", "data": {"dashboard_id": "good_alert_rule_templates_v2-overview"}}
+            ]
+        }
+    }
+}
