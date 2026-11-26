@@ -143,6 +143,26 @@ Comments in version patches should:
   path: "/properties/requires"  # removes requires property
 ```
 
+### Folder Spec Files
+
+`spec/**/spec.yml` files describe the folders and files a package contains (`contents`), and
+`$ref` the `.spec.yml` schema for each file. An item can set `validationMode` to restrict where
+it is allowed:
+
+```yaml
+  - description: Folder containing development resources
+    type: folder
+    name: _dev
+    required: false
+    visibility: private
+    validationMode: source
+    $ref: "./_dev/spec.yml"
+```
+
+- `validationMode: source`: only allowed in source packages; reported as an error in built packages.
+- `validationMode: build`: only allowed in built packages; reported as an error in source packages.
+- Omit it when the item is valid in both. Legacy mode ignores `validationMode`.
+
 ## Test Packages
 
 ### Creating Test Packages
@@ -533,12 +553,17 @@ Every new validator must be added to the `rulesDef` slice in the `rules()` funct
 
 // Only before 3.0.0, reported as a warning
 {fn: warnOn(semantic.ValidateMyRule), until: semver.MustParse("3.0.0")},
+
+// Only when validating built packages
+{fn: semantic.ValidateMyRule, modes: []Mode{BuildMode}},
 ```
 
 - `fn`: required, the validator function
 - `since`: optional, minimum spec version (inclusive)
 - `until`: optional, maximum spec version (exclusive)
 - `types`: optional, package types it applies to; omit for all types
+- `modes`: optional, validation modes it runs in (`LegacyMode`, `SourceMode`, `BuildMode`,
+  defined in `code/go/internal/validator/modes.go`); omit for all modes
 - Use `warnOn()` only for rules being phased in (warnings before becoming errors)
 
 ### Reference Examples

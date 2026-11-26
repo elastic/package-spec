@@ -52,6 +52,7 @@ Using the file list from `--stat`, bucket each changed file into one or more cat
 | Category | File pattern |
 | --- | --- |
 | **Spec files** | `spec/**/*.spec.yml` |
+| **Folder spec files** | `spec/**/spec.yml` |
 | **Changelog** | `spec/changelog.yml` |
 | **Semantic validators** | `code/go/internal/validator/semantic/*.go` (excluding `*_test.go`) |
 | **Validator registry** | `code/go/internal/validator/spec.go` |

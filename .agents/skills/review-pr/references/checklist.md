@@ -32,11 +32,18 @@ Rules: [Spec File Structure](../../../../AGENTS.md#spec-file-structure), [Versio
 - [ ] Shared fields are defined once in `spec/integration/manifest.spec.yml` and referenced with relative `$ref`.
 - [ ] New object schemas set `additionalProperties: false` where appropriate.
 
+## Folder spec files (`spec/**/spec.yml`)
+
+Rules: [Folder Spec Files](../../../../AGENTS.md#folder-spec-files).
+
+- [ ] New folders or files that only belong in source or built packages set `validationMode` (`source` or `build`).
+- [ ] New items `$ref` their schema with a relative path.
+
 ## Semantic validators (`code/go/internal/validator/semantic/`, `code/go/internal/validator/spec.go`)
 
 Rules: [Semantic Validators](../../../../AGENTS.md#semantic-validators).
 
-- [ ] Every new `ValidateXxx` is registered in `rulesDef` with the right `since`, `until`, and `types`.
+- [ ] Every new `ValidateXxx` is registered in `rulesDef` with the right `since`, `until`, `types`, and `modes`.
 - [ ] `warnOn()` is used only for rules being phased in.
 - [ ] Error messages use `fsys.Path()` and `\"%s\"` (never `%q`) for file paths.
 - [ ] Tests cover valid and invalid cases, either as a `t.TempDir()` unit test or as test packages plus `validator_test.go` cases.
