@@ -90,6 +90,18 @@ func Test_ValidateFromPath(t *testing.T) {
 				"field group: Does not match pattern '^[a-z0-9_]+$'",
 			},
 		},
+		"bad_integration_schema": {
+			"manifest.yml",
+			[]string{
+				`field schema: schema must be one of the following: "ecs", "otel"`,
+			},
+		},
+		"bad_input_schema": {
+			"manifest.yml",
+			[]string{
+				`field schema: schema must be one of the following: "ecs", "otel"`,
+			},
+		},
 		"bad_duration_vars": {
 			"manifest.yml",
 			[]string{

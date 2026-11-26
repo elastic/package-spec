@@ -550,6 +550,17 @@ spec:
       examples:
         - nginx
         - redis
+    schema:
+      description: >
+        Data schema the package produces. Optional; when omitted the package
+        declares no schema and none is inferred by the spec. More values may
+        be added in the future.
+      type: string
+      enum:
+        - ecs
+        - otel
+      examples:
+        - otel
     package_reference:
       description: >
         Reference to an input package. When specified, configuration is inherited
@@ -827,6 +838,8 @@ spec:
         - apache
     group:
       $ref: "#/definitions/group"
+    schema:
+      $ref: "#/definitions/schema"
     title:
       $ref: "#/definitions/title"
     description:
