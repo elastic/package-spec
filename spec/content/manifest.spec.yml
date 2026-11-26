@@ -17,6 +17,8 @@ spec:
       - apache
     group:
       $ref: "../integration/manifest.spec.yml#/definitions/group"
+    schema:
+      $ref: "../integration/manifest.spec.yml#/definitions/schema"
     title:
       $ref: "../integration/manifest.spec.yml#/definitions/title"
     description:
