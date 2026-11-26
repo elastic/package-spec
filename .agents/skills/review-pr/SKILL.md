@@ -8,7 +8,7 @@ description: Review a package-spec pull request or branch for completeness and c
 **This skill does not modify the codebase.** It does not edit source files, run any git
 command that modifies state (no commit, push, checkout, reset, stash, merge, or rebase), or
 change anything on the branch under review. If an issue is found, describe it and stop — do
-not attempt to fix it. The only file it writes is the review report at `.agents/review-pr-output.md`.
+not attempt to fix it. The only file it writes is the review report at `.agents/review-pr-output-<target>.md` (see Step 5).
 
 Input: a PR number, a branch name, or nothing (current branch vs `main`). PR numbers need an authenticated `gh` CLI.
 
@@ -99,7 +99,7 @@ Record validation outcomes only as described in **Step 5** (short summary per co
 
 ## Step 5 — Write the Report
 
-Write a **short** report to `.agents/review-pr-output.md`, overwriting any previous run. Use **plain text only** (no emoji or decorative symbols). Aim for roughly one screen of content.
+Write a **short** report to `.agents/review-pr-output-<target>.md`, where `<target>` is the PR number (e.g. `.agents/review-pr-output-1308.md`) or, for a branch, the branch name with `/` replaced by `-`. Reports for different targets can coexist; a new run for the same target overwrites the previous one. Use **plain text only** (no emoji or decorative symbols). Aim for roughly one screen of content.
 
 Include **only** what follows. Omit empty sections entirely.
 
@@ -129,5 +129,5 @@ One line per command you ran, for example: `go test ./code/go/internal: pass`. U
 After writing the file, print this message to the user:
 
 ```
-Review written to .agents/review-pr-output.md
+Review written to .agents/review-pr-output-<target>.md
 ```
