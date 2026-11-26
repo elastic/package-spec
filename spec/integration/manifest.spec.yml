@@ -542,9 +542,11 @@ spec:
     group:
       description: >
         Identifier of a marketplace group. Packages that share the same
-        value belong to the same group. Kibana owns the group's title,
-        icon, and description; this field only declares membership.
-        Values are not validated against Kibana's group list.
+        value belong to the same group. This field only declares
+        membership: the group's title, description and icon are defined
+        in its group.yml file, which is copied into each member package
+        at build time. A package can declare a group without a group.yml.
+        Values are not validated against any list of known groups.
       type: string
       pattern: '^[a-z0-9_]+$'
       examples:
