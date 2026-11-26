@@ -1,12 +1,12 @@
 ---
 description: Author portable Agent Skills (agentskills.io) usable in Claude, Claude Code, Copilot, and Cursor.
-globs: .cursor/skills/**/SKILL.md
+globs: .agents/skills/**/SKILL.md
 alwaysApply: false
 ---
 
 # Agent Skills format (agentskills.io)
 
-When creating or editing a skill under `.cursor/skills/`, follow the **[Agent Skills specification](https://agentskills.io/specification.md)** and **[best practices](https://agentskills.io/skill-creation/best-practices.md)**.
+When creating or editing a skill under `.agents/skills/`, follow the **[Agent Skills specification](https://agentskills.io/specification.md)** and **[best practices](https://agentskills.io/skill-creation/best-practices.md)**.
 
 The same skill folder should be **universal**: usable by any Agent Skills–compatible client. Treat **[Claude / Claude Code](https://code.claude.com/docs/en/skills)**, **[GitHub Copilot agent skills](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills)**, and **[Cursor skills](https://cursor.com/docs/context/skills)** as target consumers unless the repo explicitly documents a narrower scope. Do not rely on one vendor’s UI or tool names in the **only** path through the workflow.
 

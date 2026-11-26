@@ -67,5 +67,5 @@ Prevents invalid packages from passing `elastic-package` checks and documents th
 After substantive edits to this skill, run (if installed):
 
 ```bash
-skills-ref validate ./.cursor/skills/open-pull-request
+skills-ref validate ./.agents/skills/open-pull-request
 ```

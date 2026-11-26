@@ -82,7 +82,7 @@ Currently, the following custom formats are available:
 
 ## Agent-assisted PR review
 
-Maintainers and contributors can use the in-repository Agent Skill for a structured pre-merge checklist: [.cursor/skills/review-pr/SKILL.md](.cursor/skills/review-pr/SKILL.md). Detailed rules and examples live in [.cursor/skills/review-pr/references/checklist.md](.cursor/skills/review-pr/references/checklist.md).
+Maintainers and contributors can use the in-repository Agent Skill for a structured pre-merge checklist: [.agents/skills/review-pr/SKILL.md](.agents/skills/review-pr/SKILL.md). Detailed rules and examples live in [.agents/skills/review-pr/references/checklist.md](.agents/skills/review-pr/references/checklist.md).
 
 ## Development
 

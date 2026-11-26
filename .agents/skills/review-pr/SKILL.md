@@ -14,7 +14,7 @@ This skill conforms to the **[Agent Skills](https://agentskills.io/specification
 **This skill does not modify the codebase.** It does not edit source files, run any git
 command that modifies state (no commit, push, checkout, reset, stash, merge, or rebase), or
 change anything on the branch under review. If an issue is found, describe it and stop — do
-not attempt to fix it. The only file it writes is the review report at `.cursor/review-pr-output.md`.
+not attempt to fix it. The only file it writes is the review report at `.agents/review-pr-output.md`.
 
 Reviews a branch or pull request against the contribution rules for this repository.
 See [references/checklist.md](references/checklist.md) for full rules and examples.
@@ -25,8 +25,8 @@ For narrative onboarding (Makefile targets, scaffolding test packages, testing a
 
 | Situation | What to do |
 | --- | --- |
-| **Claude Code** | `/review-pr`, `/review-pr <branch>`, or `/review-pr <PR-number>` |
-| **Cursor / Copilot** | Attach this file to your chat and say "review my changes" or paste your diff |
+| **Claude Code** | `/review-pr`, `/review-pr <branch>`, or `/review-pr <PR-number>` (discovered via `.claude/skills/`) |
+| **Cursor / Copilot** | Discovered via `.cursor/skills/` / `.github/skills/`; ask to "review my changes", or attach this file to the chat |
 | **Any LLM** | Paste this file as a system message, then provide the output of `git diff main...HEAD` |
 
 ---
@@ -197,7 +197,7 @@ Record validation outcomes only as described in **Step 5** (short summary per co
 
 ## Step 5 — Write the Report
 
-Write a **short** report to `.cursor/review-pr-output.md`, overwriting any previous run. Use **plain text only** (no emoji or decorative symbols). Aim for roughly one screen of content.
+Write a **short** report to `.agents/review-pr-output.md`, overwriting any previous run. Use **plain text only** (no emoji or decorative symbols). Aim for roughly one screen of content.
 
 Include **only** what follows. Omit empty sections entirely.
 
@@ -227,7 +227,7 @@ One line per command you ran, for example: `go test ./code/go/internal: pass`. U
 After writing the file, print this message to the user:
 
 ```
-Review written to .cursor/review-pr-output.md
+Review written to .agents/review-pr-output.md
 ```
 
 ## Validating this skill
@@ -235,5 +235,5 @@ Review written to .cursor/review-pr-output.md
 After substantive edits to this skill, run (if installed):
 
 ```bash
-skills-ref validate ./.cursor/skills/review-pr
+skills-ref validate ./.agents/skills/review-pr
 ```
