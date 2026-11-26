@@ -29,7 +29,11 @@ spec:
     # folder. The extension is required because relative-path only checks that the
     # target exists, so without it an existing directory under img would pass.
     icon:
-      description: Relative path to the icon of the group. It must be an image file directly in the img folder.
+      description: >
+        Path to the icon of the group, relative to the group directory. The icon
+        is copied together with group.yml into each member package at build
+        time, so the same path also resolves in the built package. It must be
+        an image file directly in the img folder.
       type: string
       format: relative-path
       pattern: '^/img/[^/]+\.(png|svg|jpg|jpeg)$'
