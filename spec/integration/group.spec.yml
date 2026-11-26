@@ -25,11 +25,13 @@ spec:
         - "Collect logs and metrics from Nginx servers."
     # Deliberately stricter than the package's own icons[].src in manifest.spec.yml,
     # which only checks that the relative path exists: a group icon is copied into
-    # every member package at build time, so it has to sit in the img folder.
+    # every member package at build time, so it has to sit directly in the img
+    # folder. The extension is required because relative-path only checks that the
+    # target exists, so without it an existing directory under img would pass.
     icon:
-      description: Relative path to the icon of the group. It must be a file in the img folder.
+      description: Relative path to the icon of the group. It must be an image file directly in the img folder.
       type: string
       format: relative-path
-      pattern: '^/img/[^/]+$'
+      pattern: '^/img/[^/]+\.(png|svg|jpg|jpeg)$'
       examples:
         - "/img/logo_nginx.svg"

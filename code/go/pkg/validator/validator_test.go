@@ -1878,13 +1878,17 @@ func TestGroupFile(t *testing.T) {
 				"title is required",
 				"Additional property unknown_key is not allowed",
 				// The icon file exists, so only the img folder pattern can reject it.
-				`field icon: Does not match pattern '^/img/[^/]+$'`,
+				`field icon: Does not match pattern '^/img/[^/]+\.(png|svg|jpg|jpeg)$'`,
 			},
 		},
 		"bad_built_input_group": {
 			contentsErrContains: []string{
 				"title is required",
 				"Additional property unknown_key is not allowed",
+				// The icon points at an existing directory under img. format
+				// relative-path only checks that the target exists, so the image
+				// extension in the pattern is what rejects it.
+				`field icon: Does not match pattern '^/img/[^/]+\.(png|svg|jpg|jpeg)$'`,
 			},
 		},
 		"bad_built_content_group": {
