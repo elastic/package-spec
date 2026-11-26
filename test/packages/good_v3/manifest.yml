@@ -190,6 +190,11 @@ icons:
     title: system
     size: 1000x1000
     type: image/svg+xml
+discovery:
+  datasets:
+    - name: system.cpu
+  fields:
+    - name: system.cpu.total.pct
 agent:
   privileges:
     root: true
