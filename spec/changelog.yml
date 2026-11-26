@@ -14,6 +14,9 @@
       link: https://github.com/elastic/package-spec/pull/1271
 - version: 3.7.2-next
   changes:
+    - description: Add optional top-level `schema` field (`ecs`, `otel`) to integration, input, and content package manifests to declare the data schema the package produces.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1306
     # Pending on elastic-package copying group.yml into each built member package.
     - description: "Add the `group.yml` group definition file (`title` required, optional `description` and `icon`) to integration, input and content packages. It is copied from the parent group directory at build time, so it is only accepted when validating in build mode."
       type: enhancement

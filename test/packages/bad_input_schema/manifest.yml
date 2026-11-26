@@ -1,0 +1,27 @@
+format_version: 3.5.0
+name: bad_input_schema
+title: Bad Input Schema
+description: Input package with an invalid schema value.
+version: 0.0.1
+type: input
+group: nginx
+schema: prometheus
+source:
+  license: "Apache-2.0"
+categories:
+  - web
+conditions:
+  kibana:
+    version: "^9.0.0"
+  elastic:
+    subscription: "basic"
+policy_templates:
+  - name: nginx_logs
+    type: logs
+    title: Nginx logs
+    description: Collect logs from Nginx
+    input: logfile
+    template_path: input.yml.hbs
+owner:
+  github: elastic/ecosystem
+  type: elastic
