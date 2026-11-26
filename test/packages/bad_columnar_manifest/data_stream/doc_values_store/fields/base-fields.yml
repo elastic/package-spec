@@ -14,7 +14,7 @@
   type: keyword
   index: false
   doc_values: false
-  description: Without doc values, which columnar index modes need to rebuild _source.
+  description: Without doc values, which columnar index modes ignore.
 - name: message
   type: text
   store: true

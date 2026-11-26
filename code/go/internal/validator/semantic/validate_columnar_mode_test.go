@@ -121,10 +121,8 @@ func TestValidateColumnarField(t *testing.T) {
 			f:     field{Name: "host.name", Type: "keyword"},
 		},
 		{
-			title:    "doc_values false is a hard error",
-			f:        field{Name: "event.original", Type: "keyword", DocValues: boolPtr(false)},
-			wantErr:  errColumnarDocValuesFalse,
-			wantCode: specerrors.UnassignedCode,
+			title: "doc_values false is accepted",
+			f:     field{Name: "event.original", Type: "keyword", DocValues: boolPtr(false)},
 		},
 		{
 			title: "doc_values true is accepted",
@@ -473,7 +471,7 @@ elasticsearch:
 `,
 		},
 		{
-			title: "dynamic templates with doc_values false or store true are hard errors",
+			title: "dynamic templates with store true are hard errors, doc_values false is accepted",
 			manifest: `
 type: logs
 elasticsearch:
@@ -501,8 +499,6 @@ elasticsearch:
               type: long
 `,
 			want: []string{
-				`file "ds/manifest.yml" is invalid: elasticsearch.index_template.mappings.dynamic_templates "_embedded_ecs-event_original_non_indexed_keyword": ` +
-					`doc_values: false is not supported in columnar index modes, which rebuild _source from doc values`,
 				`file "ds/manifest.yml" is invalid: elasticsearch.index_template.mappings.dynamic_templates "_embedded_ecs-stored": ` +
 					`store: true is not supported in columnar index modes, which read every field from doc values`,
 			},

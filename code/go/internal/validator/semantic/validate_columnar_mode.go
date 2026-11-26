@@ -44,7 +44,6 @@ var (
 	errColumnarNormalizer     = errors.New("keyword normalizers other than lowercase are not supported in columnar index modes, they prevent synthetic source reconstruction; remove the normalizer or apply the transformation in an ingest pipeline")
 	errColumnarRuntimeField   = errors.New("mapping-level runtime fields are not supported in columnar index modes; compute the field in an ingest pipeline or use a search-request runtime field instead")
 	errColumnarNestedInNested = errors.New("columnar index modes support only a single level of nesting")
-	errColumnarDocValuesFalse = errors.New("doc_values: false is not supported in columnar index modes, which rebuild _source from doc values")
 	errColumnarStoreTrue      = errors.New("store: true is not supported in columnar index modes, which read every field from doc values")
 
 	// Mappings that drop data in columnar index modes, which have no stored _source to fall back on.
@@ -77,7 +76,7 @@ var columnarUnsortableTypes = map[string]bool{
 //
 // Errors without a code (invalid logsdb_columnar settings, copy_to, keyword normalizers other
 // than lowercase, mapping-level runtime fields, nested inside nested, dynamic: false,
-// dynamic: runtime, enabled: false, doc_values: false, store: true, invalid index.sort fields)
+// dynamic: runtime, enabled: false, store: true, invalid index.sort fields)
 // cannot be filtered. An index.sort without @timestamp is reported with its own SVR code.
 func ValidateColumnarModeConstraints(fsys fspath.FS) specerrors.ValidationErrors {
 	packageReadiness, err := readPackageColumnarReadiness(fsys)
@@ -143,9 +142,8 @@ type columnarDynamicTemplate struct {
 }
 
 type columnarDynamicMapping struct {
-	DocValues any                               `yaml:"doc_values"`
-	Store     any                               `yaml:"store"`
-	Fields    map[string]columnarDynamicMapping `yaml:"fields"`
+	Store  any                               `yaml:"store"`
+	Fields map[string]columnarDynamicMapping `yaml:"fields"`
 }
 
 // isColumnarReady reports whether a data stream must be validated for columnar compatibility.
@@ -324,13 +322,8 @@ func validateColumnarField(meta fieldFileMetadata, f field) specerrors.Validatio
 		errs = append(errs, columnarFieldError(meta, f, errColumnarDynamicRuntime, specerrors.UnassignedCode))
 	}
 
-	// A multi-field may disable doc values, since it is not part of _source. Fields imported with
-	// external: ecs, such as event.original, only carry the ECS doc_values: false once the package
-	// is built, so they are reported when the built package is validated.
-	if f.DocValues != nil && !*f.DocValues {
-		errs = append(errs, columnarFieldError(meta, f, errColumnarDocValuesFalse, specerrors.UnassignedCode))
-	}
-
+	// doc_values: false is not reported: Elasticsearch 9.7 ignores it in columnar index modes
+	// (elasticsearch#164157, #165690), and it still saves storage in LogsDB.
 	if f.Store != nil && *f.Store {
 		errs = append(errs, columnarFieldError(meta, f, errColumnarStoreTrue, specerrors.UnassignedCode))
 	}
@@ -483,25 +476,17 @@ func validateColumnarIndexTemplate(dataStream columnarDataStream, streamFields *
 	return errs
 }
 
-// validateColumnarDynamicTemplates reports dynamic templates whose mapping disables doc values
-// or stores the field. Elasticsearch accepts such a template, then rejects every document with a
-// matching field. The schema only allows these parameters in the _embedded_ecs templates that
-// elastic-package adds to built packages with import_mappings.
+// validateColumnarDynamicTemplates reports dynamic templates whose mapping stores the field.
+// Elasticsearch accepts such a template, then rejects every document with a matching field. The
+// schema only allows these parameters in the _embedded_ecs templates that elastic-package adds to
+// built packages with import_mappings.
 func validateColumnarDynamicTemplates(manifestPath string, templates []map[string]columnarDynamicTemplate) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 	for _, entry := range templates {
 		for _, name := range slices.Sorted(maps.Keys(entry)) {
-			mapping := entry[name].Mapping
-			var found []error
-			if isYAMLBool(mapping.DocValues, false) {
-				found = append(found, errColumnarDocValuesFalse)
-			}
-			if mapping.storesField() {
-				found = append(found, errColumnarStoreTrue)
-			}
-			for _, err := range found {
+			if entry[name].Mapping.storesField() {
 				errs = append(errs, specerrors.NewStructuredErrorf(
-					`file "%s" is invalid: elasticsearch.index_template.mappings.dynamic_templates %q: %w`, manifestPath, name, err,
+					`file "%s" is invalid: elasticsearch.index_template.mappings.dynamic_templates %q: %w`, manifestPath, name, errColumnarStoreTrue,
 				))
 			}
 		}
