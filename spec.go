@@ -8,6 +8,8 @@ import (
 	"embed"
 	"fmt"
 	"io/fs"
+	"slices"
+	"sync"
 
 	"github.com/Masterminds/semver/v3"
 	"gopkg.in/yaml.v3"
@@ -36,7 +38,7 @@ func DocsFS() fs.FS {
 // CheckVersion checks if the given version is implemented by current spec. It returns
 // the version of the spec matching with the given version.
 func CheckVersion(version semver.Version) (*semver.Version, error) {
-	versions, err := VersionsInChangelog()
+	versions, err := versionsInChangelog()
 	if err != nil {
 		return nil, err
 	}
@@ -53,8 +55,22 @@ func CheckVersion(version semver.Version) (*semver.Version, error) {
 	return nil, fmt.Errorf("spec version %q not found", version.String())
 }
 
+// versionsInChangelog parses the embedded changelog. Its contents are compiled
+// into the binary and cannot change at runtime, so it is parsed only once.
+var versionsInChangelog = sync.OnceValues(parseVersionsInChangelog)
+
 // VersionsInChangelog returns the list of versions defined in the changelog file.
 func VersionsInChangelog() ([]semver.Version, error) {
+	versions, err := versionsInChangelog()
+	if err != nil {
+		return nil, err
+	}
+
+	// The parsed slice is shared between callers, so hand out a copy.
+	return slices.Clone(versions), nil
+}
+
+func parseVersionsInChangelog() ([]semver.Version, error) {
 	d, err := fs.ReadFile(content, "spec/changelog.yml")
 	if err != nil {
 		return nil, fmt.Errorf("failed to read spec changelog: %w", err)
