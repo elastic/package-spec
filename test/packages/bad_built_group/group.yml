@@ -1,0 +1,3 @@
+description: Collect logs and metrics from Nginx servers.
+icon: logo_group.svg
+unknown_key: not allowed

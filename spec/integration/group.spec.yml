@@ -1,0 +1,41 @@
+##
+## Describes the specification for the package group definition file (group.yml).
+##
+## In source packages this file does not exist: it lives in the parent group
+## directory, next to the member packages. At build time it is copied, together
+## with its icon, into the root of every built member package. That is why it is
+## only accepted in build validation mode.
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  additionalProperties: false
+  required:
+    - title
+  properties:
+    title:
+      description: Human-readable title of the group.
+      type: string
+      examples:
+        - "Nginx"
+    description:
+      description: Longer description of the group.
+      type: string
+      examples:
+        - "Collect logs and metrics from Nginx servers."
+    # Deliberately stricter than the package's own icons[].src in manifest.spec.yml,
+    # which only checks that the relative path exists: a group icon is copied into
+    # every member package at build time, so it has to sit directly in the img
+    # folder. The extension is required because relative-path only checks that the
+    # target exists, so without it an existing directory under img would pass.
+    icon:
+      description: >
+        Path to the icon of the group, relative to the group directory. The icon
+        is copied together with group.yml into each member package at build
+        time, so the same path also resolves in the built package. It must be
+        an image file directly in the img folder.
+      type: string
+      format: relative-path
+      pattern: '^/img/[^/]+\.(png|svg|jpg|jpeg)$'
+      examples:
+        - "/img/logo_nginx.svg"
