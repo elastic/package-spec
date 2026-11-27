@@ -1,0 +1,9 @@
+format_version: 3.6.0
+name: bad_group_package_type
+title: Bad Group Package Type
+description: Package declaring the group folder spec as its package type.
+version: 0.0.1
+type: group
+owner:
+  github: elastic/foobar
+  type: community

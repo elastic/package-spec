@@ -1,0 +1,19 @@
+##
+## Describes the part of a member package's manifest.yml that a group checks.
+##
+## Only the package type is checked, so this schema stays permissive: the rest of
+## the manifest is validated against the spec of the member's own package type.
+##
+spec:
+  # Everything under here follows JSON schema (https://json-schema.org/), written as YAML for readability
+  type: object
+  required:
+    - type
+  properties:
+    type:
+      description: The type of the member package.
+      type: string
+      enum:
+        - integration
+        - input
+        - content
