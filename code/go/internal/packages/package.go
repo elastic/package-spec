@@ -48,18 +48,32 @@ func (p *Package) IsGA() bool {
 	return true
 }
 
-// NewPackage creates a new Package from a path to the package's root folder
-func NewPackage(pkgRootPath string) (*Package, error) {
-	info, err := os.Stat(pkgRootPath)
+// openRootFolder returns a filesystem rooted at rootPath, once it is known to be
+// an existing folder. The kind names what is expected there, for the errors.
+func openRootFolder(rootPath, kind string) (fs.FS, error) {
+	info, err := os.Stat(rootPath)
 	if os.IsNotExist(err) {
-		return nil, fmt.Errorf("no package found at path [%v]: %w", pkgRootPath, err)
+		return nil, fmt.Errorf("no %s found at path [%v]: %w", kind, rootPath, err)
+	}
+	if err != nil {
+		return nil, err
 	}
 
 	if !info.IsDir() {
-		return nil, fmt.Errorf("no package folder found at path [%v]", pkgRootPath)
+		return nil, fmt.Errorf("no %s folder found at path [%v]", kind, rootPath)
 	}
 
-	return NewPackageFromFS(pkgRootPath, os.DirFS(pkgRootPath))
+	return os.DirFS(rootPath), nil
+}
+
+// NewPackage creates a new Package from a path to the package's root folder
+func NewPackage(pkgRootPath string) (*Package, error) {
+	fsys, err := openRootFolder(pkgRootPath, "package")
+	if err != nil {
+		return nil, err
+	}
+
+	return NewPackageFromFS(pkgRootPath, fsys)
 }
 
 // NewPackageFromFS creates a new package from a given filesystem. A root path can be indicated

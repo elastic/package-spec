@@ -1,0 +1,5 @@
+description: Collect logs and metrics from Nginx servers.
+# img/icons is a directory that exists, so format relative-path accepts it. Only
+# the image extension in the pattern rejects it.
+icon: /img/icons
+unknown_key: not allowed

@@ -1,0 +1,48 @@
+##
+## Entrypoint of the "package group" specification.
+##
+## A group is a directory in the integrations repository holding the shared
+## definition of a group of packages: a group.yml file, an img folder with its
+## icon, and one directory per member package.
+##
+## A group is not a package type. It is never built, published or installed, and
+## the registry never sees the directory itself: at build time elastic-package
+## copies group.yml and its icon into each member package instead. This spec is
+## therefore not reachable through the package validation entrypoints, only
+## through ValidateGroupDirectory.
+##
+spec:
+  additionalContents: false
+  configurationSizeLimit: 5MB
+  relativePathSizeLimit: 3MB
+  contents:
+  - description: The group definition file
+    type: file
+    contentMediaType: "application/x-yaml"
+    name: "group.yml"
+    required: true
+    $ref: "../integration/group.spec.yml"
+  - description: Folder containing the images of the group
+    type: folder
+    name: img
+    required: false
+    additionalContents: false # Images are copied into each member package, so no nested directories.
+    contents:
+      - description: Image file used by the group
+        type: file
+        # Keep these extensions in sync with the icon pattern in
+        # ../integration/group.spec.yml, which restricts what group.yml may point at.
+        pattern: '^.+\.(png|svg|jpg|jpeg)$'
+        required: false
+  - description: Folder containing a member package of the group
+    type: folder
+    pattern: '^[a-z0-9_]+$'
+    required: false
+    additionalContents: true
+    contents:
+      - description: The main package manifest file
+        type: file
+        contentMediaType: "application/x-yaml"
+        name: "manifest.yml"
+        required: true
+        $ref: "./member.spec.yml"

@@ -81,6 +81,15 @@ func NewSpec(version semver.Version, mode Mode) (*Spec, error) {
 func (s Spec) ValidatePackage(pkg packages.Package) specerrors.ValidationErrors {
 	var errs specerrors.ValidationErrors
 
+	// The spec folder is looked up by package type, so a package claiming to be a
+	// group would be validated against the group folder spec. The spec filesystem
+	// is not fixed, so there is no list of package types to check against: only
+	// the folder specs bundled here that are not package types are rejected.
+	if pkg.Type == packages.GroupType {
+		errs = append(errs, specerrors.NewStructuredErrorf("package type %q not supported", pkg.Type))
+		return errs
+	}
+
 	rootSpec, err := loader.LoadSpec(s.fs, s.version, pkg.Type)
 	if err != nil {
 		errs = append(errs, specerrors.NewStructuredErrorf("could not read root folder spec file: %w", err))
@@ -104,6 +113,21 @@ func (s Spec) ValidatePackage(pkg packages.Package) specerrors.ValidationErrors 
 	errs = append(errs, s.rules(pkg.Type, rootSpec).validate(&pkg)...)
 
 	return processErrors(errs)
+}
+
+// ValidateGroupDirectory validates a group directory against the group folder
+// spec. See validator.ValidateGroupDirectory for what a group directory is and
+// how far its member packages are checked.
+func (s Spec) ValidateGroupDirectory(group *packages.Package) specerrors.ValidationErrors {
+	rootSpec, err := loader.LoadSpec(s.fs, s.version, packages.GroupType)
+	if err != nil {
+		return specerrors.ValidationErrors{
+			specerrors.NewStructuredErrorf("could not read group folder spec file: %w", err),
+		}
+	}
+
+	validator := newValidator(rootSpec, group, s.WarningsAsErrors, s.mode)
+	return processErrors(validator.Validate())
 }
 
 func substringInSlice(str string, list []string) bool {
@@ -275,6 +299,7 @@ func (s Spec) rules(pkgType string, rootSpec spectypes.ItemSpec) validationRules
 		{fn: semantic.ValidateNoExternalFields, modes: []Mode{BuildMode}},
 		{fn: semantic.ValidateStreamInputBundled, modes: []Mode{BuildMode},
 			types: []string{"integration"}},
+		{fn: semantic.ValidateGroupFileRequiresGroupField, modes: []Mode{BuildMode}},
 		{fn: semantic.ValidateUseOtelSuffix, types: []string{"integration"}},
 	}
 
