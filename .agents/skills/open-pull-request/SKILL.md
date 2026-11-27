@@ -23,7 +23,9 @@ description: Draft a pull request body that follows .github/PULL_REQUEST_TEMPLAT
 
 6. **Proposed commit message:** Fill the template's **Proposed commit message** section, following its comment, with a fenced block the maintainer can paste when squash-merging. Wrap the body at ~72 characters and describe the change as a whole, not the list of branch commits.
 
-7. **Output:** a single Markdown body (no title line) usable with `gh pr create --body-file`. Open the PR with `gh` only if the user asks; otherwise hand over the Markdown.
+7. **AI disclosure:** If the PR was drafted or generated with AI assistance, say so in the body, e.g. a short line at the end naming the assistant (and model, if known). Do not invent a tool or model name. Omit it for changes written without AI assistance.
+
+8. **Output:** a single Markdown body (no title line) usable with `gh pr create --body-file`. Open the PR with `gh` only if the user asks; otherwise hand over the Markdown.
 
 ## Examples
 
