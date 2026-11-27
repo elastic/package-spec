@@ -1,0 +1,4 @@
+title: Metrics
+type: metrics
+elasticsearch:
+  logsdb_columnar: opt_in

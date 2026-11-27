@@ -1,0 +1,15 @@
+title: Legacy logs
+type: logs
+streams:
+  - input: logfile
+    title: Collect legacy logs
+    description: Collect legacy logs from files
+    vars:
+      - name: paths
+        type: text
+        title: Paths
+        multi: true
+        default:
+          - /var/log/legacy/*.log
+elasticsearch:
+  logsdb_columnar: unsupported

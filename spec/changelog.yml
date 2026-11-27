@@ -12,6 +12,14 @@
     - description: "Add support for Kibana `workflow` assets in integration packages. Workflows must set `enabled: false`. Available for all format versions; ignored by Kibana versions before 9.7.0."
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1271
+    # Pending on https://github.com/elastic/kibana/issues/296252
+    - description: >
+        Add `elasticsearch.logsdb_columnar` (`opt_in`, `default`, `unsupported`) to integration package and
+        data stream manifests to declare readiness for the logsdb_columnar index mode, validate ready logs data
+        streams for mappings and index sort settings that Elasticsearch rejects in columnar modes, and
+        warn (SVR00016) when a custom index sort does not include @timestamp.
+      type: enhancement
+      link: https://github.com/elastic/package-spec/pull/1250
 - version: 3.7.2-next
   changes:
     - description: Allow `discovery` in integration package manifests, with the same schema as content packages.
