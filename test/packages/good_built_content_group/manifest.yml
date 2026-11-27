@@ -5,6 +5,7 @@ description: >
   Built content package that carries the group.yml copied from its parent group directory.
 version: 1.0.0
 type: content
+group: nginx
 source:
   license: "Apache-2.0"
 conditions:

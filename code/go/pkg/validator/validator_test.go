@@ -1870,6 +1870,8 @@ func TestBuildModeValidation(t *testing.T) {
 // the file before its contents are read, so the expected error is always the same.
 // Legacy mode is never mode-gated, so it accepts the file and checks its contents
 // just like build mode does. That is the gap legacy leaves, not the wanted behaviour.
+// Semantic rules are mode-gated as usual, so errors raised by a build-only rule are
+// listed separately and expected in build mode alone.
 func TestGroupFile(t *testing.T) {
 	basePath := filepath.Join("..", "..", "..", "..", "test", "packages")
 	sourceErrContains := []string{`group.yml": build-only file is not allowed in source packages`}
@@ -1878,6 +1880,9 @@ func TestGroupFile(t *testing.T) {
 		// contentsErrContains lists the group.spec.yml errors expected whenever the
 		// file is read, which is build mode and legacy mode. Empty when it is valid.
 		contentsErrContains []string
+		// buildOnlyErrContains lists errors from build-mode semantic rules, which
+		// neither source mode nor legacy mode runs.
+		buildOnlyErrContains []string
 	}{
 		// A valid group.yml in a built package of each type.
 		"good_built_group":         {},
@@ -1908,12 +1913,20 @@ func TestGroupFile(t *testing.T) {
 				"title is required",
 				"Additional property unknown_key is not allowed",
 			},
+			// The fixture carries a group.yml without declaring a group, which only
+			// ValidateGroupFileRequiresGroupField catches, and only in build mode.
+			buildOnlyErrContains: []string{
+				`does not define the group it belongs to in the manifest`,
+			},
 		},
 	}
 
 	for packageName, testCase := range tests {
 		for _, mode := range []Mode{BuildMode, SourceMode, LegacyMode} {
 			expectedErrContains := testCase.contentsErrContains
+			if mode == BuildMode {
+				expectedErrContains = append(expectedErrContains, testCase.buildOnlyErrContains...)
+			}
 			if mode == SourceMode {
 				expectedErrContains = sourceErrContains
 			}

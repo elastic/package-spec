@@ -18,7 +18,7 @@
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1306
     # Pending on elastic-package copying group.yml into each built member package.
-    - description: "Add the `group.yml` group definition file (`title` required, optional `description` and `icon`) to integration, input and content packages. It is copied from the parent group directory at build time, so it is only accepted when validating in build mode."
+    - description: "Add the `group.yml` group definition file (`title` required, optional `description` and `icon`) to integration, input and content packages. It is copied in at build time, so it is only accepted in build mode, where a package carrying it must also define `group`."
       type: enhancement
       link: https://github.com/elastic/package-spec/pull/1309
 - version: 3.7.1
