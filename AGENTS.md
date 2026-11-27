@@ -1,10 +1,28 @@
-# AGENTS.md - Knowledge Base for AI Agents
+# AGENTS.md
 
-This document contains important information learned while working on the package-spec repository to help future AI agents working on this codebase.
+Contribution rules for the package-spec repository. This is the single source of truth for
+these rules: the PR review checklist in
+[.agents/skills/review-pr/references/checklist.md](.agents/skills/review-pr/references/checklist.md)
+links back to the sections below. For narrative onboarding, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Agent Skills
+
+Agent skills live in `.agents/skills/`
+(symlinked from `.claude/skills/`, `.github/skills/`, and `.cursor/skills/`):
+
+- `review-pr`: review a branch or PR against the rules in this file.
+- `open-pull-request`: draft a PR body from `.github/PULL_REQUEST_TEMPLATE.md`.
+- `package-spec-release`: prepare a release.
 
 ## Releases
 
 Maintainers preparing a versioned release (`prepare-release-X.Y.Z`, changelog finalization, compliance CI, PR to `elastic/main`) should follow **[docs/releasing-package-spec.md](docs/releasing-package-spec.md)**.
+
+## Contribution Process
+
+- Changes that impact the Elastic Stack or Elastic Packages beyond this repo follow the
+  [Change Proposals](CONTRIBUTING.md#change-proposals) process before landing as a single PR.
+- New package categories follow the [Category Proposals](CONTRIBUTING.md#category-proposals) process.
 
 ## Repository Structure
 
@@ -44,12 +62,12 @@ spec:
 
 1. **Definitions**: Reusable schema components in `definitions` section
 2. **Properties**: Fields referencing definitions via `$ref`
-3. **Cross-file References**: Use relative paths (e.g., `$ref: "../integration/manifest.spec.yml#/definitions/my_field"`)
-4. **AdditionalProperties**: Set to `false` to disallow undeclared fields
+3. **Cross-file References**: Always use relative paths (e.g., `$ref: "../integration/manifest.spec.yml#/definitions/my_field"`); absolute or root-relative paths break portability
+4. **AdditionalProperties**: Set to `false` on new object schemas to disallow undeclared fields
 
 ### Sharing Definitions
 
-When a field is used in multiple locations, define it once in `spec/integration/manifest.spec.yml` and reference it:
+When a field is used in multiple locations, define it once in `spec/integration/manifest.spec.yml` and reference it. Never duplicate the same definition inline in two spec files; the copies drift out of sync.
 
 ```yaml
 # In spec/integration/manifest.spec.yml
@@ -78,8 +96,16 @@ for changes that are **only** defined for the introducing version (e.g. new **re
 **breaking** changes with a clear minimum `format_version`), **scope** the change to that version
 instead of adding remove patches.
 
+Patches live in the same `.spec.yml` file, under a top-level `versions` key. Insert new entries
+at the **top** of the list (newer `before` values first):
+
 ```yaml
 versions:
+  # Newer `before` first: insert new patch blocks here, above existing entries.
+  - before: 3.7.0
+    patch:
+      - op: remove
+        path: "/properties/recent_field"
   - before: 3.6.0
     patch:
       - op: remove
@@ -88,7 +114,7 @@ versions:
         path: "/definitions/my_new_definition"
 ```
 
-**Important**: Remove property references before the definitions they depend on.
+**Important**: Remove property references before the definitions they depend on; otherwise the patch fails.
 **Important**: This is not needed for development files (files under `_dev` directories)
 
 #### Version Patch Comment Conventions
@@ -117,6 +143,26 @@ Comments in version patches should:
   path: "/properties/requires"  # removes requires property
 ```
 
+### Folder Spec Files
+
+`spec/**/spec.yml` files describe the folders and files a package contains (`contents`), and
+`$ref` the `.spec.yml` schema for each file. An item can set `validationMode` to restrict where
+it is allowed:
+
+```yaml
+  - description: Folder containing development resources
+    type: folder
+    name: _dev
+    required: false
+    visibility: private
+    validationMode: source
+    $ref: "./_dev/spec.yml"
+```
+
+- `validationMode: source`: only allowed in source packages; reported as an error in built packages.
+- `validationMode: build`: only allowed in built packages; reported as an error in source packages.
+- Omit it when the item is valid in both. Legacy mode ignores `validationMode`.
+
 ## Test Packages
 
 ### Creating Test Packages
@@ -141,6 +187,7 @@ The tool prompts for: package type, name, title, description, license (Apache-2.
 
 ### Required Files
 
+These rules apply to packages in both `test/packages/` and `compliance/testdata/packages/`.
 Package roots created by **`elastic-package create package`** include:
 
 ```
@@ -217,7 +264,9 @@ Feature: Basic package types support
 
 **Version tags**: Use `@X.Y.Z` to indicate the minimum spec version required for the test. Tests tagged with versions higher than the current version won't be executed until that version is released.
 
-**Skipping scenarios**: When a scenario cannot pass because Kibana or elastic-package hasn't implemented support yet, add `@skip` with a comment referencing the blocking issue:
+Every `Scenario:` must have a version tag directly above it.
+
+**Skipping scenarios**: When a scenario cannot pass because Kibana or elastic-package hasn't implemented support yet, add `@skip` directly after the version tag, followed by a `# Pending <description>: <url>` comment referencing the blocking issue. Never add `@skip` without a tracking URL:
 
 ```gherkin
   @3.6.0
@@ -258,7 +307,7 @@ way to run them locally is with `elastic-package stack`:
 ```bash
 # Start a local stack (run from the compliance/ directory)
 cd compliance
-go run github.com/elastic/elastic-package stack up -d --version 9.4.0-SNAPSHOT
+go run github.com/elastic/elastic-package stack up -d --version 9.6.0-SNAPSHOT
 
 # Export stack connection env vars into the current shell
 eval $(go run github.com/elastic/elastic-package stack shellinit)
@@ -489,20 +538,55 @@ tests := map[string]struct {
 
 ### Registering Validators
 
-In `code/go/internal/validator/spec.go`:
+Every new validator must be added to the `rulesDef` slice in the `rules()` function of
+`code/go/internal/validator/spec.go`:
+
 ```go
-{
-	Func:    semantic.ValidateMyRule,
-	Type:    spectypes.Integration,
-	Version: semver.MustParse("3.7.1"),
-}
+// Applies to all package types and all versions
+{fn: semantic.ValidateMyRule},
+
+// Only for spec >= 3.8.0 (match the version that introduces the feature)
+{fn: semantic.ValidateMyRule, since: semver.MustParse("3.8.0")},
+
+// Only for some package types
+{fn: semantic.ValidateMyRule, types: []string{"integration", "input"}, since: semver.MustParse("3.8.0")},
+
+// Only before 3.0.0, reported as a warning
+{fn: warnOn(semantic.ValidateMyRule), until: semver.MustParse("3.0.0")},
+
+// Only when validating built packages
+{fn: semantic.ValidateMyRule, modes: []Mode{BuildMode}},
 ```
+
+- `fn`: required, the validator function
+- `since`: optional, minimum spec version (inclusive)
+- `until`: optional, maximum spec version (exclusive)
+- `types`: optional, package types it applies to; omit for all types
+- `modes`: optional, validation modes it runs in (`LegacyMode`, `SourceMode`, `BuildMode`,
+  defined in `code/go/internal/validator/modes.go`); omit for all modes
+- Use `warnOn()` only for rules being phased in (warnings before becoming errors)
 
 ### Reference Examples
 
 - `validate_minimum_kibana_version.go` - Multiple validation functions, pkgpath patterns
 - `validate_package_references.go` - Policy templates and data streams validation
 - `validate_deprecated_replaced_by_test.go` - Unit testing with t.TempDir()
+
+## Go Style
+
+- Every new `.go` file starts with the Elastic license header (enforced by `make check`;
+  `make -C code/go update` adds it):
+
+  ```go
+  // Copyright Elasticsearch B.V. and/or licensed to Elasticsearch B.V. under one
+  // or more contributor license agreements. Licensed under the Elastic License;
+  // you may not use this file except in compliance with the Elastic License.
+  ```
+
+- Indent with tabs (`make -C code/go format` runs gofmt).
+- No abbreviated names: `packageName`, not `pkgName`. Loop indexes (`i`, `j`) and idiomatic
+  short names (`err`, `ok`) are fine. See also the validator naming and error path rules in
+  [Best Practices](#best-practices).
 
 ## Testing Commands
 
@@ -541,7 +625,11 @@ Location: `spec/changelog.yml`
       link: https://github.com/elastic/package-spec/pull/NUMBER
 ```
 
-Add new entries at the BOTTOM of the current version's changes list. Use "TBD" for PR link if not yet created.
+- Every non-trivial PR adds an entry. Dependabot dependency bumps are the only exception.
+- Add new entries at the BOTTOM of the changes list of the in-development version (the one with the `-next` suffix), never under a released version.
+- `description` is a complete sentence ending with a period, describing what changed.
+- `type` is exactly one of `enhancement`, `bugfix`, or `breaking-change`.
+- `link` is the full PR URL, not an issue URL. Use "TBD" only if the PR does not exist yet.
 
 ### Pending changes
 

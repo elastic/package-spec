@@ -32,3 +32,9 @@ Link related issues below. Insert the issue link or reference after the word "Cl
 - Supersedes #123
 -->
 -
+
+## Proposed commit message
+
+<!-- Recommended
+Commit message to use when squash-merging this PR, instead of the list of branch commits: a short imperative title, a blank line, then a few lines on what changed and why.
+-->
